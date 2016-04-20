@@ -3,13 +3,19 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.DateField = exports.DecimalField = exports.FloatField = exports.IntegerField = exports.NumberField = exports.PasswordField = exports.StringField = exports.Field = exports.ValidationResult = undefined;
+exports.DateField = exports.DecimalField = exports.FloatField = exports.IntegerField = exports.NumberField = exports.PasswordField = exports.StringField = exports.Field = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _validators = require('./validators');
 
 var validators = _interopRequireWildcard(_validators);
+
+var _validation = require('../errors/validation');
+
+var _validation2 = _interopRequireDefault(_validation);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -19,21 +25,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var ValidationResult = exports.ValidationResult = function ValidationResult() {
-    var isValid = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
-
-    _classCallCheck(this, ValidationResult);
-
-    this.valid = isValid;
-    this.failedValidators = [];
-};
-
 var Field = exports.Field = function () {
     function Field(label) {
         var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
         _classCallCheck(this, Field);
 
+        if (!label) {
+            throw new Error('Fields must have a label');
+        }
+        this.label = label;
         this.required = options.required || true;
 
         this.validators = [['required', validators.requiredValidator]];
@@ -44,7 +45,7 @@ var Field = exports.Field = function () {
         value: function validateValue(value) {
             var checkAllValidators = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 
-            var res = new ValidationResult();
+            var failedValidators = [];
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
             var _iteratorError = undefined;
@@ -54,9 +55,8 @@ var Field = exports.Field = function () {
                     var validator = _step.value;
 
                     if (!validator[1](this, value)) {
-                        res.valid = false;
-                        res.failedValidators.push(validator[0]);
-                        if (!checkAllValidators) return res;
+                        failedValidators.push(validator[0]);
+                        if (!checkAllValidators) break;
                     }
                 }
             } catch (err) {
@@ -74,7 +74,11 @@ var Field = exports.Field = function () {
                 }
             }
 
-            return res;
+            if (failedValidators.length) {
+                throw new _validation2.default(this, failedValidators);
+            } else {
+                return true;
+            }
         }
     }]);
 
@@ -125,6 +129,7 @@ var NumberField = exports.NumberField = function (_Field2) {
 
         _this3.minValue = options.minValue || null;
         _this3.maxValue = options.maxValue || null;
+        _this3.validators.push(['invalidNumber', validators.numberValidator]);
         _this3.validators.push(['minValue', validators.minValueValidator]);
         _this3.validators.push(['maxValue', validators.maxValueValidator]);
         return _this3;
@@ -136,10 +141,15 @@ var NumberField = exports.NumberField = function (_Field2) {
 var IntegerField = exports.IntegerField = function (_NumberField) {
     _inherits(IntegerField, _NumberField);
 
-    function IntegerField() {
+    function IntegerField(label) {
+        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
         _classCallCheck(this, IntegerField);
 
-        return _possibleConstructorReturn(this, Object.getPrototypeOf(IntegerField).apply(this, arguments));
+        var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(IntegerField).call(this, label, options));
+
+        _this4.validators.push(['invalidInteger', validators.integerValidator]);
+        return _this4;
     }
 
     return IntegerField;

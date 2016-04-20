@@ -1,6 +1,10 @@
 
 export default class ModelRegistry {
-    constructor() {
+    constructor(storage, options = {}) {
+        if (!storage) {
+            throw new Error('ModelRegistry must be constructed with a ModelStorage instance as the first parameter')
+        }
+        this.storage = storage;
         this.models = {};
     }
     
@@ -8,6 +12,7 @@ export default class ModelRegistry {
         if (this.models[name]) {
             throw new Error(`Model '${name}' is already present in this registry!`);
         }
+        instance.registry = this;
         this.models[name] = instance;
     }
     
@@ -15,5 +20,6 @@ export default class ModelRegistry {
         if (!this.models[name]) {
             throw new Error(`Model '${name}' does not exist in this registry!`);
         }
+        return this.models[name];
     }
 }

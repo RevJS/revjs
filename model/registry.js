@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -9,26 +9,34 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var ModelRegistry = function () {
-    function ModelRegistry() {
+    function ModelRegistry(storage) {
+        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
         _classCallCheck(this, ModelRegistry);
 
+        if (!storage) {
+            throw new Error('ModelRegistry must be constructed with a ModelStorage instance as the first parameter');
+        }
+        this.storage = storage;
         this.models = {};
     }
 
     _createClass(ModelRegistry, [{
-        key: "addModel",
+        key: 'addModel',
         value: function addModel(name, instance) {
             if (this.models[name]) {
-                throw new Error("Model '" + name + "' is already present in this registry!");
+                throw new Error('Model \'' + name + '\' is already present in this registry!');
             }
+            instance.registry = this;
             this.models[name] = instance;
         }
     }, {
-        key: "getModel",
+        key: 'getModel',
         value: function getModel(name) {
             if (!this.models[name]) {
-                throw new Error("Model '" + name + "' does not exist in this registry!");
+                throw new Error('Model \'' + name + '\' does not exist in this registry!');
             }
+            return this.models[name];
         }
     }]);
 

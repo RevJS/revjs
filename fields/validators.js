@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.requiredValidator = requiredValidator;
 exports.minLengthValidator = minLengthValidator;
 exports.maxLengthValidator = maxLengthValidator;
+exports.numberValidator = numberValidator;
+exports.integerValidator = integerValidator;
 exports.minValueValidator = minValueValidator;
 exports.maxValueValidator = maxValueValidator;
 function requiredValidator(field, value) {
@@ -29,6 +31,20 @@ function maxLengthValidator(field, value) {
         if (value.length > field.maxLength) {
             return false;
         }
+    }
+    return true;
+}
+
+function numberValidator(field, value) {
+    if (isNaN(value)) {
+        return false;
+    }
+    return true;
+}
+
+function integerValidator(field, value) {
+    if (!/^\d+$/.test(value)) {
+        return false;
     }
     return true;
 }

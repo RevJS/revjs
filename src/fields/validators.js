@@ -24,6 +24,20 @@ export function maxLengthValidator(field, value) {
     return true;
 }
 
+export function numberValidator(field, value) {
+    if (isNaN(value)) {
+        return false;
+    }
+    return true;
+}
+
+export function integerValidator(field, value) {
+    if (!(/^\d+$/.test(value))) {
+        return false;
+    }
+    return true;
+}
+
 export function minValueValidator(field, value) {
     if (field.minValue !== null) {
         if (value < field.minValue) {

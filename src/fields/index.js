@@ -1,15 +1,13 @@
 
 import * as validators from './validators';
-
-export class ValidationResult {
-    constructor(isValid = true) {
-        this.valid = isValid;
-        this.failedValidators = [];        
-    }
-}
+import ValidationError from '../errors/validation';
 
 export class Field {
     constructor(label, options = {}) {
+        if (!label) {
+            throw new Error('Fields must have a label');
+        }
+        this.label = label;
         this.required = options.required || true;
         
         this.validators = [
@@ -18,15 +16,19 @@ export class Field {
     }
     
     validateValue(value, checkAllValidators = true) {
-        var res = new ValidationResult();
+        var failedValidators = [];
         for (var validator of this.validators) {
             if (!validator[1](this, value)) {
-                res.valid = false;
-                res.failedValidators.push(validator[0]);
-                if (!checkAllValidators) return res;
+                failedValidators.push(validator[0]);
+                if (!checkAllValidators) break;
             }
         }
-        return res;
+        if (failedValidators.length) {
+            throw new ValidationError(this, failedValidators);
+        }
+        else {
+            return true;
+        }
     }
 }
 
@@ -47,12 +49,18 @@ export class NumberField extends Field {
         super(label, options);
         this.minValue = options.minValue || null;
         this.maxValue = options.maxValue || null;
+        this.validators.push(['invalidNumber', validators.numberValidator]);
         this.validators.push(['minValue', validators.minValueValidator]);
         this.validators.push(['maxValue', validators.maxValueValidator]);
     }
 }
 
-export class IntegerField extends NumberField {}
+export class IntegerField extends NumberField {
+    constructor(label, options = {}) {
+        super(label, options);
+        this.validators.push(['invalidInteger', validators.integerValidator]);
+    }
+}
 
 export class FloatField extends NumberField {}
 
