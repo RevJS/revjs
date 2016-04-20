@@ -1,6 +1,8 @@
 
 import ValidationError from '../errors/validation';
 
+// NOTE: Avoid ES6 default argument values (unless you want to hide those args from APIs!)
+
 export default class Model {
     constructor(options) {
         this.registry = null;
@@ -23,30 +25,40 @@ export default class Model {
         }
     }
     
-    create(createVals, options = {}) {
-        if (!createVals) {
-            throw new Error("create() requires the 'createVals' parameter");
+    create(vals, options) {
+        options = options || {};
+        if (!vals) {
+            throw new Error("create() requires the 'vals' parameter");
         }
         if (this.meta.singleton) {
             throw new Error("create() cannot be called on singleton models");
         }
         
-        this.validateValues(createVals);
-        return this.registry.storage.create(this, createVals, options);
+        this.validateValues(vals);
+        return this.registry.storage.create(this, vals, options);
     }
     
-    update(updateVals, where = null, options = {}) {
-        if (!updateVals) {
-            throw new Error("update() requires the 'updateVals' parameter");
+    update(vals, where, options) {
+        where = where || null;
+        options = options || {};
+        if (!vals) {
+            throw new Error("update() requires the 'vals' parameter");
         }
         if (!this.meta.singleton && !where) {
             throw new Error("update() requires the 'where' parameter for non-singleton models")
         }
         
         // TODO: Get existing vals when appropriate
-        // updateVals = Object.assign(origVals, updateVals)
+        // vals = Object.assign(origVals, vals)
         
-        this.validateValues(updateVals);
-        return this.registry.storage.update(this, updateVals, where, options);
+        this.validateValues(vals);
+        return this.registry.storage.update(this, vals, where, options);
+    }
+    
+    get(criteria, options) {
+        options = options || {};
+        return [{
+            to_be_implemented: true
+        }]
     }
 }

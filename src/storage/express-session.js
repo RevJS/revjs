@@ -3,7 +3,12 @@ import ModelStorage from './storage';
 
 export default class ExpressSessionStorage extends ModelStorage {
     
-    create(model, createVals, options) {
+    constructor(options = {}) {
+        super(options);
+        this.sessionKey = options.sessionKey || 'models';
+    }
+    
+    create(model, vals, options = {}) {
         return new Promise((resolve) => {
             if (!options.session) {
                 throw new Error("ExpressSessionStorage.create() requires 'session' option to be specified.");
@@ -11,14 +16,17 @@ export default class ExpressSessionStorage extends ModelStorage {
             if (model.meta.singleton) {
                 throw new Error("ExpressSessionStorage.create() cannot be called on singleton models");
             }
-            if (!options.session[model.meta.tableName]) {
-                session[model.meta.tableName] = []
+            if (!(this.sessionKey in options.session))
+                options.session[this.sessionKey] = {};
+            var modelData = options.session[this.sessionKey];
+            if (!(model.meta.tableName in modelData)) {
+                modelData[model.meta.tableName] = []
             }
             resolve(true);
         });        
     }
     
-    update(model, updateVals, where = null, options = {}) {
+    update(model, vals, where = null, options = {}) {
         return new Promise((resolve) => {
             if (!options.session) {
                 throw new Error("ExpressSessionStorage.update() requires 'session' option to be specified.");
@@ -26,18 +34,21 @@ export default class ExpressSessionStorage extends ModelStorage {
             if (!model.meta.singleton && !where) {
                 throw new Error("ExpressSessionStorage.update() requires the 'where' parameter for non-singleton models")
             }
-            if (!options.session[model.meta.tableName]) {
+            if (!(this.sessionKey in options.session))
+                options.session[this.sessionKey] = {};
+            var modelData = options.session[this.sessionKey];
+            if (!(model.meta.tableName in modelData)) {
                 if (model.meta.singleton) {
-                    options.session[model.meta.tableName] = {}
+                    modelData[model.meta.tableName] = {}
                 }
                 else {
-                    options.session[model.meta.tableName] = []
+                    modelData[model.meta.tableName] = []
                 }
             }
             if (model.meta.singleton) {
-                options.session[model.meta.tableName] = Object.assign(
-                    options.session[model.meta.tableName],
-                    updateVals
+                modelData[model.meta.tableName] = Object.assign(
+                    modelData[model.meta.tableName],
+                    vals
                 );
                 resolve(true);
             }

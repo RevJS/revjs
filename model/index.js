@@ -14,6 +14,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+// NOTE: Avoid ES6 default argument values (unless you want to hide those args from APIs!)
+
 var Model = function () {
     function Model(options) {
         _classCallCheck(this, Model);
@@ -40,37 +42,43 @@ var Model = function () {
         }
     }, {
         key: 'create',
-        value: function create(createVals) {
-            var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-            if (!createVals) {
-                throw new Error("create() requires the 'createVals' parameter");
+        value: function create(vals, options) {
+            options = options || {};
+            if (!vals) {
+                throw new Error("create() requires the 'vals' parameter");
             }
             if (this.meta.singleton) {
                 throw new Error("create() cannot be called on singleton models");
             }
 
-            this.validateValues(createVals);
-            return this.registry.storage.create(this, createVals, options);
+            this.validateValues(vals);
+            return this.registry.storage.create(this, vals, options);
         }
     }, {
         key: 'update',
-        value: function update(updateVals) {
-            var where = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
-            var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-            if (!updateVals) {
-                throw new Error("update() requires the 'updateVals' parameter");
+        value: function update(vals, where, options) {
+            where = where || null;
+            options = options || {};
+            if (!vals) {
+                throw new Error("update() requires the 'vals' parameter");
             }
             if (!this.meta.singleton && !where) {
                 throw new Error("update() requires the 'where' parameter for non-singleton models");
             }
 
             // TODO: Get existing vals when appropriate
-            // updateVals = Object.assign(origVals, updateVals)
+            // vals = Object.assign(origVals, vals)
 
-            this.validateValues(updateVals);
-            return this.registry.storage.update(this, updateVals, where, options);
+            this.validateValues(vals);
+            return this.registry.storage.update(this, vals, where, options);
+        }
+    }, {
+        key: 'get',
+        value: function get(criteria, options) {
+            options = options || {};
+            return [{
+                to_be_implemented: true
+            }];
         }
     }]);
 
