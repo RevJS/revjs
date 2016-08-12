@@ -8,8 +8,8 @@ export class Field {
             throw new Error('Fields must have a label');
         }
         this.label = label;
-        this.required = options.required || true;
-        
+        this.required = (typeof options.required === 'boolean') ? options.required : true;
+
         this.validators = [
             ['required', validators.requiredValidator]
         ];

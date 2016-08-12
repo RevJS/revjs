@@ -44,4 +44,3 @@ var ModelRegistry = function () {
 }();
 
 exports.default = ModelRegistry;
-//# sourceMappingURL=registry.js.map

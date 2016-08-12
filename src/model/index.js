@@ -1,7 +1,7 @@
 
 import ValidationError from '../errors/validation';
 
-// NOTE: Avoid ES6 default argument values (unless you want to hide those args from APIs!)
+// NOTE: Avoid ES6 default argument value transpilation (unless you want to hide those args from APIs)
 
 export default class Model {
     constructor(options) {
@@ -55,10 +55,11 @@ export default class Model {
         return this.registry.storage.update(this, vals, where, options);
     }
     
-    get(criteria, options) {
+    get(where, options) {
         options = options || {};
-        return [{
-            to_be_implemented: true
-        }]
+        if (!this.meta.singleton && !where) {
+            throw new Error("get() requires the 'where' parameter for non-singleton models");
+        }
+        return this.registry.storage.get(this, where, options);
     }
 }

@@ -1,6 +1,7 @@
 
 export function getFuncArgNames(func) {
     // Source: http://stackoverflow.com/questions/1007981/how-to-get-function-parameter-names-values-dynamically-from-javascript
+    if (typeof func !== 'function') return [];
     var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
     var ARGUMENT_NAMES = /([^\s,]+)/g;
     var fnStr = func.toString().replace(STRIP_COMMENTS, '');

@@ -51,7 +51,7 @@ var ExpressSessionStorage = function (_ModelStorage) {
                 if (!(model.meta.tableName in modelData)) {
                     modelData[model.meta.tableName] = [];
                 }
-                resolve(true);
+                throw new Error('ExpressSessionStorage.create() not yet implemented :-)');
             });
         }
     }, {
@@ -86,10 +86,42 @@ var ExpressSessionStorage = function (_ModelStorage) {
                 }
             });
         }
+    }, {
+        key: 'get',
+        value: function get(model) {
+            var _this4 = this;
+
+            var where = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+            var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+            return new Promise(function (resolve) {
+                if (!options.session) {
+                    throw new Error("ExpressSessionStorage.update() requires 'session' option to be specified.");
+                }
+                if (!model.meta.singleton && !where) {
+                    throw new Error("ExpressSessionStorage.update() requires the 'where' parameter for non-singleton models");
+                }
+
+                if (!(_this4.sessionKey in options.session) || !(model.meta.tableName in options.session[_this4.sessionKey])) {
+
+                    if (model.meta.singleton) {
+                        resolve({});
+                    } else {
+                        resolve([]);
+                    }
+                } else {
+                    var modelData = options.session[_this4.sessionKey][model.meta.tableName];
+                    if (model.meta.singleton) {
+                        resolve(modelData);
+                    } else {
+                        throw new Error('Non-singleton Session Storage get() not yet implemented!');
+                    }
+                }
+            });
+        }
     }]);
 
     return ExpressSessionStorage;
 }(_storage2.default);
 
 exports.default = ExpressSessionStorage;
-//# sourceMappingURL=express-session.js.map

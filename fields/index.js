@@ -35,7 +35,7 @@ var Field = exports.Field = function () {
             throw new Error('Fields must have a label');
         }
         this.label = label;
-        this.required = options.required || true;
+        this.required = typeof options.required === 'boolean' ? options.required : true;
 
         this.validators = [['required', validators.requiredValidator]];
     }
@@ -195,4 +195,3 @@ var DateField = exports.DateField = function (_Field3) {
 
     return DateField;
 }(Field);
-//# sourceMappingURL=index.js.map

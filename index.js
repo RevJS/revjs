@@ -20,4 +20,3 @@ exports.default = {
     Model: _model2.default,
     fields: fields
 };
-//# sourceMappingURL=index.js.map

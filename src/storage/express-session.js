@@ -22,7 +22,7 @@ export default class ExpressSessionStorage extends ModelStorage {
             if (!(model.meta.tableName in modelData)) {
                 modelData[model.meta.tableName] = []
             }
-            resolve(true);
+            throw new Error('ExpressSessionStorage.create() not yet implemented :-)');
         });        
     }
     
@@ -54,6 +54,37 @@ export default class ExpressSessionStorage extends ModelStorage {
             }
             else {
                 throw new Error('Non-singleton Session Storage updates not yet implemented!');
+            }
+        });
+    }
+
+    get(model, where = null, options = {}) {
+        return new Promise((resolve) => {
+            if (!options.session) {
+                throw new Error("ExpressSessionStorage.update() requires 'session' option to be specified.");
+            }
+            if (!model.meta.singleton && !where) {
+                throw new Error("ExpressSessionStorage.update() requires the 'where' parameter for non-singleton models")
+            }
+            
+            if ( !(this.sessionKey in options.session)
+                || !(model.meta.tableName in options.session[this.sessionKey])) {
+                
+                if (model.meta.singleton) {
+                    resolve({});
+                }
+                else {
+                    resolve([]);
+                }
+            }
+            else {
+                var modelData = options.session[this.sessionKey][model.meta.tableName];
+                if (model.meta.singleton) {
+                    resolve(modelData);
+                }
+                else {
+                    throw new Error('Non-singleton Session Storage get() not yet implemented!');
+                }
             }
         });
     }

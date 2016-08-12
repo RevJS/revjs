@@ -14,7 +14,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-// NOTE: Avoid ES6 default argument values (unless you want to hide those args from APIs!)
+// NOTE: Avoid ES6 default argument value transpilation (unless you want to hide those args from APIs)
 
 var Model = function () {
     function Model(options) {
@@ -74,11 +74,12 @@ var Model = function () {
         }
     }, {
         key: 'get',
-        value: function get(criteria, options) {
+        value: function get(where, options) {
             options = options || {};
-            return [{
-                to_be_implemented: true
-            }];
+            if (!this.meta.singleton && !where) {
+                throw new Error("get() requires the 'where' parameter for non-singleton models");
+            }
+            return this.registry.storage.get(this, where, options);
         }
     }]);
 
@@ -86,4 +87,3 @@ var Model = function () {
 }();
 
 exports.default = Model;
-//# sourceMappingURL=index.js.map

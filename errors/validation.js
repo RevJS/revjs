@@ -10,8 +10,33 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var ValidationError = function (_Error) {
-    _inherits(ValidationError, _Error);
+function _extendableBuiltin(cls) {
+    function ExtendableBuiltin() {
+        var instance = Reflect.construct(cls, Array.from(arguments));
+        Object.setPrototypeOf(instance, Object.getPrototypeOf(this));
+        return instance;
+    }
+
+    ExtendableBuiltin.prototype = Object.create(cls.prototype, {
+        constructor: {
+            value: cls,
+            enumerable: false,
+            writable: true,
+            configurable: true
+        }
+    });
+
+    if (Object.setPrototypeOf) {
+        Object.setPrototypeOf(ExtendableBuiltin, cls);
+    } else {
+        ExtendableBuiltin.__proto__ = cls;
+    }
+
+    return ExtendableBuiltin;
+}
+
+var ValidationError = function (_extendableBuiltin2) {
+    _inherits(ValidationError, _extendableBuiltin2);
 
     function ValidationError(field) {
         var failedValidators = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
@@ -28,7 +53,6 @@ var ValidationError = function (_Error) {
     }
 
     return ValidationError;
-}(Error);
+}(_extendableBuiltin(Error));
 
 exports.default = ValidationError;
-//# sourceMappingURL=validation.js.map

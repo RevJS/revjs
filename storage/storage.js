@@ -11,4 +11,3 @@ var ModelStorage = function ModelStorage() {
 };
 
 exports.default = ModelStorage;
-//# sourceMappingURL=storage.js.map
