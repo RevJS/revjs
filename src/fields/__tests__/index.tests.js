@@ -4,15 +4,16 @@ import 'babel-polyfill';
 import { assert } from 'chai';
 import {
     Field,
-    StringField,
+    TextField,
     PasswordField,
     NumberField,
     IntegerField,
     FloatField,
     DecimalField,
-    DateField
+    DateField,
+    DateTimeField
 } from '../index';
-import ValidationError from '../../errors/validation';
+import ValidationResult from '../validationresult';
 
 describe("fields", () => {
 
@@ -30,77 +31,65 @@ describe("fields", () => {
         describe("validateValue()", () => {
             it("returns true for any value when not required", () => {
                 var f = new Field("My Field", {required: false});
-                assert.equal(f.validateValue(null), true);
-                assert.equal(f.validateValue(""), true);
-                assert.equal(f.validateValue("abc"), true);
-                assert.equal(f.validateValue(1), true);
+                assert.equal(f.validateValue(null).valid, true);
+                assert.equal(f.validateValue("").valid, true);
+                assert.equal(f.validateValue("abc").valid, true);
+                assert.equal(f.validateValue(1).valid, true);
             });
             it("returns true for non-empty values when required", () => {
                 var f = new Field("My Field", {required: true});
-                assert.equal(f.validateValue("abc"), true);
-                assert.equal(f.validateValue(1), true);
+                assert.equal(f.validateValue("abc").valid, true);
+                assert.equal(f.validateValue(1).valid, true);
             });
-            it("throws a ValidationError for empty values when required", () => {
+            it("returns false for empty values when required", () => {
                 var f = new Field("My Field", {required: true});
-                assert.throws(() => { f.validateValue(null); }, ValidationError);
-                assert.throws(() => { f.validateValue("");   }, ValidationError);
+                assert.equal(f.validateValue(null).valid, false);
+                assert.equal(f.validateValue("").valid, false);
             });
         });
     });
 
-    describe("StringField class", () => {
+    describe("TextField class", () => {
         it("can't be created without a label", () => {
             assert.throws(() => {
-                new StringField();
+                new TextField();
             });
         });
         it("can be created with a label", () => {
             assert.doesNotThrow(() => {
-                new StringField("My Field");
+                new TextField("My Field");
             });
         });
         describe("validateValue()", () => {
-            it("throws a ValidationError when value.length < minLength", () => {
-                var f = new StringField("My Field", {minLength: 2});
-                assert.throws(() => { f.validateValue("a"); }, ValidationError);
+            it("returns false when value.length < minLength", () => {
+                var f = new TextField("My Field", {minLength: 2});
+                assert.equal(f.validateValue("a").valid, false);
             });
             it("returns true when value.length >= minLength", () => {
-                var f = new StringField("My Field", {minLength: 2});
-                assert.equal(f.validateValue("aa"), true);
-                assert.equal(f.validateValue("abc123"), true);
+                var f = new TextField("My Field", {minLength: 2});
+                assert.equal(f.validateValue("aa").valid, true);
+                assert.equal(f.validateValue("abc123").valid, true);
             });
             it("returns true when value.length <= maxLength", () => {
-                var f = new StringField("My Field", {maxLength: 6});
-                assert.equal(f.validateValue("abc"), true);
-                assert.equal(f.validateValue("abc123"), true);
+                var f = new TextField("My Field", {maxLength: 6});
+                assert.equal(f.validateValue("abc").valid, true);
+                assert.equal(f.validateValue("abc123").valid, true);
             });
-            it("throws a ValidationError when value.length > maxLength", () => {
-                var f = new StringField("My Field", {maxLength: 2});
-                assert.throws(() => { f.validateValue("abc123"); }, ValidationError);
+            it("returns false when value.length > maxLength", () => {
+                var f = new TextField("My Field", {maxLength: 2});
+                assert.equal(f.validateValue("abc123").valid, false);
             });
-            it("ValidationError contains only one error when checkAllValidators = false", () => {
-                var f = new StringField("My Field", {maxLength: 2, minLength: 4});
-                try {
-                    f.validateValue("abc", false);
-                }
-                catch (e) {
-                    assert.instanceOf(e, ValidationError);
-                    assert.equal(e.failedValidators.length, 1);
-                    return;
-                }
-                assert(false, "No exception returned");
+            it("ValidationResult contains only one error when checkAllValidators = false", () => {
+                var f = new TextField("My Field", {maxLength: 2, minLength: 4});
+                var res = f.validateValue("abc", false);
+                assert.instanceOf(res, ValidationResult);
+                assert.equal(res.failedValidators.length, 1);
             });
-            it("ValidationError contains more than one error when checkAllValidators = true", () => {
-                var f = new StringField("My Field", {maxLength: 2, minLength: 4});
-                try {
-                    f.validateValue("abc", true);
-                }
-                catch (e) {
-                    assert.instanceOf(e, ValidationError);
-                    assert(e.failedValidators.length > 1);
-                    return;
-                }
-                assert(false, "No exception returned");
+            it("ValidationResult contains more than one error when checkAllValidators = true", () => {
+                var f = new TextField("My Field", {maxLength: 2, minLength: 4});
+                var res = f.validateValue("abc", true);
+                assert.instanceOf(res, ValidationResult);
+                assert(res.failedValidators.length > 1);
             });
         });
     });
@@ -132,32 +121,32 @@ describe("fields", () => {
         describe("validateValue()", () => {
             it("returns true when value is a number", () => {
                 var f = new NumberField("My Field");
-                assert.equal(f.validateValue(123.12), true);
-                assert.equal(f.validateValue("10"), true);
+                assert.equal(f.validateValue(123.12).valid, true);
+                assert.equal(f.validateValue("10").valid, true);
             });
-            it("throws a ValidationError when value is not a number", () => {
+            it("returns false when value is not a number", () => {
                 var f = new NumberField("My Field", {minLength: 2});
-                assert.throws(() => { f.validateValue("abc"); }, ValidationError);
+                assert.equal(f.validateValue("abc").valid, false);
             });
-            it("throws a ValidationError when value < minValue", () => {
+            it("returns false when value < minValue", () => {
                 var f = new NumberField("My Field", {minValue: 10});
-                assert.throws(() => { f.validateValue("5"); }, ValidationError);
-                assert.throws(() => { f.validateValue(5); }, ValidationError);
+                assert.equal(f.validateValue("5").valid, false);
+                assert.equal(f.validateValue(5).valid, false);
             });
             it("returns true when value >= minValue", () => {
                 var f = new NumberField("My Field", {minValue: 2});
-                assert.equal(f.validateValue("3"), true);
-                assert.equal(f.validateValue(3), true);
+                assert.equal(f.validateValue("3").valid, true);
+                assert.equal(f.validateValue(3).valid, true);
             });
             it("returns true when value <= maxValue", () => {
                 var f = new NumberField("My Field", {maxValue: 6});
-                assert.equal(f.validateValue("4"), true);
-                assert.equal(f.validateValue(4), true);
+                assert.equal(f.validateValue("4").valid, true);
+                assert.equal(f.validateValue(4).valid, true);
             });
-            it("throws a ValidationError when value > maxValuh", () => {
+            it("returns false when value > maxValuh", () => {
                 var f = new NumberField("My Field", {maxValue: 2});
-                assert.throws(() => { f.validateValue("5"); }, ValidationError);
-                assert.throws(() => { f.validateValue(5); }, ValidationError);
+                assert.equal(f.validateValue("5").valid, false);
+                assert.equal(f.validateValue(5).valid, false);
             });
         });
     });
@@ -176,13 +165,13 @@ describe("fields", () => {
         describe("validateValue()", () => {
             it("returns true when value is an integer", () => {
                 var f = new IntegerField("My Field");
-                assert.equal(f.validateValue(123), true);
-                assert.equal(f.validateValue("10"), true);
+                assert.equal(f.validateValue(123).valid, true);
+                assert.equal(f.validateValue("10").valid, true);
             });
-            it("throws a ValidationError when value is not an integer", () => {
+            it("returns false when value is not an integer", () => {
                 var f = new IntegerField("My Field", {minLength: 2});
-                assert.throws(() => { f.validateValue("123.1"); }, ValidationError);
-                assert.throws(() => { f.validateValue(22.33); }, ValidationError);
+                assert.equal(f.validateValue("123.1").valid, false);
+                assert.equal(f.validateValue(22.33).valid, false);
             });
         });
     });
@@ -222,6 +211,19 @@ describe("fields", () => {
         it("can be created with a label", () => {
             assert.doesNotThrow(() => {
                 new DateField("My Field");
+            });
+        });
+    });
+
+    describe("DateTimeField class", () => {
+        it("can't be created without a label", () => {
+            assert.throws(() => {
+                new DateTimeField();
+            });
+        });
+        it("can be created with a label", () => {
+            assert.doesNotThrow(() => {
+                new DateTimeField("My Field");
             });
         });
     });

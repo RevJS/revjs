@@ -12,7 +12,7 @@ export default class ModelRegistry {
         if (this.models[name]) {
             throw new Error(`Model '${name}' is already present in this registry!`);
         }
-        instance.registry = this;
+        instance.register(name, this);
         this.models[name] = instance;
     }
     

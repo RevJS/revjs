@@ -1,6 +1,6 @@
 
 import * as validators from './validators';
-import ValidationError from '../errors/validation';
+import ValidationResult from './validationresult';
 
 export class Field {
     constructor(label, options = {}) {
@@ -23,16 +23,11 @@ export class Field {
                 if (!checkAllValidators) break;
             }
         }
-        if (failedValidators.length) {
-            throw new ValidationError(this, failedValidators);
-        }
-        else {
-            return true;
-        }
+        return new ValidationResult(failedValidators.length == 0, failedValidators);
     }
 }
 
-export class StringField extends Field {
+export class TextField extends Field {
     constructor(label, options = {}) {
         super(label, options);
         this.minLength = options.minLength || null;
@@ -42,7 +37,7 @@ export class StringField extends Field {
     }
 }
 
-export class PasswordField extends StringField {}
+export class PasswordField extends TextField {}
 
 export class NumberField extends Field {
     constructor(label, options = {}) {
@@ -73,3 +68,4 @@ export class DecimalField extends NumberField {
 
 // TODO: Date Validation
 export class DateField extends Field {}
+export class DateTimeField extends Field {}
