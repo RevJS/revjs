@@ -18,6 +18,7 @@
      "no-console": [false],
      "triple-equals": false,
      "one-line": [false, "check-catch", "check-finally", "check-else"],
-     "only-arrow-functions": false
+     "only-arrow-functions": false,
+     "quotemark": [true, "single"]
   }
 }

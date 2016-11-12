@@ -3,6 +3,7 @@
         "declaration": true,
         "declarationDir": "./lib",
         "listEmittedFiles": true,
+        "experimentalDecorators": true,
         "outDir": "./lib",
         "rootDir": "./src",
         "noImplicitAny": true,

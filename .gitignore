@@ -1,3 +1,4 @@
 node_modules
 *.map
 *.tar.gz
+lib/**/*
