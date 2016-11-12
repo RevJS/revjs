@@ -1,21 +1,26 @@
 
-import { IStorage } from "../storage/types";
+import { IModel } from '../model';
+import { IStorage } from '../storage';
+import InMemoryStorage from '../storage/inmemory';
 
-export default class ModelRegistry {
-    private models: {[name: string]: any} = {};
+export class ModelRegistry {
+    private models: {[name: string]: IModel} = {};
+    private storage: {[name: string]: IStorage} = {};
 
-    constructor(private storage: IStorage, options = {}) {
-        if (!storage) {
-            throw new Error("ModelRegistry must be constructed with a ModelStorage instance as the first parameter");
-        }
+    constructor() {
+        this.configureStorage('default', new InMemoryStorage());
     }
 
-    public addModel(name: string, instance: any) {
+    public configureStorage(name: string, storage: IStorage) {
+        this.storage[name] = storage;
+    }
+
+    public addModel(name: string, instance: IModel) {
         if (this.models[name]) {
             throw new Error(`Model '${name}' is already present in this registry!`);
         }
-        instance.register(name, this);
         this.models[name] = instance;
+        instance.__meta__.registry = this;
     }
 
     public getModel(name: string) {
@@ -25,3 +30,6 @@ export default class ModelRegistry {
         return this.models[name];
     }
 }
+
+const registry = new ModelRegistry();
+export default registry;

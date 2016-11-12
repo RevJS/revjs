@@ -1,15 +1,23 @@
 
 // import ValidationError from '../errors/validation';
 import { FieldType } from '../fields';
-import Registry from './registry';
+import { ModelRegistry } from './registry';
 
-// NOTE: Avoid ES6 default argument value transpilation (unless you want to hide those args from APIs)
+export interface IModelOptions {
+    singleton: boolean;
+    storage: string;
+}
 
 export interface IModelMeta {
+    name: string;
     label: string;
     fields: {
         [fieldName: string]: FieldType
     };
+    fieldsOrder: Array<string>;
+    registry: ModelRegistry;
+    singleton: boolean;
+    storage: string;
 }
 
 export interface IModel {
@@ -17,13 +25,11 @@ export interface IModel {
     // create, update, etc
 }
 
-export default class Model<T> {
-
-    private registry: Registry = null;
+export default class Model {
 
     constructor(options: any) {
         // TODO
-        this.registry = null;
+        // this.registry = null;
     }
 
     /*validateValues(vals, checkAllValidators = true) {
