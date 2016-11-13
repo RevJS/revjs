@@ -17,6 +17,10 @@ export interface IFieldOptions {
     decimalPlaces?: number;
 }
 
+export interface IValidationOptions {
+    checkAllValidators: boolean;
+}
+
 export const DEFAULT_FIELD_OPTIONS: IFieldOptions = {
     required: true
 };
@@ -30,12 +34,12 @@ export class FieldType {
         ];
     }
 
-    public validateValue(value: any, checkAllValidators = true) {
+    public validateValue(value: any, options?: IValidationOptions) {
         let failedValidators: Array<any> = [];
         for (let validator of this.validators) {
             if (!validator[1](this, value)) {
                 failedValidators.push(validator[0]);
-                if (!checkAllValidators) {
+                if (options && !options.checkAllValidators) {
                     break;
                 }
             }

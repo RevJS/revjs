@@ -1,7 +1,6 @@
 
 import * as fields from '../fields';
 import { IModel, IModelOptions } from '../model';
-import registry from '../model/registry';
 export const t = fields;
 
 export interface IFieldTypeCtor {
@@ -15,7 +14,6 @@ function initMeta(obj: IModel) {
             label: null,
             fields: {},
             fieldsOrder: [],
-            registry: null,
             singleton: false,
             storage: 'default'
         };
@@ -38,7 +36,5 @@ export function model(label: string, options?: IModelOptions): any {
         targetObj.prototype.__meta__.label = label;
         targetObj.prototype.__meta__.singleton = options && options.singleton ? true : false;
         targetObj.prototype.__meta__.storage = options && options.storage ? options.storage : 'default';
-
-        registry.addModel(modelName, new targetObj());  // TODO: Might want to make this optional
     };
 }

@@ -1,11 +1,10 @@
 
 // import ValidationError from '../errors/validation';
-import { FieldType } from '../fields';
-import { ModelRegistry } from './registry';
+import { FieldType, IValidationOptions } from '../fields';
 
 export interface IModelOptions {
-    singleton: boolean;
-    storage: string;
+    singleton?: boolean;
+    storage?: string;
 }
 
 export interface IModelMeta {
@@ -15,14 +14,32 @@ export interface IModelMeta {
         [fieldName: string]: FieldType
     };
     fieldsOrder: Array<string>;
-    registry: ModelRegistry;
     singleton: boolean;
     storage: string;
 }
 
 export interface IModel {
-    __meta__: IModelMeta;
+    __meta__?: IModelMeta;
+    [property: string]: any;
     // create, update, etc
+}
+
+export interface ICreateOptions {
+    validation?: IValidationOptions;
+}
+
+export interface IReadOptions {
+    offset?: number;
+    limit?: number;
+    fields?: Array<string>;
+}
+
+export interface IUpdateOptions {
+    validation?: IValidationOptions;
+}
+
+export interface IRemoveOptions {
+    limit?: number;
 }
 
 export default class Model {

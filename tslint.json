@@ -19,6 +19,7 @@
      "triple-equals": false,
      "one-line": [false, "check-catch", "check-finally", "check-else"],
      "only-arrow-functions": false,
-     "quotemark": [true, "single"]
+     "quotemark": [true, "single"],
+     "forin": false
   }
 }
