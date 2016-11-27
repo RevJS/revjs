@@ -1,5 +1,5 @@
 
-export default class ValidationError extends Error {
+export class ValidationError extends Error {
 
     constructor(
         public field: string,

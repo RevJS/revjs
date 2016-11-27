@@ -1,5 +1,6 @@
 import { IModel, ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from '../model';
-import InMemoryStorage from './inmemory';
+import { InMemoryStorage } from './inmemory';
+export * from './inmemory';
 
 export interface IStorage {
     create<T extends IModel>(model: T, options?: ICreateOptions): Promise<T>;
@@ -16,6 +17,6 @@ export function getStorage(storageName: string) {
     return configuredStorage[storageName];
 }
 
-export default function configureStorage(storageName: string, storage: IStorage) {
+export function configureStorage(storageName: string, storage: IStorage) {
     configuredStorage[storageName] = storage;
 }

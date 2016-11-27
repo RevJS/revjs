@@ -2,7 +2,7 @@
 import { IStorage } from './';
 import { IModel, ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from '../model';
 
-export default class InMemoryStorage implements IStorage {
+export class InMemoryStorage implements IStorage {
     private storage: {
         [modelName: string]: any
     } = {};

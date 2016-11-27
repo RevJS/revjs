@@ -1,6 +1,6 @@
 
 // import ValidationError from '../errors/validation';
-import { FieldType, IValidationOptions } from '../fields';
+import { IFieldMeta, IValidationOptions } from '../fields';
 
 export interface IModelOptions {
     singleton?: boolean;
@@ -8,20 +8,16 @@ export interface IModelOptions {
 }
 
 export interface IModelMeta {
-    name: string;
-    label: string;
-    fields: {
-        [fieldName: string]: FieldType
-    };
-    fieldsOrder: Array<string>;
-    singleton: boolean;
-    storage: string;
+    name?: string;
+    label?: string;
+    fields: Array<IFieldMeta>;
+    singleton?: boolean;
+    storage?: string;
 }
 
 export interface IModel {
     __meta__?: IModelMeta;
     [property: string]: any;
-    // create, update, etc
 }
 
 export interface ICreateOptions {
@@ -42,7 +38,7 @@ export interface IRemoveOptions {
     limit?: number;
 }
 
-export default class Model {
+export class Model {
 
     constructor(options: any) {
         // TODO

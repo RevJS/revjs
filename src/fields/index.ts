@@ -10,11 +10,23 @@
 
 export interface IFieldOptions {
     required?: boolean;
+    size?: number | [number, number];
     minValue?: number;
     maxValue?: number;
     minLength?: number;
     maxLength?: number;
     decimalPlaces?: number;
+}
+
+export interface IFieldCtor {
+    new (label: string, options: IFieldOptions): Field;
+}
+
+export interface IFieldMeta {
+    name: string;
+    label: string;
+    type: IFieldCtor;
+    options: IFieldOptions;
 }
 
 export interface IValidationOptions {
@@ -25,7 +37,11 @@ export const DEFAULT_FIELD_OPTIONS: IFieldOptions = {
     required: true
 };
 
-export class FieldType {
+export function field(name: string, label: string, type: IFieldCtor, options?: IFieldOptions): IFieldMeta {
+    return {name, label, type, options};
+}
+
+export class Field {
     private validators: Array<any>;
 
     constructor(private label: string, private options: IFieldOptions) {
@@ -48,9 +64,9 @@ export class FieldType {
     }
 }
 
-export class BooleanField extends FieldType {}
+export class BooleanField extends Field {}
 
-export class TextField extends FieldType {
+export class TextField extends Field {
     constructor(label: string, options: IFieldOptions) {
         super(label, options);
         /*
@@ -62,7 +78,7 @@ export class TextField extends FieldType {
 
 export class PasswordField extends TextField {}
 
-export class NumberField extends FieldType {
+export class NumberField extends Field {
     constructor(label: string, options: IFieldOptions) {
         super(label, options);
         /*
@@ -88,8 +104,8 @@ export class DecimalField extends NumberField {
     }
 }
 
-export class DateField extends FieldType {}
-export class DateTimeField extends FieldType {}
+export class DateField extends Field {}
+export class DateTimeField extends Field {}
 
-export class RelatedRecord extends FieldType {}
-export class RelatedRecordList extends FieldType {}
+export class RelatedRecord extends Field {}
+export class RelatedRecordList extends Field {}
