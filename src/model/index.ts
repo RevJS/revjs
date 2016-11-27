@@ -1,6 +1,6 @@
 
 // import ValidationError from '../errors/validation';
-import { IFieldMeta, IValidationOptions } from '../fields';
+import { Field, IValidationOptions } from '../fields';
 
 export interface IModelOptions {
     singleton?: boolean;
@@ -10,7 +10,7 @@ export interface IModelOptions {
 export interface IModelMeta {
     name?: string;
     label?: string;
-    fields: Array<IFieldMeta>;
+    fields: Array<Field>;
     singleton?: boolean;
     storage?: string;
 }

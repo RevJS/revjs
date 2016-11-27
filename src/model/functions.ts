@@ -1,16 +1,14 @@
 import { IModel } from './';
 import { IValidationOptions } from '../fields';
 import { ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from './';
-import { getStorage } from '../storage';
+import * as storage from '../storage';
 
 export function validate<T extends IModel>(model: T, options?: IValidationOptions) {
     if (typeof model != 'object') {
         throw new TypeError('validate() vals must be an object');
     }
-    for (let fieldName in model) {
-        if (fieldName in model.__meta__.fields) {
-            model.__meta__.fields[fieldName].validateValue(model[fieldName], options);
-        }
+    for (let field of model.__meta__.fields) {
+        field.validateValue(model[field.name], options);
         // TODO: Possibly check for extra fields not in __meta__?
         // TODO: Async Validation
     }
@@ -28,11 +26,11 @@ export function create<T extends IModel>(model: T, options?: ICreateOptions): Pr
     }
 
     validate<T>(model, options ? options.validation : null);
-    let storage = getStorage(model.__meta__.storage);
+    let store = storage.get(model.__meta__.storage);
     if (!storage) {
         throw new Error('create() error - model storage \'${vals.__meta__.storage}\' is not configured');
     }
-    return storage.create<T>(model, options);
+    return store.create<T>(model, options);
 }
 
 export function update<T extends IModel>(model: T, where?: any, options?: IUpdateOptions): Promise<boolean> {
@@ -46,25 +44,25 @@ export function update<T extends IModel>(model: T, where?: any, options?: IUpdat
     // TODO: Get existing vals when appropriate
 
     validate<T>(model, options ? options.validation : null);
-    let storage = getStorage(model.__meta__.storage);
+    let store = storage.get(model.__meta__.storage);
     if (!storage) {
         throw new Error('update() error - model storage \'${vals.__meta__.storage}\' is not configured');
     }
-    return storage.update<T>(model, where, options);
+    return store.update<T>(model, where, options);
 }
 
 export function read<T extends IModel>(model: T, where?: any, options?: IReadOptions): Promise<Array<T>> {
-    let storage = getStorage(model.__meta__.storage);
+    let store = storage.get(model.__meta__.storage);
     if (!storage) {
         throw new Error('read() error - model storage \'${vals.__meta__.storage}\' is not configured');
     }
-    return storage.read<T>(model, where, options);
+    return store.read<T>(model, where, options);
 }
 
 export function remove<T extends IModel>(model: T, where?: any, options?: IRemoveOptions): Promise<Array<T>> {
-    let storage = getStorage(model.__meta__.storage);
+    let store = storage.get(model.__meta__.storage);
     if (!storage) {
         throw new Error('remove() error - model storage \'${vals.__meta__.storage}\' is not configured');
     }
-    return storage.read<T>(model, where, options);
+    return store.read<T>(model, where, options);
 }

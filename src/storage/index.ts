@@ -13,10 +13,10 @@ let configuredStorage: {[storageName: string]: IStorage} = {
     default: new InMemoryStorage()
 };
 
-export function getStorage(storageName: string) {
+export function get(storageName: string) {
     return configuredStorage[storageName];
 }
 
-export function configureStorage(storageName: string, storage: IStorage) {
+export function configure(storageName: string, storage: IStorage) {
     configuredStorage[storageName] = storage;
 }
