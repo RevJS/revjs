@@ -16,7 +16,7 @@ export interface IModelMeta {
 }
 
 export interface IModel {
-    __meta__?: IModelMeta;
+    __meta__: IModelMeta;
     [property: string]: any;
 }
 

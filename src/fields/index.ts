@@ -1,6 +1,7 @@
 
 // import * as validators from './validators';
 // import ValidationResult from './validationresult';
+import { IModel } from '../model';
 
 /*
         if (!label) {
@@ -93,5 +94,12 @@ export class DecimalField extends NumberField {
 export class DateField extends Field {}
 export class DateTimeField extends Field {}
 
-export class RelatedRecord extends Field {}
-export class RelatedRecordList extends Field {}
+export class RelatedRecord extends Field {
+    constructor(
+            name: string,
+            label: string,
+            relatedModel: new () => IModel,
+            options?: IFieldOptions) {
+        super(name, label, options);
+    }
+}
