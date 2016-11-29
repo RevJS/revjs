@@ -10,7 +10,7 @@ export interface IModelOptions {
 export interface IModelMeta {
     name?: string;
     label?: string;
-    fields: Array<Field>;
+    fields: Field[];
     singleton?: boolean;
     storage?: string;
 }
@@ -27,7 +27,7 @@ export interface ICreateOptions {
 export interface IReadOptions {
     offset?: number;
     limit?: number;
-    fields?: Array<string>;
+    fields?: string[];
 }
 
 export interface IUpdateOptions {

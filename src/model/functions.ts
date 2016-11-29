@@ -51,7 +51,7 @@ export function update<T extends IModel>(model: T, where?: any, options?: IUpdat
     return store.update<T>(model, where, options);
 }
 
-export function read<T extends IModel>(model: T, where?: any, options?: IReadOptions): Promise<Array<T>> {
+export function read<T extends IModel>(model: T, where?: any, options?: IReadOptions): Promise<T[]> {
     let store = storage.get(model.__meta__.storage);
     if (!storage) {
         throw new Error('read() error - model storage \'${vals.__meta__.storage}\' is not configured');
@@ -59,7 +59,7 @@ export function read<T extends IModel>(model: T, where?: any, options?: IReadOpt
     return store.read<T>(model, where, options);
 }
 
-export function remove<T extends IModel>(model: T, where?: any, options?: IRemoveOptions): Promise<Array<T>> {
+export function remove<T extends IModel>(model: T, where?: any, options?: IRemoveOptions): Promise<T[]> {
     let store = storage.get(model.__meta__.storage);
     if (!storage) {
         throw new Error('remove() error - model storage \'${vals.__meta__.storage}\' is not configured');

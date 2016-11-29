@@ -14,8 +14,8 @@
   "typings": "lib/index.d.ts",
   "devDependencies": {
     "chai": "3.5.0",
-    "mocha": "3.0.2",
-    "tslint": "3.15.1",
-    "typescript": "2.0.7"
+    "mocha": "3.2.0",
+    "tslint": "4.0.2",
+    "typescript": "2.0.10"
   }
 }

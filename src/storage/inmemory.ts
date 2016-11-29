@@ -41,7 +41,7 @@ export class InMemoryStorage implements IStorage {
         });
     }
 
-    public read<T extends IModel>(model: IModel, where?: any, options?: IReadOptions): Promise<Array<T>> {
+    public read<T extends IModel>(model: IModel, where?: any, options?: IReadOptions): Promise<T[]> {
         return new Promise((resolve) => {
             if (!model.__meta__.singleton && !where) {
                 throw new Error('InMemoryStorage.read() requires the \'where\' parameter for non-singleton models');
@@ -59,7 +59,7 @@ export class InMemoryStorage implements IStorage {
                 }
             }
         });
-    };
+    }
 
     public remove<T extends IModel>(model: IModel, where: any, options?: IRemoveOptions): Promise<boolean> {
         throw new Error('InMemoryStorage.delete() not yet implemented');

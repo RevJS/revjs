@@ -27,7 +27,7 @@ export const DEFAULT_FIELD_OPTIONS: IFieldOptions = {
 };
 
 export class Field {
-    private validators: Array<any>;
+    private validators: any[];
 
     constructor(public name: string, public label: string, public options?: IFieldOptions) {
         this.options = this.options || {};
@@ -37,7 +37,7 @@ export class Field {
     }
 
     public validateValue(value: any, options?: IValidationOptions) {
-        let failedValidators: Array<any> = [];
+        let failedValidators: any[] = [];
         for (let validator of this.validators) {
             if (!validator[1](this, value)) {
                 failedValidators.push(validator[0]);
