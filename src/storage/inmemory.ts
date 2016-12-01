@@ -1,6 +1,6 @@
 
 import { IStorage } from './';
-import { IModel, ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from '../model';
+import { IModel, IModelMeta, ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from '../model';
 
 export class InMemoryStorage implements IStorage {
     private storage: {
@@ -11,9 +11,9 @@ export class InMemoryStorage implements IStorage {
         // TODO: Do Stuff...
     }
 
-    public create<T extends IModel>(model: IModel, options?: ICreateOptions): Promise<T> {
+    public create<T extends IModel>(model: IModel, meta: IModelMeta, options?: ICreateOptions): Promise<T> {
         return new Promise((resolve) => {
-            if (model.__meta__.singleton) {
+            if (meta.singleton) {
                 throw new Error('InMemoryStorage.create() cannot be called on singleton models');
             }
             else {
@@ -25,14 +25,14 @@ export class InMemoryStorage implements IStorage {
         });
     }
 
-    public update<T extends IModel>(model: IModel, where?: any, options?: IUpdateOptions): Promise<boolean> {
+    public update<T extends IModel>(model: IModel, meta: IModelMeta, where?: any, options?: IUpdateOptions): Promise<boolean> {
         return new Promise((resolve) => {
-            if (!model.__meta__.singleton && !where) {
+            if (!meta.singleton && !where) {
                 throw new Error('InMemoryStorage.update() requires the \'where\' parameter for non-singleton models');
             }
-            let modelData = this.getModelData(model);
-            if (model.__meta__.singleton) {
-                this.writeFields(model, modelData);
+            let modelData = this.getModelData(model, meta);
+            if (meta.singleton) {
+                this.writeFields(model, meta, modelData);
                 resolve(true);
             }
             else {
@@ -41,17 +41,17 @@ export class InMemoryStorage implements IStorage {
         });
     }
 
-    public read<T extends IModel>(model: IModel, where?: any, options?: IReadOptions): Promise<T[]> {
+    public read<T extends IModel>(model: new() => T, meta: IModelMeta, where?: any, options?: IReadOptions): Promise<T[]> {
         return new Promise((resolve) => {
-            if (!model.__meta__.singleton && !where) {
+            if (!meta.singleton && !where) {
                 throw new Error('InMemoryStorage.read() requires the \'where\' parameter for non-singleton models');
             }
-            let modelData = this.getModelData(model, false);
+            let modelData = this.getModelData(model, meta, false);
             if (!modelData) {
-                resolve(model.__meta__.singleton ? {} : []);
+                resolve(meta.singleton ? {} : []);
             }
             else {
-                if (model.__meta__.singleton) {
+                if (meta.singleton) {
                     resolve(modelData);
                 }
                 else {
@@ -61,24 +61,24 @@ export class InMemoryStorage implements IStorage {
         });
     }
 
-    public remove<T extends IModel>(model: IModel, where: any, options?: IRemoveOptions): Promise<boolean> {
+    public remove<T extends IModel>(model: new() => T, meta: IModelMeta, where: any, options?: IRemoveOptions): Promise<boolean> {
         throw new Error('InMemoryStorage.delete() not yet implemented');
     }
 
-    private getModelData(model: IModel, init = true): any {
-        if (!this.storage[model.__meta__.name] && init) {
-            if (model.__meta__.singleton) {
-                this.storage[model.__meta__.name] = {};
+    private getModelData(model: IModel, meta: IModelMeta, init = true): any {
+        if (!this.storage[meta.name] && init) {
+            if (meta.singleton) {
+                this.storage[meta.name] = {};
             }
             else {
-                this.storage[model.__meta__.name] = [];
+                this.storage[meta.name] = [];
             }
         }
-        return this.storage[model.__meta__.name];
+        return this.storage[meta.name];
     }
 
-    private writeFields(model: IModel, target: any): void {
-        for (let field in model.__meta__.fields) {
+    private writeFields(model: IModel, meta: IModelMeta, target: any): void {
+        for (let field in meta.fields) {
             target[field] = model[field];
         }
     }

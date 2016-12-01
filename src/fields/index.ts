@@ -103,3 +103,13 @@ export class RelatedRecord extends Field {
         super(name, label, options);
     }
 }
+
+export class RelatedRecordList extends Field {
+    constructor(
+            name: string,
+            label: string,
+            relatedModel: new () => IModel,
+            options?: IFieldOptions) {
+        super(name, label, options);
+    }
+}

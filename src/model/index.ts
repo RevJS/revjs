@@ -16,7 +16,6 @@ export interface IModelMeta {
 }
 
 export interface IModel {
-    __meta__: IModelMeta;
     [property: string]: any;
 }
 
@@ -36,6 +35,18 @@ export interface IUpdateOptions {
 
 export interface IRemoveOptions {
     limit?: number;
+}
+
+export function checkIsModelInstance(model: IModel) {
+    if (!model || typeof model != 'object' || !model.constructor) {
+        throw new Error('Supplied model is not a model instance.');
+    }
+}
+
+export function checkIsModelConstructor(model: Function) {
+    if (!model || typeof model != 'function' || !model.name) {
+        throw new Error('Supplied model is not a model constructor.');
+    }
 }
 
 export class Model {

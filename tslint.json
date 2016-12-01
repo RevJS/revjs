@@ -21,6 +21,9 @@
      "one-line": [false, "check-catch", "check-finally", "check-else"],
      "only-arrow-functions": [false],
      "quotemark": [true, "single"],
-     "forin": false
+     "forin": false,
+     "variable-name": [false],
+     "no-empty": false,
+     "object-literal-shorthand": false
   }
 }
