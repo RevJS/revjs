@@ -16,12 +16,10 @@ export class InMemoryStorage implements IStorage {
             if (meta.singleton) {
                 throw new Error('InMemoryStorage.create() cannot be called on singleton models');
             }
-            else {
-                throw new Error('InMemoryStorage.create() not yet implemented');
-            }
-            // TODO...
-            // let modelData = this.getModelData(model);
-            // modelData.push(vals);
+            let modelData = this.getModelData(model, meta);
+            let record = {};
+            this.writeFields(model, meta, record);
+            modelData.push(record);
         });
     }
 
@@ -52,10 +50,11 @@ export class InMemoryStorage implements IStorage {
             }
             else {
                 if (meta.singleton) {
-                    resolve(modelData);
+                    resolve([modelData]);
                 }
                 else {
-                    throw new Error('InMemoryStorage.read() not yet implemented for non-singleton models');
+                    // TODO: Implement filtering
+                    resolve(modelData);
                 }
             }
         });
@@ -78,8 +77,8 @@ export class InMemoryStorage implements IStorage {
     }
 
     private writeFields(model: IModel, meta: IModelMeta, target: any): void {
-        for (let field in meta.fields) {
-            target[field] = model[field];
+        for (let field of meta.fields) {
+            target[field.name] = model[field.name];
         }
     }
 }

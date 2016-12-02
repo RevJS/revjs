@@ -65,7 +65,7 @@ export function read<T extends IModel>(model: new() => T, where?: any, options?:
     if (!storage) {
         throw new Error('read() error - model storage \'${vals.__meta__.storage}\' is not configured');
     }
-    return store.read<T>(model, where, options);
+    return store.read<T>(model, meta, where, options);
 }
 
 export function remove<T extends IModel>(model: new() => T, where?: any, options?: IRemoveOptions): Promise<T[]> {
@@ -76,5 +76,5 @@ export function remove<T extends IModel>(model: new() => T, where?: any, options
     if (!storage) {
         throw new Error('remove() error - model storage \'${vals.__meta__.storage}\' is not configured');
     }
-    return store.read<T>(model, where, options);
+    return store.read<T>(model, meta, where, options);
 }
