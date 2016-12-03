@@ -24,6 +24,7 @@
      "forin": false,
      "variable-name": [false],
      "no-empty": false,
-     "object-literal-shorthand": false
+     "object-literal-shorthand": false,
+     "member-access": [false]
   }
 }
