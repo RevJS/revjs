@@ -13,6 +13,16 @@
             "cwd": "${workspaceRoot}",
             "outFiles": [],
             "sourceMaps": true
+        },
+        {
+            "name": "Debug Current Unit Test",
+            "type": "node2",
+            "request": "launch",
+            "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+            "args": ["--require", "./tests-setup.js", "${relativeFile}"],
+            "cwd": "${workspaceRoot}",
+            "outFiles": [],
+            "sourceMaps": true
         }
     ]
 }
