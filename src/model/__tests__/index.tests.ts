@@ -6,12 +6,12 @@ describe('rev.model', () => {
 
     describe('checkIsModelInstance()', () => {
 
-        let errorMessage = 'Supplied model is not a model instance.';
+        let errorMessage = 'ModelError: Supplied model is not a model instance.';
 
         it('should not throw if object is passed', () => {
             expect(() => {
                 model.checkIsModelInstance({name: 'Fred'});
-            }).to.not.throw(errorMessage);
+            }).to.not.throw();
         });
 
         it('should throw if a non-object is passed', () => {
@@ -31,12 +31,12 @@ describe('rev.model', () => {
 
     describe('checkIsModelConstructor()', () => {
 
-        let errorMessage = 'Supplied model is not a model constructor.';
+        let errorMessage = 'ModelError: Supplied model is not a model constructor.';
 
         it('should not throw if a constructor is passed', () => {
             expect(() => {
                 model.checkIsModelConstructor(function MyModel() {});
-            }).to.not.throw(errorMessage);
+            }).to.not.throw();
         });
 
         it('should throw if a non-constructor is passed', () => {
