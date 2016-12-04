@@ -6,24 +6,24 @@ describe('rev.model.ValidationResult', () => {
 
     describe('constructor()', () => {
 
-        it('should create a valid result when valid not set', () => {
+        it('creates a valid result when valid not set', () => {
             let valid = new v.ModelValidationResult();
             expect(valid.valid).to.equal(true);
             expect(valid.fieldErrors).to.deep.equal({});
             expect(valid.modelErrors).to.deep.equal([]);
         });
 
-        it('should create a valid result when valid is true', () => {
+        it('creates a valid result when valid is true', () => {
             let valid = new v.ModelValidationResult(true);
             expect(valid.valid).to.equal(true);
         });
 
-        it('should create an invalid result when valid is false', () => {
+        it('creates an invalid result when valid is false', () => {
             let valid = new v.ModelValidationResult(false);
             expect(valid.valid).to.equal(false);
         });
 
-        it('should throw an error when valid is not a boolean', () => {
+        it('throws an error when valid is not a boolean', () => {
             expect(() => {
                 let valid = new v.ModelValidationResult(<any> 'flibble');
             }).to.throw('must be a boolean');
@@ -39,7 +39,7 @@ describe('rev.model.ValidationResult', () => {
             valid = new v.ModelValidationResult();
         });
 
-        it('should add a fieldError with no message', () => {
+        it('adds a fieldError with no message', () => {
             valid.addFieldError('name');
             expect(valid.fieldErrors).to.deep.equal({
                 name: [{
@@ -48,7 +48,7 @@ describe('rev.model.ValidationResult', () => {
             });
         });
 
-        it('should add a fieldError with specified message', () => {
+        it('adds a fieldError with specified message', () => {
             valid.addFieldError('name', 'That name is too silly!');
             expect(valid.fieldErrors).to.deep.equal({
                 name: [{
@@ -57,7 +57,7 @@ describe('rev.model.ValidationResult', () => {
             });
         });
 
-        it('should add a fieldError with message and data', () => {
+        it('adds a fieldError with message and data', () => {
             valid.addFieldError('name', 'fail', {type: 'silly'});
             expect(valid.fieldErrors).to.deep.equal({
                 name: [{
@@ -67,7 +67,21 @@ describe('rev.model.ValidationResult', () => {
             });
         });
 
-        it('should add a second fieldError with no message', () => {
+        it('adds a separate key for other fields', () => {
+            valid.addFieldError('name', 'fail', {type: 'silly'});
+            valid.addFieldError('age', 'Old is not an age');
+            expect(valid.fieldErrors).to.deep.equal({
+                name: [{
+                    message: 'fail',
+                    type: 'silly'
+                }],
+                age: [{
+                    message: 'Old is not an age'
+                }]
+            });
+        });
+
+        it('adds a second fieldError with no message', () => {
             valid.addFieldError('name', 'Silly!');
             valid.addFieldError('name');
             expect(valid.fieldErrors).to.deep.equal({
@@ -82,7 +96,7 @@ describe('rev.model.ValidationResult', () => {
             });
         });
 
-        it('should add a second fieldError with specified message', () => {
+        it('adds a second fieldError with specified message', () => {
             valid.addFieldError('name', 'Silly!');
             valid.addFieldError('name', 'Seems like a fake name');
             expect(valid.fieldErrors).to.deep.equal({
@@ -97,7 +111,7 @@ describe('rev.model.ValidationResult', () => {
             });
         });
 
-        it('should add a second fieldError with message and data', () => {
+        it('adds a second fieldError with message and data', () => {
             valid.addFieldError('name', 'Silly!');
             valid.addFieldError('name', 'fail', {type: 'epic'});
             expect(valid.fieldErrors).to.deep.equal({
@@ -113,10 +127,96 @@ describe('rev.model.ValidationResult', () => {
             });
         });
 
-        it('should throw an error when fieldName is not specified', () => {
+        it('sets valid to false when error is added', () => {
+            expect(valid.valid).to.equal(true);
+            valid.addFieldError('name', 'fail');
+            expect(valid.valid).to.equal(false);
+        });
+
+        it('throws an error when fieldName is not specified', () => {
             expect(() => {
                 valid.addFieldError(undefined);
             }).to.throw('You must specify fieldName');
+        });
+
+        it('throws an error if data is not an object', () => {
+            expect(() => {
+                valid.addFieldError('age','you are too old', 94);
+            }).to.throw('You cannot add non-object data');
+        });
+
+    });
+
+    describe('addModelError()', () => {
+
+        let valid: v.ModelValidationResult;
+
+        beforeEach(() => {
+            valid = new v.ModelValidationResult();
+        });
+
+        it('adds a modelError with specified message', () => {
+            valid.addModelError('Model is not cool for cats.');
+            expect(valid.modelErrors).to.deep.equal([
+                {
+                    message: 'Model is not cool for cats.'
+                }
+            ]);
+        });
+
+        it('adds a modelError with message and data', () => {
+            valid.addModelError('Model is not cool for cats.', {cool: 'dogs'});
+            expect(valid.modelErrors).to.deep.equal([
+                {
+                    message: 'Model is not cool for cats.',
+                    cool: 'dogs'
+                }
+            ]);
+        });
+
+        it('adds a second modelError with specified message', () => {
+            valid.addModelError('Silly model!');
+            valid.addModelError('This model has performed an illegal operation.');
+            expect(valid.modelErrors).to.deep.equal([
+                {
+                    message: 'Silly model!'
+                },
+                {
+                    message: 'This model has performed an illegal operation.'
+                }
+            ]);
+        });
+
+        it('adds a second modelError with message and data', () => {
+            valid.addModelError('Silly model!');
+            valid.addModelError('E-roar', {data: 42});
+            expect(valid.modelErrors).to.deep.equal([
+                {
+                    message: 'Silly model!'
+                },
+                {
+                    message: 'E-roar',
+                    data: 42
+                }
+            ]);
+        });
+
+        it('sets valid to false when error is added', () => {
+            expect(valid.valid).to.equal(true);
+            valid.addModelError('fail!');
+            expect(valid.valid).to.equal(false);
+        });
+
+        it('throws an error when no message is specified', () => {
+            expect(() => {
+                valid.addModelError(undefined);
+            }).to.throw('You must specify a message for a model error');
+        });
+
+        it('throws an error if data is not an object', () => {
+            expect(() => {
+                valid.addModelError('You are too old', 94);
+            }).to.throw('You cannot add non-object data');
         });
 
     });
