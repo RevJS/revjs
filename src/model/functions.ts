@@ -1,12 +1,18 @@
-import { IModel, IModelMeta, checkIsModelInstance, checkIsModelConstructor } from './';
+import { ValidationMode, IModel, IModelMeta, checkIsModelInstance, checkIsModelConstructor } from './';
 import { IValidationOptions } from '../fields';
 import { ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from './';
 import { registry } from '../registry';
 import * as storage from '../storage';
 
-export type ValidationMode = 'create' | 'update';
+function getModelMeta(model: any, isConstructor: boolean = false): IModelMeta {
+    let modelName = isConstructor ? model.name : model.constructor.name;
+    if (!modelName) {
+        throw new Error('Could not determine model name.');
+    }
+    return registry.getMeta(modelName);
+}
 
-export function validate(mode: ValidationMode, model: IModel, meta: IModelMeta, options?: IValidationOptions) {
+export function validate(model: IModel, meta: IModelMeta, mode: ValidationMode, options?: IValidationOptions) {
     if (typeof model != 'object') {
         throw new TypeError('validate() model must be an object');
     }
@@ -17,14 +23,6 @@ export function validate(mode: ValidationMode, model: IModel, meta: IModelMeta, 
     }
 }
 
-function getModelMeta(model: any, isConstructor: boolean = false): IModelMeta {
-    let modelName = isConstructor ? model.name : model.constructor.name;
-    if (!modelName) {
-        throw new Error('Could not determine model name.');
-    }
-    return registry.getMeta(modelName);
-}
-
 export function create<T extends IModel>(model: T, options?: ICreateOptions): Promise<T> {
 
     checkIsModelInstance(model);
@@ -33,7 +31,7 @@ export function create<T extends IModel>(model: T, options?: ICreateOptions): Pr
         throw new Error('create() cannot be called on singleton models');
     }
 
-    validate('create', model, meta, options ? options.validation : null);
+    validate(model, meta, 'create', options ? options.validation : null);
 
     let store = storage.get(meta.storage);
     if (!storage) {
@@ -48,7 +46,7 @@ export function update<T extends IModel>(model: T, where?: any, options?: IUpdat
 
     // TODO: Get existing vals when appropriate
 
-    validate('update', model, meta, options ? options.validation : null);
+    validate(model, meta, 'update', options ? options.validation : null);
 
     let store = storage.get(meta.storage);
     if (!storage) {

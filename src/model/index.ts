@@ -2,17 +2,20 @@
 // import ValidationError from '../errors/validation';
 import { Field, IValidationOptions } from '../fields';
 
+export type ValidationMode = 'create' | 'update';
+
 export interface IModelOptions {
     singleton?: boolean;
     storage?: string;
 }
 
-export interface IModelMeta {
+export interface IModelMeta<T> {
     name?: string;
     label?: string;
     fields: Field[];
     singleton?: boolean;
     storage?: string;
+    validate: (model: T, mode: ValidationMode, options?: IValidationOptions)
 }
 
 export interface IModel {
