@@ -1,18 +1,18 @@
 import { Field } from './../fields/index';
 
-import { IModel, IModelMeta, checkIsModelConstructor } from '../model';
+import { IModel, IModelMeta, checkIsModelConstructor, checkIsModelMetadata } from '../model';
 
 export class ModelRegistry {
 
     private _modelProto: { [modelName: string]: Function };
-    private _modelMeta: { [modelName: string]: IModelMeta };
+    private _modelMeta: { [modelName: string]: IModelMeta<IModel> };
 
     constructor() {
         this._modelProto = {};
         this._modelMeta = {};
     }
 
-    public register(model: Function, meta: IModelMeta) {
+    public register(model: Function, meta: IModelMeta<IModel>) {
         // Check model constructor
         checkIsModelConstructor(model);
         let modelName = model.name;
@@ -21,14 +21,7 @@ export class ModelRegistry {
         }
 
         // Check metadata
-        if (!meta || !meta.fields || !(meta.fields instanceof Array)) {
-            throw new Error('RegistryError: You have not defined the fields metadata for this model.');
-        }
-        for (let field of meta.fields) {
-            if (!field || typeof field != 'object' || !(field instanceof Field)) {
-                throw new Error(`RegistryError: One or more entries in the fields metadata is not an instance of rev.Field.`);
-            }
-        }
+        checkIsModelMetadata(meta);
 
         // Populate default metadata
         if (meta.name) {
@@ -69,6 +62,6 @@ export class ModelRegistry {
 
 export const registry = new ModelRegistry();
 
-export function register(model: Function, meta: IModelMeta) {
+export function register<T extends IModel>(model: new() => T, meta: IModelMeta<T>) {
     registry.register(model, meta);
 }

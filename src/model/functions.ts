@@ -1,10 +1,11 @@
+import { ModelValidationResult } from './validationresult';
 import { ValidationMode, IModel, IModelMeta, checkIsModelInstance, checkIsModelConstructor } from './';
 import { IValidationOptions } from '../fields';
 import { ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from './';
 import { registry } from '../registry';
 import * as storage from '../storage';
 
-function getModelMeta(model: any, isConstructor: boolean = false): IModelMeta {
+function getModelMeta<T extends IModel>(model: any, isConstructor: boolean = false): IModelMeta<T> {
     let modelName = isConstructor ? model.name : model.constructor.name;
     if (!modelName) {
         throw new Error('Could not determine model name.');
@@ -12,15 +13,17 @@ function getModelMeta(model: any, isConstructor: boolean = false): IModelMeta {
     return registry.getMeta(modelName);
 }
 
-export function validate(model: IModel, meta: IModelMeta, mode: ValidationMode, options?: IValidationOptions) {
-    if (typeof model != 'object') {
-        throw new TypeError('validate() model must be an object');
-    }
-    for (let field of meta.fields) {
-        field.validateValue(model[field.name], options);
-        // TODO: Possibly check for extra fields not in meta?
-        // TODO: Async Validation
-    }
+export function validate<T extends IModel>(model: T, meta: IModelMeta<T>, mode: ValidationMode, options?: IValidationOptions): Promise<ModelValidationResult> {
+    return new Promise((resolve, reject) => {
+        if (!model || typeof model != 'object') {
+            throw new TypeError('validate() model argument must be an instance of an object');
+        }
+        for (let field of meta.fields) {
+            field.validateValue(model[field.name], options);
+            // TODO: Possibly check for extra fields not in meta?
+            // TODO: Async Validation
+        }
+    });
 }
 
 export function create<T extends IModel>(model: T, options?: ICreateOptions): Promise<T> {

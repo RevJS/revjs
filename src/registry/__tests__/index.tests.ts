@@ -11,7 +11,7 @@ class TestModel {
     date: Date = new Date();
 }
 
-let testMeta: IModelMeta = {
+let testMeta: IModelMeta<TestModel> = {
     fields: [
         new IntegerField('id', 'Id'),
         new TextField('name', 'Name'),
@@ -20,7 +20,7 @@ let testMeta: IModelMeta = {
 };
 
 class TestModel2 {}
-let testMeta2: IModelMeta = { fields: [] };
+let testMeta2: IModelMeta<TestModel2> = { fields: [] };
 
 function getAnyObject() {
     return Object.assign({});
@@ -64,8 +64,8 @@ describe('ModelRegistry', () => {
 
         it('throws an error if fields are not defined', () => {
             expect(() => {
-                testReg.register(TestModel, <IModelMeta> {});
-            }).to.throw('You have not defined the fields metadata');
+                testReg.register(TestModel, <IModelMeta<TestModel>> {});
+            }).to.throw('Model metadata must contain a "fields" definition');
         });
 
         // Metadata tests
@@ -73,10 +73,10 @@ describe('ModelRegistry', () => {
         it('throws an error if fields metadata is missing', () => {
             expect(() => {
                 testReg.register(TestModel, null);
-            }).to.throw('You have not defined the fields metadata');
+            }).to.throw('Model metadata must contain a "fields" definition');
             expect(() => {
-                testReg.register(TestModel, <IModelMeta> {});
-            }).to.throw('You have not defined the fields metadata');
+                testReg.register(TestModel, <IModelMeta<TestModel>> {});
+            }).to.throw('Model metadata must contain a "fields" definition');
         });
 
         it('throws an error if fields array contains invalid items', () => {

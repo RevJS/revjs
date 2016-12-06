@@ -1,5 +1,4 @@
-
-// import ValidationError from '../errors/validation';
+import { ModelValidationResult } from './validationresult';
 import { Field, IValidationOptions } from '../fields';
 
 export type ValidationMode = 'create' | 'update';
@@ -15,7 +14,7 @@ export interface IModelMeta<T> {
     fields: Field[];
     singleton?: boolean;
     storage?: string;
-    validate: (model: T, mode: ValidationMode, options?: IValidationOptions)
+    validate?: (model: T, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions) => void;
 }
 
 export interface IModel {
@@ -49,5 +48,16 @@ export function checkIsModelInstance(model: IModel) {
 export function checkIsModelConstructor(model: Function) {
     if (!model || typeof model != 'function' || !model.name) {
         throw new Error('ModelError: Supplied model is not a model constructor.');
+    }
+}
+
+export function checkIsModelMetadata<T>(meta: IModelMeta<T>) {
+    if (!meta || !meta.fields || !(meta.fields instanceof Array)) {
+        throw new Error('MetadataError: Model metadata must contain a "fields" definition.');
+    }
+    for (let field of meta.fields) {
+        if (!field || typeof field != 'object' || !(field instanceof Field)) {
+            throw new Error(`MetadataError: One or more entries in the fields metadata is not an instance of rev.Field.`);
+        }
     }
 }
