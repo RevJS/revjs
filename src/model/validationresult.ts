@@ -15,6 +15,7 @@ export class ModelValidationResult {
         [fieldName: string]: IFieldError[]
     };
     public modelErrors: IModelError[];
+    public validationFinished: boolean;
 
     constructor(valid?: boolean) {
         if (typeof valid == 'undefined') {
@@ -28,6 +29,7 @@ export class ModelValidationResult {
         }
         this.fieldErrors = {};
         this.modelErrors = [];
+        this.validationFinished = true;
     }
 
     public addFieldError(fieldName: string, message?: string, data?: Object) {

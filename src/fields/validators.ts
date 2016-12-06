@@ -1,6 +1,23 @@
+import { IModel, IModelMeta, ValidationMode } from './../model/index';
+import { ModelValidationResult } from './../model/validationresult';
+import { Field, IValidationOptions } from './index';
+import { VALIDATION_MESSAGES as msg } from './validationmsg';
 
-export function requiredValidator(field, value) {
-    if (field.required && !value) {
+export function requiredValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (field.options.required) {
+        if (typeof model[field.name] === 'undefined' || model[field.name] === null) {
+            result.addFieldError(
+                field.name,
+                msg.REQUIRED(field.label),
+                { validator: 'REQUIRED' }
+            );
+        }
+    }
+}
+
+/* TODO...
+export function stringEmptyValidator(field: Field, value: any) {
+    if (field.options.required && !value) {
         return false;
     }
     return true;
@@ -55,3 +72,4 @@ export function maxValueValidator(field, value) {
     }
     return true;
 }
+*/

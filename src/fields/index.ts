@@ -1,13 +1,15 @@
 
-// import * as validators from './validators';
-// import ValidationResult from './validationresult';
-import { IModel } from '../model';
+import { IModel, IModelMeta, ValidationMode } from '../model';
+import { ModelValidationResult } from './../model/validationresult';
+import * as validators from './validators';
 
-/*
-        if (!label) {
-            throw new Error('Fields must have a label');
-        }
-*/
+export interface IFieldValidator {
+    <T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void;
+}
+
+export interface IAsyncFieldValidator {
+    <T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): Promise<void>;
+}
 
 export interface IFieldOptions {
     required?: boolean;
@@ -17,6 +19,8 @@ export interface IFieldOptions {
     minLength?: number;
     maxLength?: number;
     decimalPlaces?: number;
+    validators?: IFieldValidator[];
+    asyncValidators?: IAsyncFieldValidator[];
 }
 
 export interface IValidationOptions {
@@ -28,16 +32,30 @@ export const DEFAULT_FIELD_OPTIONS: IFieldOptions = {
 };
 
 export class Field {
-    private validators: any[];
+    public validators: IFieldValidator[];
+    public asyncValidators: IAsyncFieldValidator[];
 
     constructor(public name: string, public label: string, public options?: IFieldOptions) {
-        this.options = this.options || {};
+        if (!name || typeof name != 'string') {
+            throw new Error('FieldError: new fields must have a name');
+        }
+        if (!label || typeof label != 'string') {
+            throw new Error('FieldError: new fields must have a label');
+        }
+        this.options = options || Object.assign({}, DEFAULT_FIELD_OPTIONS);
+        if (typeof this.options != 'object') {
+            throw new Error('FieldError: the options parameter must be an object');
+        }
+        if (typeof this.options.required != 'boolean') {
+            this.options.required = true;
+        }
         this.validators = [
-            // ["required", validators.requiredValidator]
+            validators.requiredValidator
         ];
+        // TODO: Add extra validators from field options
     }
 
-    public validateValue(value: any, options?: IValidationOptions) {
+    /*public validate(value: any, options?: IValidationOptions) {
         let failedValidators: any[] = [];
         for (let validator of this.validators) {
             if (!validator[1](this, value)) {
@@ -48,7 +66,7 @@ export class Field {
             }
         }
         return true; // new ValidationResult(failedValidators.length == 0, failedValidators);
-    }
+    }*/
 }
 
 export class BooleanField extends Field {}
