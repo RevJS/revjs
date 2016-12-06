@@ -6,11 +6,12 @@ describe('rev.model.ValidationResult', () => {
 
     describe('constructor()', () => {
 
-        it('creates a valid result when valid not set', () => {
+        it('sets up an empty result as expected', () => {
             let valid = new v.ModelValidationResult();
             expect(valid.valid).to.equal(true);
             expect(valid.fieldErrors).to.deep.equal({});
             expect(valid.modelErrors).to.deep.equal([]);
+            expect(valid.validationFinished).to.equal(true);
         });
 
         it('creates a valid result when valid is true', () => {

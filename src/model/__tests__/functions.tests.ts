@@ -41,7 +41,7 @@ describe('rev.model.functions', () => {
                     expect(res).to.equal('It worked!');
                 });
         });
-        
+
     });
 
 });

@@ -61,26 +61,4 @@ describe('rev.model', () => {
 
     });
 
-    describe('checkIsModelMetadata()', () => {
-
-        it('throws an error if fields metadata is missing', () => {
-            expect(() => { model.checkIsModelMetadata(null);
-                }).to.throw('Model metadata must contain a "fields" definition.');
-            expect(() => { model.checkIsModelMetadata(<model.IModelMeta<any>> {});
-                }).to.throw('Model metadata must contain a "fields" definition.');
-        });
-
-        it('throws an error if fields array contains invalid items', () => {
-            expect(() => {
-                model.checkIsModelMetadata({
-                    fields: [
-                        new TextField('flibble', 'Jibble'),
-                        <IntegerField> getAnyObject()
-                    ]
-                });
-            }).to.throw('is not an instance of rev.Field');
-        });
-
-    });
-
 });
