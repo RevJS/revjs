@@ -2,3 +2,4 @@ node_modules
 *.map
 *.tar.gz
 lib/**/*
+npm-debug.log
