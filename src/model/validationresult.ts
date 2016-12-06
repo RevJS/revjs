@@ -22,7 +22,7 @@ export class ModelValidationResult {
         }
         else {
             if (typeof valid != 'boolean') {
-                throw new Error('ValidationError: First argument to the ValidationResult constructor must be a boolean.')
+                throw new Error('ValidationError: First argument to the ValidationResult constructor must be a boolean.');
             }
             this.valid = valid;
         }

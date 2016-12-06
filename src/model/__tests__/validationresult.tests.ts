@@ -141,7 +141,7 @@ describe('rev.model.ValidationResult', () => {
 
         it('throws an error if data is not an object', () => {
             expect(() => {
-                valid.addFieldError('age','you are too old', 94);
+                valid.addFieldError('age', 'you are too old', 94);
             }).to.throw('You cannot add non-object data');
         });
 
