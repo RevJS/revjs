@@ -3,10 +3,10 @@ import { InMemoryStorage } from './inmemory';
 export * from './inmemory';
 
 export interface IStorage {
-    create<T>(model: T, meta: IModelMeta, options?: ICreateOptions): Promise<T>;
-    update<T>(model: T, meta: IModelMeta, where?: any, options?: IUpdateOptions): Promise<boolean>;
-    read<T>(model: new() => T, meta: IModelMeta, where?: any, options?: IReadOptions): Promise<T[]>;
-    remove<T>(model: new() => T, meta: IModelMeta, where?: any, options?: IRemoveOptions): Promise<boolean>;
+    create<T>(model: T, meta: IModelMeta<T>, options?: ICreateOptions): Promise<T>;
+    update<T>(model: T, meta: IModelMeta<T>, where?: any, options?: IUpdateOptions): Promise<boolean>;
+    read<T>(model: new() => T, meta: IModelMeta<T>, where?: any, options?: IReadOptions): Promise<T[]>;
+    remove<T>(model: new() => T, meta: IModelMeta<T>, where?: any, options?: IRemoveOptions): Promise<boolean>;
 }
 
 let configuredStorage: {[storageName: string]: IStorage} = {
