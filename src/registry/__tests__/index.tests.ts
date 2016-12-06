@@ -1,4 +1,4 @@
-import { NumberField } from './../../fields/index';
+import { Field } from './../../fields/index';
 import { IModelMeta } from './../../model/index';
 import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
@@ -11,16 +11,10 @@ class TestModel {
     date: Date = new Date();
 }
 
-let testMeta: IModelMeta<TestModel> = {
-    fields: [
-        new IntegerField('id', 'Id'),
-        new TextField('name', 'Name'),
-        new DateField('date', 'Date')
-    ]
-};
-
 class TestModel2 {}
-let testMeta2: IModelMeta<TestModel2> = { fields: [] };
+
+let testMeta: IModelMeta<TestModel>;
+let testMeta2: IModelMeta<TestModel2>;
 
 function getAnyObject() {
     return Object.assign({});
@@ -31,6 +25,14 @@ describe('ModelRegistry', () => {
 
     beforeEach(() => {
         testReg = new registry.ModelRegistry();
+        testMeta = {
+            fields: [
+                new IntegerField('id', 'Id'),
+                new TextField('name', 'Name'),
+                new DateField('date', 'Date')
+            ]
+        };
+        testMeta2 = { fields: [] };
     });
 
     describe('constructor()', () => {
@@ -60,12 +62,6 @@ describe('ModelRegistry', () => {
             expect(() => {
                 testReg.register(TestModel, testMeta);
             }).to.throw('already exists in the registry');
-        });
-
-        it('throws an error if fields are not defined', () => {
-            expect(() => {
-                testReg.register(TestModel, <IModelMeta<TestModel>> {});
-            }).to.throw('Model metadata must contain a "fields" definition');
         });
 
         // Metadata tests
@@ -104,6 +100,26 @@ describe('ModelRegistry', () => {
                 });
             }).to.not.throw();
         });
+
+        it('throws an error if a field name is defined twice', () => {
+            expect(() => {
+                testReg.register(TestModel, {
+                    fields: [
+                        new TextField('flibble', 'Jibble'),
+                        new TextField('wibble', 'Some Field'),
+                        new IntegerField('flibble', 'The Duplicate')
+                    ]
+                });
+            }).to.throw('Field "flibble" is defined more than once');
+        });
+
+        it('creates the fieldsByName property as expected', () => {
+            testReg.register(TestModel, testMeta);
+            let fieldNames = testMeta.fields.map((f) => f.name);
+            let meta = testReg.getMeta('TestModel');
+            expect(Object.keys(meta.fieldsByName)).to.deep.equal(fieldNames);
+            expect(meta.fieldsByName[fieldNames[0]]).to.be.instanceOf(Field);
+        })
 
         it('should set up meta.storage ("default" if not defined)', () => {
             testReg.register(TestModel, { fields: [] });

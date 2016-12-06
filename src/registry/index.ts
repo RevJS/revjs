@@ -1,6 +1,6 @@
 import { Field } from './../fields/index';
 
-import { IModel, IModelMeta, checkIsModelConstructor, checkIsModelMetadata } from '../model';
+import { IModel, IModelMeta, checkIsModelConstructor } from '../model';
 
 export class ModelRegistry {
 
@@ -12,7 +12,10 @@ export class ModelRegistry {
         this._modelMeta = {};
     }
 
+    // TODO: Support extending existing models
+
     public register(model: Function, meta: IModelMeta<IModel>) {
+
         // Check model constructor
         checkIsModelConstructor(model);
         let modelName = model.name;
@@ -21,7 +24,14 @@ export class ModelRegistry {
         }
 
         // Check metadata
-        checkIsModelMetadata(meta);
+        if (!meta || !meta.fields || !(meta.fields instanceof Array)) {
+            throw new Error('MetadataError: Model metadata must contain a "fields" definition.');
+        }
+        for (let field of meta.fields) {
+            if (!field || typeof field != 'object' || !(field instanceof Field)) {
+                throw new Error(`MetadataError: One or more entries in the fields metadata is not an instance of rev.Field.`);
+            }
+        }
 
         // Populate default metadata
         if (meta.name) {
@@ -31,6 +41,13 @@ export class ModelRegistry {
         }
         else {
             meta.name = modelName;
+        }
+        meta.fieldsByName = {};
+        for (let field of meta.fields) {
+            if (field.name in meta.fieldsByName) {
+                throw new Error(`MetadataError: Field "${field.name}" is defined more than once.`)
+            }
+            meta.fieldsByName[field.name] = field;
         }
         meta.storage = meta.storage ? meta.storage : 'default';
         meta.label = meta.label ? meta.label : meta.name;
