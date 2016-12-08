@@ -8,9 +8,9 @@ import { VALIDATION_MESSAGES as msg } from '../validationmsg';
 import { ModelValidationResult } from '../../model/validationresult';
 
 class TestModel {
-    id: number;
-    name: string;
-    age: number;
+    id: any;
+    name: any;
+    age: any;
 }
 let nameField = new fld.TextField('name', 'Name');
 let idField = new fld.IntegerField('id', 'Id');
@@ -49,17 +49,41 @@ describe('rev.fields.validators', () => {
             expect(vResult.valid).to.equal(true);
         });
 
-        it('returns valid = false when a value is undefined', () => {
+        it('returns valid = false when a value is not defined', () => {
             let test = new TestModel();
-            vld.requiredValidator(test, meta.fields[1], meta, 'create', vResult, opts);
+            vld.requiredValidator(test, nameField, meta, 'create', vResult, opts);
             expectFailure('required', nameField.name, msg.required(nameField.label), vResult);
         });
 
         it('returns valid = false when a value is null', () => {
             let test = new TestModel();
             test.name = null;
-            vld.requiredValidator(test, meta.fields[1], meta, 'create', vResult, opts);
+            vld.requiredValidator(test, nameField, meta, 'create', vResult, opts);
             expectFailure('required', nameField.name, msg.required(nameField.label), vResult);
+        });
+
+    });
+
+    describe('requiredValidator()', () => {
+
+        it('returns valid = true when a string is specified', () => {
+            let test = new TestModel();
+            test.name = 'flibble';
+            vld.stringValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when a value is not defined', () => {
+            let test = new TestModel();
+            vld.stringValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('string', nameField.name, msg.is_string(nameField.label), vResult);
+        });
+
+        it('returns valid = false when a value is not a string', () => {
+            let test = new TestModel();
+            test.name = 22;
+            vld.stringValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('string', nameField.name, msg.is_string(nameField.label), vResult);
         });
 
     });

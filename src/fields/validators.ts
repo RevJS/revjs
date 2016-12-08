@@ -13,6 +13,16 @@ export function requiredValidator<T extends IModel>(model: T, field: Field, meta
     }
 }
 
+export function stringValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (typeof model[field.name] !== 'string') {
+        result.addFieldError(
+            field.name,
+            msg.is_string(field.label),
+            { validator: 'string' }
+        );
+    }
+}
+
 /* TODO...
 export function stringEmptyValidator(field: Field, value: any) {
     if (field.options.required && !value) {
