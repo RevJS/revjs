@@ -299,4 +299,65 @@ describe('rev.fields.validators', () => {
         });
 
     });
+
+    describe('maxLengthValidator()', () => {
+
+        // Assumes maxLengh is 10
+
+        it('returns valid = true when a string is shorter than maxLength', () => {
+            let test = new TestModel();
+            test.name = 'flibble';
+            vld.maxStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a string is equal to maxLength', () => {
+            let test = new TestModel();
+            test.name = 'flibble Ji';
+            vld.maxStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a string consists only of spaces', () => {
+            let test = new TestModel();
+            test.name = '        ';
+            vld.maxStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a string contains whitespace characters', () => {
+            let test = new TestModel();
+            test.name = ' \r\n \t ';
+            vld.maxStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when a value is not defined', () => {
+            let test = new TestModel();
+            vld.maxStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('max_string_length', nameField.name, msg.max_string_length(nameField.label, nameField.options.maxLength), vResult);
+        });
+
+        it('returns valid = false when a value is not a string', () => {
+            let test = new TestModel();
+            test.name = 222222;
+            vld.maxStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('max_string_length', nameField.name, msg.max_string_length(nameField.label, nameField.options.maxLength), vResult);
+        });
+
+        it('returns valid = false for a long string', () => {
+            let test = new TestModel();
+            test.name = 'dfs sfdsf erfwef dfsdf sdfsdf';
+            vld.maxStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('max_string_length', nameField.name, msg.max_string_length(nameField.label, nameField.options.maxLength), vResult);
+        });
+
+        it('returns valid = false for a long string with spaces', () => {
+            let test = new TestModel();
+            test.name = '     ab      ';
+            vld.maxStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('max_string_length', nameField.name, msg.max_string_length(nameField.label, nameField.options.maxLength), vResult);
+        });
+
+    });
 });

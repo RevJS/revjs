@@ -71,13 +71,13 @@ export function minStringLengthValidator<T extends IModel>(model: T, field: Fiel
 }
 
 export function maxStringLengthValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
-    if (typeof field.options.minLength != 'undefined') {
+    if (typeof field.options.maxLength != 'undefined') {
         if (typeof model[field.name] != 'string'
-                || model[field.name].length < field.options.minLength) {
+                || model[field.name].length > field.options.maxLength) {
             result.addFieldError(
                 field.name,
-                msg.min_string_length(field.label, field.options.minLength),
-                { validator: 'min_string_length' }
+                msg.max_string_length(field.label, field.options.maxLength),
+                { validator: 'max_string_length' }
             );
         }
     }
