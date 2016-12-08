@@ -64,7 +64,7 @@ describe('rev.fields.validators', () => {
 
     });
 
-    describe('requiredValidator()', () => {
+    describe('stringValidator()', () => {
 
         it('returns valid = true when a string is specified', () => {
             let test = new TestModel();
@@ -84,6 +84,51 @@ describe('rev.fields.validators', () => {
             test.name = 22;
             vld.stringValidator(test, nameField, meta, 'create', vResult, opts);
             expectFailure('string', nameField.name, msg.is_string(nameField.label), vResult);
+        });
+
+    });
+
+    describe('stringEmptyValidator()', () => {
+
+        it('returns valid = true when a string is specified', () => {
+            let test = new TestModel();
+            test.name = 'flibble';
+            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when a value is not defined', () => {
+            let test = new TestModel();
+            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('string_empty', nameField.name, msg.string_empty(nameField.label), vResult);
+        });
+
+        it('returns valid = false when a value is not a string', () => {
+            let test = new TestModel();
+            test.name = 22;
+            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('string_empty', nameField.name, msg.string_empty(nameField.label), vResult);
+        });
+
+        it('returns valid = false for a zero-length string', () => {
+            let test = new TestModel();
+            test.name = '';
+            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('string_empty', nameField.name, msg.string_empty(nameField.label), vResult);
+        });
+
+        it('returns valid = false for a string of spaces', () => {
+            let test = new TestModel();
+            test.name = '    ';
+            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('string_empty', nameField.name, msg.string_empty(nameField.label), vResult);
+        });
+
+        it('returns valid = false for a string with other whitespace characters', () => {
+            let test = new TestModel();
+            test.name = '  \r\n \n  \t  ';
+            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('string_empty', nameField.name, msg.string_empty(nameField.label), vResult);
         });
 
     });

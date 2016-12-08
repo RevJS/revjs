@@ -23,6 +23,18 @@ export function stringValidator<T extends IModel>(model: T, field: Field, meta: 
     }
 }
 
+export function stringEmptyValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (typeof model[field.name] !== 'string'
+            || !model[field.name]
+            || model[field.name].trim() == '') {
+        result.addFieldError(
+            field.name,
+            msg.string_empty(field.label),
+            { validator: 'string_empty' }
+        );
+    }
+}
+
 /* TODO...
 export function stringEmptyValidator(field: Field, value: any) {
     if (field.options.required && !value) {
