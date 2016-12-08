@@ -18,7 +18,6 @@ export interface IFieldOptions {
     maxValue?: number;
     minLength?: number;
     maxLength?: number;
-    decimalPlaces?: number;
 }
 
 export interface IValidationOptions {
