@@ -17,8 +17,8 @@ export function stringValidator<T extends IModel>(model: T, field: Field, meta: 
     if (typeof model[field.name] !== 'string') {
         result.addFieldError(
             field.name,
-            msg.is_string(field.label),
-            { validator: 'string' }
+            msg.not_a_string(field.label),
+            { validator: 'not_a_string' }
         );
     }
 }
@@ -35,13 +35,26 @@ export function stringEmptyValidator<T extends IModel>(model: T, field: Field, m
     }
 }
 
-/* TODO...
-export function stringEmptyValidator(field: Field, value: any) {
-    if (field.options.required && !value) {
+export function numberValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (isNaN(model[field.name])
+            || model[field.name] == null
+            || model[field.name] == '') {
+        result.addFieldError(
+            field.name,
+            msg.not_a_number(field.label),
+            { validator: 'not_a_number' }
+        );
+    }
+}
+
+/*export function integerValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (!(/^\d+$/.test(value))) {
         return false;
     }
     return true;
-}
+}*/
+
+/* TODO...
 
 export function minLengthValidator(field, value) {
     if (field.minLength && value && value.length) {
@@ -61,19 +74,7 @@ export function maxLengthValidator(field, value) {
     return true;
 }
 
-export function numberValidator(field, value) {
-    if (isNaN(value)) {
-        return false;
-    }
-    return true;
-}
 
-export function integerValidator(field, value) {
-    if (!(/^\d+$/.test(value))) {
-        return false;
-    }
-    return true;
-}
 
 export function minValueValidator(field, value) {
     if (field.minValue !== null) {
