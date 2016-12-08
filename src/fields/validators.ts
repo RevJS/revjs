@@ -4,14 +4,12 @@ import { Field, IValidationOptions } from './index';
 import { VALIDATION_MESSAGES as msg } from './validationmsg';
 
 export function requiredValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
-    if (field.options.required) {
-        if (typeof model[field.name] === 'undefined' || model[field.name] === null) {
-            result.addFieldError(
-                field.name,
-                msg.REQUIRED(field.label),
-                { validator: 'REQUIRED' }
-            );
-        }
+    if (typeof model[field.name] === 'undefined' || model[field.name] === null) {
+        result.addFieldError(
+            field.name,
+            msg.required(field.label),
+            { validator: 'required' }
+        );
     }
 }
 
