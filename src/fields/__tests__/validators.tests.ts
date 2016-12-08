@@ -177,4 +177,63 @@ describe('rev.fields.validators', () => {
         });
 
     });
+
+    describe('integerValidator()', () => {
+
+        it('returns valid = true when an integer is specified', () => {
+            let test = new TestModel();
+            test.age = 12;
+            vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a string equivalent of an integer is specified', () => {
+            let test = new TestModel();
+            test.age = '34';
+            vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when a value is not defined', () => {
+            let test = new TestModel();
+            vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
+            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.label), vResult);
+        });
+
+        it('returns valid = false when a value is null', () => {
+            let test = new TestModel();
+            test.age = null;
+            vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
+            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.label), vResult);
+        });
+
+        it('returns valid = false when a value is a string', () => {
+            let test = new TestModel();
+            test.age = 'flibble';
+            vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
+            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.label), vResult);
+        });
+
+        it('returns valid = false when a value is an empty string', () => {
+            let test = new TestModel();
+            test.age = '';
+            vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
+            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.label), vResult);
+        });
+
+        it('returns valid = false when a value is a float', () => {
+            let test = new TestModel();
+            test.age = 12.345;
+            vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
+            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.label), vResult);
+        });
+
+        it('returns valid = false when value is a string representation of a float', () => {
+            let test = new TestModel();
+            test.age = '12.345';
+            vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
+            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.label), vResult);
+        });
+
+    });
 });

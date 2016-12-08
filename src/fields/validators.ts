@@ -47,14 +47,21 @@ export function numberValidator<T extends IModel>(model: T, field: Field, meta: 
     }
 }
 
-/*export function integerValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
-    if (!(/^\d+$/.test(value))) {
-        return false;
+export function integerValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (!(/^\d+$/.test(model[field.name]))) {
+        result.addFieldError(
+            field.name,
+            msg.not_an_integer(field.label),
+            { validator: 'not_an_integer' }
+        );
     }
-    return true;
-}*/
+}
 
 /* TODO...
+
+ * Date Validator
+ * DateTime Validator
+ * Object validator
 
 export function minLengthValidator(field, value) {
     if (field.minLength && value && value.length) {
