@@ -12,7 +12,9 @@ class TestModel {
     name: any;
     age: any;
 }
-let nameField = new fld.TextField('name', 'Name');
+let nameField = new fld.TextField('name', 'Name', {
+    minLength: 5, maxLength: 10
+});
 let idField = new fld.IntegerField('id', 'Id');
 let ageField = new fld.NumberField('age', 'Age');
 
@@ -97,6 +99,20 @@ describe('rev.fields.validators', () => {
             expect(vResult.valid).to.equal(true);
         });
 
+        it('returns valid = true for a string of spaces', () => {
+            let test = new TestModel();
+            test.name = '    ';
+            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true for a string with other whitespace characters', () => {
+            let test = new TestModel();
+            test.name = '  \r\n \n  \t  ';
+            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
         it('returns valid = false when a value is not defined', () => {
             let test = new TestModel();
             vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
@@ -113,20 +129,6 @@ describe('rev.fields.validators', () => {
         it('returns valid = false for a zero-length string', () => {
             let test = new TestModel();
             test.name = '';
-            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
-            expectFailure('string_empty', nameField.name, msg.string_empty(nameField.label), vResult);
-        });
-
-        it('returns valid = false for a string of spaces', () => {
-            let test = new TestModel();
-            test.name = '    ';
-            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
-            expectFailure('string_empty', nameField.name, msg.string_empty(nameField.label), vResult);
-        });
-
-        it('returns valid = false for a string with other whitespace characters', () => {
-            let test = new TestModel();
-            test.name = '  \r\n \n  \t  ';
             vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
             expectFailure('string_empty', nameField.name, msg.string_empty(nameField.label), vResult);
         });
@@ -233,6 +235,67 @@ describe('rev.fields.validators', () => {
             test.age = '12.345';
             vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
             expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.label), vResult);
+        });
+
+    });
+
+    describe('minLengthValidator()', () => {
+
+        // Assumes minLengh is 5
+
+        it('returns valid = true when a string is longer than minLength', () => {
+            let test = new TestModel();
+            test.name = 'flibble';
+            vld.minStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a string is equal to minLength', () => {
+            let test = new TestModel();
+            test.name = 'flibb';
+            vld.minStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a string consists only of spaces', () => {
+            let test = new TestModel();
+            test.name = '        ';
+            vld.minStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a string contains whitespace characters', () => {
+            let test = new TestModel();
+            test.name = ' \r\n \t ';
+            vld.minStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when a value is not defined', () => {
+            let test = new TestModel();
+            vld.minStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('min_string_length', nameField.name, msg.min_string_length(nameField.label, nameField.options.minLength), vResult);
+        });
+
+        it('returns valid = false when a value is not a string', () => {
+            let test = new TestModel();
+            test.name = 222222;
+            vld.minStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('min_string_length', nameField.name, msg.min_string_length(nameField.label, nameField.options.minLength), vResult);
+        });
+
+        it('returns valid = false for a zero-length string', () => {
+            let test = new TestModel();
+            test.name = '';
+            vld.minStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('min_string_length', nameField.name, msg.min_string_length(nameField.label, nameField.options.minLength), vResult);
+        });
+
+        it('returns valid = false for a short string with spaces', () => {
+            let test = new TestModel();
+            test.name = ' ab ';
+            vld.minStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('min_string_length', nameField.name, msg.min_string_length(nameField.label, nameField.options.minLength), vResult);
         });
 
     });

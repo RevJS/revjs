@@ -26,7 +26,7 @@ export function stringValidator<T extends IModel>(model: T, field: Field, meta: 
 export function stringEmptyValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof model[field.name] !== 'string'
             || !model[field.name]
-            || model[field.name].trim() == '') {
+            || model[field.name] == '') {
         result.addFieldError(
             field.name,
             msg.string_empty(field.label),
@@ -57,11 +57,39 @@ export function integerValidator<T extends IModel>(model: T, field: Field, meta:
     }
 }
 
+export function minStringLengthValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (typeof field.options.minLength != 'undefined') {
+        if (typeof model[field.name] != 'string'
+                || model[field.name].length < field.options.minLength) {
+            result.addFieldError(
+                field.name,
+                msg.min_string_length(field.label, field.options.minLength),
+                { validator: 'min_string_length' }
+            );
+        }
+    }
+}
+
+export function maxStringLengthValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (typeof field.options.minLength != 'undefined') {
+        if (typeof model[field.name] != 'string'
+                || model[field.name].length < field.options.minLength) {
+            result.addFieldError(
+                field.name,
+                msg.min_string_length(field.label, field.options.minLength),
+                { validator: 'min_string_length' }
+            );
+        }
+    }
+}
+
 /* TODO...
 
  * Date Validator
  * DateTime Validator
  * Object validator
+
+Q: Should we discard whitespace?
 
 export function minLengthValidator(field, value) {
     if (field.minLength && value && value.length) {
