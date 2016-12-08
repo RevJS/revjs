@@ -42,15 +42,22 @@ describe('rev.fields', () => {
             }).to.throw('the options parameter must be an object');
         });
 
-        it('sets options.required to true if it has not been specified', () => {
-            let test = new fld.Field('name', 'Name', { maxLength: 20 });
-            expect(test.options.required).to.equal(true);
-        });
-
-        it('adds the REQUIRED validator by default', () => {
-            let test = new fld.Field('name', 'Name');
+        it('adds the "required" validator if options.required is true', () => {
+            let test = new fld.Field('name', 'Name', { required: true });
             expect(test.validators[0]).to.equal(vld.requiredValidator);
         });
+
+        it('adds the "required" validator if options.required is not specified', () => {
+            let test = new fld.Field('name', 'Name', { maxLength: 20 });
+            expect(test.validators[0]).to.equal(vld.requiredValidator);
+        });
+
+        it('does not add any validators if options.required is false', () => {
+            let test = new fld.Field('name', 'Name', { required: false });
+            expect(test.validators.length).to.equal(0);
+        });
+
+
 
 /*        it('can be created with a name', () => {
             assert.doesNotThrow(() => {
@@ -75,9 +82,29 @@ describe('rev.fields', () => {
                 assert.equal(f.validateValue(null).valid, false);
                 assert.equal(f.validateValue('').valid, false);
             });
-        });
+        });*/
     });
 
+
+    describe('BooleanField - constructor()', () => {
+
+        it('creates a field with properties as expected', () => {
+            let opts: fld.IFieldOptions = {};
+            let test = new fld.BooleanField('is_awesome', 'Awesome?', opts);
+            expect(test.name).to.equal('is_awesome');
+            expect(test.label).to.equal('Awesome?');
+            expect(test.options).to.equal(opts);
+            expect(test).is.instanceof(fld.Field);
+        });
+
+        it('does not add required validator if options.required is not set', () => {
+            let test = new fld.BooleanField('name', 'Name', {});
+            expect(test.validators.length).to.equal(0);
+        });
+
+    });
+
+/*
     describe('TextField class', () => {
         it('can't be created without a label', () => '
             assert.throws(() => {
@@ -254,6 +281,6 @@ describe('rev.fields', () => {
             assert.doesNotThrow(() => {
                 new DateTimeField('My Field');
             });
-        });*/
-    });
+        });
+    });*/
 });

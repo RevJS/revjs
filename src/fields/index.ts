@@ -19,12 +19,11 @@ export interface IFieldOptions {
     minLength?: number;
     maxLength?: number;
     decimalPlaces?: number;
-    validators?: IFieldValidator[];
-    asyncValidators?: IAsyncFieldValidator[];
 }
 
 export interface IValidationOptions {
-    checkAllValidators: boolean;
+    checkAllValidators?: boolean;
+    timeout?: number;
 }
 
 export const DEFAULT_FIELD_OPTIONS: IFieldOptions = {
@@ -46,13 +45,11 @@ export class Field {
         if (typeof this.options != 'object') {
             throw new Error('FieldError: the options parameter must be an object');
         }
-        if (typeof this.options.required != 'boolean') {
-            this.options.required = true;
+        this.validators = [];
+        this.asyncValidators = [];
+        if (this.options.required || typeof this.options.required == 'undefined') {
+            this.validators.push(validators.requiredValidator);
         }
-        this.validators = [
-            validators.requiredValidator
-        ];
-        // TODO: Add extra validators from field options
     }
 
     /*public validate(value: any, options?: IValidationOptions) {
@@ -69,7 +66,17 @@ export class Field {
     }*/
 }
 
-export class BooleanField extends Field {}
+export class BooleanField extends Field {
+    constructor(name: string, label: string, options?: IFieldOptions) {
+        super(name, label, options);
+        if (typeof this.options.required == 'undefined') {
+            let idx = this.validators.indexOf(validators.requiredValidator);
+            if (idx > -1) {
+                this.validators.splice(idx, 1);
+            }
+        }
+    }
+}
 
 export class TextField extends Field {
     constructor(name: string, label: string, options?: IFieldOptions) {
