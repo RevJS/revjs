@@ -439,4 +439,66 @@ describe('rev.fields.validators', () => {
         });
 
     });
+
+    describe('maxValueValidator()', () => {
+
+        // Assume name maxValue = 'jjj', age maxValue = 30
+        // JavaScript orders strings in alphabetical order
+
+        it('returns valid = true when a number is less than maxValue', () => {
+            let test = new TestModel();
+            test.age = 22;
+            vld.maxValueValidator(test, ageField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a number is equal to maxValue', () => {
+            let test = new TestModel();
+            test.age = 30;
+            vld.maxValueValidator(test, ageField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a string is less than maxValue', () => {
+            let test = new TestModel();
+            test.name = 'b';
+            vld.maxValueValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a string is equal to maxValue', () => {
+            let test = new TestModel();
+            test.name = 'jjj';
+            vld.maxValueValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true (validation bypassed) when a value is not defined', () => {
+            let test = new TestModel();
+            vld.maxValueValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true (validation bypassed) when a value is null', () => {
+            let test = new TestModel();
+            test.name = null;
+            vld.maxValueValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when number is greater than maxValue', () => {
+            let test = new TestModel();
+            test.age = 45;
+            vld.maxValueValidator(test, ageField, meta, 'create', vResult, opts);
+            expectFailure('max_value', ageField.name, msg.max_value(ageField.label, ageField.options.maxValue), vResult);
+        });
+
+        it('returns valid = false when string is greater than maxValue', () => {
+            let test = new TestModel();
+            test.name = 'zzz';
+            vld.maxValueValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('max_value', nameField.name, msg.max_value(nameField.label, nameField.options.maxValue), vResult);
+        });
+
+    });
 });

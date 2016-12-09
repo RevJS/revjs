@@ -96,6 +96,19 @@ export function minValueValidator<T extends IModel>(model: T, field: Field, meta
     }
 }
 
+export function maxValueValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (typeof field.options.maxValue != 'undefined') {
+        if (typeof model[field.name] != 'undefined' && model[field.name] !== null
+                && model[field.name] > field.options.maxValue) {
+            result.addFieldError(
+                field.name,
+                msg.max_value(field.label, field.options.maxValue),
+                { validator: 'max_value' }
+            );
+        }
+    }
+}
+
 /* TODO...
 
  * Date Validator
