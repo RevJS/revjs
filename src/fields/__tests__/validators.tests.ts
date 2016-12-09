@@ -13,10 +13,13 @@ class TestModel {
     age: any;
 }
 let nameField = new fld.TextField('name', 'Name', {
-    minLength: 5, maxLength: 10
+    minLength: 5, maxLength: 10,
+    minValue: 'ddd', maxValue: 'jjj'
 });
 let idField = new fld.IntegerField('id', 'Id');
-let ageField = new fld.NumberField('age', 'Age');
+let ageField = new fld.NumberField('age', 'Age', {
+    minValue: 18, maxValue: 30
+});
 
 let meta: IModelMeta<TestModel> = {
     fields: [idField, nameField, ageField]
@@ -357,6 +360,82 @@ describe('rev.fields.validators', () => {
             test.name = '     ab      ';
             vld.maxStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
             expectFailure('max_string_length', nameField.name, msg.max_string_length(nameField.label, nameField.options.maxLength), vResult);
+        });
+
+    });
+
+    describe('minValueValidator()', () => {
+
+        // Assume name minValue = 'ddd', age minValue = 18
+        // JavaScript orders strings in alphabetical order
+
+        it('returns valid = true when a number is greater than minValue', () => {
+            let test = new TestModel();
+            test.age = 25;
+            vld.minValueValidator(test, ageField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a number is equal to minValue', () => {
+            let test = new TestModel();
+            test.age = 18;
+            vld.minValueValidator(test, ageField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a string is greater than minValue', () => {
+            let test = new TestModel();
+            test.name = 'f';
+            vld.minValueValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a string is equal to minValue', () => {
+            let test = new TestModel();
+            test.name = 'ddd';
+            vld.minValueValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true (validation bypassed) when a value is not defined', () => {
+            let test = new TestModel();
+            vld.minValueValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true (validation bypassed) when a value is null', () => {
+            let test = new TestModel();
+            test.name = null;
+            vld.minValueValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when number is less than minValue', () => {
+            let test = new TestModel();
+            test.age = 10;
+            vld.minValueValidator(test, ageField, meta, 'create', vResult, opts);
+            expectFailure('min_value', ageField.name, msg.min_value(ageField.label, ageField.options.minValue), vResult);
+        });
+
+        it('returns valid = false when number is a lot less than minValue', () => {
+            let test = new TestModel();
+            test.age = -120;
+            vld.minValueValidator(test, ageField, meta, 'create', vResult, opts);
+            expectFailure('min_value', ageField.name, msg.min_value(ageField.label, ageField.options.minValue), vResult);
+        });
+
+        it('returns valid = false when string is less than minValue', () => {
+            let test = new TestModel();
+            test.name = 'bbb';
+            vld.minValueValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('min_value', nameField.name, msg.min_value(nameField.label, nameField.options.minValue), vResult);
+        });
+
+        it('returns valid = false when string is a lot less than minValue', () => {
+            let test = new TestModel();
+            test.name = '';
+            vld.minValueValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('min_value', nameField.name, msg.min_value(nameField.label, nameField.options.minValue), vResult);
         });
 
     });

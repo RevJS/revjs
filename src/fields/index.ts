@@ -14,8 +14,8 @@ export interface IAsyncFieldValidator {
 export interface IFieldOptions {
     required?: boolean;
     size?: number | [number, number];
-    minValue?: number;
-    maxValue?: number;
+    minValue?: number | string;
+    maxValue?: number | string;
     minLength?: number;
     maxLength?: number;
 }
