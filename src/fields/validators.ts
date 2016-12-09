@@ -59,8 +59,8 @@ export function integerValidator<T extends IModel>(model: T, field: Field, meta:
 
 export function minStringLengthValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof field.options.minLength != 'undefined') {
-        if (typeof model[field.name] != 'string'
-                || model[field.name].length < field.options.minLength) {
+        if (typeof model[field.name] == 'string'
+                && model[field.name].length < field.options.minLength) {
             result.addFieldError(
                 field.name,
                 msg.min_string_length(field.label, field.options.minLength),
@@ -72,8 +72,8 @@ export function minStringLengthValidator<T extends IModel>(model: T, field: Fiel
 
 export function maxStringLengthValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof field.options.maxLength != 'undefined') {
-        if (typeof model[field.name] != 'string'
-                || model[field.name].length > field.options.maxLength) {
+        if (typeof model[field.name] == 'string'
+                && model[field.name].length > field.options.maxLength) {
             result.addFieldError(
                 field.name,
                 msg.max_string_length(field.label, field.options.maxLength),
@@ -90,25 +90,7 @@ export function maxStringLengthValidator<T extends IModel>(model: T, field: Fiel
  * Object validator
 
 Q: Should we discard whitespace?
-
-export function minLengthValidator(field, value) {
-    if (field.minLength && value && value.length) {
-        if (value.length < field.minLength) {
-            return false;
-        }
-    }
-    return true;
-}
-
-export function maxLengthValidator(field, value) {
-    if (field.maxLength && value && value.length) {
-        if (value.length > field.maxLength) {
-            return false;
-        }
-    }
-    return true;
-}
-
+A: No - bad pattern
 
 
 export function minValueValidator(field, value) {

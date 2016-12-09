@@ -271,17 +271,17 @@ describe('rev.fields.validators', () => {
             expect(vResult.valid).to.equal(true);
         });
 
-        it('returns valid = false when a value is not defined', () => {
+        it('returns valid = true (validation bypassed) when a value is not defined', () => {
             let test = new TestModel();
             vld.minStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
-            expectFailure('min_string_length', nameField.name, msg.min_string_length(nameField.label, nameField.options.minLength), vResult);
+            expect(vResult.valid).to.equal(true);
         });
 
-        it('returns valid = false when a value is not a string', () => {
+        it('returns valid = true (validation bypassed) when a value is not a string', () => {
             let test = new TestModel();
             test.name = 222222;
             vld.minStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
-            expectFailure('min_string_length', nameField.name, msg.min_string_length(nameField.label, nameField.options.minLength), vResult);
+            expect(vResult.valid).to.equal(true);
         });
 
         it('returns valid = false for a zero-length string', () => {
@@ -332,17 +332,17 @@ describe('rev.fields.validators', () => {
             expect(vResult.valid).to.equal(true);
         });
 
-        it('returns valid = false when a value is not defined', () => {
+        it('returns valid = true (validation bypassed) when a value is not defined', () => {
             let test = new TestModel();
             vld.maxStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
-            expectFailure('max_string_length', nameField.name, msg.max_string_length(nameField.label, nameField.options.maxLength), vResult);
+            expect(vResult.valid).to.equal(true);
         });
 
-        it('returns valid = false when a value is not a string', () => {
+        it('returns valid = true (validation bypassed) when a value is not a string', () => {
             let test = new TestModel();
             test.name = 222222;
             vld.maxStringLengthValidator(test, nameField, meta, 'create', vResult, opts);
-            expectFailure('max_string_length', nameField.name, msg.max_string_length(nameField.label, nameField.options.maxLength), vResult);
+            expect(vResult.valid).to.equal(true);
         });
 
         it('returns valid = false for a long string', () => {
