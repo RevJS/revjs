@@ -11,4 +11,5 @@ export let VALIDATION_MESSAGES = {
     max_string_length: (label: string, val: number) => `${label} should have at most ${val} characters`,
     min_value: (label: string, val: any) => `${label} should be at least ${val}`,
     max_value: (label: string, val: any) => `${label} should be at most ${val}`,
+    invalid_selection: (label: string) => `Invalid selection for ${label}`,
 };

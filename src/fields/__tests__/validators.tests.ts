@@ -1,4 +1,4 @@
-import { IValidationOptions } from './../index';
+import { IValidationOptions, NumberField } from './../index';
 import { IModelMeta } from './../../model/index';
 import { expect } from 'chai';
 import * as fld from '../index';
@@ -11,6 +11,7 @@ class TestModel {
     id: any;
     name: any;
     age: any;
+    gender: any;
     isAwesome: any;
 }
 let nameField = new fld.TextField('name', 'Name', {
@@ -21,13 +22,16 @@ let idField = new fld.IntegerField('id', 'Id');
 let ageField = new fld.NumberField('age', 'Age', {
     minValue: 18, maxValue: 30
 });
+let genderField = new fld.SelectionField('gender', 'Gender', [
+    ['male', 'Male'],
+    ['female', 'Female']
+]);
 let booleanField = new fld.BooleanField('isAwesome', 'Is Awesome?');
 
 let meta: IModelMeta<TestModel> = {
     fields: [idField, nameField, ageField]
 };
 let opts: IValidationOptions = {
-    checkAllValidators: true,
     timeout: 200
 };
 
@@ -555,4 +559,50 @@ describe('rev.fields.validators', () => {
         });
 
     });
+
+    describe('selectionValidator()', () => {
+
+        it('returns valid = true when a value is not defined', () => {
+            let test = new TestModel();
+            vld.selectionValidator(test, genderField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a value is null', () => {
+            let test = new TestModel();
+            test.gender = null;
+            vld.selectionValidator(test, genderField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when the value is in the selection', () => {
+            let test = new TestModel();
+            test.gender = 'female';
+            vld.selectionValidator(test, genderField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when the value is not in the selection', () => {
+            let test = new TestModel();
+            test.gender = 'hamster';
+            vld.selectionValidator(test, genderField, meta, 'create', vResult, opts);
+            expectFailure('invalid_selection', genderField.name, msg.invalid_selection(genderField.label), vResult);
+        });
+
+        it('returns valid = false when the value is a number that is not in the selection', () => {
+            let test = new TestModel();
+            test.gender = 222;
+            vld.selectionValidator(test, genderField, meta, 'create', vResult, opts);
+            expectFailure('invalid_selection', genderField.name, msg.invalid_selection(genderField.label), vResult);
+        });
+
+        it('returns valid = false when value is an empty string', () => {
+            let test = new TestModel();
+            test.gender = '';
+            vld.selectionValidator(test, genderField, meta, 'create', vResult, opts);
+            expectFailure('invalid_selection', genderField.name, msg.invalid_selection(genderField.label), vResult);
+        });
+
+    });
+
 });

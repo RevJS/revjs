@@ -57,34 +57,7 @@ describe('rev.fields', () => {
             expect(test.validators.length).to.equal(0);
         });
 
-
-
-/*        it('can be created with a name', () => {
-            assert.doesNotThrow(() => {
-                new Field('My Field');
-            });
-        });
-        describe('validateValue()', () => {
-            it('returns true for any value when not required', () => {
-                let f = new Field('My Field', {required: false});
-                assert.equal(f.validateValue(null).valid, true);
-                assert.equal(f.validateValue('').valid, true);
-                assert.equal(f.validateValue('abc').valid, true);
-                assert.equal(f.validateValue(1).valid, true);
-            });
-            it('returns true for non-empty values when required', () => {
-                let f = new Field('My Field', {required: true});
-                assert.equal(f.validateValue('abc').valid, true);
-                assert.equal(f.validateValue(1).valid, true);
-            });
-            it('returns false for empty values when required', () => {
-                let f = new Field('My Field', {required: true});
-                assert.equal(f.validateValue(null).valid, false);
-                assert.equal(f.validateValue('').valid, false);
-            });
-        });*/
     });
-
 
     describe('BooleanField - constructor()', () => {
 
@@ -95,11 +68,6 @@ describe('rev.fields', () => {
             expect(test.label).to.equal('Awesome?');
             expect(test.options).to.equal(opts);
             expect(test).is.instanceof(fld.Field);
-        });
-
-        it('does not add required validator if options.required is not set', () => {
-            let test = new fld.BooleanField('name', 'Name', {});
-            expect(test.validators.length).to.equal(0);
         });
 
     });

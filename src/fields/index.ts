@@ -21,7 +21,6 @@ export interface IFieldOptions {
 }
 
 export interface IValidationOptions {
-    checkAllValidators?: boolean;
     timeout?: number;
 }
 
@@ -68,22 +67,30 @@ export class Field {
 export class BooleanField extends Field {
     constructor(name: string, label: string, options?: IFieldOptions) {
         super(name, label, options);
-        if (typeof this.options.required == 'undefined') {
-            let idx = this.validators.indexOf(validators.requiredValidator);
-            if (idx > -1) {
-                this.validators.splice(idx, 1);
-            }
-        }
+        this.validators.push(validators.booleanValidator);
     }
 }
 
 export class TextField extends Field {
     constructor(name: string, label: string, options?: IFieldOptions) {
         super(name, label, options);
-        /*
-        this.validators.push(["minLength", validators.minLengthValidator]);
-        this.validators.push(["maxLength", validators.maxLengthValidator]);
-        */
+        let o = this.options;
+        let v = this.validators;
+        if (o.required) {
+            v.push(validators.stringEmptyValidator);
+        }
+        if (typeof o.minLength != 'undefined') {
+            v.push(validators.minStringLengthValidator);
+        }
+        if (typeof o.maxLength != 'undefined') {
+            v.push(validators.maxStringLengthValidator);
+        }
+        if (typeof o.minValue != 'undefined') {
+            v.push(validators.minValueValidator);
+        }
+        if (typeof o.maxValue != 'undefined') {
+            v.push(validators.maxValueValidator);
+        }
     }
 }
 
@@ -92,31 +99,47 @@ export class PasswordField extends TextField {}
 export class NumberField extends Field {
     constructor(name: string, label: string, options?: IFieldOptions) {
         super(name, label, options);
-        /*
-        this.validators.push(["invalidNumber", validators.numberValidator]);
-        this.validators.push(["minValue", validators.minValueValidator]);
-        this.validators.push(["maxValue", validators.maxValueValidator]);
-        */
+        this.validators.push(validators.numberValidator);
+        if (typeof this.options.minValue != 'undefined') {
+            this.validators.push(validators.minValueValidator);
+        }
+        if (typeof this.options.maxValue != 'undefined') {
+            this.validators.push(validators.maxValueValidator);
+        }
     }
 }
 
 export class IntegerField extends NumberField {
     constructor(name: string, label: string, options?: IFieldOptions) {
         super(name, label, options);
-        // this.validators.push(["invalidInteger", validators.integerValidator]);
+        this.validators.push(validators.integerValidator);
+        if (typeof this.options.minValue != 'undefined') {
+            this.validators.push(validators.minValueValidator);
+        }
+        if (typeof this.options.maxValue != 'undefined') {
+            this.validators.push(validators.maxValueValidator);
+        }
     }
 }
 
 export class FloatField extends NumberField {}
 
-export class DecimalField extends NumberField {
-    constructor(name: string, label: string, options?: IFieldOptions) {
-        super(name, label, options);
-    }
-}
+export class DecimalField extends NumberField {}
 
 export class DateField extends Field {}
 export class DateTimeField extends Field {}
+
+export class SelectionField extends Field {
+    constructor(
+            name: string,
+            label: string,
+            public selection: Array<[string, string]>,
+            options?: IFieldOptions) {
+        super(name, label, options);
+        // TODO: Validate selection array
+        this.validators.push(validators.selectionValidator);
+    }
+}
 
 export class RelatedRecord extends Field {
     constructor(
