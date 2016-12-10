@@ -11,6 +11,7 @@ class TestModel {
     id: any;
     name: any;
     age: any;
+    isAwesome: any;
 }
 let nameField = new fld.TextField('name', 'Name', {
     minLength: 5, maxLength: 10,
@@ -20,6 +21,7 @@ let idField = new fld.IntegerField('id', 'Id');
 let ageField = new fld.NumberField('age', 'Age', {
     minValue: 18, maxValue: 30
 });
+let booleanField = new fld.BooleanField('isAwesome', 'Is Awesome?');
 
 let meta: IModelMeta<TestModel> = {
     fields: [idField, nameField, ageField]
@@ -71,17 +73,24 @@ describe('rev.fields.validators', () => {
 
     describe('stringValidator()', () => {
 
+        it('returns valid = true when a value is not defined', () => {
+            let test = new TestModel();
+            vld.stringValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a value is null', () => {
+            let test = new TestModel();
+            test.name = null;
+            vld.stringValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
         it('returns valid = true when a string is specified', () => {
             let test = new TestModel();
             test.name = 'flibble';
             vld.stringValidator(test, nameField, meta, 'create', vResult, opts);
             expect(vResult.valid).to.equal(true);
-        });
-
-        it('returns valid = false when a value is not defined', () => {
-            let test = new TestModel();
-            vld.stringValidator(test, nameField, meta, 'create', vResult, opts);
-            expectFailure('not_a_string', nameField.name, msg.not_a_string(nameField.label), vResult);
         });
 
         it('returns valid = false when a value is not a string', () => {
@@ -122,6 +131,13 @@ describe('rev.fields.validators', () => {
             expectFailure('string_empty', nameField.name, msg.string_empty(nameField.label), vResult);
         });
 
+        it('returns valid = false when a value is null', () => {
+            let test = new TestModel();
+            test.name = null;
+            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('string_empty', nameField.name, msg.string_empty(nameField.label), vResult);
+        });
+
         it('returns valid = false when a value is not a string', () => {
             let test = new TestModel();
             test.name = 22;
@@ -140,6 +156,19 @@ describe('rev.fields.validators', () => {
 
     describe('numberValidator()', () => {
 
+        it('returns valid = true when a value is not defined', () => {
+            let test = new TestModel();
+            vld.numberValidator(test, ageField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a value is null', () => {
+            let test = new TestModel();
+            test.age = null;
+            vld.numberValidator(test, ageField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
         it('returns valid = true when a number is specified', () => {
             let test = new TestModel();
             test.age = 12.345;
@@ -152,19 +181,6 @@ describe('rev.fields.validators', () => {
             test.age = '34.567';
             vld.numberValidator(test, ageField, meta, 'create', vResult, opts);
             expect(vResult.valid).to.equal(true);
-        });
-
-        it('returns valid = false when a value is not defined', () => {
-            let test = new TestModel();
-            vld.numberValidator(test, ageField, meta, 'create', vResult, opts);
-            expectFailure('not_a_number', ageField.name, msg.not_a_number(ageField.label), vResult);
-        });
-
-        it('returns valid = false when a value is null', () => {
-            let test = new TestModel();
-            test.age = null;
-            vld.numberValidator(test, ageField, meta, 'create', vResult, opts);
-            expectFailure('not_a_number', ageField.name, msg.not_a_number(ageField.label), vResult);
         });
 
         it('returns valid = false when a value is a string', () => {
@@ -185,6 +201,19 @@ describe('rev.fields.validators', () => {
 
     describe('integerValidator()', () => {
 
+        it('returns valid = true when a value is not defined', () => {
+            let test = new TestModel();
+            vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a value is null', () => {
+            let test = new TestModel();
+            test.age = null;
+            vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
         it('returns valid = true when an integer is specified', () => {
             let test = new TestModel();
             test.age = 12;
@@ -197,19 +226,6 @@ describe('rev.fields.validators', () => {
             test.age = '34';
             vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
             expect(vResult.valid).to.equal(true);
-        });
-
-        it('returns valid = false when a value is not defined', () => {
-            let test = new TestModel();
-            vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
-            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.label), vResult);
-        });
-
-        it('returns valid = false when a value is null', () => {
-            let test = new TestModel();
-            test.age = null;
-            vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
-            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.label), vResult);
         });
 
         it('returns valid = false when a value is a string', () => {
@@ -238,6 +254,44 @@ describe('rev.fields.validators', () => {
             test.age = '12.345';
             vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
             expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.label), vResult);
+        });
+
+    });
+
+    describe('booleanValidator()', () => {
+
+        it('returns valid = true when a value is not defined', () => {
+            let test = new TestModel();
+            vld.integerValidator(test, booleanField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a value is null', () => {
+            let test = new TestModel();
+            test.isAwesome = null;
+            vld.integerValidator(test, booleanField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a boolean is specified and true', () => {
+            let test = new TestModel();
+            test.isAwesome = true;
+            vld.booleanValidator(test, booleanField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a boolean is specified and false', () => {
+            let test = new TestModel();
+            test.isAwesome = false;
+            vld.booleanValidator(test, booleanField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when a value is not a boolean', () => {
+            let test = new TestModel();
+            test.isAwesome = 22;
+            vld.booleanValidator(test, booleanField, meta, 'create', vResult, opts);
+            expectFailure('not_a_boolean', booleanField.name, msg.not_a_boolean(booleanField.label), vResult);
         });
 
     });

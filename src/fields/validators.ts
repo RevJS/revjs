@@ -3,8 +3,12 @@ import { ModelValidationResult } from './../model/validationresult';
 import { Field, IValidationOptions } from './index';
 import { VALIDATION_MESSAGES as msg } from './validationmsg';
 
+function isSet(value: any) {
+    return (typeof value != 'undefined' && value !== null);
+}
+
 export function requiredValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
-    if (typeof model[field.name] == 'undefined' || model[field.name] === null) {
+    if (!isSet(model[field.name])) {
         result.addFieldError(
             field.name,
             msg.required(field.label),
@@ -14,7 +18,7 @@ export function requiredValidator<T extends IModel>(model: T, field: Field, meta
 }
 
 export function stringValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
-    if (typeof model[field.name] != 'string') {
+    if (isSet(model[field.name]) && typeof model[field.name] != 'string') {
         result.addFieldError(
             field.name,
             msg.not_a_string(field.label),
@@ -25,8 +29,7 @@ export function stringValidator<T extends IModel>(model: T, field: Field, meta: 
 
 export function stringEmptyValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof model[field.name] != 'string'
-            || !model[field.name]
-            || model[field.name] === '') {
+            || !model[field.name]) {
         result.addFieldError(
             field.name,
             msg.string_empty(field.label),
@@ -36,9 +39,8 @@ export function stringEmptyValidator<T extends IModel>(model: T, field: Field, m
 }
 
 export function numberValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
-    if (isNaN(model[field.name])
-            || model[field.name] === null
-            || model[field.name] === '') {
+    if (isSet(model[field.name]) && (
+        isNaN(model[field.name]) || model[field.name] === '')) {
         result.addFieldError(
             field.name,
             msg.not_a_number(field.label),
@@ -48,11 +50,21 @@ export function numberValidator<T extends IModel>(model: T, field: Field, meta: 
 }
 
 export function integerValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
-    if (!(/^\d+$/.test(model[field.name]))) {
+    if (isSet(model[field.name]) && !(/^\d+$/.test(model[field.name]))) {
         result.addFieldError(
             field.name,
             msg.not_an_integer(field.label),
             { validator: 'not_an_integer' }
+        );
+    }
+}
+
+export function booleanValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (isSet(model[field.name]) && typeof model[field.name] != 'boolean') {
+        result.addFieldError(
+            field.name,
+            msg.not_a_boolean(field.label),
+            { validator: 'not_a_boolean' }
         );
     }
 }
