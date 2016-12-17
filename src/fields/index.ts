@@ -136,7 +136,15 @@ export class SelectionField extends Field {
             public selection: Array<[string, string]>,
             options?: IFieldOptions) {
         super(name, label, options);
-        // TODO: Validate selection array
+        if (typeof this.selection != 'object' || !(this.selection instanceof Array)) {
+            throw new Error('FieldError: SelectionField "selection" parameter must be an array');
+        }
+        for (let i=0; i<this.selection.length; i++) {  // tslint:disable-line
+            if (typeof this.selection[i] != 'object' || !(this.selection[i] instanceof Array)
+                    || this.selection[i].length != 2) {
+                throw new Error(`FieldError: SelectionField selection item ${i} should be an array with two items`);
+            }
+        }
         this.validators.push(validators.selectionValidator);
     }
 }
