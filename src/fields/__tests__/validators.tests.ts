@@ -1,4 +1,4 @@
-import { IValidationOptions, NumberField } from './../index';
+import { IValidationOptions, NumberField, DateField } from './../index';
 import { IModelMeta } from './../../model/index';
 import { expect } from 'chai';
 import * as fld from '../index';
@@ -13,6 +13,7 @@ class TestModel {
     age: any;
     gender: any;
     isAwesome: any;
+    registered: any;
 }
 let nameField = new fld.TextField('name', 'Name', {
     minLength: 5, maxLength: 10,
@@ -27,9 +28,13 @@ let genderField = new fld.SelectionField('gender', 'Gender', [
     ['female', 'Female']
 ]);
 let booleanField = new fld.BooleanField('isAwesome', 'Is Awesome?');
+let dateField = new fld.DateTimeField('registered', 'Date Registered');
 
 let meta: IModelMeta<TestModel> = {
-    fields: [idField, nameField, ageField]
+    fields: [
+        idField, nameField, ageField, genderField,
+        booleanField, dateField
+    ]
 };
 let opts: IValidationOptions = {
     timeout: 200
@@ -601,6 +606,152 @@ describe('rev.fields.validators', () => {
             test.gender = '';
             vld.selectionValidator(test, genderField, meta, 'create', vResult, opts);
             expectFailure('invalid_selection', genderField.name, msg.invalid_selection(genderField.label), vResult);
+        });
+
+    });
+
+    describe('dateOnlyValidator()', () => {
+
+        it('returns valid = true when a value is not defined', () => {
+            let test = new TestModel();
+            vld.dateOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a value is null', () => {
+            let test = new TestModel();
+            test.registered = null;
+            vld.dateOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a date object is passed', () => {
+            let test = new TestModel();
+            test.registered = new Date('2016-12-01');
+            vld.dateOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a date in the correct format is passed', () => {
+            let test = new TestModel();
+            test.registered = '2016-12-01';
+            vld.dateOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when a non-date object is set', () => {
+            let test = new TestModel();
+            test.registered = new TestModel();
+            vld.dateOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_date', dateField.name, msg.not_a_date(dateField.label), vResult);
+        });
+
+        it('returns valid = false when date string also contains a time', () => {
+            let test = new TestModel();
+            test.registered = '2016-12-01T12:00:00';
+            vld.dateOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_date', dateField.name, msg.not_a_date(dateField.label), vResult);
+        });
+
+        it('returns valid = false when date string is an invalid date', () => {
+            let test = new TestModel();
+            test.registered = '2016-00-12';
+            vld.dateOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_date', dateField.name, msg.not_a_date(dateField.label), vResult);
+        });
+
+        it('returns valid = false when string is not in the correct format', () => {
+            let test = new TestModel();
+            test.registered = '17 May 1985';
+            vld.dateOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_date', dateField.name, msg.not_a_date(dateField.label), vResult);
+        });
+
+        it('returns valid = false when string is empty', () => {
+            let test = new TestModel();
+            test.registered = '';
+            vld.dateOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_date', dateField.name, msg.not_a_date(dateField.label), vResult);
+        });
+
+    });
+
+    describe('dateTimeValidator()', () => {
+
+        it('returns valid = true when a value is not defined', () => {
+            let test = new TestModel();
+            vld.dateTimeValidator(test, dateField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a value is null', () => {
+            let test = new TestModel();
+            test.registered = null;
+            vld.dateTimeValidator(test, dateField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a date object is passed', () => {
+            let test = new TestModel();
+            test.registered = new Date('2016-12-01T12:22:33');
+            vld.dateTimeValidator(test, dateField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a datetime in the correct format is passed', () => {
+            let test = new TestModel();
+            test.registered = '2016-12-01T12:22:33';
+            vld.dateTimeValidator(test, dateField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when a non-date object is set', () => {
+            let test = new TestModel();
+            test.registered = new TestModel();
+            vld.dateTimeValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.label), vResult);
+        });
+
+        it('returns valid = false when datetime string does not contain a time', () => {
+            let test = new TestModel();
+            test.registered = '2016-12-01';
+            vld.dateTimeValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.label), vResult);
+        });
+
+        it('returns valid = false when datetime string has an invalid date', () => {
+            let test = new TestModel();
+            test.registered = '2016-00-12T12:22:33';
+            vld.dateTimeValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.label), vResult);
+        });
+
+        it('returns valid = false when datetime string has an invalid time', () => {
+            let test = new TestModel();
+            test.registered = '2016-01-12T25:22:33';
+            vld.dateTimeValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.label), vResult);
+        });
+
+        it('returns valid = false when datetime string contains milliseconds and TZ', () => {
+            let test = new TestModel();
+            test.registered = '2016-01-12T11:22:33.000Z';
+            vld.dateTimeValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.label), vResult);
+        });
+
+        it('returns valid = false when string is not in the correct format', () => {
+            let test = new TestModel();
+            test.registered = '17 May 1985 11:22:33';
+            vld.dateTimeValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.label), vResult);
+        });
+
+        it('returns valid = false when string is empty', () => {
+            let test = new TestModel();
+            test.registered = '';
+            vld.dateTimeValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.label), vResult);
         });
 
     });

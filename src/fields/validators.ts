@@ -128,30 +128,39 @@ export function selectionValidator<T extends IModel>(model: T, field: SelectionF
     }
 }
 
-/* TODO...
+let dateOnlyRegex = /^[0-9]{4}-[01][0-9]-[0-3][0-9]$/;
+let dateTimeRegex = /^[0-9]{4}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/;
 
- * Date Validator
- * DateTime Validator
- * Object validator
-
-Q: Should we discard whitespace?
-A: No - bad pattern
-
-export function minValueValidator(field, value) {
-    if (field.minValue !== null) {
-        if (value < field.minValue) {
-            return false;
+export function dateOnlyValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (isSet(model[field.name])) {
+        if (typeof model[field.name] == 'object' && model[field.name] instanceof Date) {
+            return;
+        }
+        if (typeof model[field.name] != 'string'
+                || !((<string> model[field.name]).match(dateOnlyRegex))
+                || !Date.parse(model[field.name])) {
+            result.addFieldError(
+                field.name,
+                msg.not_a_date(field.label),
+                { validator: 'not_a_date' }
+            );
         }
     }
-    return true;
 }
 
-export function maxValueValidator(field, value) {
-    if (field.maxValue !== null) {
-        if (value > field.maxValue) {
-            return false;
+export function dateTimeValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (isSet(model[field.name])) {
+        if (typeof model[field.name] == 'object' && model[field.name] instanceof Date) {
+            return;
+        }
+        if (typeof model[field.name] != 'string'
+                || !((<string> model[field.name]).match(dateTimeRegex))
+                || !Date.parse(model[field.name])) {
+            result.addFieldError(
+                field.name,
+                msg.not_a_datetime(field.label),
+                { validator: 'not_a_datetime' }
+            );
         }
     }
-    return true;
 }
-*/
