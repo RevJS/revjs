@@ -59,6 +59,49 @@ describe('rev.fields', () => {
 
     });
 
+    describe('Field - validate()', () => {
+        let testModel = {
+            name: 'Frank'
+        };
+        let testMeta = {
+            fields: [new fld.Field('name', 'Name')]
+        };
+        let result: ModelValidationResult;
+
+        beforeEach(() => {
+            result = new ModelValidationResult();
+        });
+
+        it('returns a resolved promise when validation completes - no validators', () => {
+            let test = new fld.Field('name', 'Name');
+            return expect(
+                test.validate(testModel, testMeta, 'create', result)
+            ).to.eventually.be.fulfilled;
+        });
+
+        it('returns a resolved promise when validation completes - required validator', () => {
+            let test = new fld.Field('name', 'Name', { required: true });
+            return expect(
+                test.validate(testModel, testMeta, 'create', result)
+            ).to.eventually.be.fulfilled;
+        });
+
+        it('validation fails as expected when required field not set', () => {
+            let test = new fld.Field('name', 'Name', { required: true });
+            return expect(
+                test.validate({ name: null }, testMeta, 'create', result)
+            ).to.eventually.have.property('valid', false);
+        });
+
+        it('throws an error if a model instance is not passed', () => {
+            let test = new fld.Field('name', 'Name');
+            expect(() => {
+                test.validate(<any> 'test', testMeta, 'create', result);
+            }).to.throw('not a model instance');
+        });
+
+    });
+
     describe('BooleanField - constructor()', () => {
 
         it('creates a field with properties as expected', () => {

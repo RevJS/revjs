@@ -1,6 +1,7 @@
 
 import { IModel, IModelMeta, ValidationMode } from '../model';
-import { ModelValidationResult } from './../model/validationresult';
+import { ModelValidationResult } from '../model/validationresult';
+import { checkIsModelInstance } from '../model';
 import * as validators from './validators';
 
 export interface IFieldValidator {
@@ -50,18 +51,16 @@ export class Field {
         }
     }
 
-    /*public validate(value: any, options?: IValidationOptions) {
-        let failedValidators: any[] = [];
-        for (let validator of this.validators) {
-            if (!validator[1](this, value)) {
-                failedValidators.push(validator[0]);
-                if (options && !options.checkAllValidators) {
-                    break;
-                }
+    public validate<T extends IModel>(model: T, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
+        checkIsModelInstance(model);
+        return new Promise((resolve, reject) => {
+            for (let validator of this.validators) {
+                validator(model, this, meta, mode, result, options);
             }
-        }
-        return true; // new ValidationResult(failedValidators.length == 0, failedValidators);
-    }*/
+            // TODO: Async validation
+            resolve(result);
+        });
+    }
 }
 
 export class BooleanField extends Field {
