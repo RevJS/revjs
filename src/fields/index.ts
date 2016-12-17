@@ -57,7 +57,7 @@ export class Field {
             for (let validator of this.validators) {
                 validator(model, this, meta, mode, result, options);
             }
-            // TODO: Async validation
+            // TODO: Async validation if sync validation passes
             resolve(result);
         });
     }
