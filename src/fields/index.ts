@@ -92,6 +92,9 @@ export class TextField extends Field {
         if (typeof o.maxValue != 'undefined') {
             v.push(validators.maxValueValidator);
         }
+        if (typeof o.regEx == 'object' && o.regEx instanceof RegExp) {
+            v.push(validators.regExValidator);
+        }
     }
 }
 

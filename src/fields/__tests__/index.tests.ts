@@ -235,6 +235,12 @@ describe('rev.fields', () => {
             expect(test.validators[1]).to.equal(vld.maxValueValidator);
         });
 
+        it('adds the regEx validator if options.regEx is set to a RegExp', () => {
+            let test = new fld.TextField('name', 'Name', { required: false, regEx: /^T/ });
+            expect(test.validators.length).to.equal(2);
+            expect(test.validators[1]).to.equal(vld.regExValidator);
+        });
+
         it('successfully validates a string value', () => {
             let test = new fld.TextField('name', 'Name', { required: true });
             testModel.name = 'Joe Smith';
@@ -248,7 +254,8 @@ describe('rev.fields', () => {
                 minLength: 1,
                 maxLength: 10,
                 minValue: 'a',
-                maxValue: 'z'
+                maxValue: 'z',
+                regEx: /^abc/
             });
             testModel.name = 'abc123';
             return expect(test.validate(testModel, testMeta, 'create', result))
