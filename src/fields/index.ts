@@ -75,6 +75,7 @@ export class TextField extends Field {
         super(name, label, options);
         let o = this.options;
         let v = this.validators;
+        v.push(validators.stringValidator);
         if (o.required) {
             v.push(validators.stringEmptyValidator);
         }

@@ -170,4 +170,125 @@ describe('rev.fields', () => {
 
     });
 
+    describe('TextField', () => {
+        let testModel = {
+            name: <any> null
+        };
+        let testMeta = {
+            fields: [new fld.TextField('name', 'Name')]
+        };
+        let result: ModelValidationResult;
+
+        beforeEach(() => {
+            result = new ModelValidationResult();
+        });
+
+        it('creates a field with properties as expected', () => {
+            let opts: fld.IFieldOptions = {};
+            let test = new fld.TextField('name', 'Name', opts);
+            expect(test.name).to.equal('name');
+            expect(test.label).to.equal('Name');
+            expect(test.options).to.equal(opts);
+            expect(test).is.instanceof(fld.Field);
+        });
+
+        it('sets default field options if they are not specified', () => {
+            let test = new fld.TextField('name', 'Name');
+            expect(test.options).to.deep.equal(fld.DEFAULT_FIELD_OPTIONS);
+        });
+
+        it('adds the stringValidator by default', () => {
+            let test = new fld.TextField('name', 'Name', { required: false });
+            expect(test.validators.length).to.equal(1);
+            expect(test.validators[0]).to.equal(vld.stringValidator);
+        });
+
+        it('adds the required and stringEmpty validators if options.required is true', () => {
+            let test = new fld.TextField('name', 'Name', { required: true });
+            expect(test.validators.length).to.equal(3);
+            expect(test.validators[0]).to.equal(vld.requiredValidator);
+            expect(test.validators[1]).to.equal(vld.stringValidator);
+            expect(test.validators[2]).to.equal(vld.stringEmptyValidator);
+        });
+
+        it('adds the minLength validator if options.minLength is set', () => {
+            let test = new fld.TextField('name', 'Name', { required: false, minLength: 10 });
+            expect(test.validators.length).to.equal(2);
+            expect(test.validators[1]).to.equal(vld.minStringLengthValidator);
+        });
+
+        it('adds the maxLength validator if options.maxLength is set', () => {
+            let test = new fld.TextField('name', 'Name', { required: false, maxLength: 10 });
+            expect(test.validators.length).to.equal(2);
+            expect(test.validators[1]).to.equal(vld.maxStringLengthValidator);
+        });
+
+        it('adds the minValue validator if options.minValue is set', () => {
+            let test = new fld.TextField('name', 'Name', { required: false, minValue: 'a' });
+            expect(test.validators.length).to.equal(2);
+            expect(test.validators[1]).to.equal(vld.minValueValidator);
+        });
+
+        it('adds the maxValue validator if options.maxValue is set', () => {
+            let test = new fld.TextField('name', 'Name', { required: false, maxValue: 'z' });
+            expect(test.validators.length).to.equal(2);
+            expect(test.validators[1]).to.equal(vld.maxValueValidator);
+        });
+
+        it('successfully validates a string value', () => {
+            let test = new fld.TextField('name', 'Name', { required: true });
+            testModel.name = 'Joe Smith';
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully validates a string value that passes validation', () => {
+            let test = new fld.TextField('name', 'Name', {
+                required: true,
+                minLength: 1,
+                maxLength: 10,
+                minValue: 'a',
+                maxValue: 'z'
+            });
+            testModel.name = 'abc123';
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully validates a null value if field not required', () => {
+            let test = new fld.TextField('name', 'Name', { required: false });
+            testModel.name = null;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('does not validate on null value if field is required', () => {
+            let test = new fld.TextField('name', 'Name', { required: true });
+            testModel.name = null;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', false);
+        });
+
+        it('does not validate on non-string value', () => {
+            let test = new fld.TextField('name', 'Name', { required: true });
+            testModel.name = true;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', false);
+        });
+
+        it('does not validate a string if it does not match rules', () => {
+            let test = new fld.TextField('name', 'Name', {
+                required: true,
+                minLength: 1,
+                maxLength: 10,
+                minValue: 'a',
+                maxValue: 'd'
+            });
+            testModel.name = 'This string is too long and out of range';
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', false);
+        });
+
+    });
+
 });
