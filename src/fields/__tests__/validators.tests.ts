@@ -1,5 +1,5 @@
-import { IValidationOptions, NumberField, DateField } from './../index';
-import { IModelMeta } from './../../model/index';
+import { IFieldOptions, IValidationOptions, NumberField, DateField } from '../index';
+import { IModelMeta } from '../../model/index';
 import { expect } from 'chai';
 import * as fld from '../index';
 import * as vld from '../validators';
@@ -17,7 +17,8 @@ class TestModel {
 }
 let nameField = new fld.TextField('name', 'Name', {
     minLength: 5, maxLength: 10,
-    minValue: 'ddd', maxValue: 'jjj'
+    minValue: 'ddd', maxValue: 'jjj',
+    regEx: /^abc\d.$/  // abc[number][anything]
 });
 let idField = new fld.IntegerField('id', 'Id');
 let ageField = new fld.NumberField('age', 'Age', {
@@ -159,6 +160,51 @@ describe('rev.fields.validators', () => {
             test.name = '';
             vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
             expectFailure('string_empty', nameField.name, msg.string_empty(nameField.label), vResult);
+        });
+
+    });
+
+    describe('regExValidator()', () => {
+
+        it('returns valid = true when a value is not defined', () => {
+            let test = new TestModel();
+            vld.regExValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a value is null', () => {
+            let test = new TestModel();
+            test.name = null;
+            vld.regExValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a string matches the regex', () => {
+            let test = new TestModel();
+            test.name = 'abc12';
+            vld.regExValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when another string matches the regex', () => {
+            let test = new TestModel();
+            test.name = 'abc2d';
+            vld.regExValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when a value does not match the regex', () => {
+            let test = new TestModel();
+            test.name = 'flibble';
+            vld.regExValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('no_regex_match', nameField.name, msg.no_regex_match(nameField.label), vResult);
+        });
+
+        it('returns valid = false when another value does not match the regex', () => {
+            let test = new TestModel();
+            test.name = 'abcd';
+            vld.regExValidator(test, nameField, meta, 'create', vResult, opts);
+            expectFailure('no_regex_match', nameField.name, msg.no_regex_match(nameField.label), vResult);
         });
 
     });

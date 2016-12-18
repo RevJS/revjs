@@ -19,6 +19,7 @@ export interface IFieldOptions {
     maxValue?: number | string;
     minLength?: number;
     maxLength?: number;
+    regEx?: RegExp;
 }
 
 export interface IValidationOptions {

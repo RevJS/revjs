@@ -38,6 +38,19 @@ export function stringEmptyValidator<T extends IModel>(model: T, field: Field, m
     }
 }
 
+export function regExValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (typeof model[field.name] == 'string'
+            && typeof field.options.regEx == 'object'
+            && field.options.regEx instanceof RegExp
+            && !field.options.regEx.test(model[field.name])) {
+        result.addFieldError(
+            field.name,
+            msg.no_regex_match(field.label),
+            { validator: 'no_regex_match' }
+        );
+    }
+}
+
 export function numberValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name]) && (
         isNaN(model[field.name]) || model[field.name] === '')) {
