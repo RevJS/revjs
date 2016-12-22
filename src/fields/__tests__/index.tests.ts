@@ -369,4 +369,82 @@ describe('rev.fields', () => {
 
     });
 
+    describe('URLField', () => {
+        let testModel = {
+            website: <any> null
+        };
+        let testMeta = {
+            fields: [new fld.URLField('website', 'Website')]
+        };
+        let result: ModelValidationResult;
+
+        beforeEach(() => {
+            result = new ModelValidationResult();
+        });
+
+        it('creates a field with properties as expected', () => {
+            let opts: fld.IFieldOptions = {};
+            let test = new fld.URLField('website', 'Website', opts);
+            expect(test).is.instanceof(fld.TextField);
+            expect(test.name).to.equal('website');
+            expect(test.label).to.equal('Website');
+            expect(test.options).to.equal(opts);
+            expect(test.options.regEx).to.equal(fld.URL_REGEX);
+        });
+
+        it('sets default field options if they are not specified', () => {
+            let test = new fld.URLField('website', 'Website');
+            expect(test.options).to.deep.equal(
+                Object.assign({}, fld.DEFAULT_FIELD_OPTIONS, {
+                    regEx: fld.URL_REGEX
+                })
+            );
+        });
+
+        it('allows the default url regex to be overridden', () => {
+            let testRegex = /abc/
+            let test = new fld.URLField('website', 'Website', {
+                regEx: testRegex
+            });
+            expect(test.options.regEx).to.equal(testRegex);
+        });
+
+        it('uses the default regex if an invalid regex is passed', () => {
+            let testRegex = { test: 'flibble' };
+            let test = new fld.URLField('website', 'Website', {
+                regEx: <any> testRegex
+            });
+            expect(test.options.regEx).to.equal(fld.URL_REGEX);
+        });
+
+        it('successfully validates a valid url', () => {
+            let test = new fld.URLField('website', 'Website');
+            testModel.website = 'www.google.com';
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully validates a valid url with protocol', () => {
+            let test = new fld.URLField('website', 'Website');
+            testModel.website = 'https://www.google.com';
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully picks up an invalid url', () => {
+            let test = new fld.URLField('website', 'Website');
+            testModel.website = 'not_a_website_url';
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', false);
+        });
+
+        it('successfully validates a null value if field not required', () => {
+            let test = new fld.URLField('website', 'Website', { required: false });
+            testModel.website = null;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+    });
+
 });

@@ -32,6 +32,7 @@ export const DEFAULT_FIELD_OPTIONS: IFieldOptions = {
 };
 
 export const EMAIL_ADDR_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+export const URL_REGEX = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/;
 
 function getOptions(options?: IFieldOptions): IFieldOptions {
     if (isSet(options)) {
@@ -124,7 +125,17 @@ export class EmailField extends TextField {
     }
 }
 
-export class URLField extends TextField {}
+export class URLField extends TextField {
+    constructor(name: string, label: string, options?: IFieldOptions) {
+        let opts = getOptions(options);
+        if (!opts.regEx
+            || typeof opts.regEx != 'object'
+            || !(opts.regEx instanceof RegExp)) {
+            opts.regEx = URL_REGEX;
+        }
+        super(name, label, opts);
+    }
+}
 
 export class NumberField extends Field {
     constructor(name: string, label: string, options?: IFieldOptions) {
