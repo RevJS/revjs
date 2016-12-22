@@ -298,4 +298,75 @@ describe('rev.fields', () => {
 
     });
 
+    describe('EmailField', () => {
+        let testModel = {
+            email: <any> null
+        };
+        let testMeta = {
+            fields: [new fld.EmailField('email', 'E-mail')]
+        };
+        let result: ModelValidationResult;
+
+        beforeEach(() => {
+            result = new ModelValidationResult();
+        });
+
+        it('creates a field with properties as expected', () => {
+            let opts: fld.IFieldOptions = {};
+            let test = new fld.EmailField('email', 'E-mail', opts);
+            expect(test).is.instanceof(fld.TextField);
+            expect(test.name).to.equal('email');
+            expect(test.label).to.equal('E-mail');
+            expect(test.options).to.equal(opts);
+            expect(test.options.regEx).to.equal(fld.EMAIL_ADDR_REGEX);
+        });
+
+        it('sets default field options if they are not specified', () => {
+            let test = new fld.EmailField('email', 'E-mail');
+            expect(test.options).to.deep.equal(
+                Object.assign({}, fld.DEFAULT_FIELD_OPTIONS, {
+                    regEx: fld.EMAIL_ADDR_REGEX
+                })
+            );
+        });
+
+        it('allows the default e-mail address regex to be overridden', () => {
+            let testRegex = /abc/
+            let test = new fld.EmailField('email', 'E-mail', {
+                regEx: testRegex
+            });
+            expect(test.options.regEx).to.equal(testRegex);
+        });
+
+        it('uses the default regex if an invalid regex is passed', () => {
+            let testRegex = { test: 'flibble' };
+            let test = new fld.EmailField('email', 'E-mail', {
+                regEx: <any> testRegex
+            });
+            expect(test.options.regEx).to.equal(fld.EMAIL_ADDR_REGEX);
+        });
+
+        it('successfully validates a valid e-mail address', () => {
+            let test = new fld.EmailField('email', 'E-mail');
+            testModel.email = 'Joe.Smith_21@gmail.com';
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully picks up an invalid e-mail address', () => {
+            let test = new fld.EmailField('email', 'E-mail');
+            testModel.email = 'Joe.Smith_not_an_email.com';
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', false);
+        });
+
+        it('successfully validates a null value if field not required', () => {
+            let test = new fld.EmailField('email', 'E-mail', { required: false });
+            testModel.email = null;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+    });
+
 });

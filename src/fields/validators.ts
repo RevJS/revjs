@@ -2,10 +2,7 @@ import { IModel, IModelMeta, ValidationMode } from './../model/index';
 import { ModelValidationResult } from './../model/validationresult';
 import { Field, SelectionField, IValidationOptions } from './index';
 import { VALIDATION_MESSAGES as msg } from './validationmsg';
-
-function isSet(value: any) {
-    return (typeof value != 'undefined' && value !== null);
-}
+import { isSet } from '../utils';
 
 export function requiredValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
     if (!isSet(model[field.name])) {

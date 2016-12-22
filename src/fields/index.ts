@@ -2,6 +2,7 @@
 import { IModel, IModelMeta, ValidationMode } from '../model';
 import { ModelValidationResult } from '../model/validationresult';
 import { checkIsModelInstance } from '../model';
+import { isSet } from '../utils';
 import * as validators from './validators';
 
 export interface IFieldValidator {
@@ -30,6 +31,20 @@ export const DEFAULT_FIELD_OPTIONS: IFieldOptions = {
     required: true
 };
 
+export const EMAIL_ADDR_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+function getOptions(options?: IFieldOptions): IFieldOptions {
+    if (isSet(options)) {
+        if (typeof options != 'object') {
+            throw new Error('FieldError: the options parameter must be an object');
+        }
+        return options;
+    }
+    else {
+        return Object.assign({}, DEFAULT_FIELD_OPTIONS);
+    }
+}
+
 export class Field {
     public validators: IFieldValidator[];
     public asyncValidators: IAsyncFieldValidator[];
@@ -41,10 +56,7 @@ export class Field {
         if (!label || typeof label != 'string') {
             throw new Error('FieldError: new fields must have a label');
         }
-        this.options = options || Object.assign({}, DEFAULT_FIELD_OPTIONS);
-        if (typeof this.options != 'object') {
-            throw new Error('FieldError: the options parameter must be an object');
-        }
+        this.options = getOptions(options);
         this.validators = [];
         this.asyncValidators = [];
         if (this.options.required || typeof this.options.required == 'undefined') {
@@ -99,6 +111,20 @@ export class TextField extends Field {
 }
 
 export class PasswordField extends TextField {}
+
+export class EmailField extends TextField {
+    constructor(name: string, label: string, options?: IFieldOptions) {
+        let opts = getOptions(options);
+        if (!opts.regEx
+            || typeof opts.regEx != 'object'
+            || !(opts.regEx instanceof RegExp)) {
+            opts.regEx = EMAIL_ADDR_REGEX;
+        }
+        super(name, label, opts);
+    }
+}
+
+export class URLField extends TextField {}
 
 export class NumberField extends Field {
     constructor(name: string, label: string, options?: IFieldOptions) {
