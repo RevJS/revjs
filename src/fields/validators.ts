@@ -60,7 +60,7 @@ export function numberValidator<T extends IModel>(model: T, field: Field, meta: 
 }
 
 export function integerValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
-    if (isSet(model[field.name]) && !(/^\d+$/.test(model[field.name]))) {
+    if (isSet(model[field.name]) && !(/^(-?[1-9][0-9]*|0)$/.test(model[field.name]))) {
         result.addFieldError(
             field.name,
             msg.not_an_integer(field.label),

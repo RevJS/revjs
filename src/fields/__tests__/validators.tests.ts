@@ -276,6 +276,13 @@ describe('rev.fields.validators', () => {
             expect(vResult.valid).to.equal(true);
         });
 
+        it('returns valid = true when a negative integer is specified', () => {
+            let test = new TestModel();
+            test.age = -12;
+            vld.integerValidator(test, ageField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
         it('returns valid = true when a string equivalent of an integer is specified', () => {
             let test = new TestModel();
             test.age = '34';
