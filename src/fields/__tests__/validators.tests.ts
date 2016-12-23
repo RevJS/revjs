@@ -729,6 +729,72 @@ describe('rev.fields.validators', () => {
 
     });
 
+    describe('timeOnlyValidator()', () => {
+
+        it('returns valid = true when a value is not defined', () => {
+            let test = new TestModel();
+            vld.timeOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a value is null', () => {
+            let test = new TestModel();
+            test.registered = null;
+            vld.timeOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a date object is passed', () => {
+            let test = new TestModel();
+            test.registered = new Date('2016-12-01T12:11:01');
+            vld.timeOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a time in the correct format is passed', () => {
+            let test = new TestModel();
+            test.registered = '15:11:01';
+            vld.timeOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when a non-date object is set', () => {
+            let test = new TestModel();
+            test.registered = new TestModel();
+            vld.timeOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_time', dateField.name, msg.not_a_time(dateField.label), vResult);
+        });
+
+        it('returns valid = false when time string also contains a date', () => {
+            let test = new TestModel();
+            test.registered = '2016-12-01T15:11:01';
+            vld.timeOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_time', dateField.name, msg.not_a_time(dateField.label), vResult);
+        });
+
+        it('returns valid = false when time string is an invalid time', () => {
+            let test = new TestModel();
+            test.registered = '56:21:32';
+            vld.timeOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_time', dateField.name, msg.not_a_time(dateField.label), vResult);
+        });
+
+        it('returns valid = false when string is not in the correct format', () => {
+            let test = new TestModel();
+            test.registered = '5:21 pm';
+            vld.timeOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_time', dateField.name, msg.not_a_time(dateField.label), vResult);
+        });
+
+        it('returns valid = false when string is empty', () => {
+            let test = new TestModel();
+            test.registered = '';
+            vld.timeOnlyValidator(test, dateField, meta, 'create', vResult, opts);
+            expectFailure('not_a_time', dateField.name, msg.not_a_time(dateField.label), vResult);
+        });
+
+    });
+
     describe('dateTimeValidator()', () => {
 
         it('returns valid = true when a value is not defined', () => {

@@ -139,6 +139,7 @@ export function selectionValidator<T extends IModel>(model: T, field: SelectionF
 }
 
 let dateOnlyRegex = /^[0-9]{4}-[01][0-9]-[0-3][0-9]$/;
+let timeOnlyRegex = /^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/;
 let dateTimeRegex = /^[0-9]{4}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/;
 
 export function dateOnlyValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
@@ -153,6 +154,23 @@ export function dateOnlyValidator<T extends IModel>(model: T, field: Field, meta
                 field.name,
                 msg.not_a_date(field.label),
                 { validator: 'not_a_date' }
+            );
+        }
+    }
+}
+
+export function timeOnlyValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (isSet(model[field.name])) {
+        if (typeof model[field.name] == 'object' && model[field.name] instanceof Date) {
+            return;
+        }
+        if (typeof model[field.name] != 'string'
+                || !((<string> model[field.name]).match(timeOnlyRegex))
+                || !Date.parse('2000-01-01T' + model[field.name])) {
+            result.addFieldError(
+                field.name,
+                msg.not_a_time(field.label),
+                { validator: 'not_a_time' }
             );
         }
     }

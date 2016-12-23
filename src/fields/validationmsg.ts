@@ -8,6 +8,7 @@ export let VALIDATION_MESSAGES = {
     not_an_integer: (label: string) => `${label} should be an integer`,
     not_a_boolean: (label: string) => `${label} should be either true or false`,
     not_a_date: (label: string) => `${label} should be a date`,
+    not_a_time: (label: string) => `${label} should be a time`,
     not_a_datetime: (label: string) => `${label} should be a date and time`,
     min_string_length: (label: string, val: number) => `${label} should have at least ${val} characters`,
     max_string_length: (label: string, val: number) => `${label} should have at most ${val} characters`,
