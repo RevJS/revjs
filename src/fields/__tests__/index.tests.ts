@@ -747,4 +747,81 @@ describe('rev.fields', () => {
 
     });
 
+    describe('TimeField', () => {
+        let testModel = {
+            value: <any> null
+        };
+        let testMeta = {
+            fields: [new fld.TimeField('value', 'Value')]
+        };
+        let result: ModelValidationResult;
+
+        beforeEach(() => {
+            result = new ModelValidationResult();
+        });
+
+        it('creates a field with properties as expected', () => {
+            let opts: fld.IFieldOptions = {};
+            let test = new fld.TimeField('value', 'Value', opts);
+            expect(test.name).to.equal('value');
+            expect(test.label).to.equal('Value');
+            expect(test.options).to.equal(opts);
+            expect(test).is.instanceof(fld.Field);
+        });
+
+        it('sets default field options if they are not specified', () => {
+            let test = new fld.TimeField('value', 'Value');
+            expect(test.options).to.deep.equal(fld.DEFAULT_FIELD_OPTIONS);
+        });
+
+        it('adds the timeOnlyValidator by default', () => {
+            let test = new fld.TimeField('value', 'Value', { required: false });
+            expect(test.validators.length).to.equal(1);
+            expect(test.validators[0]).to.equal(vld.timeOnlyValidator);
+        });
+
+        it('adds the required validator if options.required is true', () => {
+            let test = new fld.TimeField('value', 'Value', { required: true });
+            expect(test.validators.length).to.equal(2);
+            expect(test.validators[0]).to.equal(vld.requiredValidator);
+            expect(test.validators[1]).to.equal(vld.timeOnlyValidator);
+        });
+
+        it('successfully validates a date object value', () => {
+            let test = new fld.TimeField('value', 'Value', { required: true });
+            testModel.value = new Date(2016, 12, 23, 15, 27, 32);
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully validates a time value in a string', () => {
+            let test = new fld.TimeField('value', 'Value', { required: true });
+            testModel.value = '15:27:32';
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully validates a null value if field not required', () => {
+            let test = new fld.TimeField('value', 'Value', { required: false });
+            testModel.value = null;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('does not validate on null value if field is required', () => {
+            let test = new fld.TimeField('value', 'Value', { required: true });
+            testModel.value = null;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', false);
+        });
+
+        it('does not validate a non-time value', () => {
+            let test = new fld.TimeField('value', 'Value', { required: true });
+            testModel.value = 'Time you got a watch!...';
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', false);
+        });
+
+    });
+
 });

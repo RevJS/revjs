@@ -165,7 +165,19 @@ export class DateField extends Field {
     }
 }
 
-export class DateTimeField extends Field {}
+export class TimeField extends Field {
+    constructor(name: string, label: string, options?: IFieldOptions) {
+        super(name, label, options);
+        this.validators.push(validators.timeOnlyValidator);
+    }
+}
+
+export class DateTimeField extends Field {
+    constructor(name: string, label: string, options?: IFieldOptions) {
+        super(name, label, options);
+        this.validators.push(validators.dateTimeValidator);
+    }
+}
 
 export class SelectionField extends Field {
     constructor(
