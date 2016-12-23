@@ -500,7 +500,7 @@ describe('rev.fields', () => {
 
         it('successfully validates a number value', () => {
             let test = new fld.NumberField('value', 'Value', { required: true });
-            testModel.value = 42;
+            testModel.value = 42.5;
             return expect(test.validate(testModel, testMeta, 'create', result))
                 .to.eventually.have.property('valid', true);
         });
@@ -547,10 +547,200 @@ describe('rev.fields', () => {
         it('does not validate a number if it does not match rules', () => {
             let test = new fld.NumberField('value', 'Value', {
                 required: true,
+                minValue: 40.1,
+                maxValue: 50.2
+            });
+            testModel.value = 22.72;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', false);
+        });
+
+    });
+
+    describe('IntegerField', () => {
+        let testModel = {
+            value: <any> null
+        };
+        let testMeta = {
+            fields: [new fld.IntegerField('value', 'Value')]
+        };
+        let result: ModelValidationResult;
+
+        beforeEach(() => {
+            result = new ModelValidationResult();
+        });
+
+        it('creates a field with properties as expected', () => {
+            let opts: fld.IFieldOptions = {};
+            let test = new fld.IntegerField('value', 'Value', opts);
+            expect(test.name).to.equal('value');
+            expect(test.label).to.equal('Value');
+            expect(test.options).to.equal(opts);
+            expect(test).is.instanceof(fld.NumberField);
+        });
+
+        it('sets default field options if they are not specified', () => {
+            let test = new fld.IntegerField('value', 'Value');
+            expect(test.options).to.deep.equal(fld.DEFAULT_FIELD_OPTIONS);
+        });
+
+        it('adds the integerValidator by default', () => {
+            let test = new fld.IntegerField('value', 'Value', { required: false });
+            expect(test.validators.length).to.equal(2);
+            expect(test.validators[0]).to.equal(vld.numberValidator);
+            expect(test.validators[1]).to.equal(vld.integerValidator);
+        });
+
+        it('adds the required validator if options.required is true', () => {
+            let test = new fld.IntegerField('value', 'Value', { required: true });
+            expect(test.validators.length).to.equal(3);
+            expect(test.validators[0]).to.equal(vld.requiredValidator);
+            expect(test.validators[1]).to.equal(vld.numberValidator);
+            expect(test.validators[2]).to.equal(vld.integerValidator);
+        });
+
+        it('adds the minValue validator if options.minValue is set', () => {
+            let test = new fld.IntegerField('value', 'Value', { required: false, minValue: 'a' });
+            expect(test.validators.length).to.equal(3);
+            expect(test.validators[2]).to.equal(vld.minValueValidator);
+        });
+
+        it('adds the maxValue validator if options.maxValue is set', () => {
+            let test = new fld.IntegerField('value', 'Value', { required: false, maxValue: 'z' });
+            expect(test.validators.length).to.equal(3);
+            expect(test.validators[2]).to.equal(vld.maxValueValidator);
+        });
+
+        it('successfully validates an integer value', () => {
+            let test = new fld.IntegerField('value', 'Value', { required: true });
+            testModel.value = 42;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully validates an integer value in a string', () => {
+            let test = new fld.IntegerField('value', 'Value', { required: true });
+            testModel.value = '12';
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully validates an integer value that passes validation', () => {
+            let test = new fld.IntegerField('value', 'Value', {
+                required: true,
+                minValue: 40,
+                maxValue: 50
+            });
+            testModel.value = 42;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully validates a null value if field not required', () => {
+            let test = new fld.IntegerField('value', 'Value', { required: false });
+            testModel.value = null;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('does not validate on null value if field is required', () => {
+            let test = new fld.IntegerField('value', 'Value', { required: true });
+            testModel.value = null;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', false);
+        });
+
+        it('does not validate on non-integer value', () => {
+            let test = new fld.IntegerField('value', 'Value', { required: true });
+            testModel.value = 42.5;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', false);
+        });
+
+        it('does not validate an integer if it does not match rules', () => {
+            let test = new fld.IntegerField('value', 'Value', {
+                required: true,
                 minValue: 40,
                 maxValue: 50
             });
             testModel.value = 22;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', false);
+        });
+
+    });
+
+    describe('DateField', () => {
+        let testModel = {
+            value: <any> null
+        };
+        let testMeta = {
+            fields: [new fld.DateField('value', 'Value')]
+        };
+        let result: ModelValidationResult;
+
+        beforeEach(() => {
+            result = new ModelValidationResult();
+        });
+
+        it('creates a field with properties as expected', () => {
+            let opts: fld.IFieldOptions = {};
+            let test = new fld.DateField('value', 'Value', opts);
+            expect(test.name).to.equal('value');
+            expect(test.label).to.equal('Value');
+            expect(test.options).to.equal(opts);
+            expect(test).is.instanceof(fld.Field);
+        });
+
+        it('sets default field options if they are not specified', () => {
+            let test = new fld.DateField('value', 'Value');
+            expect(test.options).to.deep.equal(fld.DEFAULT_FIELD_OPTIONS);
+        });
+
+        it('adds the dateOnlyValidator by default', () => {
+            let test = new fld.DateField('value', 'Value', { required: false });
+            expect(test.validators.length).to.equal(1);
+            expect(test.validators[0]).to.equal(vld.dateOnlyValidator);
+        });
+
+        it('adds the required validator if options.required is true', () => {
+            let test = new fld.DateField('value', 'Value', { required: true });
+            expect(test.validators.length).to.equal(2);
+            expect(test.validators[0]).to.equal(vld.requiredValidator);
+            expect(test.validators[1]).to.equal(vld.dateOnlyValidator);
+        });
+
+        it('successfully validates a date value', () => {
+            let test = new fld.DateField('value', 'Value', { required: true });
+            testModel.value = new Date(2016, 12, 23);
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully validates a date value in a string', () => {
+            let test = new fld.DateField('value', 'Value', { required: true });
+            testModel.value = '2016-12-23';
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully validates a null value if field not required', () => {
+            let test = new fld.DateField('value', 'Value', { required: false });
+            testModel.value = null;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('does not validate on null value if field is required', () => {
+            let test = new fld.DateField('value', 'Value', { required: true });
+            testModel.value = null;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', false);
+        });
+
+        it('does not validate a non-date value', () => {
+            let test = new fld.DateField('value', 'Value', { required: true });
+            testModel.value = 'I am a date, honest guv!...';
             return expect(test.validate(testModel, testMeta, 'create', result))
                 .to.eventually.have.property('valid', false);
         });

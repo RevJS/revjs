@@ -153,21 +153,18 @@ export class NumberField extends Field {
 export class IntegerField extends NumberField {
     constructor(name: string, label: string, options?: IFieldOptions) {
         super(name, label, options);
-        this.validators.push(validators.integerValidator);
-        if (typeof this.options.minValue != 'undefined') {
-            this.validators.push(validators.minValueValidator);
-        }
-        if (typeof this.options.maxValue != 'undefined') {
-            this.validators.push(validators.maxValueValidator);
-        }
+        let validatorIdx = this.options.required ? 2 : 1;
+        this.validators.splice(validatorIdx, 0, validators.integerValidator);
     }
 }
 
-export class FloatField extends NumberField {}
+export class DateField extends Field {
+    constructor(name: string, label: string, options?: IFieldOptions) {
+        super(name, label, options);
+        this.validators.push(validators.dateOnlyValidator);
+    }
+}
 
-export class DecimalField extends NumberField {}
-
-export class DateField extends Field {}
 export class DateTimeField extends Field {}
 
 export class SelectionField extends Field {
@@ -190,6 +187,8 @@ export class SelectionField extends Field {
     }
 }
 
+/* TODO:
+
 export class RelatedRecord extends Field {
     constructor(
             name: string,
@@ -209,3 +208,5 @@ export class RelatedRecordList extends Field {
         super(name, label, options);
     }
 }
+
+*/
