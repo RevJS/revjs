@@ -12,6 +12,7 @@ class TestModel {
     name: any;
     age: any;
     gender: any;
+    hobbies: any;
     isAwesome: any;
     registered: any;
 }
@@ -28,6 +29,11 @@ let genderField = new fld.SelectionField('gender', 'Gender', [
     ['male', 'Male'],
     ['female', 'Female']
 ]);
+let hobbiesField = new fld.SelectionField('hobbies', 'Hobbies', [
+    ['ironing', 'Ironing'],
+    ['extreme_ironing', 'Extreme Ironing'],
+    ['naked_ironing', 'Naked Ironing']
+], { multiple: true });
 let booleanField = new fld.BooleanField('isAwesome', 'Is Awesome?');
 let dateField = new fld.DateTimeField('registered', 'Date Registered');
 
@@ -618,47 +624,127 @@ describe('rev.fields.validators', () => {
 
     });
 
-    describe('selectionValidator()', () => {
+    describe('singleSelectionValidator()', () => {
 
         it('returns valid = true when a value is not defined', () => {
             let test = new TestModel();
-            vld.selectionValidator(test, genderField, meta, 'create', vResult, opts);
+            vld.singleSelectionValidator(test, genderField, meta, 'create', vResult, opts);
             expect(vResult.valid).to.equal(true);
         });
 
         it('returns valid = true when a value is null', () => {
             let test = new TestModel();
             test.gender = null;
-            vld.selectionValidator(test, genderField, meta, 'create', vResult, opts);
+            vld.singleSelectionValidator(test, genderField, meta, 'create', vResult, opts);
             expect(vResult.valid).to.equal(true);
         });
 
         it('returns valid = true when the value is in the selection', () => {
             let test = new TestModel();
             test.gender = 'female';
-            vld.selectionValidator(test, genderField, meta, 'create', vResult, opts);
+            vld.singleSelectionValidator(test, genderField, meta, 'create', vResult, opts);
             expect(vResult.valid).to.equal(true);
         });
 
         it('returns valid = false when the value is not in the selection', () => {
             let test = new TestModel();
             test.gender = 'hamster';
-            vld.selectionValidator(test, genderField, meta, 'create', vResult, opts);
-            expectFailure('invalid_selection', genderField.name, msg.invalid_selection(genderField.label), vResult);
+            vld.singleSelectionValidator(test, genderField, meta, 'create', vResult, opts);
+            expectFailure('no_selection_match', genderField.name, msg.no_selection_match(genderField.label), vResult);
         });
 
         it('returns valid = false when the value is a number that is not in the selection', () => {
             let test = new TestModel();
             test.gender = 222;
-            vld.selectionValidator(test, genderField, meta, 'create', vResult, opts);
-            expectFailure('invalid_selection', genderField.name, msg.invalid_selection(genderField.label), vResult);
+            vld.singleSelectionValidator(test, genderField, meta, 'create', vResult, opts);
+            expectFailure('no_selection_match', genderField.name, msg.no_selection_match(genderField.label), vResult);
         });
 
         it('returns valid = false when value is an empty string', () => {
             let test = new TestModel();
             test.gender = '';
-            vld.selectionValidator(test, genderField, meta, 'create', vResult, opts);
-            expectFailure('invalid_selection', genderField.name, msg.invalid_selection(genderField.label), vResult);
+            vld.singleSelectionValidator(test, genderField, meta, 'create', vResult, opts);
+            expectFailure('no_selection_match', genderField.name, msg.no_selection_match(genderField.label), vResult);
+        });
+
+    });
+
+    describe('multipleSelectionValidator()', () => {
+
+        it('returns valid = true when a value is not defined', () => {
+            let test = new TestModel();
+            vld.multipleSelectionValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a value is null', () => {
+            let test = new TestModel();
+            test.hobbies = null;
+            vld.multipleSelectionValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when one value is in the selection', () => {
+            let test = new TestModel();
+            test.hobbies = ['ironing'];
+            vld.multipleSelectionValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when more than one value is in the selection', () => {
+            let test = new TestModel();
+            test.hobbies = ['ironing', 'extreme_ironing'];
+            vld.multipleSelectionValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when value is just a string', () => {
+            let test = new TestModel();
+            test.hobbies = 'ironing';
+            vld.multipleSelectionValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expectFailure('selection_not_an_array', hobbiesField.name, msg.selection_not_an_array(hobbiesField.label), vResult);
+        });
+
+        it('returns valid = false when value is just a number', () => {
+            let test = new TestModel();
+            test.hobbies = 222;
+            vld.multipleSelectionValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expectFailure('selection_not_an_array', hobbiesField.name, msg.selection_not_an_array(hobbiesField.label), vResult);
+        });
+
+        it('returns valid = false when value is an object', () => {
+            let test = new TestModel();
+            test.hobbies = { flibble: true };
+            vld.multipleSelectionValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expectFailure('selection_not_an_array', hobbiesField.name, msg.selection_not_an_array(hobbiesField.label), vResult);
+        });
+
+        it('returns valid = false when one value is not in the selection', () => {
+            let test = new TestModel();
+            test.hobbies = ['golf'];
+            vld.multipleSelectionValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expectFailure('no_selection_match', hobbiesField.name, msg.no_selection_match(hobbiesField.label), vResult);
+        });
+
+        it('returns valid = false when one value is in the selection and one is not in the selection', () => {
+            let test = new TestModel();
+            test.hobbies = ['ironing', 'golf'];
+            vld.multipleSelectionValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expectFailure('no_selection_match', hobbiesField.name, msg.no_selection_match(hobbiesField.label), vResult);
+        });
+
+        it('returns valid = false when one value is a number that is not in the selection', () => {
+            let test = new TestModel();
+            test.hobbies = [222];
+            vld.multipleSelectionValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expectFailure('no_selection_match', hobbiesField.name, msg.no_selection_match(hobbiesField.label), vResult);
+        });
+
+        it('returns valid = false when value is an empty string', () => {
+            let test = new TestModel();
+            test.hobbies = [''];
+            vld.multipleSelectionValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expectFailure('no_selection_match', hobbiesField.name, msg.no_selection_match(hobbiesField.label), vResult);
         });
 
     });

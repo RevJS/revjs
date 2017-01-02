@@ -15,5 +15,6 @@ export let VALIDATION_MESSAGES = {
     min_value: (label: string, val: any) => `${label} should be at least ${val}`,
     max_value: (label: string, val: any) => `${label} should be at most ${val}`,
     no_regex_match: (label: string) => `${label} is not in the correct format`,
-    invalid_selection: (label: string) => `Invalid selection for ${label}`,
+    no_selection_match: (label: string) => `Invalid selection for ${label}`,
+    selection_not_an_array: (label: string) => `${label} should be a list of selections`,
 };

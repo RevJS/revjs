@@ -123,7 +123,7 @@ export function maxValueValidator<T extends IModel>(model: T, field: TextField |
     }
 }
 
-export function selectionValidator<T extends IModel>(model: T, field: SelectionField, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+export function singleSelectionValidator<T extends IModel>(model: T, field: SelectionField, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         for (let opt of field.selection) {
             if (opt[0] == model[field.name]) {
@@ -132,9 +132,39 @@ export function selectionValidator<T extends IModel>(model: T, field: SelectionF
         }
         result.addFieldError(
             field.name,
-            msg.invalid_selection(field.label),
-            { validator: 'invalid_selection' }
+            msg.no_selection_match(field.label),
+            { validator: 'no_selection_match' }
         );
+    }
+}
+
+export function multipleSelectionValidator<T extends IModel>(model: T, field: SelectionField, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (isSet(model[field.name])) {
+        if (typeof model[field.name] != 'object' || !(model[field.name] instanceof Array)) {
+            result.addFieldError(
+                field.name,
+                msg.selection_not_an_array(field.label),
+                { validator: 'selection_not_an_array' }
+            );
+        }
+        else {
+            let matches = 0;
+            for (let val of model[field.name]) {
+                for (let opt of field.selection) {
+                    if (opt[0] == val) {
+                        matches++;
+                        break;
+                    }
+                }
+            }
+            if (matches < model[field.name].length) {
+                result.addFieldError(
+                    field.name,
+                    msg.no_selection_match(field.label),
+                    { validator: 'no_selection_match' }
+                );
+            }
+        }
     }
 }
 
