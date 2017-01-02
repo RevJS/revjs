@@ -10,8 +10,7 @@ describe('rev.fields', () => {
 
         it('creates a field with properties as expected', () => {
             let opts: fld.IFieldOptions = {
-                required: true,
-                maxLength: 100
+                required: true
             };
             let test = new fld.Field('name', 'Name', opts);
             expect(test.name).to.equal('name');
@@ -48,7 +47,7 @@ describe('rev.fields', () => {
         });
 
         it('adds the "required" validator if options.required is not specified', () => {
-            let test = new fld.Field('name', 'Name', { maxLength: 20 });
+            let test = new fld.Field('name', 'Name', { });
             expect(test.validators[0]).to.equal(vld.requiredValidator);
         });
 
@@ -825,6 +824,87 @@ describe('rev.fields', () => {
     });
 
     describe('DateTimeField', () => {
+        let testModel = {
+            value: <any> null
+        };
+        let testMeta = {
+            fields: [new fld.DateTimeField('value', 'Value')]
+        };
+        let result: ModelValidationResult;
+
+        beforeEach(() => {
+            result = new ModelValidationResult();
+        });
+
+        it('creates a field with properties as expected', () => {
+            let opts: fld.IFieldOptions = {};
+            let test = new fld.DateTimeField('value', 'Value', opts);
+            expect(test.name).to.equal('value');
+            expect(test.label).to.equal('Value');
+            expect(test.options).to.equal(opts);
+            expect(test).is.instanceof(fld.Field);
+        });
+
+        it('sets default field options if they are not specified', () => {
+            let test = new fld.DateTimeField('value', 'Value');
+            expect(test.options).to.deep.equal(fld.DEFAULT_FIELD_OPTIONS);
+        });
+
+        it('adds the dateTimeValidator by default', () => {
+            let test = new fld.DateTimeField('value', 'Value', { required: false });
+            expect(test.validators.length).to.equal(1);
+            expect(test.validators[0]).to.equal(vld.dateTimeValidator);
+        });
+
+        it('adds the required validator if options.required is true', () => {
+            let test = new fld.DateTimeField('value', 'Value', { required: true });
+            expect(test.validators.length).to.equal(2);
+            expect(test.validators[0]).to.equal(vld.requiredValidator);
+            expect(test.validators[1]).to.equal(vld.dateTimeValidator);
+        });
+
+        it('successfully validates a date and time value', () => {
+            let test = new fld.DateTimeField('value', 'Value', { required: true });
+            testModel.value = new Date(2016, 12, 23, 11, 22, 33);
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully validates a date time value in a string', () => {
+            let test = new fld.DateTimeField('value', 'Value', { required: true });
+            testModel.value = '2016-12-23T21:32:43';
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully validates a null value if field not required', () => {
+            let test = new fld.DateTimeField('value', 'Value', { required: false });
+            testModel.value = null;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('does not validate on null value if field is required', () => {
+            let test = new fld.DateTimeField('value', 'Value', { required: true });
+            testModel.value = null;
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', false);
+        });
+
+        it('does not validate a non-datetime value', () => {
+            let test = new fld.DateTimeField('value', 'Value', { required: true });
+            testModel.value = 'I am a non-datetime value';
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', false);
+        });
+
+    });
+
+    /*
+    TODO!!
+    */
+
+    describe('SelectionField', () => {  // TODO
         let testModel = {
             value: <any> null
         };

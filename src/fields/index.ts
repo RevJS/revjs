@@ -15,12 +15,23 @@ export interface IAsyncFieldValidator {
 
 export interface IFieldOptions {
     required?: boolean;
-    size?: number | [number, number];
+}
+
+export interface ITextFieldOptions extends IFieldOptions {
     minValue?: number | string;
     maxValue?: number | string;
     minLength?: number;
     maxLength?: number;
     regEx?: RegExp;
+}
+
+export interface INumberFieldOptions extends IFieldOptions {
+    minValue?: number | string;
+    maxValue?: number | string;
+}
+
+export interface ISelectionFieldOptions extends IFieldOptions {
+    multiple?: boolean;
 }
 
 export interface IValidationOptions {
@@ -85,7 +96,9 @@ export class BooleanField extends Field {
 }
 
 export class TextField extends Field {
-    constructor(name: string, label: string, options?: IFieldOptions) {
+    public options: ITextFieldOptions;
+
+    constructor(name: string, label: string, options?: ITextFieldOptions) {
         super(name, label, options);
         let o = this.options;
         let v = this.validators;
@@ -114,8 +127,8 @@ export class TextField extends Field {
 export class PasswordField extends TextField {}
 
 export class EmailField extends TextField {
-    constructor(name: string, label: string, options?: IFieldOptions) {
-        let opts = getOptions(options);
+    constructor(name: string, label: string, options?: ITextFieldOptions) {
+        let opts = <ITextFieldOptions> getOptions(options);
         if (!opts.regEx
             || typeof opts.regEx != 'object'
             || !(opts.regEx instanceof RegExp)) {
@@ -126,8 +139,8 @@ export class EmailField extends TextField {
 }
 
 export class URLField extends TextField {
-    constructor(name: string, label: string, options?: IFieldOptions) {
-        let opts = getOptions(options);
+    constructor(name: string, label: string, options?: ITextFieldOptions) {
+        let opts = <ITextFieldOptions> getOptions(options);
         if (!opts.regEx
             || typeof opts.regEx != 'object'
             || !(opts.regEx instanceof RegExp)) {
@@ -138,7 +151,9 @@ export class URLField extends TextField {
 }
 
 export class NumberField extends Field {
-    constructor(name: string, label: string, options?: IFieldOptions) {
+    public options: INumberFieldOptions;
+
+    constructor(name: string, label: string, options?: INumberFieldOptions) {
         super(name, label, options);
         this.validators.push(validators.numberValidator);
         if (typeof this.options.minValue != 'undefined') {
@@ -151,7 +166,7 @@ export class NumberField extends Field {
 }
 
 export class IntegerField extends NumberField {
-    constructor(name: string, label: string, options?: IFieldOptions) {
+    constructor(name: string, label: string, options?: INumberFieldOptions) {
         super(name, label, options);
         let validatorIdx = this.options.required ? 2 : 1;
         this.validators.splice(validatorIdx, 0, validators.integerValidator);
