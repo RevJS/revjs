@@ -908,8 +908,13 @@ describe('rev.fields', () => {
         let testModel = {
             value: <any> null
         };
+        let selection = [
+            ['option1', 'Option 1'],
+            ['option2', 'Option 2'],
+            ['option3', 'Option 3']
+        ];
         let testMeta = {
-            fields: [new fld.DateTimeField('value', 'Value')]
+            fields: [new fld.SelectionField('value', 'Value', selection)]
         };
         let result: ModelValidationResult;
 
@@ -919,62 +924,99 @@ describe('rev.fields', () => {
 
         it('creates a field with properties as expected', () => {
             let opts: fld.IFieldOptions = {};
-            let test = new fld.DateTimeField('value', 'Value', opts);
+            let test = new fld.SelectionField('value', 'Value', selection, opts);
             expect(test.name).to.equal('value');
             expect(test.label).to.equal('Value');
+            expect(test.selection).to.equal(selection);
             expect(test.options).to.equal(opts);
             expect(test).is.instanceof(fld.Field);
         });
 
         it('sets default field options if they are not specified', () => {
-            let test = new fld.DateTimeField('value', 'Value');
+            let test = new fld.SelectionField('value', 'Value', selection);
             expect(test.options).to.deep.equal(fld.DEFAULT_FIELD_OPTIONS);
         });
 
-        it('adds the dateTimeValidator by default', () => {
-            let test = new fld.DateTimeField('value', 'Value', { required: false });
+        it('adds the singleSelectionValidator by default', () => {
+            let test = new fld.SelectionField('value', 'Value', selection, { required: false });
             expect(test.validators.length).to.equal(1);
-            expect(test.validators[0]).to.equal(vld.dateTimeValidator);
+            expect(test.validators[0]).to.equal(vld.singleSelectionValidator);
         });
 
         it('adds the required validator if options.required is true', () => {
-            let test = new fld.DateTimeField('value', 'Value', { required: true });
+            let test = new fld.SelectionField('value', 'Value', selection, { required: true });
             expect(test.validators.length).to.equal(2);
             expect(test.validators[0]).to.equal(vld.requiredValidator);
-            expect(test.validators[1]).to.equal(vld.dateTimeValidator);
+            expect(test.validators[1]).to.equal(vld.singleSelectionValidator);
         });
 
-        it('successfully validates a date and time value', () => {
-            let test = new fld.DateTimeField('value', 'Value', { required: true });
-            testModel.value = new Date(2016, 12, 23, 11, 22, 33);
+        it('adds the multipleSelectionValidator if opts.multiple = true', () => {
+            let test = new fld.SelectionField('value', 'Value', selection, { multiple: true });
+            expect(test.validators.length).to.equal(2);
+            expect(test.validators[0]).to.equal(vld.requiredValidator);
+            expect(test.validators[1]).to.equal(vld.multipleSelectionValidator);
+        });
+
+        it('cannot be created with a selection that is not an array', () => {
+            expect(() => {
+                let test = new fld.SelectionField('value', 'Value', <any> 'aaa');
+            }).to.throw('"selection" parameter must be an array');
+        });
+
+        it('cannot be created with a single-dimension selection array', () => {
+            expect(() => {
+                let test = new fld.SelectionField('value', 'Value', <any> ['aaa', 'bbb']);
+            }).to.throw('should be an array with two items');
+        });
+
+        it('cannot be created with a two-dimensional selection array with the wrong number of items', () => {
+            expect(() => {
+                let test = new fld.SelectionField('value', 'Value', [
+                    ['aaa'],
+                    ['bbb', 'ccc'],
+                    ['ddd', 'eee', 'fff']
+                ]);
+            }).to.throw('should be an array with two items');
+        });
+
+        it('successfully validates a single value', () => {
+            let test = new fld.SelectionField('value', 'Value', selection);
+            testModel.value = 'option2';
             return expect(test.validate(testModel, testMeta, 'create', result))
                 .to.eventually.have.property('valid', true);
         });
 
-        it('successfully validates a date time value in a string', () => {
-            let test = new fld.DateTimeField('value', 'Value', { required: true });
-            testModel.value = '2016-12-23T21:32:43';
+        it('successfully validates multiple values', () => {
+            let test = new fld.SelectionField('value', 'Value', selection, { multiple: true });
+            testModel.value = ['option1', 'option3'];
             return expect(test.validate(testModel, testMeta, 'create', result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('successfully validates a null value if field not required', () => {
-            let test = new fld.DateTimeField('value', 'Value', { required: false });
+            let test = new fld.SelectionField('value', 'Value', selection, { required: false });
             testModel.value = null;
             return expect(test.validate(testModel, testMeta, 'create', result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('does not validate on null value if field is required', () => {
-            let test = new fld.DateTimeField('value', 'Value', { required: true });
+            let test = new fld.SelectionField('value', 'Value', selection, { required: true });
             testModel.value = null;
             return expect(test.validate(testModel, testMeta, 'create', result))
                 .to.eventually.have.property('valid', false);
         });
 
-        it('does not validate a non-datetime value', () => {
-            let test = new fld.DateTimeField('value', 'Value', { required: true });
-            testModel.value = 'I am a non-datetime value';
+        it('does not validate an invalid single value', () => {
+            let test = new fld.SelectionField('value', 'Value', selection);
+            testModel.value = 'I am not an option';
+            return expect(test.validate(testModel, testMeta, 'create', result))
+                .to.eventually.have.property('valid', false);
+        });
+
+        it('does not validate an invalid multi-value', () => {
+            let test = new fld.SelectionField('value', 'Value', selection);
+            testModel.value = ['option1', 'nope', 'option3'];
             return expect(test.validate(testModel, testMeta, 'create', result))
                 .to.eventually.have.property('valid', false);
         });

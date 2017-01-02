@@ -195,11 +195,13 @@ export class DateTimeField extends Field {
 }
 
 export class SelectionField extends Field {
+    public options: ISelectionFieldOptions;
+
     constructor(
             name: string,
             label: string,
-            public selection: Array<[string, string]>,
-            options?: IFieldOptions) {
+            public selection: string[][],
+            options?: ISelectionFieldOptions) {
         super(name, label, options);
         if (typeof this.selection != 'object' || !(this.selection instanceof Array)) {
             throw new Error('FieldError: SelectionField "selection" parameter must be an array');
@@ -210,7 +212,12 @@ export class SelectionField extends Field {
                 throw new Error(`FieldError: SelectionField selection item ${i} should be an array with two items`);
             }
         }
-        this.validators.push(validators.selectionValidator);
+        if (this.options.multiple) {
+            this.validators.push(validators.multipleSelectionValidator);
+        }
+        else {
+            this.validators.push(validators.singleSelectionValidator);
+        }
     }
 }
 
