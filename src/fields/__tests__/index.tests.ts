@@ -900,11 +900,7 @@ describe('rev.fields', () => {
 
     });
 
-    /*
-    TODO!!
-    */
-
-    describe('SelectionField', () => {  // TODO
+    describe('SelectionField', () => {
         let testModel = {
             value: <any> null
         };
@@ -943,18 +939,26 @@ describe('rev.fields', () => {
             expect(test.validators[0]).to.equal(vld.singleSelectionValidator);
         });
 
-        it('adds the required validator if options.required is true', () => {
+        it('adds the required validator and stringEmpty validator if options.required is true', () => {
             let test = new fld.SelectionField('value', 'Value', selection, { required: true });
-            expect(test.validators.length).to.equal(2);
+            expect(test.validators.length).to.equal(3);
             expect(test.validators[0]).to.equal(vld.requiredValidator);
-            expect(test.validators[1]).to.equal(vld.singleSelectionValidator);
+            expect(test.validators[1]).to.equal(vld.stringEmptyValidator);
+            expect(test.validators[2]).to.equal(vld.singleSelectionValidator);
+        });
+
+        it('adds the required validator and listEmpty validator if options.required is true and multiple = true', () => {
+            let test = new fld.SelectionField('value', 'Value', selection, { required: true, multiple: true });
+            expect(test.validators.length).to.equal(3);
+            expect(test.validators[0]).to.equal(vld.requiredValidator);
+            expect(test.validators[1]).to.equal(vld.listEmptyValidator);
+            expect(test.validators[2]).to.equal(vld.multipleSelectionValidator);
         });
 
         it('adds the multipleSelectionValidator if opts.multiple = true', () => {
-            let test = new fld.SelectionField('value', 'Value', selection, { multiple: true });
-            expect(test.validators.length).to.equal(2);
-            expect(test.validators[0]).to.equal(vld.requiredValidator);
-            expect(test.validators[1]).to.equal(vld.multipleSelectionValidator);
+            let test = new fld.SelectionField('value', 'Value', selection, { required: false, multiple: true });
+            expect(test.validators.length).to.equal(1);
+            expect(test.validators[0]).to.equal(vld.multipleSelectionValidator);
         });
 
         it('cannot be created with a selection that is not an array', () => {

@@ -212,12 +212,18 @@ export class SelectionField extends Field {
                 throw new Error(`FieldError: SelectionField selection item ${i} should be an array with two items`);
             }
         }
-        if (this.options.multiple) {
-            this.validators.push(validators.multipleSelectionValidator);
+        if (this.options.required) {
+            this.validators.push(
+                this.options.multiple ?
+                    validators.listEmptyValidator :
+                    validators.stringEmptyValidator
+            );
         }
-        else {
-            this.validators.push(validators.singleSelectionValidator);
-        }
+        this.validators.push(
+            this.options.multiple ?
+                validators.multipleSelectionValidator :
+                validators.singleSelectionValidator
+        );
     }
 }
 
