@@ -77,13 +77,31 @@ export class Field {
     }
 
     public validate<T extends IModel>(model: T, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
+        let timeout = options && options.timeout ? options.timeout : 5000;
         checkIsModelInstance(model);
         return new Promise((resolve, reject) => {
+            // Run synchronous validators
             for (let validator of this.validators) {
                 validator(model, this, meta, mode, result, options);
             }
-            // TODO: Async validation if sync validation passes
-            resolve(result);
+            // Run asynchronous validators
+            if (this.asyncValidators.length > 0) {
+                let promises: Array<Promise<void>> = [];
+                for (let asyncValidator of this.asyncValidators) {
+                    promises.push(asyncValidator(model, this, meta, mode, result, options));
+                }
+                Promise.all(promises)
+                    .then(() => {
+                        resolve(result);
+                    });
+                setTimeout(() => {
+                    reject(new Error(`Field validate() - timed out after ${timeout} milliseconds`));
+                }, timeout);
+            }
+            else {
+                // Resolve immediately
+                resolve(result);
+            }
         });
     }
 }

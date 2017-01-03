@@ -1,8 +1,32 @@
+import { Field } from '../index';
+import { IModel, IModelMeta, ValidationMode } from '../../model';
 import { expect } from 'chai';
 import * as fld from '../index';
 import * as vld from '../validators';
 
 import { ModelValidationResult } from '../../model/validationresult';
+
+function quickValidAsyncValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult) {
+    return new Promise<void>((resolve, reject) => {
+        resolve();
+    });
+}
+
+function quickInvalidAsyncValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult) {
+    return new Promise<void>((resolve, reject) => {
+        result.addFieldError('name', 'name field is invalid');
+        resolve();
+    });
+}
+
+function slowInvalidAsyncValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult) {
+    return new Promise<void>((resolve, reject) => {
+        setTimeout(() => {
+            result.addFieldError('name', 'name field is invalid');
+            resolve();
+        }, 8000);
+    });
+}
 
 describe('rev.fields', () => {
 
@@ -98,6 +122,41 @@ describe('rev.fields', () => {
             expect(() => {
                 test.validate(<any> 'test', testMeta, 'create', result);
             }).to.throw('not a model instance');
+        });
+
+        it('returns valid = true when validation completes with a valid async validator', () => {
+            let test = new fld.Field('name', 'Name', { required: false });
+            test.asyncValidators.push(quickValidAsyncValidator);
+            return expect(
+                test.validate(testModel, testMeta, 'create', result)
+            ).to.eventually.have.property('valid', true);
+        });
+
+        it('returns valid = false when validation completes with an invalid async validator', () => {
+            let test = new fld.Field('name', 'Name', { required: false });
+            test.asyncValidators.push(quickInvalidAsyncValidator);
+            return expect(
+                test.validate(testModel, testMeta, 'create', result)
+            ).to.eventually.have.property('valid', false);
+        });
+
+        it('returns valid = false when validation completes with a valid and an invalid async validator', () => {
+            let test = new fld.Field('name', 'Name', { required: false });
+            test.asyncValidators.push(quickValidAsyncValidator);
+            test.asyncValidators.push(quickInvalidAsyncValidator);
+            return expect(
+                test.validate(testModel, testMeta, 'create', result)
+            ).to.eventually.have.property('valid', false);
+        });
+
+        it('returns a rejected promise when async validation times out', () => {
+            let test = new fld.Field('name', 'Name', { required: false });
+            test.asyncValidators.push(slowInvalidAsyncValidator);
+            return expect(
+                test.validate(testModel, testMeta, 'create', result, {
+                    timeout: 100
+                })
+            ).to.be.rejectedWith('timed out');
         });
 
     });
