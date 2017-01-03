@@ -25,8 +25,8 @@ export function stringValidator<T extends IModel>(model: T, field: Field, meta: 
 }
 
 export function stringEmptyValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
-    if (typeof model[field.name] != 'string'
-            || !model[field.name]) {
+    if (typeof model[field.name] == 'string'
+            && model[field.name].length == 0) {
         result.addFieldError(
             field.name,
             msg.string_empty(field.label),
@@ -134,6 +134,17 @@ export function singleSelectionValidator<T extends IModel>(model: T, field: Sele
             field.name,
             msg.no_selection_match(field.label),
             { validator: 'no_selection_match' }
+        );
+    }
+}
+
+export function listEmptyValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (typeof model[field.name] == 'object' && model[field.name] instanceof Array
+            && model[field.name].length == 0) {
+        result.addFieldError(
+            field.name,
+            msg.list_empty(field.label),
+            { validator: 'list_empty' }
         );
     }
 }

@@ -120,6 +120,19 @@ describe('rev.fields.validators', () => {
 
     describe('stringEmptyValidator()', () => {
 
+        it('returns valid = true when a value is not specified', () => {
+            let test = new TestModel();
+            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a value is null', () => {
+            let test = new TestModel();
+            test.name = null;
+            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
         it('returns valid = true when a string is specified', () => {
             let test = new TestModel();
             test.name = 'flibble';
@@ -139,26 +152,6 @@ describe('rev.fields.validators', () => {
             test.name = '  \r\n \n  \t  ';
             vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
             expect(vResult.valid).to.equal(true);
-        });
-
-        it('returns valid = false when a value is not defined', () => {
-            let test = new TestModel();
-            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
-            expectFailure('string_empty', nameField.name, msg.string_empty(nameField.label), vResult);
-        });
-
-        it('returns valid = false when a value is null', () => {
-            let test = new TestModel();
-            test.name = null;
-            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
-            expectFailure('string_empty', nameField.name, msg.string_empty(nameField.label), vResult);
-        });
-
-        it('returns valid = false when a value is not a string', () => {
-            let test = new TestModel();
-            test.name = 22;
-            vld.stringEmptyValidator(test, nameField, meta, 'create', vResult, opts);
-            expectFailure('string_empty', nameField.name, msg.string_empty(nameField.label), vResult);
         });
 
         it('returns valid = false for a zero-length string', () => {
@@ -665,6 +658,44 @@ describe('rev.fields.validators', () => {
             test.gender = '';
             vld.singleSelectionValidator(test, genderField, meta, 'create', vResult, opts);
             expectFailure('no_selection_match', genderField.name, msg.no_selection_match(genderField.label), vResult);
+        });
+
+    });
+
+    describe('listEmptyValidator()', () => {
+
+        it('returns valid = true when value is not defined', () => {
+            let test = new TestModel();
+            vld.listEmptyValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when value is null', () => {
+            let test = new TestModel();
+            test.hobbies = null;
+            vld.listEmptyValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a list has multiple entries', () => {
+            let test = new TestModel();
+            test.hobbies = ['flibble', 'jibble'];
+            vld.listEmptyValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when a list has one entry', () => {
+            let test = new TestModel();
+            test.hobbies = ['flibble'];
+            vld.listEmptyValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when a list has no entries', () => {
+            let test = new TestModel();
+            test.hobbies = [];
+            vld.listEmptyValidator(test, hobbiesField, meta, 'create', vResult, opts);
+            expectFailure('list_empty', hobbiesField.name, msg.list_empty(hobbiesField.label), vResult);
         });
 
     });
