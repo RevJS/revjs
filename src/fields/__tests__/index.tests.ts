@@ -60,7 +60,7 @@ describe('rev.fields', () => {
 
     describe('Field - validate()', () => {
         let testModel = {
-            name: 'Frank'
+            name: <any> null
         };
         let testMeta = {
             fields: [new fld.Field('name', 'Name')]
@@ -72,7 +72,7 @@ describe('rev.fields', () => {
         });
 
         it('returns a resolved promise when validation completes - no validators', () => {
-            let test = new fld.Field('name', 'Name');
+            let test = new fld.Field('name', 'Name', { required: false });
             return expect(
                 test.validate(testModel, testMeta, 'create', result)
             ).to.eventually.have.property('valid', true);
@@ -80,6 +80,7 @@ describe('rev.fields', () => {
 
         it('returns a resolved promise when validation completes - required validator', () => {
             let test = new fld.Field('name', 'Name', { required: true });
+            testModel.name = 'Frank';
             return expect(
                 test.validate(testModel, testMeta, 'create', result)
             ).to.eventually.have.property('valid', true);
