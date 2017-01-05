@@ -1,5 +1,6 @@
 import { Field } from '../index';
-import { IModel, IModelMeta, ValidationMode } from '../../model';
+import { IModelMeta } from '../../model/meta';
+import { IModel, ValidationMode } from '../../model';
 import { expect } from 'chai';
 import * as fld from '../index';
 import * as vld from '../validators';
