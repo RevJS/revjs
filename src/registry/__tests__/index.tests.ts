@@ -1,5 +1,5 @@
 import { Field } from './../../fields/index';
-import { IModelMeta } from './../../model/index';
+import { IModelMeta } from './../../model/meta';
 import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
 
@@ -53,7 +53,7 @@ describe('ModelRegistry', () => {
 
         it('rejects a non-model constructor with a ModelError', () => {
             expect(() => {
-                testReg.register(<Function> {}, testMeta);
+                testReg.register(<any> {}, testMeta);
             }).to.throw('ModelError');
         });
 
@@ -64,91 +64,9 @@ describe('ModelRegistry', () => {
             }).to.throw('already exists in the registry');
         });
 
-        // Metadata tests
-
-        it('throws an error if fields metadata is missing', () => {
-            expect(() => {
-                testReg.register(TestModel, null);
-            }).to.throw('Model metadata must contain a "fields" definition');
-            expect(() => {
-                testReg.register(TestModel, <IModelMeta<TestModel>> {});
-            }).to.throw('Model metadata must contain a "fields" definition');
-        });
-
-        it('throws an error if fields array contains invalid items', () => {
-            expect(() => {
-                testReg.register(TestModel, {
-                    fields: [
-                        new TextField('flibble', 'Jibble'),
-                        <IntegerField> getAnyObject()
-                    ]
-                });
-            }).to.throw('is not an instance of rev.Field');
-        });
-
-        it('if meta.name is passed, it must match the model name', () => {
-            expect(() => {
-                testReg.register(TestModel, {
-                    name: 'Flibble',
-                    fields: []
-                });
-            }).to.throw('Model name does not match meta.name');
-            expect(() => {
-                testReg.register(TestModel, {
-                    name: 'TestModel',
-                    fields: []
-                });
-            }).to.not.throw();
-        });
-
-        it('throws an error if a field name is defined twice', () => {
-            expect(() => {
-                testReg.register(TestModel, {
-                    fields: [
-                        new TextField('flibble', 'Jibble'),
-                        new TextField('wibble', 'Some Field'),
-                        new IntegerField('flibble', 'The Duplicate')
-                    ]
-                });
-            }).to.throw('Field "flibble" is defined more than once');
-        });
-
-        it('creates the fieldsByName property as expected', () => {
+        it('should initialise metadata', () => {
             testReg.register(TestModel, testMeta);
-            let fieldNames = testMeta.fields.map((f) => f.name);
-            let meta = testReg.getMeta('TestModel');
-            expect(Object.keys(meta.fieldsByName)).to.deep.equal(fieldNames);
-            expect(meta.fieldsByName[fieldNames[0]]).to.be.instanceOf(Field);
-        })
-
-        it('should set up meta.storage ("default" if not defined)', () => {
-            testReg.register(TestModel, { fields: [] });
-            testReg.register(TestModel2, {
-                fields: [],
-                storage: 'main_db'
-            });
-            expect(testReg.getMeta('TestModel').storage).to.equal('default');
-            expect(testReg.getMeta('TestModel2').storage).to.equal('main_db');
-        });
-
-        it('should set up meta.label (if not set, should equal model name)', () => {
-            testReg.register(TestModel, { fields: [] });
-            testReg.register(TestModel2, {
-                fields: [],
-                label: 'Awesome Entity'
-            });
-            expect(testReg.getMeta('TestModel').label).to.equal('TestModel');
-            expect(testReg.getMeta('TestModel2').label).to.equal('Awesome Entity');
-        });
-
-        it('should set up meta.singleton (defaults to false)', () => {
-            testReg.register(TestModel, { fields: [] });
-            testReg.register(TestModel2, {
-                fields: [],
-                singleton: true
-            });
-            expect(testReg.getMeta('TestModel').singleton).to.equal(false);
-            expect(testReg.getMeta('TestModel2').singleton).to.equal(true);
+            expect(testMeta.fieldsByName).to.be.an('object');
         });
     });
 

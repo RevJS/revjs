@@ -1,5 +1,6 @@
-import { IModel, IModelMeta, ValidationMode } from './../model/index';
-import { ModelValidationResult } from './../model/validationresult';
+import { IModelMeta } from '../model/meta';
+import { IModel, ValidationMode } from '../model/index';
+import { ModelValidationResult } from '../model/validationresult';
 import { Field, TextField, NumberField, SelectionField, IValidationOptions } from './index';
 import { VALIDATION_MESSAGES as msg } from './validationmsg';
 import { isSet } from '../utils';

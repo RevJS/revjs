@@ -1,6 +1,8 @@
 import { ModelValidationResult } from './validationresult';
-import { ValidationMode, IModel, IModelMeta, checkIsModelInstance, checkIsModelConstructor } from './';
+import { IModelMeta } from './meta';
+import { ValidationMode, IModel, checkIsModelInstance, checkIsModelConstructor } from './';
 import { IValidationOptions } from '../fields';
+import { VALIDATION_MESSAGES as msg } from '../fields/validationmsg';
 import { ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from './';
 import { registry } from '../registry';
 import * as storage from '../storage';
@@ -9,13 +11,38 @@ import * as storage from '../storage';
 
 export function validateAgainstMeta<T extends IModel>(model: T, meta: IModelMeta<T>, mode: ValidationMode, options?: IValidationOptions): Promise<ModelValidationResult> {
     return new Promise((resolve, reject) => {
-        /*checkIsModelInstance(model);
+        checkIsModelInstance(model);
+        let timeout = options && options.timeout ? options.timeout : 5000;
+        let result = new ModelValidationResult();
+        // First, check if model contains fields that are not in meta
+        for (let field in model) {
+            if (!(field in meta.fieldsByName)) {
+                result.addModelError(msg.extra_field(field), {
+                    validator: 'extra_field'
+                });
+            }
+        }
+        // Trigger field validation
+        let promises: Array<Promise<ModelValidationResult>> = [];
         for (let field of meta.fields) {
-            field.validateValue(model[field.name], options);
-            // TODO: Possibly check for extra fields not in meta?
-            // TODO: Async Validation
-        }*/
-        reject(new Error('Noooooo!!!!'));
+            promises.push(field.validate(model, meta, mode, result, options));
+        }
+        Promise.all(promises)
+            .then(() => {
+                // Trigger model validation
+                if (meta.validate) {
+                    meta.validate(model, mode, result, options);
+                }
+                if (meta.validateAsync) {
+                    return meta.validateAsync(model, mode, result, options);
+                }
+            })
+            .then(() => {
+                resolve(result);
+            });
+        setTimeout(() => {
+            reject(new Error(`Model validateAgainstMeta() - timed out after ${timeout} milliseconds`));
+        }, timeout);
     });
 }
 

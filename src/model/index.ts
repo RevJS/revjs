@@ -8,18 +8,6 @@ export interface IModelOptions {
     storage?: string;
 }
 
-export interface IModelMeta<T> {
-    name?: string;
-    label?: string;
-    fields: Field[];
-    fieldsByName?: {
-        [fieldName: string]: Field
-    };
-    singleton?: boolean;
-    storage?: string;
-    validate?: (model: T, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions) => void;
-}
-
 export interface IModel {
     [property: string]: any;
 }

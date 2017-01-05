@@ -1,5 +1,5 @@
 import { IFieldOptions, IValidationOptions, NumberField, DateField } from '../index';
-import { IModelMeta } from '../../model/index';
+import { IModelMeta } from '../../model/meta';
 import { expect } from 'chai';
 import * as fld from '../index';
 import * as vld from '../validators';

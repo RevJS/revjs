@@ -1,5 +1,6 @@
 
-import { IModel, IModelMeta, ValidationMode } from '../model';
+import { IModelMeta } from '../model/meta';
+import { IModel, ValidationMode } from '../model';
 import { ModelValidationResult } from '../model/validationresult';
 import { checkIsModelInstance } from '../model';
 import { isSet } from '../utils';
