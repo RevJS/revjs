@@ -1,4 +1,5 @@
-import { IModel, IModelMeta, ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from '../model';
+import { IModelMeta } from '../model/meta';
+import { IModel, ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from '../model';
 import { InMemoryStorage } from './inmemory';
 export * from './inmemory';
 
