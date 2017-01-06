@@ -1,6 +1,6 @@
 import { ModelValidationResult } from '../validationresult';
 import { IModelMeta, initialiseMeta } from '../meta';
-import { IModel, ValidationMode } from '../index';
+import { IModel, ModelOperation } from '../index';
 import { expect } from 'chai';
 import { registry } from '../../registry';
 import * as fld from '../../fields';
@@ -136,7 +136,7 @@ describe('rev.model.functions', () => {
             test.name = 'Harry';
             test.date = new Date();
 
-            meta.validate = (model: TestModel, mode: ValidationMode, result: ModelValidationResult) => {
+            meta.validate = (model: TestModel, mode: ModelOperation, result: ModelValidationResult) => {
                 result.addFieldError('name', 'That name is too stupid!', { stupidityLevel: 10 });
             };
 
@@ -157,7 +157,7 @@ describe('rev.model.functions', () => {
             test.name = 'Harry';
             test.date = new Date();
 
-            meta.validateAsync = (model: TestModel, mode: ValidationMode, result: ModelValidationResult) => {
+            meta.validateAsync = (model: TestModel, mode: ModelOperation, result: ModelValidationResult) => {
                 return new Promise<void>((resolve, reject) => {
                     result.addFieldError('name', 'Google says that name is stupid', { stupidRank: 99 });
                     resolve();
@@ -181,11 +181,11 @@ describe('rev.model.functions', () => {
             test.name = 'Harry';
             test.date = new Date();
 
-            meta.validateAsync = (model: TestModel, mode: ValidationMode, result: ModelValidationResult) => {
+            meta.validateAsync = (model: TestModel, mode: ModelOperation, result: ModelValidationResult) => {
                 return new Promise<void>((resolve, reject) => {
                     setTimeout(() => {
                         resolve();
-                    }, 10000)
+                    }, 10000);
                 });
             };
 

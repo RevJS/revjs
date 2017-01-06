@@ -1,5 +1,5 @@
 import { ModelValidationResult } from './validationresult';
-import { IModel, ValidationMode } from './index';
+import { IModel, ModelOperation } from './index';
 import { Field, IValidationOptions } from '../fields/index';
 
 export interface IModelMeta<T> {
@@ -11,8 +11,8 @@ export interface IModelMeta<T> {
     };
     singleton?: boolean;
     storage?: string;
-    validate?: <T extends IModel>(model: T, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions) => void;
-    validateAsync?: <T extends IModel>(model: T, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions) => Promise<void>;
+    validate?: <T extends IModel>(model: T, operation: ModelOperation, result: ModelValidationResult, options?: IValidationOptions) => void;
+    validateAsync?: <T extends IModel>(model: T, operation: ModelOperation, result: ModelValidationResult, options?: IValidationOptions) => Promise<void>;
 }
 
 export function initialiseMeta<T extends IModel>(model: new() => T, meta: IModelMeta<T>) {

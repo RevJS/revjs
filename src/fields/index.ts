@@ -1,17 +1,17 @@
 
 import { IModelMeta } from '../model/meta';
-import { IModel, ValidationMode } from '../model';
+import { IModel, ModelOperation } from '../model';
 import { ModelValidationResult } from '../model/validationresult';
 import { checkIsModelInstance } from '../model';
 import { isSet } from '../utils';
 import * as validators from './validators';
 
 export interface IFieldValidator {
-    <T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): void;
+    <T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: ModelOperation, result: ModelValidationResult, options?: IValidationOptions): void;
 }
 
 export interface IAsyncFieldValidator {
-    <T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): Promise<void>;
+    <T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: ModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<void>;
 }
 
 export interface IFieldOptions {
@@ -77,19 +77,19 @@ export class Field {
         }
     }
 
-    public validate<T extends IModel>(model: T, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
+    public validate<T extends IModel>(model: T, meta: IModelMeta<T>, operation: ModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
         let timeout = options && options.timeout ? options.timeout : 5000;
         checkIsModelInstance(model);
         return new Promise((resolve, reject) => {
             // Run synchronous validators
             for (let validator of this.validators) {
-                validator(model, this, meta, mode, result, options);
+                validator(model, this, meta, operation, result, options);
             }
             // Run asynchronous validators
             if (this.asyncValidators.length > 0) {
                 let promises: Array<Promise<void>> = [];
                 for (let asyncValidator of this.asyncValidators) {
-                    promises.push(asyncValidator(model, this, meta, mode, result, options));
+                    promises.push(asyncValidator(model, this, meta, operation, result, options));
                 }
                 Promise.all(promises)
                     .then(() => {

@@ -1,26 +1,26 @@
 import { Field } from '../index';
 import { IModelMeta } from '../../model/meta';
-import { IModel, ValidationMode } from '../../model';
+import { IModel, ModelOperation } from '../../model';
 import { expect } from 'chai';
 import * as fld from '../index';
 import * as vld from '../validators';
 
 import { ModelValidationResult } from '../../model/validationresult';
 
-function quickValidAsyncValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult) {
+function quickValidAsyncValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: ModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         resolve();
     });
 }
 
-function quickInvalidAsyncValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult) {
+function quickInvalidAsyncValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: ModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         result.addFieldError('name', 'name field is invalid');
         resolve();
     });
 }
 
-function slowInvalidAsyncValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, mode: ValidationMode, result: ModelValidationResult) {
+function slowInvalidAsyncValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: ModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         setTimeout(() => {
             result.addFieldError('name', 'name field is invalid');
@@ -391,7 +391,7 @@ describe('rev.fields', () => {
         });
 
         it('allows the default e-mail address regex to be overridden', () => {
-            let testRegex = /abc/
+            let testRegex = /abc/;
             let test = new fld.EmailField('email', 'E-mail', {
                 regEx: testRegex
             });
@@ -462,7 +462,7 @@ describe('rev.fields', () => {
         });
 
         it('allows the default url regex to be overridden', () => {
-            let testRegex = /abc/
+            let testRegex = /abc/;
             let test = new fld.URLField('website', 'Website', {
                 regEx: testRegex
             });

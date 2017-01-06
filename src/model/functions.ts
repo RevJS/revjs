@@ -1,6 +1,6 @@
 import { ModelValidationResult } from './validationresult';
 import { IModelMeta } from './meta';
-import { ValidationMode, IModel, checkIsModelInstance, checkIsModelConstructor } from './';
+import { ModelOperation, IModel, checkIsModelInstance, checkIsModelConstructor } from './';
 import { IValidationOptions } from '../fields';
 import { VALIDATION_MESSAGES as msg } from '../fields/validationmsg';
 import { ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from './';
@@ -9,7 +9,7 @@ import * as storage from '../storage';
 
 // TODO: validate() function that does not require meta (gets it from the registry)
 
-export function validateAgainstMeta<T extends IModel>(model: T, meta: IModelMeta<T>, mode: ValidationMode, options?: IValidationOptions): Promise<ModelValidationResult> {
+export function validateAgainstMeta<T extends IModel>(model: T, meta: IModelMeta<T>, operation: ModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
     return new Promise((resolve, reject) => {
         checkIsModelInstance(model);
         let timeout = options && options.timeout ? options.timeout : 5000;
@@ -25,16 +25,16 @@ export function validateAgainstMeta<T extends IModel>(model: T, meta: IModelMeta
         // Trigger field validation
         let promises: Array<Promise<ModelValidationResult>> = [];
         for (let field of meta.fields) {
-            promises.push(field.validate(model, meta, mode, result, options));
+            promises.push(field.validate(model, meta, operation, result, options));
         }
         Promise.all(promises)
             .then(() => {
                 // Trigger model validation
                 if (meta.validate) {
-                    meta.validate(model, mode, result, options);
+                    meta.validate(model, operation, result, options);
                 }
                 if (meta.validateAsync) {
-                    return meta.validateAsync(model, mode, result, options);
+                    return meta.validateAsync(model, operation, result, options);
                 }
             })
             .then(() => {

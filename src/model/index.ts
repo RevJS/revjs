@@ -1,7 +1,7 @@
 import { ModelValidationResult } from './validationresult';
 import { Field, IValidationOptions } from '../fields';
 
-export type ValidationMode = 'create' | 'update';
+export type ModelOperation = 'create' | 'update';
 
 export interface IModelOptions {
     singleton?: boolean;
