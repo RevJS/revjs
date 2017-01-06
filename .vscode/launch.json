@@ -23,6 +23,16 @@
             "cwd": "${workspaceRoot}",
             "outFiles": [],
             "sourceMaps": true
+        },
+        {
+            "name": "Run Current File",
+            "type": "node2",
+            "request": "launch",
+            "program": "${workspaceRoot}/node_modules/.bin/ts-node",
+            "args": ["${relativeFile}"],
+            "cwd": "${workspaceRoot}",
+            "outFiles": [],
+            "sourceMaps": true
         }
     ]
 }

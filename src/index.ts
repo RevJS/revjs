@@ -1,4 +1,4 @@
 
-export * from './model/functions';
+export * from './model/operations';
 export * from './fields';
 export { register } from './registry';
