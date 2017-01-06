@@ -1,4 +1,4 @@
-import { ModelValidationResult } from '../validationresult';
+import { ModelValidationResult } from '../validation';
 import { IModelMeta, initialiseMeta } from '../meta';
 import { IModel, ModelOperation } from '../index';
 import { expect } from 'chai';

@@ -1,11 +1,11 @@
-import { IFieldOptions, IValidationOptions, NumberField, DateField } from '../index';
+import { IFieldOptions, NumberField, DateField } from '../index';
 import { IModelMeta } from '../../model/meta';
 import { expect } from 'chai';
 import * as fld from '../index';
 import * as vld from '../validators';
 import { VALIDATION_MESSAGES as msg } from '../validationmsg';
 
-import { ModelValidationResult } from '../../model/validationresult';
+import { ModelValidationResult, IValidationOptions } from '../../model/validation';
 
 class TestModel {
     id: any;

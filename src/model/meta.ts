@@ -1,6 +1,6 @@
-import { ModelValidationResult } from './validationresult';
+import { ModelValidationResult, IValidationOptions } from './validation';
 import { IModel, ModelOperation } from './index';
-import { Field, IValidationOptions } from '../fields/index';
+import { Field } from '../fields/index';
 
 export interface IModelMeta<T> {
     name?: string;

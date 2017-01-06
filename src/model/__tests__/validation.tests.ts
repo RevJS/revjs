@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import * as v from '../validationresult';
+import * as v from '../validation';
 
 describe('rev.model.ValidationResult', () => {
 

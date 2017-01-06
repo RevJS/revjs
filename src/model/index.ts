@@ -1,5 +1,6 @@
-import { ModelValidationResult } from './validationresult';
-import { Field, IValidationOptions } from '../fields';
+import { ModelValidationResult, IValidationOptions } from './validation';
+import { Field } from '../fields';
+export { IModelMeta } from './meta';
 
 export type ModelOperation = 'create' | 'update';
 

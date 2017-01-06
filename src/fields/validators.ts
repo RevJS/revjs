@@ -1,9 +1,17 @@
 import { IModelMeta } from '../model/meta';
 import { IModel, ModelOperation } from '../model/index';
-import { ModelValidationResult } from '../model/validationresult';
-import { Field, TextField, NumberField, SelectionField, IValidationOptions } from './index';
+import { IValidationOptions, ModelValidationResult } from '../model/validation';
+import { Field, TextField, NumberField, SelectionField } from './index';
 import { VALIDATION_MESSAGES as msg } from './validationmsg';
 import { isSet } from '../utils';
+
+export interface IFieldValidator {
+    <T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: ModelOperation, result: ModelValidationResult, options?: IValidationOptions): void;
+}
+
+export interface IAsyncFieldValidator {
+    <T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: ModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<void>;
+}
 
 export function requiredValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: ModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (!isSet(model[field.name])) {

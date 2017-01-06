@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import * as fld from '../index';
 import * as vld from '../validators';
 
-import { ModelValidationResult } from '../../model/validationresult';
+import { ModelValidationResult } from '../../model/validation';
 
 function quickValidAsyncValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: ModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {

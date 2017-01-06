@@ -1,7 +1,6 @@
-import { ModelValidationResult } from './validationresult';
+import { ModelValidationResult, IValidationOptions } from './validation';
 import { IModelMeta } from './meta';
 import { ModelOperation, IModel, checkIsModelInstance, checkIsModelConstructor } from './';
-import { IValidationOptions } from '../fields';
 import { VALIDATION_MESSAGES as msg } from '../fields/validationmsg';
 import { ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from './';
 import { registry } from '../registry';

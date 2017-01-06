@@ -1,4 +1,8 @@
 
+export interface IValidationOptions {
+    timeout?: number;
+}
+
 export interface IFieldError {
     message: string;
     [key: string]: any;
