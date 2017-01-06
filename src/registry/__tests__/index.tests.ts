@@ -1,4 +1,3 @@
-import { Field } from './../../fields/index';
 import { IModelMeta } from './../../model/meta';
 import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
@@ -15,10 +14,6 @@ class TestModel2 {}
 
 let testMeta: IModelMeta<TestModel>;
 let testMeta2: IModelMeta<TestModel2>;
-
-function getAnyObject() {
-    return Object.assign({});
-}
 
 describe('ModelRegistry', () => {
     let testReg: registry.ModelRegistry;

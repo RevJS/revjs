@@ -1,4 +1,3 @@
-import { IFieldOptions, NumberField, DateField } from '../index';
 import { IModelMeta } from '../../model/meta';
 import { expect } from 'chai';
 import * as fld from '../index';

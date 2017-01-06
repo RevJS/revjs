@@ -1,48 +1,27 @@
-import { ModelValidationResult, IValidationOptions } from './validation';
-import { IModelMeta } from './meta';
-import { ModelOperation, IModel, checkIsModelInstance, checkIsModelConstructor } from './';
-import { VALIDATION_MESSAGES as msg } from '../fields/validationmsg';
-import { ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from './';
+import { IModel } from './index';
+import { checkIsModelInstance, checkIsModelConstructor } from './utils';
+import { IValidationOptions, validateAgainstMeta } from './validation';
 import { registry } from '../registry';
 import * as storage from '../storage';
 
-// TODO: validate() function that does not require meta (gets it from the registry)
+export type ModelOperation = 'create' | 'update' | 'remove';
 
-export function validateAgainstMeta<T extends IModel>(model: T, meta: IModelMeta<T>, operation: ModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
-    return new Promise((resolve, reject) => {
-        checkIsModelInstance(model);
-        let timeout = options && options.timeout ? options.timeout : 5000;
-        let result = new ModelValidationResult();
-        // First, check if model contains fields that are not in meta
-        for (let field in model) {
-            if (!(field in meta.fieldsByName)) {
-                result.addModelError(msg.extra_field(field), {
-                    validator: 'extra_field'
-                });
-            }
-        }
-        // Trigger field validation
-        let promises: Array<Promise<ModelValidationResult>> = [];
-        for (let field of meta.fields) {
-            promises.push(field.validate(model, meta, operation, result, options));
-        }
-        Promise.all(promises)
-            .then(() => {
-                // Trigger model validation
-                if (meta.validate) {
-                    meta.validate(model, operation, result, options);
-                }
-                if (meta.validateAsync) {
-                    return meta.validateAsync(model, operation, result, options);
-                }
-            })
-            .then(() => {
-                resolve(result);
-            });
-        setTimeout(() => {
-            reject(new Error(`Model validateAgainstMeta() - timed out after ${timeout} milliseconds`));
-        }, timeout);
-    });
+export interface ICreateOptions {
+    validation?: IValidationOptions;
+}
+
+export interface IReadOptions {
+    offset?: number;
+    limit?: number;
+    fields?: string[];
+}
+
+export interface IUpdateOptions {
+    validation?: IValidationOptions;
+}
+
+export interface IRemoveOptions {
+    limit?: number;
 }
 
 export function create<T extends IModel>(model: T, options?: ICreateOptions): Promise<T> {

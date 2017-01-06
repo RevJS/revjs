@@ -1,13 +1,18 @@
+import { IntegerField, TextField, DateField } from '../../fields';
+import { ModelValidationResult, validateAgainstMeta } from '../validation';
+import { ModelOperation } from '../index';
+import { IModelMeta, initialiseMeta } from '../meta';
+import { VALIDATION_MESSAGES as msg } from '../../fields/validationmsg';
+
 import { expect } from 'chai';
+import * as sinon from 'sinon';
 
-import * as v from '../validation';
+describe('rev.model.validation', () => {
 
-describe('rev.model.ValidationResult', () => {
-
-    describe('constructor()', () => {
+    describe('ValidationResult - constructor()', () => {
 
         it('sets up an empty result as expected', () => {
-            let valid = new v.ModelValidationResult();
+            let valid = new ModelValidationResult();
             expect(valid.valid).to.equal(true);
             expect(valid.fieldErrors).to.deep.equal({});
             expect(valid.modelErrors).to.deep.equal([]);
@@ -15,29 +20,29 @@ describe('rev.model.ValidationResult', () => {
         });
 
         it('creates a valid result when valid is true', () => {
-            let valid = new v.ModelValidationResult(true);
+            let valid = new ModelValidationResult(true);
             expect(valid.valid).to.equal(true);
         });
 
         it('creates an invalid result when valid is false', () => {
-            let valid = new v.ModelValidationResult(false);
+            let valid = new ModelValidationResult(false);
             expect(valid.valid).to.equal(false);
         });
 
         it('throws an error when valid is not a boolean', () => {
             expect(() => {
-                let valid = new v.ModelValidationResult(<any> 'flibble');
+                new ModelValidationResult(<any> 'flibble');
             }).to.throw('must be a boolean');
         });
 
     });
 
-    describe('addFieldError()', () => {
+    describe('ValidationResult - addFieldError()', () => {
 
-        let valid: v.ModelValidationResult;
+        let valid: ModelValidationResult;
 
         beforeEach(() => {
-            valid = new v.ModelValidationResult();
+            valid = new ModelValidationResult();
         });
 
         it('adds a fieldError with no message', () => {
@@ -148,12 +153,12 @@ describe('rev.model.ValidationResult', () => {
 
     });
 
-    describe('addModelError()', () => {
+    describe('ValidationResult - addModelError()', () => {
 
-        let valid: v.ModelValidationResult;
+        let valid: ModelValidationResult;
 
         beforeEach(() => {
-            valid = new v.ModelValidationResult();
+            valid = new ModelValidationResult();
         });
 
         it('adds a modelError with specified message', () => {
@@ -218,6 +223,187 @@ describe('rev.model.ValidationResult', () => {
             expect(() => {
                 valid.addModelError('You are too old', 94);
             }).to.throw('You cannot add non-object data');
+        });
+
+    });
+
+    describe('validateAgainstMeta()', () => {
+
+        class TestModel {
+            id: number;
+            name: string;
+            date: Date;
+        }
+
+        let meta: IModelMeta<TestModel> = {
+            fields: [
+                new IntegerField('id', 'Id', { minValue: 10 }),
+                new TextField('name', 'Name'),
+                new DateField('date', 'Date', { required: false })
+            ],
+            validate: <sinon.SinonSpy> null,
+            validateAsync: <sinon.SinonStub> null
+        };
+
+        initialiseMeta(TestModel, meta);
+
+        it('should return a valid result if valid object is passed', () => {
+
+            let test = new TestModel();
+            test.id = 11;
+            test.name = 'Harry';
+            test.date = new Date();
+
+            return validateAgainstMeta(test, meta, 'create')
+                .then((res) => {
+                    expect(res.valid).to.equal(true);
+                });
+        });
+
+        it('should return a valid result if valid object is passed and model validators are used', () => {
+
+            let test = new TestModel();
+            test.id = 11;
+            test.name = 'Harry';
+            test.date = new Date();
+
+            meta.validate = sinon.spy();
+            meta.validateAsync = sinon.stub().returns(Promise.resolve());
+
+            return validateAgainstMeta(test, meta, 'create')
+                .then((res) => {
+                    expect(res.valid).to.equal(true);
+                    expect((<any> meta.validate).callCount).to.equal(1);
+                    expect((<any> meta.validateAsync).callCount).to.equal(1);
+                });
+        });
+
+        it('should reject if a model instance is not passed', () => {
+            let test: any = () => {};
+
+            return validateAgainstMeta(test, meta, 'create')
+                .then((res) => {
+                    expect(false, 'Did not reject').to.be.true;
+                })
+                .catch((err) => {
+                    expect(err.message).to.contain('not a model instance');
+                });
+        });
+
+        it('should return an invalid result if extra fields are present', () => {
+
+            let test = <any> new TestModel();
+            test.id = 11;
+            test.name = 'Harry';
+            test.date = new Date();
+            test.extra = 'stuff';
+
+            return validateAgainstMeta(test, meta, 'create')
+                .then((res) => {
+                    expect(res.valid).to.equal(false);
+                    expect(res.modelErrors.length).to.equal(1);
+                    expect(res.modelErrors[0]['message']).to.equal(msg.extra_field('extra'));
+                    expect(res.modelErrors[0]['validator']).to.equal('extra_field');
+                });
+        });
+
+        it('should return an invalid result if a field value is invalid', () => {
+
+            let test = new TestModel();
+            test.id = 2;
+            test.name = 'Harry';
+            test.date = new Date();
+
+            return validateAgainstMeta(test, meta, 'create')
+                .then((res) => {
+                    expect(res.valid).to.equal(false);
+                    expect(res.fieldErrors['id'].length).to.equal(1);
+                    expect(res.fieldErrors['id'][0]['message']).to.equal(msg.min_value('Id', 10));
+                    expect(res.fieldErrors['id'][0]['validator']).to.equal('min_value');
+                });
+        });
+
+        it('should return an invalid result if a required field is not set', () => {
+
+            let test = new TestModel();
+            test.id = 11;
+
+            return validateAgainstMeta(test, meta, 'create')
+                .then((res) => {
+                    expect(res.valid).to.equal(false);
+                    expect(res.fieldErrors['name'].length).to.equal(1);
+                    expect(res.fieldErrors['name'][0]['message']).to.equal(msg.required('Name'));
+                    expect(res.fieldErrors['name'][0]['validator']).to.equal('required');
+                });
+        });
+
+        it('should return an invalid result if meta validate() fails', () => {
+
+            let test = new TestModel();
+            test.id = 11;
+            test.name = 'Harry';
+            test.date = new Date();
+
+            meta.validate = (model: TestModel, mode: ModelOperation, result: ModelValidationResult) => {
+                result.addFieldError('name', 'That name is too stupid!', { stupidityLevel: 10 });
+            };
+
+            return validateAgainstMeta(test, meta, 'create')
+                .then((res) => {
+                    meta.validate = undefined;
+                    expect(res.valid).to.equal(false);
+                    expect(res.fieldErrors['name'].length).to.equal(1);
+                    expect(res.fieldErrors['name'][0]['message']).to.equal('That name is too stupid!');
+                    expect(res.fieldErrors['name'][0]['stupidityLevel']).to.equal(10);
+                });
+        });
+
+        it('should return an invalid result if meta validateAsync() fails', () => {
+
+            let test = new TestModel();
+            test.id = 11;
+            test.name = 'Harry';
+            test.date = new Date();
+
+            meta.validateAsync = (model: TestModel, mode: ModelOperation, result: ModelValidationResult) => {
+                return new Promise<void>((resolve, reject) => {
+                    result.addFieldError('name', 'Google says that name is stupid', { stupidRank: 99 });
+                    resolve();
+                });
+            };
+
+            return validateAgainstMeta(test, meta, 'create')
+                .then((res) => {
+                    meta.validateAsync = undefined;
+                    expect(res.valid).to.equal(false);
+                    expect(res.fieldErrors['name'].length).to.equal(1);
+                    expect(res.fieldErrors['name'][0]['message']).to.equal('Google says that name is stupid');
+                    expect(res.fieldErrors['name'][0]['stupidRank']).to.equal(99);
+                });
+        });
+
+        it('should reject if validation timeout expires', () => {
+
+            let test = new TestModel();
+            test.id = 11;
+            test.name = 'Harry';
+            test.date = new Date();
+
+            meta.validateAsync = (model: TestModel, mode: ModelOperation, result: ModelValidationResult) => {
+                return new Promise<void>((resolve, reject) => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 10000);
+                });
+            };
+
+            return validateAgainstMeta(test, meta, 'create', { timeout: 10})
+                .then((res) => {
+                    expect(false, 'Did not reject').to.be.true;
+                })
+                .catch((err) => {
+                    expect(err.message).to.contain('timed out');
+                });
         });
 
     });

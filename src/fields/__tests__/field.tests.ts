@@ -43,13 +43,13 @@ describe('rev.fields.field', () => {
 
         it('cannot be created without a name', () => {
             expect(() => {
-                let test = new Field(undefined, undefined);
+                new Field(undefined, undefined);
             }).to.throw('new fields must have a name');
         });
 
         it('cannot be created without a label', () => {
             expect(() => {
-                let test = new Field('name', undefined);
+                new Field('name', undefined);
             }).to.throw('new fields must have a label');
         });
 
@@ -60,7 +60,7 @@ describe('rev.fields.field', () => {
 
         it('throws an error if options is not an object', () => {
             expect(() => {
-                let test = new Field('name', 'Name', () => '33');
+                new Field('name', 'Name', () => '33');
             }).to.throw('the options parameter must be an object');
         });
 

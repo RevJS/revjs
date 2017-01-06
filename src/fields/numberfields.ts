@@ -1,4 +1,4 @@
-import { Field, IFieldOptions, getOptions } from './field';
+import { Field, IFieldOptions } from './field';
 import * as validators from './validators';
 
 export interface INumberFieldOptions extends IFieldOptions {

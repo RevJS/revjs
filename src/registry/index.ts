@@ -1,4 +1,3 @@
-import { Field } from './../fields/index';
 
 import { IModelMeta, initialiseMeta } from '../model/meta';
 import { IModel, checkIsModelConstructor } from '../model';
@@ -50,7 +49,7 @@ export class ModelRegistry {
         return this._modelMeta[modelName];
     }
 
-    private __clearRegistry() {
+    public __clearRegistry() {
         // Used in unit tests
         this._modelProto = {};
         this._modelMeta = {};

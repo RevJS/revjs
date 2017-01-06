@@ -1,11 +1,6 @@
 import { expect } from 'chai';
-import { IntegerField, TextField } from '../../fields';
 
-import * as model from '../index';
-
-function getAnyObject() {
-    return Object.assign({});
-}
+import { checkIsModelInstance, checkIsModelConstructor } from '../utils';
 
 describe('rev.model', () => {
 
@@ -15,20 +10,20 @@ describe('rev.model', () => {
 
         it('should not throw if object is passed', () => {
             expect(() => {
-                model.checkIsModelInstance({name: 'Fred'});
+                checkIsModelInstance({name: 'Fred'});
             }).to.not.throw();
         });
 
         it('should throw if a non-object is passed', () => {
-            expect(() => { model.checkIsModelInstance(undefined);
+            expect(() => { checkIsModelInstance(undefined);
                 }).to.throw(errorMessage);
-            expect(() => { model.checkIsModelInstance(null);
+            expect(() => { checkIsModelInstance(null);
                 }).to.throw(errorMessage);
-            expect(() => { model.checkIsModelInstance(<any> 22);
+            expect(() => { checkIsModelInstance(<any> 22);
                 }).to.throw(errorMessage);
-            expect(() => { model.checkIsModelInstance(<any> 'string');
+            expect(() => { checkIsModelInstance(<any> 'string');
                 }).to.throw(errorMessage);
-            expect(() => { model.checkIsModelInstance(() => {});
+            expect(() => { checkIsModelInstance(() => {});
                 }).to.throw(errorMessage);
         });
 
@@ -40,22 +35,22 @@ describe('rev.model', () => {
 
         it('should not throw if a constructor is passed', () => {
             expect(() => {
-                model.checkIsModelConstructor(function MyModel() {});
+                checkIsModelConstructor(function MyModel() {});
             }).to.not.throw();
         });
 
         it('should throw if a non-constructor is passed', () => {
-            expect(() => { model.checkIsModelConstructor(undefined);
+            expect(() => { checkIsModelConstructor(undefined);
                 }).to.throw(errorMessage);
-            expect(() => { model.checkIsModelConstructor(null);
+            expect(() => { checkIsModelConstructor(null);
                 }).to.throw(errorMessage);
-            expect(() => { model.checkIsModelConstructor(<any> 22);
+            expect(() => { checkIsModelConstructor(<any> 22);
                 }).to.throw(errorMessage);
-            expect(() => { model.checkIsModelConstructor(<any> 'string');
+            expect(() => { checkIsModelConstructor(<any> 'string');
                 }).to.throw(errorMessage);
-            expect(() => { model.checkIsModelConstructor(() => {});
+            expect(() => { checkIsModelConstructor(() => {});
                 }).to.throw(errorMessage);
-            expect(() => { model.checkIsModelConstructor(<any> {name: 'Fred'});
+            expect(() => { checkIsModelConstructor(<any> {name: 'Fred'});
                 }).to.throw(errorMessage);
         });
 

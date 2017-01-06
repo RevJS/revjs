@@ -138,19 +138,19 @@ describe('rev.fields.selectionfields', () => {
 
         it('cannot be created with a selection that is not an array', () => {
             expect(() => {
-                let test = new SelectionField('value', 'Value', <any> 'aaa');
+                new SelectionField('value', 'Value', <any> 'aaa');
             }).to.throw('"selection" parameter must be an array');
         });
 
         it('cannot be created with a single-dimension selection array', () => {
             expect(() => {
-                let test = new SelectionField('value', 'Value', <any> ['aaa', 'bbb']);
+                new SelectionField('value', 'Value', <any> ['aaa', 'bbb']);
             }).to.throw('should be an array with two items');
         });
 
         it('cannot be created with a two-dimensional selection array with the wrong number of items', () => {
             expect(() => {
-                let test = new SelectionField('value', 'Value', [
+                new SelectionField('value', 'Value', [
                     ['aaa'],
                     ['bbb', 'ccc'],
                     ['ddd', 'eee', 'fff']
