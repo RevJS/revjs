@@ -1,5 +1,5 @@
 import { DateField, TimeField, DateTimeField } from '../datetimefields';
-import { ModelValidationResult } from '../../model/validation';
+import { ModelValidationResult } from '../../models/validation';
 import { IFieldOptions, Field, DEFAULT_FIELD_OPTIONS } from '../field';
 import { dateOnlyValidator, requiredValidator, timeOnlyValidator, dateTimeValidator } from '../validators';
 

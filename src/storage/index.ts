@@ -1,8 +1,8 @@
-import { IModelMeta } from '../model/meta';
-import { ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from '../model';
+import { IModelMeta } from '../models/meta';
+import { ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from '../models';
 import { InMemoryStorage } from './inmemory';
-import { ModelOperationResult } from '../model/operations';
-import { IModel } from '../model/model';
+import { ModelOperationResult } from '../models/operations';
+import { IModel } from '../models/model';
 import { IWhereQuery } from '../operators/operators';
 export * from './inmemory';
 

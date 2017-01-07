@@ -1,5 +1,5 @@
-import { IModel, IModelMeta, ModelOperation, checkIsModelInstance } from '../model';
-import { ModelValidationResult, IValidationOptions } from '../model/validation';
+import { IModel, IModelMeta, ModelOperation, checkIsModelInstance } from '../models';
+import { ModelValidationResult, IValidationOptions } from '../models/validation';
 import { IFieldValidator, IAsyncFieldValidator } from './validators';
 import { isSet } from '../utils';
 

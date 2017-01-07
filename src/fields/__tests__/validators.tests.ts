@@ -1,10 +1,10 @@
-import { IModelMeta } from '../../model/meta';
+import { IModelMeta } from '../../models/meta';
 import { expect } from 'chai';
 import * as fld from '../index';
 import * as vld from '../validators';
 import { VALIDATION_MESSAGES as msg } from '../validationmsg';
 
-import { ModelValidationResult, IValidationOptions } from '../../model/validation';
+import { ModelValidationResult, IValidationOptions } from '../../models/validation';
 
 class TestModel {
     id: any;

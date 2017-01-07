@@ -1,5 +1,5 @@
 import { TextField, EmailField, EMAIL_ADDR_REGEX, URLField, URL_REGEX } from '../textfields';
-import { ModelValidationResult } from '../../model/validation';
+import { ModelValidationResult } from '../../models/validation';
 import { IFieldOptions, Field, DEFAULT_FIELD_OPTIONS } from '../field';
 import { stringValidator, requiredValidator, stringEmptyValidator, minStringLengthValidator, maxStringLengthValidator, minValueValidator, maxValueValidator, regExValidator } from '../validators';
 

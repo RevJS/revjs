@@ -1,5 +1,5 @@
 import { BooleanField, SelectionField } from '../selectionfields';
-import { ModelValidationResult } from '../../model/validation';
+import { ModelValidationResult } from '../../models/validation';
 import { IFieldOptions, Field, DEFAULT_FIELD_OPTIONS } from '../field';
 import { booleanValidator, requiredValidator, singleSelectionValidator, stringEmptyValidator, listEmptyValidator, multipleSelectionValidator } from '../validators';
 

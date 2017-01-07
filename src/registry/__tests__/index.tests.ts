@@ -1,4 +1,4 @@
-import { IModelMeta } from './../../model/meta';
+import { IModelMeta } from './../../models/meta';
 import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
 

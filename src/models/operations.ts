@@ -47,17 +47,19 @@ export interface ICreateOptions {
 }
 
 export interface IReadOptions {
-    offset?: number;
     limit?: number;
+    offset?: number;
     fields?: string[];
 }
 
 export interface IUpdateOptions {
+    limit?: number;
     validation?: IValidationOptions;
 }
 
 export interface IRemoveOptions {
     limit?: number;
+    validation?: IValidationOptions;
 }
 
 export function create<T extends IModel>(model: T, options?: ICreateOptions): Promise<ModelOperationResult<T>> {

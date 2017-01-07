@@ -1,6 +1,6 @@
 
-import { IModelMeta, initialiseMeta } from '../model/meta';
-import { IModel, checkIsModelConstructor } from '../model';
+import { IModelMeta, initialiseMeta } from '../models/meta';
+import { IModel, checkIsModelConstructor } from '../models';
 
 export class ModelRegistry {
 

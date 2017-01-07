@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { IFieldOptions, Field, DEFAULT_FIELD_OPTIONS } from '../field';
 import { requiredValidator } from '../validators';
-import { ModelValidationResult } from '../../model/validation';
-import { IModel, ModelOperation } from '../../model/index';
-import { IModelMeta } from '../../model/meta';
+import { ModelValidationResult } from '../../models/validation';
+import { IModel, ModelOperation } from '../../models/index';
+import { IModelMeta } from '../../models/meta';
 
 function quickValidAsyncValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: ModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {

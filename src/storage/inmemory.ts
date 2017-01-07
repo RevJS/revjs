@@ -1,8 +1,8 @@
 
 import { IStorage } from './';
-import { IModelMeta } from '../model/meta';
-import { IModel, ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from '../model';
-import { ModelOperationResult } from '../model/operations';
+import { IModelMeta } from '../models/meta';
+import { IModel, ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from '../models';
+import { ModelOperationResult } from '../models/operations';
 
 export class InMemoryStorage implements IStorage {
     private storage: {
