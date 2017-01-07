@@ -22,6 +22,8 @@ export class ModelOperationResult<T> {
     constructor(public operation: ModelOperation) {
         this.success = true;
         this.errors = [];
+        this.validation = null;
+        this.createdModel = null;
     }
 
     public addError(message: string, data?: Object) {
