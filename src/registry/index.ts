@@ -49,8 +49,7 @@ export class ModelRegistry {
         return this._modelMeta[modelName];
     }
 
-    public __clearRegistry() {
-        // Used in unit tests
+    public clearRegistry() {
         this._modelProto = {};
         this._modelMeta = {};
     }

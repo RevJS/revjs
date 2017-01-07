@@ -1,13 +1,16 @@
 import { IModelMeta } from '../model/meta';
 import { ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from '../model';
 import { InMemoryStorage } from './inmemory';
+import { ModelOperationResult } from '../model/operations';
+import { IModel } from '../model/model';
+import { IWhereQuery } from '../operators/operators';
 export * from './inmemory';
 
 export interface IStorage {
-    create<T>(model: T, meta: IModelMeta<T>, options?: ICreateOptions): Promise<T>;
-    update<T>(model: T, meta: IModelMeta<T>, where?: any, options?: IUpdateOptions): Promise<boolean>;
-    read<T>(model: new() => T, meta: IModelMeta<T>, where?: any, options?: IReadOptions): Promise<T[]>;
-    remove<T>(model: new() => T, meta: IModelMeta<T>, where?: any, options?: IRemoveOptions): Promise<boolean>;
+    create<T extends IModel>(model: T, meta: IModelMeta<T>, options?: ICreateOptions): Promise<ModelOperationResult<T>>;
+    update<T extends IModel>(model: T, meta: IModelMeta<T>, where?: IWhereQuery, options?: IUpdateOptions): Promise<ModelOperationResult<T>>;
+    read<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where?: IWhereQuery, options?: IReadOptions): Promise<T[]>;
+    remove<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where?: IWhereQuery, options?: IRemoveOptions): Promise<ModelOperationResult<T>>;
 }
 
 let configuredStorage: {[storageName: string]: IStorage} = {

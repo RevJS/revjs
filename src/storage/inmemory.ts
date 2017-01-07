@@ -2,6 +2,7 @@
 import { IStorage } from './';
 import { IModelMeta } from '../model/meta';
 import { IModel, ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from '../model';
+import { ModelOperationResult } from '../model/operations';
 
 export class InMemoryStorage implements IStorage {
     private storage: {
@@ -12,7 +13,7 @@ export class InMemoryStorage implements IStorage {
         // TODO: Do Stuff...
     }
 
-    public create<T extends IModel>(model: T, meta: IModelMeta<T>, options?: ICreateOptions): Promise<T> {
+    public create<T extends IModel>(model: T, meta: IModelMeta<T>, options?: ICreateOptions): Promise<ModelOperationResult<T>> {
         return new Promise((resolve) => {
             if (meta.singleton) {
                 throw new Error('InMemoryStorage.create() cannot be called on singleton models');
@@ -24,7 +25,7 @@ export class InMemoryStorage implements IStorage {
         });
     }
 
-    public update<T extends IModel>(model: T, meta: IModelMeta<T>, where?: any, options?: IUpdateOptions): Promise<boolean> {
+    public update<T extends IModel>(model: T, meta: IModelMeta<T>, where?: any, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
         return new Promise((resolve) => {
             if (!meta.singleton && !where) {
                 throw new Error('InMemoryStorage.update() requires the \'where\' parameter for non-singleton models');
@@ -61,7 +62,7 @@ export class InMemoryStorage implements IStorage {
         });
     }
 
-    public remove<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where: any, options?: IRemoveOptions): Promise<boolean> {
+    public remove<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where: any, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
         throw new Error('InMemoryStorage.delete() not yet implemented');
     }
 
