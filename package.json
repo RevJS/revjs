@@ -1,7 +1,7 @@
 {
-  "name": "rev-framework",
+  "name": "rev-core",
   "version": "0.0.1",
-  "description": "RevFramework Isomorphic ORM",
+  "description": "RevJS Isomorphic Data Library - Core Components",
   "scripts": {
     "build": "tsc",
     "build-watch": "tsc --watch",
