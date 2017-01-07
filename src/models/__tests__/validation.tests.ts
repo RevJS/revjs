@@ -290,6 +290,25 @@ describe('rev.model.validation', () => {
                 });
         });
 
+        it('should reject if un-initialised metadata is passed', () => {
+            let test = new TestModel();
+            let uninitialisedMeta: IModelMeta<TestModel> = {
+                fields: [
+                    new IntegerField('id', 'Id', { minValue: 10 }),
+                    new TextField('name', 'Name'),
+                    new DateField('date', 'Date', { required: false })
+                ]
+            };
+
+            return validateAgainstMeta(test, uninitialisedMeta, 'create')
+                .then((res) => {
+                    expect(false, 'Did not reject').to.be.true;
+                })
+                .catch((err) => {
+                    expect(err.message).to.contain('metadata has not been initialised');
+                });
+        });
+
         it('should return an invalid result if extra fields are present', () => {
 
             let test = <any> new TestModel();

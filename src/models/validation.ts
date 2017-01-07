@@ -1,7 +1,7 @@
 
 import { VALIDATION_MESSAGES as msg } from '../fields/validationmsg';
 import { IModel, ModelOperation } from './index';
-import { checkIsModelInstance } from './utils';
+import { checkIsModelInstance, checkMetadataInitialised } from './utils';
 import { IModelMeta } from './meta';
 
 export interface IValidationOptions {
@@ -84,6 +84,7 @@ export class ModelValidationResult {
 export function validateAgainstMeta<T extends IModel>(model: T, meta: IModelMeta<T>, operation: ModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
     return new Promise((resolve, reject) => {
         checkIsModelInstance(model);
+        checkMetadataInitialised(meta);
         let timeout = options && options.timeout ? options.timeout : 5000;
         let result = new ModelValidationResult();
         // First, check if model contains fields that are not in meta
