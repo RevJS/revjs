@@ -8,6 +8,8 @@ registry, field types, CRUD functions and simple in-memory data storage.
 
 This project is currently in pre-alpha stages, but is getting closer to alpha!
 
+## Features
+
 This toolkit will eventually have the following features:
 
  * Easy-to-use model definition and CRUD functions
