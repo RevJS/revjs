@@ -10,7 +10,7 @@ export interface IStorage {
     create<T extends IModel>(model: T, meta: IModelMeta<T>, result: ModelOperationResult<T>, options: ICreateOptions): Promise<void>;
     update<T extends IModel>(model: T, meta: IModelMeta<T>, where: IWhereQuery, result: ModelOperationResult<T>, options: IUpdateOptions): Promise<void>;
     read<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where: IWhereQuery, result: ModelOperationResult<T>, options: IReadOptions): Promise<void>;
-    remove<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where: IWhereQuery, options: IRemoveOptions): Promise<void>;
+    remove<T extends IModel>(meta: IModelMeta<T>, where: IWhereQuery, result: ModelOperationResult<T>, options: IRemoveOptions): Promise<void>;
 }
 
 let configuredStorage: {[storageName: string]: IStorage} = {

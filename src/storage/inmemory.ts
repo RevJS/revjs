@@ -62,7 +62,7 @@ export class InMemoryStorage implements IStorage {
         });
     }
 
-    public remove<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<void> {
+    public remove<T extends IModel>(meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<void> {
         throw new Error('InMemoryStorage.delete() not yet implemented');
     }
 
