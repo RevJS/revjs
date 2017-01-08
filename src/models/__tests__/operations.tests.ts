@@ -1,11 +1,13 @@
 import { ModelOperationResult } from '../operations';
 import * as operations from '../operations';
+import { OPERATION_MESSAGES as msg } from '../operationmsg';
 import * as sinon from 'sinon';
 import * as rewire from 'rewire';
 
 import { expect } from 'chai';
 import { IModelMeta, initialiseMeta } from '../meta';
 import { IntegerField, TextField, SelectionField, EmailField } from '../../fields';
+import { ModelValidationResult } from '../validation';
 
 describe('rev.model.operations', () => {
 
@@ -43,6 +45,7 @@ describe('rev.model.operations', () => {
             expect(res.operation).to.equal('create');
             expect(res.errors).to.deep.equal([]);
             expect(res.validation).to.be.null;
+            expect(res.result).to.be.null;
             expect(res.results).to.be.null;
         });
 
@@ -133,13 +136,19 @@ describe('rev.model.operations', () => {
         ops.__set__({
             registry_1: {
                 registry: {
-                    getMeta: (modeName: string) => {
+                    getMeta: (modelName: string) => {
+                        if (modelName != 'TestModel') {
+                            throw new Error('mock_getMeta_error');
+                        }
                         return testMeta;
                     }
                 }
             },
             storage: {
                 get: (storageName: string) => {
+                    if (storageName != 'default') {
+                        throw new Error('mock_storage_get_error');
+                    }
                     return storageSpy;
                 }
             }
@@ -153,7 +162,7 @@ describe('rev.model.operations', () => {
             };
         });
 
-        it('calls storage.create() and returns result if model is valid', () => {
+        it('calls storage.create() and returns successful result if model is valid', () => {
             let model = new TestModel();
             model.name = 'Bob';
             model.gender = 'male';
@@ -164,7 +173,97 @@ describe('rev.model.operations', () => {
                     expect(createCall.args[0]).to.equal(model);
                     expect(createCall.args[1]).to.equal(testMeta);
                     expect(res.success).to.be.true;
+                    expect(res.validation).to.be.instanceOf(ModelValidationResult);
+                    expect(res.validation.valid).to.be.true;
                 });
+        });
+
+        it('rejects if passed model is not a model instance', () => {
+            let model: any = () => {};
+            return expect(ops.create(model))
+                .to.be.rejectedWith('not a model instance');
+        });
+
+        it('rejects if registry.getMeta fails (e.g. model not registered)', () => {
+            class UnregisteredModel {}
+            let model = new UnregisteredModel();
+            return expect(ops.create(model))
+                .to.be.rejectedWith('mock_getMeta_error');
+        });
+
+        it('rejects if storage.get fails (e.g. invalid storage specified)', () => {
+            let model = new TestModel();
+            testMeta.storage = 'dbase';
+            return expect(ops.create(model))
+                .to.be.rejectedWith('mock_storage_get_error');
+        });
+
+        it('rejects for singleton models', () => {
+            let model = new TestModel();
+            testMeta.singleton = true;
+            return expect(ops.create(model))
+                .to.be.rejectedWith('create() cannot be called on singleton models');
+        });
+
+        it('completes with unsuccessful result when model required fields not set', () => {
+            let model = new TestModel();
+            return ops.create(model)
+                .then((res) => {
+                    expect(res.success).to.be.false;
+                    expect(res.errors.length).to.equal(1);
+                    expect(res.errors[0].message).to.equal(msg.failed_validation('TestModel'));
+                    expect(res.errors[0]['code']).to.equal('failed_validation');
+                    expect(res.validation).to.be.instanceOf(ModelValidationResult);
+                    expect(res.validation.valid).to.be.false;
+                });
+        });
+
+        it('completes with unsuccessful result when model fields do not pass validation', () => {
+            let model = new TestModel();
+            model.name = 'Bill';
+            model.gender = 'fish';
+            model.age = 9;
+            model.email = 'www.google.com';
+            return ops.create(model)
+                .then((res) => {
+                    expect(res.success).to.be.false;
+                    expect(res.errors.length).to.equal(1);
+                    expect(res.errors[0].message).to.equal(msg.failed_validation('TestModel'));
+                    expect(res.errors[0]['code']).to.equal('failed_validation');
+                    expect(res.validation).to.be.instanceOf(ModelValidationResult);
+                    expect(res.validation.valid).to.be.false;
+                });
+        });
+
+        it('returns any operation errors added by the storage', () => {
+            storageSpy = {
+                create: sinon.spy((model: any, meta: any, result: any) => {
+                    result.addError('error_from_storage');
+                    return Promise.resolve(result);
+                })
+            };
+            let model = new TestModel();
+            model.name = 'Bob';
+            model.gender = 'male';
+            return ops.create(model)
+                .then((res) => {
+                    expect(res.success).to.be.false;
+                    expect(res.errors.length).to.equal(1);
+                    expect(res.errors[0].message).to.equal('error_from_storage');
+                });
+        });
+
+        it('rejects when storage.create rejects', () => {
+            storageSpy = {
+                create: sinon.spy((model: any, meta: any, result: any) => {
+                    return Promise.reject(new Error('rejection_from_storage'));
+                })
+            };
+            let model = new TestModel();
+            model.name = 'Bob';
+            model.gender = 'male';
+            return expect(ops.create(model))
+                .to.be.rejectedWith('rejection_from_storage');
         });
 
     });

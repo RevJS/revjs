@@ -1,5 +1,5 @@
 import { IModel } from './index';
-import { checkIsModelInstance, checkIsModelConstructor } from './utils';
+import { checkIsModelInstance } from './utils';
 import { IValidationOptions, validateAgainstMeta, ModelValidationResult } from './validation';
 import { registry } from '../registry';
 import { OPERATION_MESSAGES as msg } from './operationmsg';
@@ -16,6 +16,7 @@ export interface IOperationError {
 export class ModelOperationResult<T> {
     public success: boolean;
     public validation?: ModelValidationResult;
+    public result?: T;
     public results?: T[];
     public errors: IOperationError[];
 
@@ -23,6 +24,7 @@ export class ModelOperationResult<T> {
         this.success = true;
         this.errors = [];
         this.validation = null;
+        this.result = null;
         this.results = null;
     }
 
@@ -71,11 +73,9 @@ export function create<T extends IModel>(model: T, options?: ICreateOptions): Pr
 
         let meta = registry.getMeta(model.constructor.name);
         let store = storage.get(meta.storage);
+
         if (meta.singleton) {
             throw new Error('create() cannot be called on singleton models');
-        }
-        if (!storage) {
-            throw new Error('create() error - model storage \'${vals.__meta__.storage}\' is not configured');
         }
 
         let operationResult = new ModelOperationResult<T>('create');
@@ -100,7 +100,7 @@ export function create<T extends IModel>(model: T, options?: ICreateOptions): Pr
 }
 
 export function update<T extends IModel>(model: T, where?: IWhereQuery, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
-    checkIsModelInstance(model);
+    /*checkIsModelInstance(model);
     let meta = registry.getMeta(model.constructor.name);
 
     // TODO: Get existing vals when appropriate
@@ -112,11 +112,12 @@ export function update<T extends IModel>(model: T, where?: IWhereQuery, options?
     if (!storage) {
         throw new Error('update() error - model storage \'${vals.__meta__.storage}\' is not configured');
     }
-    return store.update(model, meta, where, operationResult, options);
+    store.update(model, meta, where, operationResult, options);*/
+    return Promise.resolve();
 }
 
 export function read<T extends IModel>(model: new() => T, where?: IWhereQuery, options?: IReadOptions): Promise<ModelOperationResult<T>> {
-    checkIsModelConstructor(model);
+    /*checkIsModelConstructor(model);
     let meta = registry.getMeta(model.name);
 
     let operationResult = new ModelOperationResult<T>('read');
@@ -124,16 +125,18 @@ export function read<T extends IModel>(model: new() => T, where?: IWhereQuery, o
     if (!storage) {
         throw new Error('read() error - model storage \'${vals.__meta__.storage}\' is not configured');
     }
-    return store.read(model, meta, where, operationResult, options);
+    return store.read(model, meta, where, operationResult, options);*/
+    return Promise.resolve();
 }
 
 export function remove<T extends IModel>(model: new() => T, where?: IWhereQuery, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
-    checkIsModelConstructor(model);
+    /*checkIsModelConstructor(model);
     let meta = registry.getMeta(model.name);
 
     let store = storage.get(meta.storage);
     if (!storage) {
         throw new Error('remove() error - model storage \'${vals.__meta__.storage}\' is not configured');
     }
-    return store.remove(model, meta, where, options);
+    return store.remove(model, meta, where, options);*/
+    return Promise.resolve();
 }
