@@ -1,8 +1,39 @@
 import { ModelOperationResult } from '../operations';
+import * as operations from '../operations';
+import * as sinon from 'sinon';
+import * as rewire from 'rewire';
 
 import { expect } from 'chai';
+import { IModelMeta, initialiseMeta } from '../meta';
+import { IntegerField, TextField, SelectionField, EmailField } from '../../fields';
 
 describe('rev.model.operations', () => {
+
+    class TestModel {
+        name: string;
+        gender: string;
+        age: number;
+        email: string;
+    }
+
+    let GENDERS = [
+        ['male', 'Male'],
+        ['female', 'Female']
+    ];
+
+    let testMeta: IModelMeta<TestModel>;
+
+    beforeEach(() => {
+        testMeta = {
+            fields: [
+                new TextField('name', 'Name'),
+                new SelectionField('gender', 'Gender', GENDERS),
+                new IntegerField('age', 'Age', { required: false, minValue: 10 }),
+                new EmailField('email', 'E-mail', { required: false })
+            ]
+        };
+        initialiseMeta(TestModel, testMeta);
+    });
 
     describe('ModelOperationResult - constructor()', () => {
 
@@ -12,7 +43,7 @@ describe('rev.model.operations', () => {
             expect(res.operation).to.equal('create');
             expect(res.errors).to.deep.equal([]);
             expect(res.validation).to.be.null;
-            expect(res.createdModel).to.be.null;
+            expect(res.results).to.be.null;
         });
 
     });
@@ -87,6 +118,53 @@ describe('rev.model.operations', () => {
             expect(() => {
                 res.addError('Operation took too long', 1000000);
             }).to.throw('You cannot add non-object data to an operation result');
+        });
+
+    });
+
+    describe('create()', () => {
+
+        let storageSpy: {
+            create: sinon.SinonSpy;
+        };
+
+        let rwOps = rewire('../operations');
+        let ops: typeof operations & typeof rwOps = <any> rwOps;
+        ops.__set__({
+            registry_1: {
+                registry: {
+                    getMeta: (modeName: string) => {
+                        return testMeta;
+                    }
+                }
+            },
+            storage: {
+                get: (storageName: string) => {
+                    return storageSpy;
+                }
+            }
+        });
+
+        beforeEach(() => {
+            storageSpy = {
+                create: sinon.spy((model: any, meta: any, result: any) => {
+                    return Promise.resolve(result);
+                })
+            };
+        });
+
+        it('calls storage.create() and returns result if model is valid', () => {
+            let model = new TestModel();
+            model.name = 'Bob';
+            model.gender = 'male';
+            return ops.create(model)
+                .then((res) => {
+                    expect(storageSpy.create.callCount).to.equal(1);
+                    let createCall = storageSpy.create.getCall(0);
+                    expect(createCall.args[0]).to.equal(model);
+                    expect(createCall.args[1]).to.equal(testMeta);
+                    expect(res.success).to.be.true;
+                });
         });
 
     });

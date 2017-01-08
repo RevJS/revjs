@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { checkIsModelInstance, checkIsModelConstructor } from '../utils';
+import { checkIsModelInstance, checkIsModelConstructor, checkMetadataInitialised } from '../utils';
 
 describe('rev.model', () => {
 
@@ -56,4 +56,72 @@ describe('rev.model', () => {
 
     });
 
+    describe('checkMetadataInitialised()', () => {
+
+        let nonObjMsg = 'MetadataError: Supplied metadata is not an object.';
+        let fieldsMissingMsg = 'MetadataError: Supplied metadata does not contain fields array.';
+        let notInitedMsg = 'MetadataError: Supplied metadata has not been initialised.';
+
+        it('should not throw if initialised metadata is passed', () => {
+            expect(() => {
+                checkMetadataInitialised({
+                    fields: [],
+                    fieldsByName: {}
+                });
+            }).to.not.throw();
+        });
+
+        it('should throw if a non-object is passed', () => {
+            expect(() => { checkMetadataInitialised(undefined);
+                }).to.throw(nonObjMsg);
+            expect(() => { checkMetadataInitialised(null);
+                }).to.throw(nonObjMsg);
+            expect(() => { checkMetadataInitialised(<any> 22);
+                }).to.throw(nonObjMsg);
+            expect(() => { checkMetadataInitialised(<any> 'string');
+                }).to.throw(nonObjMsg);
+        });
+
+        it('should throw if meta.fields is not set or is not an array', () => {
+            expect(() => {
+                checkMetadataInitialised(<any> {});
+            }).to.throw(fieldsMissingMsg);
+            expect(() => {
+                checkMetadataInitialised({
+                    fields: null
+                });
+            }).to.throw(fieldsMissingMsg);
+            expect(() => {
+                checkMetadataInitialised({
+                    fields: <any> 22
+                });
+            }).to.throw(fieldsMissingMsg);
+            expect(() => {
+                checkMetadataInitialised({
+                    fields: <any> {}
+                });
+            }).to.throw(fieldsMissingMsg);
+        });
+
+        it('should throw if meta.fieldsByName is not set or is not an object', () => {
+            expect(() => {
+                checkMetadataInitialised({
+                    fields: []
+                });
+            }).to.throw(notInitedMsg);
+            expect(() => {
+                checkMetadataInitialised({
+                    fields: [],
+                    fieldsByName: null
+                });
+            }).to.throw(notInitedMsg);
+            expect(() => {
+                checkMetadataInitialised({
+                    fields: [],
+                    fieldsByName: <any> 22
+                });
+            }).to.throw(notInitedMsg);
+        });
+
+    });
 });

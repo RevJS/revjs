@@ -13,7 +13,7 @@ export class InMemoryStorage implements IStorage {
         // TODO: Do Stuff...
     }
 
-    public create<T extends IModel>(model: T, meta: IModelMeta<T>, options?: ICreateOptions): Promise<ModelOperationResult<T>> {
+    public create<T extends IModel>(model: T, meta: IModelMeta<T>, result: ModelOperationResult<T>, options?: ICreateOptions): Promise<ModelOperationResult<T>> {
         return new Promise((resolve) => {
             if (meta.singleton) {
                 throw new Error('InMemoryStorage.create() cannot be called on singleton models');
@@ -25,7 +25,7 @@ export class InMemoryStorage implements IStorage {
         });
     }
 
-    public update<T extends IModel>(model: T, meta: IModelMeta<T>, where?: any, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
+    public update<T extends IModel>(model: T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
         return new Promise((resolve) => {
             if (!meta.singleton && !where) {
                 throw new Error('InMemoryStorage.update() requires the \'where\' parameter for non-singleton models');
@@ -41,7 +41,7 @@ export class InMemoryStorage implements IStorage {
         });
     }
 
-    public read<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where?: any, options?: IReadOptions): Promise<T[]> {
+    public read<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IReadOptions): Promise<ModelOperationResult<T>> {
         return new Promise((resolve) => {
             if (!meta.singleton && !where) {
                 throw new Error('InMemoryStorage.read() requires the \'where\' parameter for non-singleton models');
@@ -62,7 +62,7 @@ export class InMemoryStorage implements IStorage {
         });
     }
 
-    public remove<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where: any, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
+    public remove<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
         throw new Error('InMemoryStorage.delete() not yet implemented');
     }
 
