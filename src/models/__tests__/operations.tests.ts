@@ -25,6 +25,36 @@ describe('rev.model.operations', () => {
 
     let testMeta: IModelMeta<TestModel>;
 
+    let storageSpy: {
+        create?: sinon.SinonSpy;
+        read?: sinon.SinonSpy;
+        update?: sinon.SinonSpy;
+        remove?: sinon.SinonSpy;
+    };
+
+    let rwOps = rewire('../operations');
+    let ops: typeof operations & typeof rwOps = <any> rwOps;
+    ops.__set__({
+        registry_1: {
+            registry: {
+                getMeta: (modelName: string) => {
+                    if (modelName != 'TestModel') {
+                        throw new Error('mock_getMeta_error');
+                    }
+                    return testMeta;
+                }
+            }
+        },
+        storage: {
+            get: (storageName: string) => {
+                if (storageName != 'default') {
+                    throw new Error('mock_storage_get_error');
+                }
+                return storageSpy;
+            }
+        }
+    });
+
     beforeEach(() => {
         testMeta = {
             fields: [
@@ -35,6 +65,21 @@ describe('rev.model.operations', () => {
             ]
         };
         initialiseMeta(TestModel, testMeta);
+
+        storageSpy = {
+            create: sinon.spy((model: any, meta: any, result: any) => {
+                return Promise.resolve();
+            }),
+            read: sinon.spy((model: any, meta: any, where: any, result: any) => {
+                return Promise.resolve();
+            }),
+            update: sinon.spy((model: any, meta: any, where: any, result: any) => {
+                return Promise.resolve();
+            }),
+            remove: sinon.spy((model: any, meta: any, where: any, result: any) => {
+                return Promise.resolve();
+            })
+        };
     });
 
     describe('ModelOperationResult - constructor()', () => {
@@ -126,41 +171,6 @@ describe('rev.model.operations', () => {
     });
 
     describe('create()', () => {
-
-        let storageSpy: {
-            create: sinon.SinonSpy;
-        };
-
-        let rwOps = rewire('../operations');
-        let ops: typeof operations & typeof rwOps = <any> rwOps;
-        ops.__set__({
-            registry_1: {
-                registry: {
-                    getMeta: (modelName: string) => {
-                        if (modelName != 'TestModel') {
-                            throw new Error('mock_getMeta_error');
-                        }
-                        return testMeta;
-                    }
-                }
-            },
-            storage: {
-                get: (storageName: string) => {
-                    if (storageName != 'default') {
-                        throw new Error('mock_storage_get_error');
-                    }
-                    return storageSpy;
-                }
-            }
-        });
-
-        beforeEach(() => {
-            storageSpy = {
-                create: sinon.spy((model: any, meta: any, result: any) => {
-                    return Promise.resolve(result);
-                })
-            };
-        });
 
         it('calls storage.create() and returns successful result if model is valid', () => {
             let model = new TestModel();
@@ -263,6 +273,116 @@ describe('rev.model.operations', () => {
             model.name = 'Bob';
             model.gender = 'male';
             return expect(ops.create(model))
+                .to.be.rejectedWith('rejection_from_storage');
+        });
+
+    });
+
+    describe('update()', () => {
+
+        let whereClause = {}; // where-clause stuff TO DO!
+
+        it('calls storage.update() and returns successful result if model is valid', () => {
+            let model = new TestModel();
+            model.name = 'Bob';
+            model.gender = 'male';
+            return ops.update(model, whereClause)
+                .then((res) => {
+                    expect(storageSpy.update.callCount).to.equal(1);
+                    let updateCall = storageSpy.update.getCall(0);
+                    expect(updateCall.args[0]).to.equal(model);
+                    expect(updateCall.args[1]).to.equal(testMeta);
+                    expect(res.success).to.be.true;
+                    expect(res.validation).to.be.instanceOf(ModelValidationResult);
+                    expect(res.validation.valid).to.be.true;
+                });
+        });
+
+        it('rejects if passed model is not a model instance', () => {
+            let model: any = () => {};
+            return expect(ops.update(model, whereClause))
+                .to.be.rejectedWith('not a model instance');
+        });
+
+        it('rejects if registry.getMeta fails (e.g. model not registered)', () => {
+            class UnregisteredModel {}
+            let model = new UnregisteredModel();
+            return expect(ops.update(model, whereClause))
+                .to.be.rejectedWith('mock_getMeta_error');
+        });
+
+        it('rejects if storage.get fails (e.g. invalid storage specified)', () => {
+            let model = new TestModel();
+            testMeta.storage = 'dbase';
+            return expect(ops.update(model, whereClause))
+                .to.be.rejectedWith('mock_storage_get_error');
+        });
+
+        it('rejects when model is not a singleton and where clause is not specified', () => {
+            let model = new TestModel();
+            testMeta.singleton = false;
+            return expect(ops.update(model))
+                .to.be.rejectedWith('update() must be called with a where clause for non-singleton models');
+        });
+
+        it('completes with unsuccessful result when model required fields not set', () => {
+            let model = new TestModel();
+            return ops.update(model, whereClause)
+                .then((res) => {
+                    expect(res.success).to.be.false;
+                    expect(res.errors.length).to.equal(1);
+                    expect(res.errors[0].message).to.equal(msg.failed_validation('TestModel'));
+                    expect(res.errors[0]['code']).to.equal('failed_validation');
+                    expect(res.validation).to.be.instanceOf(ModelValidationResult);
+                    expect(res.validation.valid).to.be.false;
+                });
+        });
+
+        it('completes with unsuccessful result when model fields do not pass validation', () => {
+            let model = new TestModel();
+            model.name = 'Bill';
+            model.gender = 'fish';
+            model.age = 9;
+            model.email = 'www.google.com';
+            return ops.update(model, whereClause)
+                .then((res) => {
+                    expect(res.success).to.be.false;
+                    expect(res.errors.length).to.equal(1);
+                    expect(res.errors[0].message).to.equal(msg.failed_validation('TestModel'));
+                    expect(res.errors[0]['code']).to.equal('failed_validation');
+                    expect(res.validation).to.be.instanceOf(ModelValidationResult);
+                    expect(res.validation.valid).to.be.false;
+                });
+        });
+
+        it('returns any operation errors added by the storage', () => {
+            storageSpy = {
+                update: sinon.spy((model: any, meta: any, where: any, result: any) => {
+                    result.addError('error_from_storage');
+                    return Promise.resolve(result);
+                })
+            };
+            let model = new TestModel();
+            model.name = 'Bob';
+            model.gender = 'male';
+            return ops.update(model, whereClause)
+                .then((res) => {
+                    expect(res.success).to.be.false;
+                    expect(res.errors.length).to.equal(1);
+                    expect(res.errors[0].message).to.equal('error_from_storage');
+                });
+        });
+
+        it('rejects when storage.update rejects', () => {
+            storageSpy = {
+                update: sinon.spy((model: any, meta: any, where: any, result: any) => {
+                    return Promise.reject(new Error('rejection_from_storage'));
+                })
+            };
+            let model = new TestModel();
+            model.name = 'Bob';
+            model.gender = 'male';
+            return expect(ops.update(model, whereClause))
                 .to.be.rejectedWith('rejection_from_storage');
         });
 

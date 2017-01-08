@@ -85,7 +85,13 @@ export function create<T extends IModel>(model: T, options?: ICreateOptions): Pr
                 operationResult.validation = validationResult;
 
                 if (validationResult.valid) {
-                    resolve(store.create<typeof model>(model, meta, operationResult, options));
+                    store.create<typeof model>(model, meta, operationResult, options)
+                        .then(() => {
+                            resolve(operationResult);
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
                 }
                 else {
                     operationResult.addError(msg.failed_validation(meta.name), { code: 'failed_validation' });
@@ -100,19 +106,55 @@ export function create<T extends IModel>(model: T, options?: ICreateOptions): Pr
 }
 
 export function update<T extends IModel>(model: T, where?: IWhereQuery, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
-    /*checkIsModelInstance(model);
-    let meta = registry.getMeta(model.constructor.name);
+    return new Promise((resolve, reject) => {
 
-    // TODO: Get existing vals when appropriate
+        checkIsModelInstance(model);
 
-    validateAgainstMeta(model, meta, 'update', options ? options.validation : null);
+        // TODO: Validate 'where' parameter
 
-    let operationResult = new ModelOperationResult<T>('update');
+        let meta = registry.getMeta(model.constructor.name);
+        let store = storage.get(meta.storage);
+
+        if (!meta.singleton && !where) {
+            throw new Error('update() must be called with a where clause for non-singleton models');
+        }
+
+        let operationResult = new ModelOperationResult<T>('update');
+        validateAgainstMeta(model, meta, 'update', options ? options.validation : null)
+            .then((validationResult) => {
+
+                operationResult.validation = validationResult;
+
+                if (validationResult.valid) {
+                    store.update<typeof model>(model, meta, where, operationResult, options)
+                        .then(() => {
+                            resolve(operationResult);
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                }
+                else {
+                    operationResult.addError(msg.failed_validation(meta.name), { code: 'failed_validation' });
+                    resolve(operationResult);
+                }
+
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
+}
+
+export function remove<T extends IModel>(model: new() => T, where?: IWhereQuery, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
+    /*checkIsModelConstructor(model);
+    let meta = registry.getMeta(model.name);
+
     let store = storage.get(meta.storage);
     if (!storage) {
-        throw new Error('update() error - model storage \'${vals.__meta__.storage}\' is not configured');
+        throw new Error('remove() error - model storage \'${vals.__meta__.storage}\' is not configured');
     }
-    store.update(model, meta, where, operationResult, options);*/
+    return store.remove(model, meta, where, options);*/
     return Promise.resolve();
 }
 
@@ -126,17 +168,5 @@ export function read<T extends IModel>(model: new() => T, where?: IWhereQuery, o
         throw new Error('read() error - model storage \'${vals.__meta__.storage}\' is not configured');
     }
     return store.read(model, meta, where, operationResult, options);*/
-    return Promise.resolve();
-}
-
-export function remove<T extends IModel>(model: new() => T, where?: IWhereQuery, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
-    /*checkIsModelConstructor(model);
-    let meta = registry.getMeta(model.name);
-
-    let store = storage.get(meta.storage);
-    if (!storage) {
-        throw new Error('remove() error - model storage \'${vals.__meta__.storage}\' is not configured');
-    }
-    return store.remove(model, meta, where, options);*/
     return Promise.resolve();
 }
