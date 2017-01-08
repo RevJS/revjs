@@ -1,8 +1,9 @@
 
 import { VALIDATION_MESSAGES as msg } from '../fields/validationmsg';
-import { IModel, ModelOperation } from './index';
+import { IModel, IModelOperation } from './index';
 import { checkIsModelInstance, checkMetadataInitialised } from './utils';
 import { IModelMeta } from './meta';
+import { IWhereQuery } from '../operators/operators';
 
 export interface IValidationOptions {
     timeout?: number;
@@ -81,10 +82,13 @@ export class ModelValidationResult {
 
 // TODO: validate() function that does not require meta (gets it from the registry)
 
-export function validateAgainstMeta<T extends IModel>(model: T, meta: IModelMeta<T>, operation: ModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
+export function validateModel<T extends IModel>(model: T, meta: IModelMeta<T>, operation: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
     return new Promise((resolve, reject) => {
         checkIsModelInstance(model);
         checkMetadataInitialised(meta);
+        if (!operation || typeof operation != 'object' || ['create', 'update'].indexOf(operation.type) == -1) {
+            throw new Error('validateAgainstMeta() - invalid operation specified - should either be a create or update operation.');
+        }
         let timeout = options && options.timeout ? options.timeout : 5000;
         let result = new ModelValidationResult();
         // First, check if model contains fields that are not in meta
@@ -112,9 +116,39 @@ export function validateAgainstMeta<T extends IModel>(model: T, meta: IModelMeta
             })
             .then(() => {
                 resolve(result);
+            })
+            .catch((err) => {
+                reject(err);
             });
         setTimeout(() => {
-            reject(new Error(`Model validateAgainstMeta() - timed out after ${timeout} milliseconds`));
+            reject(new Error(`validateModel() - timed out after ${timeout} milliseconds`));
+        }, timeout);
+    });
+}
+
+export function validateModelRemoval<T extends IModel>(meta: IModelMeta<T>, where: IWhereQuery, options?: IValidationOptions): Promise<ModelValidationResult> {
+    return new Promise((resolve, reject) => {
+        checkMetadataInitialised(meta);
+        let timeout = options && options.timeout ? options.timeout : 5000;
+        let result = new ModelValidationResult();
+
+        if (meta.validateRemoval) {
+            meta.validateRemoval(where, result, options);
+        }
+        if (meta.validateRemovalAsync) {
+            meta.validateRemovalAsync(where, result, options)
+                .then(() => {
+                    resolve(result);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        }
+        else {
+            resolve(result);
+        }
+        setTimeout(() => {
+            reject(new Error(`validateRemoval() - timed out after ${timeout} milliseconds`));
         }, timeout);
     });
 }
