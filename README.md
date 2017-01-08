@@ -1,25 +1,37 @@
 # RevJS - Rev up your data-driven JS app development!
 
 RevJS is a rapid application development toolkit designed to simplify creation
-of isomorphic data-driven JS apps for Mobile and Desktop.
+of data-driven JS apps.
 
-The `rev-models` module is the core component of RevJS, which includes the model
+The `rev-models` module is the core component of RevJS, which includes a model metadata
 registry, field types, CRUD functions and simple in-memory data storage.
 
 This project is currently in pre-alpha stages, but is getting closer to alpha!
 
-## Features
+The basic idea is, this code:
 
-This toolkit will eventually have the following features:
+```typescript
+class Person {
+    id: number;
+    name: string;
+    email: string;
+}
 
- * Easy-to-use model definition and CRUD functions
- 
- * Isomorphic (client + server) model validation
+rev.register(Person, {
+    fields: [
+        new rev.IntegerField('id', 'Id'),
+        new rev.TextField('name', 'Full Name'),
+        new rev.EmailField('email', 'Email Address'),
+    ]
+})
+```
 
- * Connectors for many popular databases for data persistence
+...plus a small amount of configuration, gives you:
 
- * Plugins for popular NodeJS frameworks to expose models as REST APIs as desired
+ * Create, Read, Update, Delete access to Person records from a database
 
- * Integrations with popular UI frameworks for form rendering + validation
+ * A full HTTP REST API (with a swagger specification)
 
- * 100% test coverage
+ * Fully-customiseable, automatically generated forms for a variety of UI frameworks
+
+ * Data-validation and other model methods shared between client and server (write once, validate everywhere :) )
