@@ -81,7 +81,7 @@ describe('rev.fields.textfields', () => {
         it('successfully validates a string value', () => {
             let test = new TextField('name', 'Name', { required: true });
             testModel.name = 'Joe Smith';
-            return expect(test.validate(testModel, testMeta, 'create', result))
+            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
                 .to.eventually.have.property('valid', true);
         });
 
@@ -95,28 +95,28 @@ describe('rev.fields.textfields', () => {
                 regEx: /^abc/
             });
             testModel.name = 'abc123';
-            return expect(test.validate(testModel, testMeta, 'create', result))
+            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new TextField('name', 'Name', { required: false });
             testModel.name = null;
-            return expect(test.validate(testModel, testMeta, 'create', result))
+            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('does not validate on null value if field is required', () => {
             let test = new TextField('name', 'Name', { required: true });
             testModel.name = null;
-            return expect(test.validate(testModel, testMeta, 'create', result))
+            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
                 .to.eventually.have.property('valid', false);
         });
 
         it('does not validate on non-string value', () => {
             let test = new TextField('name', 'Name', { required: true });
             testModel.name = true;
-            return expect(test.validate(testModel, testMeta, 'create', result))
+            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
                 .to.eventually.have.property('valid', false);
         });
 
@@ -129,7 +129,7 @@ describe('rev.fields.textfields', () => {
                 maxValue: 'd'
             });
             testModel.name = 'This string is too long and out of range';
-            return expect(test.validate(testModel, testMeta, 'create', result))
+            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
                 .to.eventually.have.property('valid', false);
         });
 
@@ -186,21 +186,21 @@ describe('rev.fields.textfields', () => {
         it('successfully validates a valid e-mail address', () => {
             let test = new EmailField('email', 'E-mail');
             testModel.email = 'Joe.Smith_21@gmail.com';
-            return expect(test.validate(testModel, testMeta, 'create', result))
+            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('successfully picks up an invalid e-mail address', () => {
             let test = new EmailField('email', 'E-mail');
             testModel.email = 'Joe.Smith_not_an_email.com';
-            return expect(test.validate(testModel, testMeta, 'create', result))
+            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
                 .to.eventually.have.property('valid', false);
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new EmailField('email', 'E-mail', { required: false });
             testModel.email = null;
-            return expect(test.validate(testModel, testMeta, 'create', result))
+            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
                 .to.eventually.have.property('valid', true);
         });
 
@@ -257,28 +257,28 @@ describe('rev.fields.textfields', () => {
         it('successfully validates a valid url', () => {
             let test = new URLField('website', 'Website');
             testModel.website = 'www.google.com';
-            return expect(test.validate(testModel, testMeta, 'create', result))
+            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('successfully validates a valid url with protocol', () => {
             let test = new URLField('website', 'Website');
             testModel.website = 'https://www.google.com';
-            return expect(test.validate(testModel, testMeta, 'create', result))
+            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('successfully picks up an invalid url', () => {
             let test = new URLField('website', 'Website');
             testModel.website = 'not_a_website_url';
-            return expect(test.validate(testModel, testMeta, 'create', result))
+            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
                 .to.eventually.have.property('valid', false);
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new URLField('website', 'Website', { required: false });
             testModel.website = null;
-            return expect(test.validate(testModel, testMeta, 'create', result))
+            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
                 .to.eventually.have.property('valid', true);
         });
     });

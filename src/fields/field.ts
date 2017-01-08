@@ -1,4 +1,4 @@
-import { IModel, IModelMeta, ModelOperation, checkIsModelInstance } from '../models';
+import { IModel, IModelMeta, IModelOperation, checkIsModelInstance } from '../models';
 import { ModelValidationResult, IValidationOptions } from '../models/validation';
 import { IFieldValidator, IAsyncFieldValidator } from './validators';
 import { isSet } from '../utils';
@@ -44,7 +44,7 @@ export class Field {
         }
     }
 
-    public validate<T extends IModel>(model: T, meta: IModelMeta<T>, operation: ModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
+    public validate<T extends IModel>(model: T, meta: IModelMeta<T>, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
         let timeout = options && options.timeout ? options.timeout : 5000;
         checkIsModelInstance(model);
         return new Promise((resolve, reject) => {

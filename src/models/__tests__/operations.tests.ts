@@ -1,4 +1,4 @@
-import { ModelOperationResult } from '../operations';
+import { ModelOperationResult, IModelOperation } from '../operations';
 import * as operations from '../operations';
 import { OPERATION_MESSAGES as msg } from '../operationmsg';
 import * as sinon from 'sinon';
@@ -85,9 +85,10 @@ describe('rev.model.operations', () => {
     describe('ModelOperationResult - constructor()', () => {
 
         it('sets up an empty result as expected', () => {
-            let res = new ModelOperationResult('create');
+            let op: IModelOperation = {type: 'create'};
+            let res = new ModelOperationResult(op);
             expect(res.success).to.equal(true);
-            expect(res.operation).to.equal('create');
+            expect(res.operation).to.equal(op);
             expect(res.errors).to.deep.equal([]);
             expect(res.validation).to.be.null;
             expect(res.result).to.be.null;
@@ -101,7 +102,7 @@ describe('rev.model.operations', () => {
         let res: ModelOperationResult<{}>;
 
         beforeEach(() => {
-            res = new ModelOperationResult('create');
+            res = new ModelOperationResult({type: 'create'});
         });
 
         it('adds an error with specified message', () => {
