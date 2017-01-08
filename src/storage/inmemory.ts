@@ -13,8 +13,8 @@ export class InMemoryStorage implements IStorage {
         // TODO: Do Stuff...
     }
 
-    public create<T extends IModel>(model: T, meta: IModelMeta<T>, result: ModelOperationResult<T>, options?: ICreateOptions): Promise<ModelOperationResult<T>> {
-        return new Promise((resolve) => {
+    public create<T extends IModel>(model: T, meta: IModelMeta<T>, result: ModelOperationResult<T>, options?: ICreateOptions): Promise<void> {
+        return new Promise<void>((resolve) => {
             if (meta.singleton) {
                 throw new Error('InMemoryStorage.create() cannot be called on singleton models');
             }
@@ -25,15 +25,15 @@ export class InMemoryStorage implements IStorage {
         });
     }
 
-    public update<T extends IModel>(model: T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
-        return new Promise((resolve) => {
+    public update<T extends IModel>(model: T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IUpdateOptions): Promise<void> {
+        return new Promise<void>((resolve) => {
             if (!meta.singleton && !where) {
                 throw new Error('InMemoryStorage.update() requires the \'where\' parameter for non-singleton models');
             }
             let modelData = this.getModelData(meta);
             if (meta.singleton) {
                 this.writeFields(model, meta, modelData);
-                resolve(true);
+                resolve(/*true*/);
             }
             else {
                 throw new Error('InMemoryStorage.update() not yet implemented for non-singleton models');
@@ -41,18 +41,18 @@ export class InMemoryStorage implements IStorage {
         });
     }
 
-    public read<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IReadOptions): Promise<ModelOperationResult<T>> {
-        return new Promise((resolve) => {
+    public read<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IReadOptions): Promise<void> {
+        return new Promise<void>((resolve) => {
             if (!meta.singleton && !where) {
                 throw new Error('InMemoryStorage.read() requires the \'where\' parameter for non-singleton models');
             }
             let modelData = this.getModelData<T>(meta, false);
             if (!modelData) {
-                resolve(meta.singleton ? {} : []);
+                resolve(/*meta.singleton ? {} : []*/);
             }
             else {
                 if (meta.singleton) {
-                    resolve([modelData]);
+                    resolve(/*[modelData]*/);
                 }
                 else {
                     // TODO: Implement filtering
@@ -62,7 +62,7 @@ export class InMemoryStorage implements IStorage {
         });
     }
 
-    public remove<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
+    public remove<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<void> {
         throw new Error('InMemoryStorage.delete() not yet implemented');
     }
 
