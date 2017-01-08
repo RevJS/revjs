@@ -6,7 +6,6 @@ import { VALIDATION_MESSAGES as msg } from '../../fields/validationmsg';
 
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { IWhereQuery } from '../../operators/operators';
 
 describe('rev.model.validation', () => {
 
@@ -509,7 +508,10 @@ describe('rev.model.validation', () => {
             validateRemoval: <sinon.SinonSpy> null,
             validateRemovalAsync: <sinon.SinonStub> null
         };
-        let whereClause = {};
+        let op: IModelOperation = {
+            type: 'remove',
+            where: {}
+        };
 
         initialiseMeta(TestModel, meta);
 
@@ -519,7 +521,7 @@ describe('rev.model.validation', () => {
         });
 
         it('should return a valid result if removal is valid', () => {
-            return validateModelRemoval(meta, whereClause)
+            return validateModelRemoval(meta, op)
                 .then((res) => {
                     expect(res.valid).to.equal(true);
                 });
@@ -530,7 +532,7 @@ describe('rev.model.validation', () => {
             meta.validateRemoval = sinon.spy();
             meta.validateRemovalAsync = sinon.stub().returns(Promise.resolve());
 
-            return validateModelRemoval(meta, whereClause)
+            return validateModelRemoval(meta, op)
                 .then((res) => {
                     expect(res.valid).to.equal(true);
                     expect((<any> meta.validateRemoval).callCount).to.equal(1);
@@ -547,7 +549,7 @@ describe('rev.model.validation', () => {
                 ]
             };
 
-            return validateModelRemoval(uninitialisedMeta, whereClause)
+            return validateModelRemoval(uninitialisedMeta, op)
                 .then((res) => {
                     expect(false, 'Did not reject').to.be.true;
                 })
@@ -556,13 +558,43 @@ describe('rev.model.validation', () => {
                 });
         });
 
+        it('should reject if operation is not specified', () => {
+            return validateModelRemoval(meta, null)
+                .then((res) => {
+                    expect(false, 'Did not reject').to.be.true;
+                })
+                .catch((err) => {
+                    expect(err.message).to.contain('invalid operation specified');
+                });
+        });
+
+        it('should reject if operation is not a create or update', () => {
+            return validateModelRemoval(meta, {type: 'create', where: {}})
+                .then((res) => {
+                    expect(false, 'Did not reject').to.be.true;
+                })
+                .catch((err) => {
+                    expect(err.message).to.contain('invalid operation specified');
+                });
+        });
+
+        it('should reject if operation where clause is not provided', () => {
+            return validateModelRemoval(meta, {type: 'remove'})
+                .then((res) => {
+                    expect(false, 'Did not reject').to.be.true;
+                })
+                .catch((err) => {
+                    expect(err.message).to.contain('invalid operation where clause specified');
+                });
+        });
+
         it('should return an invalid result if meta validateRemoval() fails', () => {
 
-            meta.validateRemoval = (where: IWhereQuery, result: ModelValidationResult) => {
+            meta.validateRemoval = (operation: IModelOperation, result: ModelValidationResult) => {
                 result.addModelError('You are not allowed to remove this model', { nope: true });
             };
 
-            return validateModelRemoval(meta, whereClause)
+            return validateModelRemoval(meta, op)
                 .then((res) => {
                     expect(res.valid).to.equal(false);
                     expect(res.modelErrors.length).to.equal(1);
@@ -573,24 +605,24 @@ describe('rev.model.validation', () => {
 
         it('should reject if meta validateRemoval() throws an error', () => {
 
-            meta.validateRemoval = (where: IWhereQuery, result: ModelValidationResult) => {
+            meta.validateRemoval = (operation: IModelOperation, result: ModelValidationResult) => {
                 throw new Error('Validator epic fail...');
             };
 
-            return expect(validateModelRemoval(meta, whereClause))
+            return expect(validateModelRemoval(meta, op))
                 .to.be.rejectedWith('Validator epic fail...');
         });
 
         it('should return an invalid result if meta validateRemovalAsync() fails', () => {
 
-            meta.validateRemovalAsync = (where: IWhereQuery, result: ModelValidationResult) => {
+            meta.validateRemovalAsync = (operation: IModelOperation, result: ModelValidationResult) => {
                 return new Promise<void>((resolve, reject) => {
                     result.addModelError('Google says you cant remove this model', { denied: true });
                     resolve();
                 });
             };
 
-            return validateModelRemoval(meta, whereClause)
+            return validateModelRemoval(meta, op)
                 .then((res) => {
                     expect(res.valid).to.equal(false);
                     expect(res.modelErrors.length).to.equal(1);
@@ -601,27 +633,27 @@ describe('rev.model.validation', () => {
 
         it('should reject if meta validateRemovalAsync() throws an error', () => {
 
-            meta.validateRemovalAsync = (where: IWhereQuery, result: ModelValidationResult) => {
+            meta.validateRemovalAsync = (operation: IModelOperation, result: ModelValidationResult) => {
                 throw new Error('Async Validator epic fail...');
             };
 
-            return expect(validateModelRemoval(meta, whereClause))
+            return expect(validateModelRemoval(meta, op))
                 .to.be.rejectedWith('Async Validator epic fail...');
         });
 
         it('should reject if meta validateRemovalAsync() rejects', () => {
 
-            meta.validateRemovalAsync = (where: IWhereQuery, result: ModelValidationResult) => {
+            meta.validateRemovalAsync = (operation: IModelOperation, result: ModelValidationResult) => {
                 return Promise.reject(new Error('Can handle rejection...'));
             };
 
-            return expect(validateModelRemoval(meta, whereClause))
+            return expect(validateModelRemoval(meta, op))
                 .to.be.rejectedWith('Can handle rejection...');
         });
 
         it('should reject if validation timeout expires', () => {
 
-            meta.validateRemovalAsync = (where: IWhereQuery, result: ModelValidationResult) => {
+            meta.validateRemovalAsync = (operation: IModelOperation, result: ModelValidationResult) => {
                 return new Promise<void>((resolve, reject) => {
                     setTimeout(() => {
                         resolve();
@@ -629,7 +661,7 @@ describe('rev.model.validation', () => {
                 });
             };
 
-            return expect(validateModelRemoval(meta, whereClause, { timeout: 10}))
+            return expect(validateModelRemoval(meta, op, { timeout: 10}))
                 .to.be.rejectedWith('timed out');
         });
 

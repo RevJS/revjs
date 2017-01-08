@@ -1,7 +1,6 @@
 import { Field } from '../fields/field';
 import { IModel, IModelOperation } from './index';
 import { ModelValidationResult, IValidationOptions } from './validation';
-import { IWhereQuery } from '../operators/operators';
 
 export interface IModelMeta<T extends IModel> {
     name?: string;
@@ -14,8 +13,8 @@ export interface IModelMeta<T extends IModel> {
     storage?: string;
     validate?: (model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => void;
     validateAsync?: (model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => Promise<void>;
-    validateRemoval?: (where: IWhereQuery, result: ModelValidationResult, options?: IValidationOptions) => void;
-    validateRemovalAsync?: (where: IWhereQuery, result: ModelValidationResult, options?: IValidationOptions) => Promise<void>;
+    validateRemoval?: (operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => void;
+    validateRemovalAsync?: (operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => Promise<void>;
 }
 
 export function initialiseMeta<T extends IModel>(model: new() => T, meta: IModelMeta<T>) {
