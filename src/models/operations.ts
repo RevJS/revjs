@@ -157,6 +157,7 @@ export function update<T extends IModel>(model: T, where?: IWhereQuery, options?
 }
 
 // TODO: it would be good if remove() worked with a model instance as well
+//  ... in that case it would use the model's primary key (if present) to remove it.
 
 export function remove<T extends IModel>(model: new() => T, where?: IWhereQuery, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
     return new Promise((resolve, reject) => {
@@ -205,14 +206,26 @@ export function remove<T extends IModel>(model: new() => T, where?: IWhereQuery,
 }
 
 export function read<T extends IModel>(model: new() => T, where?: IWhereQuery, options?: IReadOptions): Promise<ModelOperationResult<T>> {
-    /*checkIsModelConstructor(model);
-    let meta = registry.getMeta(model.name);
+    return new Promise((resolve, reject) => {
 
-    let operationResult = new ModelOperationResult<T>('read');
-    let store = storage.get(meta.storage);
-    if (!storage) {
-        throw new Error('read() error - model storage \'${vals.__meta__.storage}\' is not configured');
-    }
-    return store.read(model, meta, where, operationResult, options);*/
-    return Promise.resolve();
+        checkIsModelConstructor(model);
+        let meta = registry.getMeta(model.name);
+        if (meta.singleton && where) {
+            throw new Error('read() cannot be called with a where clause for singleton models');
+        }
+
+        let store = storage.get(meta.storage);
+        let operation: IModelOperation = {
+            type: 'read',
+            where: where
+        };
+        let operationResult = new ModelOperationResult<T>(operation);
+        store.read(model, meta, where, operationResult, options)
+            .then(() => {
+                resolve(operationResult);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
 }
