@@ -1,7 +1,7 @@
 {
   "name": "rev-models",
   "version": "0.0.1",
-  "description": "RevJS Isomorphic Data Library - Data Model Components",
+  "description": "RevJS Isomorphic Data Library - Core Data Model Components",
   "scripts": {
     "build": "tsc",
     "build-watch": "tsc --watch",

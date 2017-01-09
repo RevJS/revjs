@@ -4,7 +4,8 @@ RevJS is a rapid application development toolkit designed to simplify creation
 of data-driven JS apps.
 
 The `rev-models` module is the core component of RevJS, which includes a model metadata
-registry, field types, CRUD functions and simple in-memory data storage.
+registry, field types, CRUD functions and simple in-memory data storage to help new
+users get up and running quickly.
 
 This project is currently in pre-alpha stages, but is getting closer to alpha!
 
