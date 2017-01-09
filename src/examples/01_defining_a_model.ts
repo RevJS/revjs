@@ -3,7 +3,7 @@ import '../polyfills';
 import * as rev from '../index';
 
 // EXAMPLE:
-// import * as rev from 'revjs'
+// import * as rev from 'rev-models'
 
 let TITLES = [
     ['Mr', 'Mr.'],
