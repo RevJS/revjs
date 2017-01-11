@@ -531,6 +531,20 @@ describe('rev.model.operations', () => {
                 });
         });
 
+        it('allows storage.read() to be called without a where clause', () => {
+            return ops.read(TestModel)
+                .then((res) => {
+                    expect(storageSpy.read.callCount).to.equal(1);
+                    let readCall = storageSpy.read.getCall(0);
+                    expect(readCall.args[0]).to.equal(TestModel);
+                    expect(readCall.args[1]).to.equal(testMeta);
+                    expect(readCall.args[2]).to.deep.equal({});
+                    expect(res.success).to.be.true;
+                    expect(res.results).to.equal(testResults);
+                    expect(res.validation).to.be.null;
+                });
+        });
+
         it('rejects if passed model is not a model constructor', () => {
             let model: any = {};
             return expect(ops.read(model, whereClause))
