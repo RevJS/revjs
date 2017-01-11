@@ -7,6 +7,7 @@
         "outDir": "./lib",
         "rootDir": "./src",
         "noImplicitAny": true,
+        "suppressImplicitAnyIndexErrors": true,
         "noUnusedLocals": true,
         "module": "commonjs",
         "target": "es5"

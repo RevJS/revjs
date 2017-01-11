@@ -49,6 +49,9 @@ export class ModelOperationResult<T> {
     }
 }
 
+export interface ILoadOptions {
+}
+
 export interface ICreateOptions {
     validation?: IValidationOptions;
 }
@@ -68,6 +71,8 @@ export interface IRemoveOptions {
     limit?: number;
     validation?: IValidationOptions;
 }
+
+// TODO: Implement a 'load' method that takes a JSON array of data
 
 export function create<T extends IModel>(model: T, options?: ICreateOptions): Promise<ModelOperationResult<T>> {
     return new Promise((resolve, reject) => {
@@ -220,7 +225,7 @@ export function read<T extends IModel>(model: new() => T, where?: IWhereQuery, o
             where: where
         };
         let operationResult = new ModelOperationResult<T>(operation);
-        store.read(model, meta, where, operationResult, options)
+        store.read(model, meta, where || {}, operationResult, options)
             .then(() => {
                 resolve(operationResult);
             })
