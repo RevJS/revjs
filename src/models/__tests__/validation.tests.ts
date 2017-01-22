@@ -45,15 +45,6 @@ describe('rev.model.validation', () => {
             valid = new ModelValidationResult();
         });
 
-        it('adds a fieldError with no message', () => {
-            valid.addFieldError('name');
-            expect(valid.fieldErrors).to.deep.equal({
-                name: [{
-                    message: undefined
-                }]
-            });
-        });
-
         it('adds a fieldError with specified message', () => {
             valid.addFieldError('name', 'That name is too silly!');
             expect(valid.fieldErrors).to.deep.equal({
@@ -63,22 +54,34 @@ describe('rev.model.validation', () => {
             });
         });
 
-        it('adds a fieldError with message and data', () => {
-            valid.addFieldError('name', 'fail', {type: 'silly'});
+        it('adds a fieldError with message and code', () => {
+            valid.addFieldError('name', 'fail', 'bugger');
             expect(valid.fieldErrors).to.deep.equal({
                 name: [{
                     message: 'fail',
+                    code: 'bugger'
+                }]
+            });
+        });
+
+        it('adds a fieldError with message, code and data', () => {
+            valid.addFieldError('name', 'fail', 'bugger', {type: 'silly'});
+            expect(valid.fieldErrors).to.deep.equal({
+                name: [{
+                    message: 'fail',
+                    code: 'bugger',
                     type: 'silly'
                 }]
             });
         });
 
         it('adds a separate key for other fields', () => {
-            valid.addFieldError('name', 'fail', {type: 'silly'});
+            valid.addFieldError('name', 'fail', 'bugger', {type: 'silly'});
             valid.addFieldError('age', 'Old is not an age');
             expect(valid.fieldErrors).to.deep.equal({
                 name: [{
                     message: 'fail',
+                    code: 'bugger',
                     type: 'silly'
                 }],
                 age: [{
@@ -87,16 +90,17 @@ describe('rev.model.validation', () => {
             });
         });
 
-        it('adds a second fieldError with no message', () => {
+        it('adds a second fieldError with no code', () => {
+            valid.addFieldError('name', 'Silly!', 'fail');
             valid.addFieldError('name', 'Silly!');
-            valid.addFieldError('name');
             expect(valid.fieldErrors).to.deep.equal({
                 name: [
                     {
-                        message: 'Silly!'
+                        message: 'Silly!',
+                        code: 'fail'
                     },
                     {
-                        message: undefined
+                        message: 'Silly!'
                     }
                 ]
             });
@@ -119,7 +123,7 @@ describe('rev.model.validation', () => {
 
         it('adds a second fieldError with message and data', () => {
             valid.addFieldError('name', 'Silly!');
-            valid.addFieldError('name', 'fail', {type: 'epic'});
+            valid.addFieldError('name', 'fail', 'bugger', {type: 'epic'});
             expect(valid.fieldErrors).to.deep.equal({
                 name: [
                     {
@@ -127,6 +131,7 @@ describe('rev.model.validation', () => {
                     },
                     {
                         message: 'fail',
+                        code: 'bugger',
                         type: 'epic'
                     }
                 ]
@@ -141,13 +146,13 @@ describe('rev.model.validation', () => {
 
         it('throws an error when fieldName is not specified', () => {
             expect(() => {
-                valid.addFieldError(undefined);
+                valid.addFieldError(undefined, undefined);
             }).to.throw('You must specify fieldName');
         });
 
         it('throws an error if data is not an object', () => {
             expect(() => {
-                valid.addFieldError('age', 'you are too old', 94);
+                valid.addFieldError('age', 'you are too old', 'fail', 94);
             }).to.throw('You cannot add non-object data');
         });
 
@@ -170,11 +175,22 @@ describe('rev.model.validation', () => {
             ]);
         });
 
-        it('adds a modelError with message and data', () => {
-            valid.addModelError('Model is not cool for cats.', {cool: 'dogs'});
+        it('adds a modelError with message and code', () => {
+            valid.addModelError('Model is not cool for cats.', 'coolness');
             expect(valid.modelErrors).to.deep.equal([
                 {
                     message: 'Model is not cool for cats.',
+                    code: 'coolness'
+                }
+            ]);
+        });
+
+        it('adds a modelError with message, code and data', () => {
+            valid.addModelError('Model is not cool for cats.', 'coolness', {cool: 'dogs'});
+            expect(valid.modelErrors).to.deep.equal([
+                {
+                    message: 'Model is not cool for cats.',
+                    code: 'coolness',
                     cool: 'dogs'
                 }
             ]);
@@ -195,13 +211,14 @@ describe('rev.model.validation', () => {
 
         it('adds a second modelError with message and data', () => {
             valid.addModelError('Silly model!');
-            valid.addModelError('E-roar', {data: 42});
+            valid.addModelError('E-roar', 'oh_no', {data: 42});
             expect(valid.modelErrors).to.deep.equal([
                 {
                     message: 'Silly model!'
                 },
                 {
                     message: 'E-roar',
+                    code: 'oh_no',
                     data: 42
                 }
             ]);
@@ -221,7 +238,7 @@ describe('rev.model.validation', () => {
 
         it('throws an error if data is not an object', () => {
             expect(() => {
-                valid.addModelError('You are too old', 94);
+                valid.addModelError('You are too old', 'age', 94);
             }).to.throw('You cannot add non-object data');
         });
 
@@ -349,7 +366,7 @@ describe('rev.model.validation', () => {
                     expect(res.valid).to.equal(false);
                     expect(res.modelErrors.length).to.equal(1);
                     expect(res.modelErrors[0]['message']).to.equal(msg.extra_field('extra'));
-                    expect(res.modelErrors[0]['validator']).to.equal('extra_field');
+                    expect(res.modelErrors[0]['code']).to.equal('extra_field');
                 });
         });
 
@@ -365,7 +382,7 @@ describe('rev.model.validation', () => {
                     expect(res.valid).to.equal(false);
                     expect(res.fieldErrors['id'].length).to.equal(1);
                     expect(res.fieldErrors['id'][0]['message']).to.equal(msg.min_value('Id', 10));
-                    expect(res.fieldErrors['id'][0]['validator']).to.equal('min_value');
+                    expect(res.fieldErrors['id'][0]['code']).to.equal('min_value');
                 });
         });
 
@@ -379,7 +396,7 @@ describe('rev.model.validation', () => {
                     expect(res.valid).to.equal(false);
                     expect(res.fieldErrors['name'].length).to.equal(1);
                     expect(res.fieldErrors['name'][0]['message']).to.equal(msg.required('Name'));
-                    expect(res.fieldErrors['name'][0]['validator']).to.equal('required');
+                    expect(res.fieldErrors['name'][0]['code']).to.equal('required');
                 });
         });
 
@@ -391,7 +408,7 @@ describe('rev.model.validation', () => {
             test.date = new Date();
 
             meta.validate = (model: TestModel, mode: IModelOperation, result: ModelValidationResult) => {
-                result.addFieldError('name', 'That name is too stupid!', { stupidityLevel: 10 });
+                result.addFieldError('name', 'That name is too stupid!', 'daftness', { stupidityLevel: 10 });
             };
 
             return validateModel(test, meta, {type: 'create'})
@@ -400,6 +417,7 @@ describe('rev.model.validation', () => {
                     expect(res.valid).to.equal(false);
                     expect(res.fieldErrors['name'].length).to.equal(1);
                     expect(res.fieldErrors['name'][0]['message']).to.equal('That name is too stupid!');
+                    expect(res.fieldErrors['name'][0]['code']).to.equal('daftness');
                     expect(res.fieldErrors['name'][0]['stupidityLevel']).to.equal(10);
                 });
         });
@@ -428,7 +446,7 @@ describe('rev.model.validation', () => {
 
             meta.validateAsync = (model: TestModel, mode: IModelOperation, result: ModelValidationResult) => {
                 return new Promise<void>((resolve, reject) => {
-                    result.addFieldError('name', 'Google says that name is stupid', { stupidRank: 99 });
+                    result.addFieldError('name', 'Google says that name is stupid', 'daftness', { stupidRank: 99 });
                     resolve();
                 });
             };
@@ -439,6 +457,7 @@ describe('rev.model.validation', () => {
                     expect(res.valid).to.equal(false);
                     expect(res.fieldErrors['name'].length).to.equal(1);
                     expect(res.fieldErrors['name'][0]['message']).to.equal('Google says that name is stupid');
+                    expect(res.fieldErrors['name'][0]['code']).to.equal('daftness');
                     expect(res.fieldErrors['name'][0]['stupidRank']).to.equal(99);
                 });
         });
@@ -591,7 +610,7 @@ describe('rev.model.validation', () => {
         it('should return an invalid result if meta validateRemoval() fails', () => {
 
             meta.validateRemoval = (operation: IModelOperation, result: ModelValidationResult) => {
-                result.addModelError('You are not allowed to remove this model', { nope: true });
+                result.addModelError('You are not allowed to remove this model', 'removal_error', { nope: true });
             };
 
             return validateModelRemoval(meta, op)
@@ -599,6 +618,7 @@ describe('rev.model.validation', () => {
                     expect(res.valid).to.equal(false);
                     expect(res.modelErrors.length).to.equal(1);
                     expect(res.modelErrors[0]['message']).to.equal('You are not allowed to remove this model');
+                    expect(res.modelErrors[0]['code']).to.equal('removal_error');
                     expect(res.modelErrors[0]['nope']).to.equal(true);
                 });
         });
@@ -617,7 +637,7 @@ describe('rev.model.validation', () => {
 
             meta.validateRemovalAsync = (operation: IModelOperation, result: ModelValidationResult) => {
                 return new Promise<void>((resolve, reject) => {
-                    result.addModelError('Google says you cant remove this model', { denied: true });
+                    result.addModelError('Google says you cant remove this model', 'removal_error', { denied: true });
                     resolve();
                 });
             };
@@ -627,6 +647,7 @@ describe('rev.model.validation', () => {
                     expect(res.valid).to.equal(false);
                     expect(res.modelErrors.length).to.equal(1);
                     expect(res.modelErrors[0]['message']).to.equal('Google says you cant remove this model');
+                    expect(res.modelErrors[0]['code']).to.equal('removal_error');
                     expect(res.modelErrors[0]['denied']).to.equal(true);
                 });
         });

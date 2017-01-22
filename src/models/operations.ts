@@ -13,6 +13,7 @@ export interface IModelOperation {
 
 export interface IOperationError {
     message: string;
+    code?: string;
     [key: string]: any;
 }
 
@@ -31,14 +32,17 @@ export class ModelOperationResult<T> {
         this.results = null;
     }
 
-    public addError(message: string, data?: Object) {
+    public addError(message: string, code?: string, data?: Object) {
         if (!message) {
             throw new Error(`ModelOperationResult Error: A message must be specified for the operation error.`);
         }
         this.success = false;
-        let operationError = {
+        let operationError: IOperationError = {
             message: message
         };
+        if (code) {
+            operationError.code = code;
+        }
         if (data) {
             if (typeof data != 'object') {
                 throw new Error(`ModelOperationResult Error: You cannot add non-object data to an operation result.`);
@@ -105,7 +109,7 @@ export function create<T extends IModel>(model: T, options?: ICreateOptions): Pr
                         });
                 }
                 else {
-                    operationResult.addError(msg.failed_validation(meta.name), { code: 'failed_validation' });
+                    operationResult.addError(msg.failed_validation(meta.name), 'failed_validation');
                     resolve(operationResult);
                 }
 
@@ -150,7 +154,7 @@ export function update<T extends IModel>(model: T, where?: IWhereQuery, options?
                         });
                 }
                 else {
-                    operationResult.addError(msg.failed_validation(meta.name), { code: 'failed_validation' });
+                    operationResult.addError(msg.failed_validation(meta.name), 'failed_validation');
                     resolve(operationResult);
                 }
 
@@ -199,7 +203,7 @@ export function remove<T extends IModel>(model: new() => T, where?: IWhereQuery,
                         });
                 }
                 else {
-                    operationResult.addError(msg.failed_validation(meta.name), { code: 'failed_validation' });
+                    operationResult.addError(msg.failed_validation(meta.name), 'failed_validation');
                     resolve(operationResult);
                 }
 

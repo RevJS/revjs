@@ -18,7 +18,7 @@ export function requiredValidator<T extends IModel>(model: T, field: Field, meta
         result.addFieldError(
             field.name,
             msg.required(field.label),
-            { validator: 'required' }
+            'required'
         );
     }
 }
@@ -28,7 +28,7 @@ export function stringValidator<T extends IModel>(model: T, field: Field, meta: 
         result.addFieldError(
             field.name,
             msg.not_a_string(field.label),
-            { validator: 'not_a_string' }
+            'not_a_string'
         );
     }
 }
@@ -39,7 +39,7 @@ export function stringEmptyValidator<T extends IModel>(model: T, field: Field, m
         result.addFieldError(
             field.name,
             msg.string_empty(field.label),
-            { validator: 'string_empty' }
+            'string_empty'
         );
     }
 }
@@ -52,7 +52,7 @@ export function regExValidator<T extends IModel>(model: T, field: TextField, met
         result.addFieldError(
             field.name,
             msg.no_regex_match(field.label),
-            { validator: 'no_regex_match' }
+            'no_regex_match'
         );
     }
 }
@@ -63,7 +63,7 @@ export function numberValidator<T extends IModel>(model: T, field: Field, meta: 
         result.addFieldError(
             field.name,
             msg.not_a_number(field.label),
-            { validator: 'not_a_number' }
+            'not_a_number'
         );
     }
 }
@@ -73,7 +73,7 @@ export function integerValidator<T extends IModel>(model: T, field: Field, meta:
         result.addFieldError(
             field.name,
             msg.not_an_integer(field.label),
-            { validator: 'not_an_integer' }
+            'not_an_integer'
         );
     }
 }
@@ -83,7 +83,7 @@ export function booleanValidator<T extends IModel>(model: T, field: Field, meta:
         result.addFieldError(
             field.name,
             msg.not_a_boolean(field.label),
-            { validator: 'not_a_boolean' }
+            'not_a_boolean'
         );
     }
 }
@@ -94,7 +94,7 @@ export function minStringLengthValidator<T extends IModel>(model: T, field: Text
         result.addFieldError(
             field.name,
             msg.min_string_length(field.label, field.options.minLength),
-            { validator: 'min_string_length' }
+            'min_string_length'
         );
     }
 }
@@ -105,7 +105,7 @@ export function maxStringLengthValidator<T extends IModel>(model: T, field: Text
         result.addFieldError(
             field.name,
             msg.max_string_length(field.label, field.options.maxLength),
-            { validator: 'max_string_length' }
+            'max_string_length'
         );
     }
 }
@@ -116,7 +116,7 @@ export function minValueValidator<T extends IModel>(model: T, field: TextField |
         result.addFieldError(
             field.name,
             msg.min_value(field.label, field.options.minValue),
-            { validator: 'min_value' }
+            'min_value'
         );
     }
 }
@@ -127,7 +127,7 @@ export function maxValueValidator<T extends IModel>(model: T, field: TextField |
         result.addFieldError(
             field.name,
             msg.max_value(field.label, field.options.maxValue),
-            { validator: 'max_value' }
+            'max_value'
         );
     }
 }
@@ -142,7 +142,7 @@ export function singleSelectionValidator<T extends IModel>(model: T, field: Sele
         result.addFieldError(
             field.name,
             msg.no_selection_match(field.label),
-            { validator: 'no_selection_match' }
+            'no_selection_match'
         );
     }
 }
@@ -153,7 +153,7 @@ export function listEmptyValidator<T extends IModel>(model: T, field: Field, met
         result.addFieldError(
             field.name,
             msg.list_empty(field.label),
-            { validator: 'list_empty' }
+            'list_empty'
         );
     }
 }
@@ -164,7 +164,7 @@ export function multipleSelectionValidator<T extends IModel>(model: T, field: Se
             result.addFieldError(
                 field.name,
                 msg.selection_not_an_array(field.label),
-                { validator: 'selection_not_an_array' }
+                'selection_not_an_array'
             );
         }
         else {
@@ -181,7 +181,7 @@ export function multipleSelectionValidator<T extends IModel>(model: T, field: Se
                 result.addFieldError(
                     field.name,
                     msg.no_selection_match(field.label),
-                    { validator: 'no_selection_match' }
+                    'no_selection_match'
                 );
             }
         }
@@ -203,7 +203,7 @@ export function dateOnlyValidator<T extends IModel>(model: T, field: Field, meta
             result.addFieldError(
                 field.name,
                 msg.not_a_date(field.label),
-                { validator: 'not_a_date' }
+                'not_a_date'
             );
         }
     }
@@ -220,7 +220,7 @@ export function timeOnlyValidator<T extends IModel>(model: T, field: Field, meta
             result.addFieldError(
                 field.name,
                 msg.not_a_time(field.label),
-                { validator: 'not_a_time' }
+                'not_a_time'
             );
         }
     }
@@ -237,7 +237,7 @@ export function dateTimeValidator<T extends IModel>(model: T, field: Field, meta
             result.addFieldError(
                 field.name,
                 msg.not_a_datetime(field.label),
-                { validator: 'not_a_datetime' }
+                'not_a_datetime'
             );
         }
     }

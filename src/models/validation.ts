@@ -10,11 +10,13 @@ export interface IValidationOptions {
 
 export interface IFieldError {
     message: string;
+    code?: string;
     [key: string]: any;
 }
 
 export interface IModelError {
     message: string;
+    code?: string;
     [key: string]: any;
 }
 
@@ -41,7 +43,7 @@ export class ModelValidationResult {
         this.validationFinished = true;
     }
 
-    public addFieldError(fieldName: string, message?: string, data?: Object) {
+    public addFieldError(fieldName: string, message: string, code?: string, data?: Object) {
         if (!fieldName) {
             throw new Error(`ValidationError: You must specify fieldName when adding a field error.`);
         }
@@ -49,9 +51,12 @@ export class ModelValidationResult {
         if (!(fieldName in this.fieldErrors)) {
             this.fieldErrors[fieldName] = [];
         }
-        let fieldError = {
+        let fieldError: IFieldError = {
             message: message
         };
+        if (code) {
+            fieldError.code = code;
+        }
         if (data) {
             if (typeof data != 'object') {
                 throw new Error(`ValidationError: You cannot add non-object data to a validation error (field: "${fieldName}").`);
@@ -61,14 +66,17 @@ export class ModelValidationResult {
         this.fieldErrors[fieldName].push(fieldError);
     }
 
-    public addModelError(message: string, data?: Object) {
+    public addModelError(message: string, code?: string, data?: Object) {
         if (!message) {
             throw new Error(`ValidationError: You must specify a message for a model error.`);
         }
         this.valid = false;
-        let modelError = {
+        let modelError: IModelError = {
             message: message
         };
+        if (code) {
+            modelError.code = code;
+        }
         if (data) {
             if (typeof data != 'object') {
                 throw new Error(`ValidationError: You cannot add non-object data to a model validation error.`);
@@ -93,9 +101,7 @@ export function validateModel<T extends IModel>(model: T, meta: IModelMeta<T>, o
         // First, check if model contains fields that are not in meta
         for (let field in model) {
             if (!(field in meta.fieldsByName)) {
-                result.addModelError(msg.extra_field(field), {
-                    validator: 'extra_field'
-                });
+                result.addModelError(msg.extra_field(field), 'extra_field');
             }
         }
         // Trigger field validation

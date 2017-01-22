@@ -56,7 +56,7 @@ function expectFailure(validatorName: string, fieldName: string, message: string
     expect(vResult.fieldErrors[fieldName].length).to.equal(1);
     expect(vResult.fieldErrors[fieldName][0]).to.deep.equal({
         message: message,
-        validator: validatorName
+        code: validatorName
     });
 }
 
