@@ -126,4 +126,52 @@ describe('ModelRegistry', () => {
 
     });
 
+    describe('getForms()', () => {
+
+        it('returns all registered forms for the specified model', () => {
+            modelRegistry.register(TestModel, testMeta);
+            testReg.register(TestModel, 'default', formMeta);
+            testReg.register(TestModel, 'login_form', formMeta);
+            expect(testReg.getForms('TestModel')).to.deep.equal({
+                default: formMeta,
+                login_form: formMeta
+            });
+        });
+
+        it('returns an empty dict if model is not defined', () => {
+            expect(testReg.getForms('Fish')).to.deep.equal({});
+        });
+
+        it('returns an empty dict if model has no forms', () => {
+            modelRegistry.register(TestModel, testMeta);
+            expect(testReg.getForms('TestModel')).to.deep.equal({});
+        });
+
+    });
+
+    describe('getForm()', () => {
+
+        it('should return requested form meta', () => {
+            modelRegistry.register(TestModel, testMeta);
+            testReg.register(TestModel, 'default', formMeta);
+            expect(testReg.getForm('TestModel', 'default')).to.equal(formMeta);
+        });
+
+        it('should throw an error if the model does not have any forms', () => {
+            modelRegistry.register(TestModel, testMeta);
+            expect(() => {
+                testReg.getForm('TestModel', 'default');
+            }).to.throw(`Form 'default' is not defined for model 'TestModel'`);
+        });
+
+        it('should throw an error if the requested form does not exist', () => {
+            modelRegistry.register(TestModel, testMeta);
+            testReg.register(TestModel, 'default', formMeta);
+            expect(() => {
+                testReg.getForm('TestModel', 'create_form');
+            }).to.throw(`Form 'create_form' is not defined for model 'TestModel'`);
+        });
+
+    });
+
 });
