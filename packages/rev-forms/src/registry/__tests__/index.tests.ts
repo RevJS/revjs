@@ -57,6 +57,73 @@ describe('ModelRegistry', () => {
             expect(testReg.isRegistered('TestModel', 'default')).to.equal(true);
         });
 
+        it('returns false when a non-string is passed for modelName', () => {
+            expect(testReg.isRegistered(<any> 22, 'default')).to.equal(false);
+        });
+
+        it('returns false when a non-string is passed for formName', () => {
+            expect(testReg.isRegistered('TestModel', <any> 128)).to.equal(false);
+        });
+
+        it('returns false when an object is passed for modelName', () => {
+            expect(testReg.isRegistered(<any> {test: 1}, 'default')).to.equal(false);
+        });
+
+        it('returns false when an object is passed for formName', () => {
+            expect(testReg.isRegistered('TestModel', <any> {test: 1})).to.equal(false);
+        });
+
+    });
+
+    describe('register()', () => {
+
+        it('adds a valid form to the registry', () => {
+            modelRegistry.register(TestModel, testMeta);
+            testReg.register(TestModel, 'default', formMeta);
+            expect(testReg.getForm('TestModel', 'default')).to.equal(formMeta);
+        });
+
+        it('rejects a non-model constructor with a ModelError', () => {
+            expect(() => {
+                testReg.register(<any> {}, 'default', formMeta);
+            }).to.throw('ModelError');
+        });
+
+        it('throws an error if model has not been registered', () => {
+            expect(() => {
+                testReg.register(TestModel, 'default', formMeta);
+            }).to.throw(`Model 'TestModel' has not been registered`);
+        });
+
+        it('throws an error if formName is empty', () => {
+            modelRegistry.register(TestModel, testMeta);
+            expect(() => {
+                testReg.register(TestModel, '', formMeta);
+            }).to.throw(`Invalid formName specified`);
+        });
+
+        it('throws an error if formName is not a string', () => {
+            modelRegistry.register(TestModel, testMeta);
+            expect(() => {
+                testReg.register(TestModel, <any> 22, formMeta);
+            }).to.throw(`Invalid formName specified`);
+        });
+
+        it('throws an error if specified form is already registered', () => {
+            modelRegistry.register(TestModel, testMeta);
+            testReg.register(TestModel, 'default', formMeta);
+            expect(() => {
+                testReg.register(TestModel, 'default', formMeta);
+            }).to.throw(`Form 'default' is already defined for model 'TestModel'`);
+        });
+
+        it('throws an error if form metadata is invalid', () => {
+            modelRegistry.register(TestModel, testMeta);
+            expect(() => {
+                testReg.register(TestModel, 'default', <any> {});
+            }).to.throw(`FormMetadataError`);
+        });
+
     });
 
 });
