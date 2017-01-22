@@ -1,0 +1,2 @@
+
+export { register } from './registry';

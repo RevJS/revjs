@@ -1,0 +1,28 @@
+{
+  "name": "rev-forms",
+  "version": "0.0.1",
+  "description": "RevJS Isomorphic Data Library - Base Forms Module",
+  "scripts": {
+    "build": "tsc",
+    "build-watch": "tsc --watch",
+    "lint": "tslint ./src/**/*.ts",
+    "test": "mocha --require ./tests-setup.js --recursive \"./src/**/__tests__/*\"",
+    "test-watch": "mocha --require ./tests-setup.js --recursive \"./src/**/__tests__/*\" --watch",
+    "mocha": "mocha --require ./tests-setup.js"
+  },
+  "author": "Russell Briggs <russ@paraflyer.net>",
+  "license": "MIT",
+  "typings": "lib/index.d.ts",
+  "peerDependencies": {
+    "rev-models": "0.0.1"
+  },
+  "devDependencies": {
+    "@types/chai": "3.4.34",
+    "@types/mocha": "2.2.33",
+    "chai": "3.5.0",
+    "mocha": "3.2.0",
+    "ts-node": "1.7.0",
+    "tslint": "4.0.2",
+    "typescript": "2.0.10"
+  }
+}
