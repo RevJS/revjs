@@ -174,4 +174,30 @@ describe('ModelRegistry', () => {
 
     });
 
+    describe('rev-forms.registry', () => {
+
+        it('should be an instance of ModelRegistry', () => {
+            expect(registry.registry)
+                .to.be.an.instanceOf(registry.ModelFormRegistry);
+        });
+
+    });
+
+    describe('rev-forms.register()', () => {
+
+        it('should add models to the shared registry', () => {
+            modelRegistry.register(TestModel, testMeta);
+            registry.registry.register(TestModel, 'default', formMeta);
+            expect(registry.registry.getForm('TestModel', 'default')).to.equal(formMeta);
+        });
+
+        it('should throw an error if something goes wrong', () => {
+            modelRegistry.register(TestModel, testMeta);
+            expect(() => {
+                registry.registry.register(TestModel, 'default', formMeta);
+            }).to.throw(`Form 'default' is already defined for model 'TestModel'`);
+        });
+
+    });
+
 });
