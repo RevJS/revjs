@@ -3,3 +3,16 @@ node_modules
 *.tar.gz
 lib/**/*
 npm-debug.log
+
+# files symlinked from ./lib/
+examples
+fields
+index.d.ts
+index.js
+models
+operators
+polyfills.d.ts
+polyfills.js
+registry
+storage
+utils
