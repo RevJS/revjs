@@ -14,12 +14,16 @@ export class ModelRegistry {
 
     // TODO: Support extending existing models
 
+    public isRegistered(modelName: string): boolean {
+        return (modelName in this._modelProto);
+    }
+
     public register<T extends IModel>(model: new() => T, meta: IModelMeta<T>) {
 
         // Check model constructor
         checkIsModelConstructor(model);
         let modelName = model.name;
-        if (modelName in this._modelProto) {
+        if (this.isRegistered(modelName)) {
             throw new Error(`RegistryError: Model '${modelName}' already exists in the registry.`);
         }
 
@@ -36,14 +40,14 @@ export class ModelRegistry {
     }
 
     public getProto(modelName: string) {
-        if (!(modelName in this._modelProto)) {
+        if (!this.isRegistered(modelName)) {
             throw new Error(`RegistryError: Model  '${modelName}' does not exist in the registry.`);
         }
         return this._modelProto[modelName];
     }
 
     public getMeta(modelName: string) {
-        if (!(modelName in this._modelMeta)) {
+        if (!this.isRegistered(modelName)) {
             throw new Error(`RegistryError: Model  '${modelName}' does not exist in the registry.`);
         }
         return this._modelMeta[modelName];

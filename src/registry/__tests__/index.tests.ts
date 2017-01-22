@@ -38,6 +38,27 @@ describe('ModelRegistry', () => {
 
     });
 
+    describe('isRegistered()', () => {
+
+        it('returns false when a model is not registered', () => {
+            expect(testReg.isRegistered('TestModel')).to.equal(false);
+        });
+
+        it('returns true when a model is registered', () => {
+            testReg.register(TestModel, testMeta);
+            expect(testReg.isRegistered('TestModel')).to.equal(true);
+        });
+
+        it('returns false when a non-string is passed', () => {
+            expect(testReg.isRegistered(<any> 22)).to.equal(false);
+        });
+
+        it('returns false when an object is passed', () => {
+            expect(testReg.isRegistered(<any> {test: 1})).to.equal(false);
+        });
+
+    });
+
     describe('register()', () => {
 
         it('adds a valid model to the registry', () => {
