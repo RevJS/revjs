@@ -1,62 +1,76 @@
 
-import { IModelMeta, initialiseMeta } from '../models/meta';
-import { IModel, checkIsModelConstructor } from '../models';
+import { IModel, checkIsModelConstructor } from 'rev-models/models';
+import { IFormMeta, checkFormMeta } from '../forms/meta';
 
-export class ModelRegistry {
+import { registry as modelRegistry } from 'rev-models/registry';
 
-    private _modelProto: { [modelName: string]: Function };
-    private _modelMeta: { [modelName: string]: IModelMeta<IModel> };
+export class ModelFormRegistry {
+
+    private _formMeta: {
+        [modelName: string]: {
+            [formName: string]: IFormMeta
+        }
+    };
 
     constructor() {
-        this._modelProto = {};
-        this._modelMeta = {};
+        this._formMeta = {};
     }
 
-    // TODO: Support extending existing models
+    public isRegistered(modelName: string, formName: string) {
+        return (modelName && formName
+                && (modelName in this._formMeta)
+                && (formName in this._formMeta[modelName]));
+    }
 
-    public register<T extends IModel>(model: new() => T, meta: IModelMeta<T>) {
+    public register<T extends IModel>(model: new() => T, formName: string, formMeta: IFormMeta) {
 
         // Check model constructor
         checkIsModelConstructor(model);
         let modelName = model.name;
-        if (modelName in this._modelProto) {
-            throw new Error(`RegistryError: Model '${modelName}' already exists in the registry.`);
+        if (!modelRegistry.isRegistered(modelName)) {
+            throw new Error(`FormRegistryError: Model '${modelName}' has not been registered.`);
         }
 
-        // Initialise model metadata
-        initialiseMeta(model, meta);
-
-        // Add prototype and metadata to the registry
-        this._modelProto[modelName] = model;
-        this._modelMeta[modelName] = meta;
-    }
-
-    public getModelNames(): string[] {
-        return Object.keys(this._modelMeta);
-    }
-
-    public getProto(modelName: string) {
-        if (!(modelName in this._modelProto)) {
-            throw new Error(`RegistryError: Model  '${modelName}' does not exist in the registry.`);
+        // Check form name
+        if (!formName || typeof formName != 'string') {
+            throw new Error(`FormRegistryError: Invalid formName specified.`);
         }
-        return this._modelProto[modelName];
+        if (this.isRegistered(modelName, formName)) {
+            throw new Error(`FormRegistryError: Form '${formName}' is already defined for model '${modelName}'.`);
+        }
+
+        // Check form meta
+        let modelMeta = modelRegistry.getMeta(modelName);
+        checkFormMeta(modelMeta, formMeta);
+
+        // Add form meta to the registry
+        if (!(modelName in this._formMeta)) {
+            this._formMeta[modelName] = {};
+        }
+        this._formMeta[modelName][formName] = formMeta;
     }
 
-    public getMeta(modelName: string) {
-        if (!(modelName in this._modelMeta)) {
-            throw new Error(`RegistryError: Model  '${modelName}' does not exist in the registry.`);
+    public getForms(modelName: string): {[formName: string]: IFormMeta} {
+        if (!(modelName in this._formMeta)) {
+            return {};
         }
-        return this._modelMeta[modelName];
+        return this._formMeta[modelName];
+    }
+
+    public getForm(modelName: string, formName: string): IFormMeta {
+        if (!(modelName in this._formMeta) || !(formName in this._formMeta[modelName])) {
+            throw new Error(`FormRegistryError: Form '${formName}' is not defined for model '${modelName}'.`);
+        }
+        return this._formMeta[modelName][formName];
     }
 
     public clearRegistry() {
-        this._modelProto = {};
-        this._modelMeta = {};
+        this._formMeta = {};
     }
 }
 
-export const registry = new ModelRegistry();
+export const registry = new ModelFormRegistry();
 
-export function register<T extends IModel>(model: new() => T, meta: IModelMeta<T>) {
-    registry.register(model, meta);
+export function register<T extends IModel>(model: new() => T, formName: string, formMeta: IFormMeta) {
+    registry.register(model, formName, formMeta);
 }

@@ -1,8 +1,11 @@
-import { IModelMeta } from './../../models/meta';
-import { expect } from 'chai';
-import { IntegerField, TextField, DateField } from '../../fields';
-
+import { IModelMeta } from 'rev-models/models';
+import * as f from 'rev-models/fields';
 import * as registry from '../index';
+import { registry as modelRegistry } from 'rev-models/registry';
+
+import { IFormMeta } from '../../forms/meta';
+
+import { expect } from 'chai';
 
 class TestModel {
     id: number = 1;
@@ -10,132 +13,50 @@ class TestModel {
     date: Date = new Date();
 }
 
-class TestModel2 {}
+let testMeta: IModelMeta<TestModel> = {
+    fields: [
+        new f.IntegerField('id', 'Id'),
+        new f.TextField('name', 'Name'),
+        new f.DateField('date', 'Date')
+    ]
+};
 
-let testMeta: IModelMeta<TestModel>;
-let testMeta2: IModelMeta<TestModel2>;
+let formMeta: IFormMeta;
 
 describe('ModelRegistry', () => {
-    let testReg: registry.ModelRegistry;
+    let testReg: registry.ModelFormRegistry;
 
     beforeEach(() => {
-        testReg = new registry.ModelRegistry();
-        testMeta = {
-            fields: [
-                new IntegerField('id', 'Id'),
-                new TextField('name', 'Name'),
-                new DateField('date', 'Date')
-            ]
+        modelRegistry.clearRegistry();
+        testReg = new registry.ModelFormRegistry();
+        formMeta = {
+            title: 'Test Form',
+            fields: [ 'name', 'date' ]
         };
-        testMeta2 = { fields: [] };
     });
 
     describe('constructor()', () => {
 
-        it('creates a registry with no models', () => {
-            expect(testReg.getModelNames()).to.have.length(0);
+        it('successfully creates a registry', () => {
+            expect(() => {
+                testReg = new registry.ModelFormRegistry()
+            }).to.not.throw();
         });
 
     });
 
-    describe('register()', () => {
+    describe('isRegistered()', () => {
 
-        it('adds a valid model to the registry', () => {
-            testReg.register(TestModel, testMeta);
-            expect(testReg.getProto('TestModel')).to.equal(TestModel);
-            expect(testReg.getMeta('TestModel')).to.equal(testMeta);
+        it('returns false when a model is not registered', () => {
+            expect(testReg.isRegistered('TestModel', 'default')).to.equal(false);
         });
 
-        it('rejects a non-model constructor with a ModelError', () => {
-            expect(() => {
-                testReg.register(<any> {}, testMeta);
-            }).to.throw('ModelError');
-        });
-
-        it('throws an error if model already exists', () => {
-            testReg.register(TestModel, testMeta);
-            expect(() => {
-                testReg.register(TestModel, testMeta);
-            }).to.throw('already exists in the registry');
-        });
-
-        it('should initialise metadata', () => {
-            testReg.register(TestModel, testMeta);
-            expect(testMeta.fieldsByName).to.be.an('object');
-        });
-    });
-
-    describe('getModelNames()', () => {
-
-        it('should get the names of the models', () => {
-            expect(testReg.getModelNames()).to.deep.equal([]);
-            testReg.register(TestModel, testMeta);
-            expect(testReg.getModelNames()).to.deep.equal(['TestModel']);
-            testReg.register(TestModel2, testMeta2);
-            expect(testReg.getModelNames()).to.deep.equal(['TestModel', 'TestModel2']);
+        it('returns true when a model is registered', () => {
+            modelRegistry.register(TestModel, testMeta);
+            testReg.register(TestModel, 'default', formMeta);
+            expect(testReg.isRegistered('TestModel', 'default')).to.equal(true);
         });
 
     });
 
-    describe('getProto()', () => {
-
-        it('should return model prototype', () => {
-            testReg.register(TestModel, testMeta);
-            expect(testReg.getProto('TestModel')).to.equal(TestModel);
-        });
-
-        it('should throw an error if the model does not exist', () => {
-            expect(() => {
-                testReg.getProto('Flibble');
-            }).to.throw('does not exist in the registry');
-            testReg.register(TestModel, testMeta);
-            expect(() => {
-                testReg.getProto('Jibble');
-            }).to.throw('does not exist in the registry');
-        });
-
-    });
-
-    describe('getMeta()', () => {
-
-        it('should return model metadata', () => {
-            testReg.register(TestModel, testMeta);
-            expect(testReg.getMeta('TestModel')).to.equal(testMeta);
-        });
-
-        it('should throw an error if the model does not exist', () => {
-            expect(() => {
-                testReg.getMeta('Flibble');
-            }).to.throw('does not exist in the registry');
-            testReg.register(TestModel, testMeta);
-            expect(() => {
-                testReg.getMeta('Jibble');
-            }).to.throw('does not exist in the registry');
-        });
-
-    });
-
-    describe('rev.registry', () => {
-
-        it('should be an instance of ModelRegistry', () => {
-            expect(registry.registry)
-                .to.be.an.instanceOf(registry.ModelRegistry);
-        });
-
-    });
-
-    describe('rev.register()', () => {
-
-        it('should add models to the shared registry', () => {
-            registry.registry.register(TestModel, testMeta);
-            expect(registry.registry.getMeta('TestModel')).to.equal(testMeta);
-        });
-
-        it('should throw an error if something goes wrong', () => {
-            expect(() => {
-                registry.registry.register(TestModel, testMeta);
-            }).to.throw('already exists in the registry');
-        });
-
-    });
 });
