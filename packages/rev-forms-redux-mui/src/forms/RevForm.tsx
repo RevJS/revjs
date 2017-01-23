@@ -1,7 +1,8 @@
 
 import * as React from 'react';
 
-import { Field } from 'redux-form';
+import { Field, reduxForm } from 'redux-form';
+export { Form } from 'redux-form';
 
 import TextField from '../fields/TextField';
 
@@ -9,12 +10,12 @@ import TextField from '../fields/TextField';
 // import * as forms from 'rev-forms';
 // import RaisedButton from 'material-ui/RaisedButton';
 
-export interface IRevFormProps {
+interface IRevFormProps {
     model: string;
     form: string;
 }
 
-export default class RevForm extends React.Component<IRevFormProps, void> {
+class RevForm extends React.Component<IRevFormProps, void> {
 
     render() {
         return (
@@ -25,5 +26,14 @@ export default class RevForm extends React.Component<IRevFormProps, void> {
             </form>
         );
     }
+
+}
+
+export function getRevForm(model: string, form: string) {
+
+    console.log(`${model}_${form}`);
+    return reduxForm({
+        form: `${model}_${form}`
+    })(RevForm) as any;
 
 }
