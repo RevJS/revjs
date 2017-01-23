@@ -3,3 +3,9 @@ node_modules
 *.tar.gz
 lib/**/*
 npm-debug.log
+
+# items linked from ./lib
+forms
+index.d.ts
+index.js
+registry
