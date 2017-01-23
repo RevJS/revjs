@@ -1,7 +1,7 @@
 {
   "name": "rev-forms-redux-mui",
   "version": "0.0.1",
-  "description": "React, Redux Forms and Material UI integration for RevJS",
+  "description": "React, Redux-Forms and Material UI integration for RevJS",
   "scripts": {
     "build": "tsc",
     "build-watch": "tsc --watch",
