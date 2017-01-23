@@ -12,7 +12,7 @@
   },
   "author": "Russell Briggs <russ@paraflyer.net>",
   "license": "MIT",
-  "typings": "lib/index.d.ts",
+  "typings": "index.d.ts",
   "devDependencies": {
     "@types/chai": "3.4.34",
     "@types/chai-as-promised": "0.0.29",
@@ -27,6 +27,6 @@
     "sinon": "1.17.7",
     "ts-node": "1.7.0",
     "tslint": "4.0.2",
-    "typescript": "2.0.10"
+    "typescript": "2.1.5"
   }
 }

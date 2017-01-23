@@ -1,10 +1,10 @@
 {
     "compilerOptions": {
         "declaration": true,
-        "declarationDir": "./lib",
+        "declarationDir": "./dist",
         "listEmittedFiles": true,
         "experimentalDecorators": true,
-        "outDir": "./lib",
+        "outDir": "./dist",
         "rootDir": "./src",
         "noImplicitAny": true,
         "suppressImplicitAnyIndexErrors": true,
