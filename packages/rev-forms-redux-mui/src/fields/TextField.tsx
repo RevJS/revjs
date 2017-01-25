@@ -7,7 +7,6 @@ import { IRevFieldTypeProps } from './types';
 import * as fields from 'rev-models/fields';
 
 export default function TextField(props: IRevFieldTypeProps) {
-    console.log(props);
 
     let type = 'text';
     if (props.field instanceof fields.PasswordField) {

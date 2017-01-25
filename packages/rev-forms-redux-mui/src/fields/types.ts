@@ -2,7 +2,6 @@ import { IModelMeta } from 'rev-models/models';
 import * as fields from 'rev-models/fields';
 
 export interface IReduxFormInputProps {
-    checked?: boolean;
     name: string;
     onBlur: any;
     onChange: any;

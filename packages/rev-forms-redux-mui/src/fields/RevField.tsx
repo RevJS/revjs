@@ -1,11 +1,14 @@
 
 import * as React from 'react';
 import { Field } from 'redux-form';
-import TextField from './TextField';
 import { IRevFormMeta } from '../forms/RevForm';
 import { registry } from 'rev-models/registry';
 import * as fields from 'rev-models/fields';
 import { IRevFieldComponentProps } from './types';
+
+import TextField from './TextField';
+import BooleanField from './BooleanField';
+import DateField from './DateField';
 
 export interface IRevFieldProps {
     name: string;
@@ -40,12 +43,12 @@ export default class RevField extends React.Component<IRevFieldProps, void> {
         }
         else if (this.cProps.field instanceof fields.BooleanField) {
             return (
-                <Field name={this.props.name} component={TextField} props={this.cProps} />
+                <Field name={this.props.name} component={BooleanField} props={this.cProps} />
             );
         }
         else if (this.cProps.field instanceof fields.DateField) {
             return (
-                <Field name={this.props.name} component={TextField} props={this.cProps} />
+                <Field name={this.props.name} component={DateField} props={this.cProps} />
             );
         }
     }
