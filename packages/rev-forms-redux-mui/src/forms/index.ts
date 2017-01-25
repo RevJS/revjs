@@ -1,2 +1,2 @@
 
-export { getRevForm } from './RevForm';
+export { default as RevForm } from './RevForm';

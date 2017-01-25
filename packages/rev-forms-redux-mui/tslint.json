@@ -13,6 +13,7 @@
      "max-line-length": [false],
      "max-classes-per-file": [false],
      "no-var-requires": false,
+     "no-unused-variable": [true, "react"],
      "trailing-comma": [false],
      "object-literal-sort-keys": false,
      "ordered-imports": [false],
