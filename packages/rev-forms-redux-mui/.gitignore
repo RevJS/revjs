@@ -1,11 +1,5 @@
 node_modules
 *.map
 *.tar.gz
-lib/**/*
+dist/**/*
 npm-debug.log
-
-# items linked from lib/
-fields
-forms
-index.d.ts
-index.js
