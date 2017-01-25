@@ -1,15 +1,28 @@
 
 import * as React from 'react';
 
-// import TextField from 'material-ui/TextField';
+import MUITextField from 'material-ui/TextField';
 
-export default function TextField(props: any) {
+import { IRevFieldTypeProps } from './types';
+import * as fields from 'rev-models/fields';
+
+export default function TextField(props: IRevFieldTypeProps) {
+    console.log(props);
+
+    let type = 'text';
+    if (props.field instanceof fields.PasswordField) {
+        type = 'password';
+    }
     return (
-        <div className="input-row">
-            {/* <TextField hintText="Username" fullWidth={true} /> */}
-            <input {...props.input} type="text"/>
-            {props.meta.touched && props.meta.error &&
-            <span className="error">{props.meta.error}</span>}
-        </div>
+        <MUITextField
+            name={props.field.name}
+            floatingLabelText={props.field.label}
+            type={type}
+            value={props.input.value}
+            onChange={props.input.onChange}
+            onFocus={props.input.onFocus}
+            onBlur={props.input.onBlur}
+            fullWidth={true}
+        />
     );
 }
