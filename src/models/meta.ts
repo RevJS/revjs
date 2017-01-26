@@ -17,9 +17,27 @@ export interface IModelMeta<T extends IModel> {
     validateRemovalAsync?: (operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => Promise<void>;
 }
 
-export function initialiseMeta<T extends IModel>(model: new() => T, meta: IModelMeta<T>) {
+export function initialiseMeta<T extends IModel>(model: new() => T, meta?: IModelMeta<T>): IModelMeta<T> {
 
     let modelName = model.name;
+
+    // Load fields from prototype __fields property if present (fields added via decorators)
+    let proto = model.prototype;
+    if (proto.__fields) {
+        if (typeof proto.__fields != 'object' || !(proto.__fields instanceof Array)) {
+            throw new Error('MetadataError: Model __fields property must be an array.');
+        }
+        if (!meta) {
+            meta = { fields: [] };
+        }
+        if (!meta.fields || !(meta.fields instanceof Array)) {
+            throw new Error('MetadataError: Model metadata fields entry must be an array.');
+        }
+        for (let field of proto.__fields) {
+            meta.fields.push(field);
+        }
+        delete proto.__fields;
+    }
 
     // Check metadata
     if (!meta || !meta.fields || !(meta.fields instanceof Array)) {
@@ -51,4 +69,5 @@ export function initialiseMeta<T extends IModel>(model: new() => T, meta: IModel
     meta.label = meta.label ? meta.label : meta.name;
     meta.singleton = meta.singleton ? true : false;
 
+    return meta;
 }

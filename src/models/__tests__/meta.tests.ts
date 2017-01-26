@@ -2,6 +2,7 @@ import { Field } from '../../fields/index';
 import { IModelMeta, initialiseMeta } from '../meta';
 import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
+import * as d from '../../decorators';
 
 class TestModel {
     id: number = 1;
@@ -18,7 +19,7 @@ function getAnyObject() {
     return Object.assign({});
 }
 
-describe('initialiseMeta()', () => {
+describe('initialiseMeta() - metadata only', () => {
 
     beforeEach(() => {
         testMeta = {
@@ -110,6 +111,74 @@ describe('initialiseMeta()', () => {
         initialiseMeta(TestModel2, testMeta2);
         expect(testMeta.singleton).to.equal(false);
         expect(testMeta2.singleton).to.equal(true);
+    });
+
+});
+
+describe('initialiseMeta() - with decorators', () => {
+
+    it('creates metadata as expected when only decorators are used', () => {
+        class MyClass {
+            @d.IntegerField('ID')
+                id: number;
+            @d.TextField('Name')
+                name: string;
+            @d.BooleanField('Active?')
+                active: boolean;
+        }
+        let meta = initialiseMeta(MyClass);
+        expect(meta.fields).to.have.length(3);
+        expect(meta.fieldsByName).to.have.keys('id', 'name', 'active');
+    });
+
+    it('decorator metadata is added to existing metadata', () => {
+        class MyClass {
+            @d.IntegerField('ID')
+                id: number;
+            @d.TextField('Name')
+                name: string;
+            @d.BooleanField('Active?')
+                active: boolean;
+        }
+        let baseMeta: IModelMeta<MyClass> = {
+            fields: [
+                new TextField('flibble', 'Flibble')
+            ]
+        };
+        let meta = initialiseMeta(MyClass, baseMeta);
+        expect(meta.fields).to.have.length(4);
+        expect(meta.fieldsByName).to.have.keys('flibble', 'id', 'name', 'active');
+    });
+
+    it('removes the __fields property once it has been transferred to metadata', () => {
+        class MyClass {
+            @d.TextField('Name')
+                name: string;
+        }
+        expect((MyClass.prototype as any).__fields).to.be.an('Array');
+        initialiseMeta(MyClass);
+        expect((MyClass.prototype as any).__fields).to.be.undefined;
+    });
+
+    it('throws an error if for some reason prototype.__fields is not an array', () => {
+        class MyClass {}
+        (MyClass.prototype as any).__fields = 'flibble';
+        expect(() => {
+            initialiseMeta(MyClass);
+        }).to.throw('Model __fields property must be an array');
+    });
+
+    it('throws an error if meta.fields is not an array', () => {
+        class MyClass {
+            @d.TextField('Name')
+                name: string;
+        }
+        let meta: any = {
+            fields: {}
+        };
+        expect(() => {
+            initialiseMeta(MyClass, meta);
+        }).to.throw('fields entry must be an array');
     });
 
 });
