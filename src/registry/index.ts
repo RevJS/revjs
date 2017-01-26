@@ -18,7 +18,7 @@ export class ModelRegistry {
         return (modelName in this._modelProto);
     }
 
-    public register<T extends IModel>(model: new() => T, meta: IModelMeta<T>) {
+    public register<T extends IModel>(model: new() => T, meta?: IModelMeta<T>) {
 
         // Check model constructor
         checkIsModelConstructor(model);
@@ -28,7 +28,7 @@ export class ModelRegistry {
         }
 
         // Initialise model metadata
-        initialiseMeta(model, meta);
+        meta = initialiseMeta(model, meta);
 
         // Add prototype and metadata to the registry
         this._modelProto[modelName] = model;
@@ -61,6 +61,6 @@ export class ModelRegistry {
 
 export const registry = new ModelRegistry();
 
-export function register<T extends IModel>(model: new() => T, meta: IModelMeta<T>) {
+export function register<T extends IModel>(model: new() => T, meta?: IModelMeta<T>) {
     registry.register(model, meta);
 }

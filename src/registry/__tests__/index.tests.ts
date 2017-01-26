@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
 
 import * as registry from '../index';
+import * as d from '../../decorators';
 
 class TestModel {
     id: number = 1;
@@ -61,10 +62,22 @@ describe('ModelRegistry', () => {
 
     describe('register()', () => {
 
-        it('adds a valid model to the registry', () => {
+        it('adds a valid model and metadata to the registry', () => {
             testReg.register(TestModel, testMeta);
             expect(testReg.getProto('TestModel')).to.equal(TestModel);
             expect(testReg.getMeta('TestModel')).to.equal(testMeta);
+        });
+
+        it('adds a decorated model to the registry. No need to pass metadata.', () => {
+            class DecoratedModel {
+                @d.TextField('Name')
+                    name: string;
+                @d.IntegerField('Age')
+                    age: number;
+            }
+            testReg.register(DecoratedModel);
+            expect(testReg.getProto('DecoratedModel')).to.equal(DecoratedModel);
+            expect(testReg.getMeta('DecoratedModel').fieldsByName).to.have.keys('name', 'age');
         });
 
         it('rejects a non-model constructor with a ModelError', () => {
@@ -84,6 +97,13 @@ describe('ModelRegistry', () => {
             testReg.register(TestModel, testMeta);
             expect(testMeta.fieldsByName).to.be.an('object');
         });
+
+        it('throws an error if metadata cannot be initialised', () => {
+            expect(() => {
+                testReg.register(TestModel);
+            }).to.throw('MetadataError');
+        });
+
     });
 
     describe('getModelNames()', () => {
