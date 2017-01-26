@@ -41,7 +41,7 @@ export function initialiseMeta<T extends IModel>(model: new() => T, meta?: IMode
 
     // Check metadata
     if (!meta || !meta.fields || !(meta.fields instanceof Array)) {
-        throw new Error('MetadataError: Model metadata must contain a "fields" definition.');
+        throw new Error('MetadataError: You must define the fields metadata for the model.');
     }
     for (let field of meta.fields) {
         if (!field || typeof field != 'object' || !(field instanceof Field)) {

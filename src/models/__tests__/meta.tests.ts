@@ -35,10 +35,10 @@ describe('initialiseMeta() - metadata only', () => {
     it('throws an error if fields metadata is missing', () => {
         expect(() => {
             initialiseMeta(TestModel, null);
-        }).to.throw('Model metadata must contain a "fields" definition');
+        }).to.throw('You must define the fields metadata for the model');
         expect(() => {
             initialiseMeta(TestModel, <IModelMeta<TestModel>> {});
-        }).to.throw('Model metadata must contain a "fields" definition');
+        }).to.throw('You must define the fields metadata for the model');
     });
 
     it('throws an error if fields array contains invalid items', () => {
