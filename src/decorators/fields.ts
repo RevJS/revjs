@@ -8,7 +8,7 @@ import { ISelectionFieldOptions } from '../fields/selectionfields';
 
 function addFieldMeta(target: any, fieldName: string, fieldObj: fld.Field) {
     if (!target.__fields) {
-        target.__fields = []
+        target.__fields = [];
     }
     target.__fields.push(fieldObj);
 }

@@ -13,18 +13,12 @@ The basic idea is, this code:
 
 ```typescript
 class Person {
-    id: number;
-    name: string;
-    email: string;
+    @IntegerField('Id')    id: number;
+    @TextField('Name')     name: string;
+    @EmailField('Email')   email: string;
 }
 
-rev.register(Person, {
-    fields: [
-        new rev.IntegerField('id', 'Id'),
-        new rev.TextField('name', 'Full Name'),
-        new rev.EmailField('email', 'Email Address'),
-    ]
-})
+rev.register(Person)
 ```
 
 ...plus a small amount of configuration, gives you:

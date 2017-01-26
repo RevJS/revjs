@@ -67,7 +67,6 @@ describe('rev.decorators.fields', () => {
 
     });
 
-
     describe('Selection Fields', () => {
 
         it('BooleanField', () => {
@@ -81,7 +80,7 @@ describe('rev.decorators.fields', () => {
         let selection = [
             ['option_1', 'One'],
             ['option_2', 'Two']
-        ]
+        ];
 
         it('SelectionField', () => {
             class MyClass {
