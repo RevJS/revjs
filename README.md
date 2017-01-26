@@ -12,13 +12,26 @@ This project is currently in pre-alpha stages, but is getting closer to alpha!
 The basic idea is, this code:
 
 ```typescript
+import { IntegerField, TextField, EmailField, register, create } from 'rev-models';
+
 class Person {
-    @IntegerField('Id')    id: number;
-    @TextField('Name')     name: string;
-    @EmailField('Email')   email: string;
+    @IntegerField('Id')
+        id: number;    
+    @TextField('Name')
+        name: string;
+    @EmailField('Email')
+        email: string;
 }
 
-rev.register(Person)
+register(Person)
+
+let bob = new Person();
+bob.id = 1;
+bob.name = 'Bob';
+bob.email = 'bob@bob.com';
+
+create(bob);
+
 ```
 
 ...plus a small amount of configuration, gives you:
