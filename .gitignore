@@ -1,18 +1,5 @@
 node_modules
 *.map
 *.tar.gz
-lib/**/*
+dist/**/*
 npm-debug.log
-
-# files symlinked from ./lib/
-examples
-fields
-index.d.ts
-index.js
-models
-operators
-polyfills.d.ts
-polyfills.js
-registry
-storage
-utils
