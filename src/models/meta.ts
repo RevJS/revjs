@@ -5,7 +5,7 @@ import { ModelValidationResult, IValidationOptions } from './validation';
 export interface IModelMeta<T extends IModel> {
     name?: string;
     label?: string;
-    fields: Field[];
+    fields?: Field[];
     fieldsByName?: {
         [fieldName: string]: Field
     };
