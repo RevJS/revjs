@@ -13,16 +13,26 @@ export default function BooleanField(props: IRevFieldTypeProps) {
 
     let checked = props.input.value ? true : false;
 
+    const styles = {
+        checkbox: {
+            marginTop: 16,
+            marginBottom: 5,
+            textAlign: 'left'
+        },
+        label: {
+        }
+    };
+
     return (
-        <div style={{width: 250, paddingTop: 15, paddingBottom: 15}}>
-            <MUICheckbox
-                name={props.field.name}
-                label={props.field.label}
-                checked={checked}
-                onCheck={onCheck}
-                onFocus={props.input.onFocus}
-                onBlur={props.input.onBlur}
-            />
-        </div>
+        <MUICheckbox
+            name={props.field.name}
+            label={props.field.label}
+            checked={checked}
+            onCheck={onCheck}
+            onFocus={props.input.onFocus}
+            onBlur={props.input.onBlur}
+            style={styles.checkbox}
+            labelStyle={styles.label}
+        />
     );
 }
