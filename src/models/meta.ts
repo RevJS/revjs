@@ -30,7 +30,10 @@ export function initialiseMeta<T extends IModel>(model: new() => T, meta?: IMode
         if (!meta) {
             meta = { fields: [] };
         }
-        if (!meta.fields || !(meta.fields instanceof Array)) {
+        if (!meta.fields) {
+            meta.fields = [];
+        }
+        if (!(meta.fields instanceof Array)) {
             throw new Error('MetadataError: Model metadata fields entry must be an array.');
         }
         for (let field of proto.__fields) {

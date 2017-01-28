@@ -131,6 +131,20 @@ describe('initialiseMeta() - with decorators', () => {
         expect(meta.fieldsByName).to.have.keys('id', 'name', 'active');
     });
 
+    it('decorator metadata is added to empty metadata', () => {
+        class MyClass {
+            @d.IntegerField('ID')
+                id: number;
+            @d.TextField('Name')
+                name: string;
+            @d.BooleanField('Active?')
+                active: boolean;
+        }
+        let meta = initialiseMeta(MyClass, {});
+        expect(meta.fields).to.have.length(3);
+        expect(meta.fieldsByName).to.have.keys('id', 'name', 'active');
+    });
+
     it('decorator metadata is added to existing metadata', () => {
         class MyClass {
             @d.IntegerField('ID')
