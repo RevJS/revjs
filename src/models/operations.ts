@@ -6,8 +6,10 @@ import { OPERATION_MESSAGES as msg } from './operationmsg';
 import * as storage from '../storage';
 import { IWhereQuery } from '../operators/operators';
 
+export type ModelOperationType = 'create' | 'read' | 'update' | 'remove';
+
 export interface IModelOperation {
-    type: 'create' | 'read' | 'update' | 'remove';
+    type: ModelOperationType;
     where?: IWhereQuery;
 }
 
