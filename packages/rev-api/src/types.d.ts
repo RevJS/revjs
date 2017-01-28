@@ -1,0 +1,4 @@
+
+interface Function {
+    name: string;
+}
