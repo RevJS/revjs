@@ -2,7 +2,7 @@ import { IModelMeta } from 'rev-models/models';
 import { initialiseMeta } from 'rev-models/models/meta';
 import * as f from 'rev-models/fields';
 
-import { IFormMeta, checkFormMeta } from '../meta';
+import { IApiMeta, initialiseApiMeta } from '../meta';
 
 import { expect } from 'chai';
 
@@ -21,63 +21,59 @@ let testMeta: IModelMeta<TestModel> = {
 };
 initialiseMeta(TestModel, testMeta);
 
-let formMeta: IFormMeta;
+let apiMeta: IApiMeta;
 
-describe('checkFormMeta()', () => {
+describe('initialiseApiMeta()', () => {
 
-    it('does not throw if form metadata is valid', () => {
-        formMeta = {
-            title: 'Test Form',
-            fields: [ 'name', 'date' ]
+    it('does not throw if api metadata is a valid list of operations', () => {
+        apiMeta = {
+            operations: [ 'create', 'read' ]
         };
         expect(() => {
-            checkFormMeta(testMeta, formMeta);
+            initialiseApiMeta(testMeta, apiMeta);
         }).to.not.throw();
     });
 
-    it('throws an error if fields metadata is missing', () => {
-        formMeta = <any> {};
+    it('converts "all" to the complete list of operations', () => {
+        apiMeta = {
+            operations: 'all'
+        };
         expect(() => {
-            checkFormMeta(testMeta, null);
-        }).to.throw('Form metadata must contain a "fields" array');
-        expect(() => {
-            checkFormMeta(testMeta, formMeta);
-        }).to.throw('Form metadata must contain a "fields" array');
+            initialiseApiMeta(testMeta, apiMeta);
+        }).to.not.throw();
+        expect(apiMeta.operations).to.deep.equal(['create','read','update','remove']);
     });
 
-    it('throws an error if fields array contains invalid item types', () => {
-        formMeta = <any> {
-            fields: [
-                'name',
-                'date',
-                new f.IntegerField('a', 'A')
-            ]};
+    it('throws an error if operations key is missing', () => {
+        apiMeta = <any> {};
         expect(() => {
-            checkFormMeta(testMeta, formMeta);
-        }).to.throw('is not a string');
+            initialiseApiMeta(testMeta, null);
+        }).to.throw('API metadata must contain a valid "operations" entry');
+        expect(() => {
+            initialiseApiMeta(testMeta, apiMeta);
+        }).to.throw('API metadata must contain a valid "operations" entry');
     });
 
-    it('throws an error if fields array contains duplicate items', () => {
-        formMeta = <any> {
-            fields: [
-                'name',
-                'date',
-                'date'
-            ]};
+    it('throws an error if operations key is not "all" or an array', () => {
         expect(() => {
-            checkFormMeta(testMeta, formMeta);
-        }).to.throw(`Duplicate field 'date' in the fields array`);
+            initialiseApiMeta(testMeta, { operations: 'some' } as any);
+        }).to.throw('API metadata must contain a valid "operations" entry');
+        expect(() => {
+            initialiseApiMeta(testMeta, { operations: {} } as any);
+        }).to.throw('API metadata must contain a valid "operations" entry');
     });
 
-    it('throws an error if field does not exist in the model', () => {
-        formMeta = <any> {
-            fields: [
-                'first_name',
-                'last_name'
+    it('throws an error if operations array contains invalid operations', () => {
+        apiMeta = <any> {
+            operations: [
+                'create',
+                'read',
+                'destroy',
+                'modify'
             ]};
         expect(() => {
-            checkFormMeta(testMeta, formMeta);
-        }).to.throw(`Field 'first_name' is not defined for model 'TestModel'.`);
+            initialiseApiMeta(testMeta, apiMeta);
+        }).to.throw('Invalid operation in operations list');
     });
 
 });
