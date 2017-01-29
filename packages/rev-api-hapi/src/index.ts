@@ -1,6 +1,22 @@
 
 import * as Hapi from 'hapi';
+import { ModelApiRegistry } from 'rev-api/registry';
 
-export default function revApiPlugin(server: Hapi.Server, options: any, next: any) {
-    return true;
+export interface IRevApiPluginOptions {
+    baseUrl?: string;
+    apiRegistry: ModelApiRegistry;
 }
+
+let version = require('../package.json').version;
+
+function RevApiPlugin(server: Hapi.Server, options: IRevApiPluginOptions, next: any) {
+    server.expose('version', version);
+    next();
+}
+
+(RevApiPlugin as any).attributes = {
+    name: 'rev-api',
+    version: version
+};
+
+export default RevApiPlugin;
