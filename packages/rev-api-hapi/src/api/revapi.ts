@@ -30,7 +30,7 @@ export class RevApi {
             method: ['GET', 'POST', 'PUT', 'DELETE'],
             path: this.baseUrl,
             handler: this.__handleRequest
-        })
+        });
     }
 
     __handleRequest(req: Hapi.Request, reply: Hapi.IReply) {
