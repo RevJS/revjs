@@ -2,15 +2,25 @@
 import { IModel, checkIsModelConstructor } from 'rev-models/models';
 import { IApiMeta, initialiseApiMeta } from '../api/meta';
 
-import { registry as modelRegistry } from 'rev-models/registry';
+import { ModelRegistry, registry as revRegistry } from 'rev-models/registry';
 
 export class ModelApiRegistry {
 
+    private _modelRegistry: ModelRegistry;
     private _apiMeta: {
         [modelName: string]: IApiMeta
     };
 
-    constructor() {
+    constructor(modelRegistry?: ModelRegistry) {
+        if (modelRegistry) {
+            if (typeof modelRegistry != 'object' || !(modelRegistry instanceof ModelRegistry)) {
+                throw new Error(`ApiRegistryError: Invalid ModelRegistry passed in constructor.`);
+            }
+            this._modelRegistry = modelRegistry;
+        }
+        else {
+            this._modelRegistry = revRegistry;
+        }
         this._apiMeta = {};
     }
 
@@ -23,7 +33,7 @@ export class ModelApiRegistry {
         // Check model constructor
         checkIsModelConstructor(model);
         let modelName = model.name;
-        if (!modelRegistry.isRegistered(modelName)) {
+        if (!this._modelRegistry.isRegistered(modelName)) {
             throw new Error(`ApiRegistryError: Model '${modelName}' has not been registered.`);
         }
         if (this.isRegistered(modelName)) {
@@ -31,7 +41,7 @@ export class ModelApiRegistry {
         }
 
         // Check api meta
-        let modelMeta = modelRegistry.getMeta(modelName);
+        let modelMeta = this._modelRegistry.getMeta(modelName);
         initialiseApiMeta(modelMeta, apiMeta);
 
         // Add api meta to the registry

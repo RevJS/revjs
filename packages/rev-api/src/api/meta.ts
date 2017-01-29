@@ -13,9 +13,9 @@ export function initialiseApiMeta<T extends IModel>(modelMeta: IModelMeta<T>, ap
         throw new Error('ApiMetadataError: API metadata must contain a valid "operations" entry.');
     }
 
-    let opOps: ModelOperationType[] = ['create','read','update','remove'];
+    let opOps: ModelOperationType[] = ['create', 'read', 'update', 'remove'];
     if (apiMeta.operations == 'all') {
-        apiMeta.operations = opOps.map(op => op);
+        apiMeta.operations = opOps.map((op) => op);
     }
     else {
         for (let op of apiMeta.operations) {

@@ -2,7 +2,7 @@ import { IModelMeta } from 'rev-models/models';
 // import { ModelOperationType } from 'rev-models/models';
 import * as f from 'rev-models/fields';
 import * as registry from '../index';
-import { registry as modelRegistry } from 'rev-models/registry';
+import { ModelRegistry, registry as revRegistry } from 'rev-models/registry';
 
 import { IApiMeta } from '../../api/meta';
 
@@ -24,11 +24,13 @@ let testMeta: IModelMeta<TestModel> = {
 
 let apiMeta: IApiMeta;
 
-describe('ModelRegistry', () => {
+describe('ModelApiRegistry', () => {
+    let testModelReg: ModelRegistry;
     let testReg: registry.ModelApiRegistry;
 
     beforeEach(() => {
-        modelRegistry.clearRegistry();
+        testModelReg = new ModelRegistry();
+        revRegistry.clearRegistry();
         testReg = new registry.ModelApiRegistry();
         apiMeta = {
             operations: [ 'read' ]
@@ -39,8 +41,16 @@ describe('ModelRegistry', () => {
 
         it('successfully creates a registry', () => {
             expect(() => {
-                testReg = new registry.ModelApiRegistry()
+                testReg = new registry.ModelApiRegistry();
             }).to.not.throw();
+            expect((testReg as any)._modelRegistry).to.equal(revRegistry);
+        });
+
+        it('successfully creates a registry with a specific modelRegistry', () => {
+            expect(() => {
+                testReg = new registry.ModelApiRegistry(testModelReg);
+            }).to.not.throw();
+            expect((testReg as any)._modelRegistry).to.equal(testModelReg);
         });
 
     });
@@ -52,7 +62,7 @@ describe('ModelRegistry', () => {
         });
 
         it('returns true when a model is registered', () => {
-            modelRegistry.register(TestModel, testMeta);
+            revRegistry.register(TestModel, testMeta);
             testReg.register(TestModel, apiMeta);
             expect(testReg.isRegistered('TestModel')).to.equal(true);
         });
@@ -70,7 +80,7 @@ describe('ModelRegistry', () => {
     describe('register()', () => {
 
         it('adds a valid api to the registry', () => {
-            modelRegistry.register(TestModel, testMeta);
+            revRegistry.register(TestModel, testMeta);
             testReg.register(TestModel, apiMeta);
             expect(testReg.getApiMeta('TestModel')).to.equal(apiMeta);
         });
@@ -88,7 +98,7 @@ describe('ModelRegistry', () => {
         });
 
         it('throws an error if model already has an api registered', () => {
-            modelRegistry.register(TestModel, testMeta);
+            revRegistry.register(TestModel, testMeta);
             testReg.register(TestModel, apiMeta);
             expect(() => {
                 testReg.register(TestModel, apiMeta);
@@ -96,7 +106,7 @@ describe('ModelRegistry', () => {
         });
 
         it('throws an error if api metadata is invalid', () => {
-            modelRegistry.register(TestModel, testMeta);
+            revRegistry.register(TestModel, testMeta);
             expect(() => {
                 testReg.register(TestModel, <any> {});
             }).to.throw(`ApiMetadataError`);
@@ -107,18 +117,18 @@ describe('ModelRegistry', () => {
     describe('getApiMeta()', () => {
 
         it('should return requested api meta', () => {
-            modelRegistry.register(TestModel, testMeta);
+            revRegistry.register(TestModel, testMeta);
             testReg.register(TestModel, apiMeta);
             expect(testReg.getApiMeta('TestModel')).to.equal(apiMeta);
         });
 
         it('should throw an error if the model does not have an api defined', () => {
-            modelRegistry.register(TestModel, testMeta);
+            revRegistry.register(TestModel, testMeta);
             expect(() => {
                 testReg.getApiMeta('TestModel');
             }).to.throw(`Model 'TestModel' does not have a registered API`);
         });
-    
+
     });
 
     describe('rev-forms.registry', () => {
@@ -133,13 +143,13 @@ describe('ModelRegistry', () => {
     describe('rev-api.register()', () => {
 
         it('should add model api meta to the shared registry', () => {
-            modelRegistry.register(TestModel, testMeta);
+            revRegistry.register(TestModel, testMeta);
             registry.registry.register(TestModel, apiMeta);
             expect(registry.registry.getApiMeta('TestModel')).to.equal(apiMeta);
         });
 
         it('should throw an error if something goes wrong', () => {
-            modelRegistry.register(TestModel, testMeta);
+            revRegistry.register(TestModel, testMeta);
             expect(() => {
                 registry.registry.register(TestModel, apiMeta);
             }).to.throw(`Model 'TestModel' already has a registered API`);
