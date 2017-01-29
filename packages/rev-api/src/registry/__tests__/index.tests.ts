@@ -43,14 +43,14 @@ describe('ModelApiRegistry', () => {
             expect(() => {
                 testReg = new registry.ModelApiRegistry();
             }).to.not.throw();
-            expect((testReg as any)._modelRegistry).to.equal(revRegistry);
+            expect(testReg.getModelRegistry()).to.equal(revRegistry);
         });
 
         it('successfully creates a registry with a specific modelRegistry', () => {
             expect(() => {
                 testReg = new registry.ModelApiRegistry(testModelReg);
             }).to.not.throw();
-            expect((testReg as any)._modelRegistry).to.equal(testModelReg);
+            expect(testReg.getModelRegistry()).to.equal(testModelReg);
         });
 
     });

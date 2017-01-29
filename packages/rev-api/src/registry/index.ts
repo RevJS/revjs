@@ -24,6 +24,10 @@ export class ModelApiRegistry {
         this._apiMeta = {};
     }
 
+    public getModelRegistry() {
+        return this._modelRegistry;
+    }
+
     public isRegistered(modelName: string) {
         return (modelName && (modelName in this._apiMeta));
     }
