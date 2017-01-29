@@ -2,7 +2,14 @@
 import * as Hapi from 'hapi';
 import { IRevApiOptions, RevApi } from './api/revapi';
 
-let version = require('../package.json').version;
+let version: string = null;
+
+try {
+    version = require('./package.json').version;
+}
+catch (e) {
+    version = require('../package.json').version;
+}
 
 function RevApiPlugin(server: Hapi.Server, options: IRevApiOptions, next: any) {
     server.expose('version', version);
