@@ -14,9 +14,8 @@ export interface IRevApiRequest {
     bodyJson: any;
 }
 
-export interface IRevApiReply {
-    (err: Error, code: number, bodyJson: any): void;
-}
+export type IRevApiReply =
+    (err: Error, code: number, bodyJson: any) => void;
 
 export function processRequest(request: IRevApiRequest, reply: IRevApiReply) {
     // check method
@@ -24,4 +23,3 @@ export function processRequest(request: IRevApiRequest, reply: IRevApiReply) {
     // check method against model
     // fire off to processCreate / Update / Read / Remove method
 }
-
