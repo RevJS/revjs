@@ -1,8 +1,8 @@
 
-import { IModel, checkIsModelConstructor } from 'rev-models/models';
+import { IModel, checkIsModelConstructor } from 'rev-models/lib/models';
 import { IFormMeta, checkFormMeta } from '../forms/meta';
 
-import { registry as modelRegistry } from 'rev-models/registry';
+import { registry as modelRegistry } from 'rev-models/lib/registry';
 
 export class ModelFormRegistry {
 

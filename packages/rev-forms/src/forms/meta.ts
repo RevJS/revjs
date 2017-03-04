@@ -1,4 +1,4 @@
-import { IModel, IModelMeta } from 'rev-models/models';
+import { IModel, IModelMeta } from 'rev-models/lib/models';
 
 export interface IFormMeta {
     title?: string;
