@@ -48,7 +48,7 @@ describe('rev.model', () => {
                 }).to.throw(errorMessage);
             expect(() => { checkIsModelConstructor('string' as any);
                 }).to.throw(errorMessage);
-            expect(() => { checkIsModelConstructor(class MyTest {});
+            expect(() => { checkIsModelConstructor(function() {} as any);
                 }).to.throw(errorMessage);
             expect(() => { checkIsModelConstructor({name: 'Fred'} as any);
                 }).to.throw(errorMessage);

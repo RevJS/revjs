@@ -1,12 +1,8 @@
 
 /* Object.assign */
-declare interface ObjectConstructor {  // tslint:disable-line
-    assign(target: any, ...sources: any[]): any;
-}
-
 if (typeof Object.assign != 'function') {
-  (function () {
-    Object.assign = function (target) {
+  (function() {
+    Object.assign = function(target: any) {
       'use strict';
       if (target === undefined || target === null) {
         throw new TypeError('Cannot convert undefined or null to object');
@@ -29,11 +25,6 @@ if (typeof Object.assign != 'function') {
 }
 
 /* Function.name */
-
-interface Function {  // tslint:disable-line
-    name: string;
-}
-
 if (!(function f() {}).name) {
     Object.defineProperty(Function.prototype, 'name', {
         get: function() {

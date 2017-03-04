@@ -9,7 +9,7 @@
     "build": "run-bin tsc",
     "build-watch": "run-bin tsc --watch",
     "lint": "run-bin tslint ./src/**/*.ts",
-    "test": "run-bin mocha --require ../../scripts/tests-setup.js --recursive \"./src/**/__tests__/*\"",
+    "test": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\"",
     "test-watch": "run-bin mocha --require ../../scripts/tests-setup.js --recursive \"./src/**/__tests__/*\" --watch",
     "mocha": "run-bin mocha --require ./tests-setup.js"
   },
