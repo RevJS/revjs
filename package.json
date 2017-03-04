@@ -2,7 +2,8 @@
   "name": "revjs",
   "version": "1.0.0",
   "scripts": {
-    "build": "lerna run lint && lerna run build",
+    "build": "lerna run build",
+    "lint": "lerna run lint",
     "test": "lerna run test"
   },
   "devDependencies": {
