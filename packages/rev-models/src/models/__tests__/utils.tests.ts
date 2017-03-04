@@ -19,9 +19,9 @@ describe('rev.model', () => {
                 }).to.throw(errorMessage);
             expect(() => { checkIsModelInstance(null);
                 }).to.throw(errorMessage);
-            expect(() => { checkIsModelInstance(<any> 22);
+            expect(() => { checkIsModelInstance(22 as any);
                 }).to.throw(errorMessage);
-            expect(() => { checkIsModelInstance(<any> 'string');
+            expect(() => { checkIsModelInstance('string' as any);
                 }).to.throw(errorMessage);
             expect(() => { checkIsModelInstance(() => {});
                 }).to.throw(errorMessage);
@@ -35,7 +35,7 @@ describe('rev.model', () => {
 
         it('should not throw if a constructor is passed', () => {
             expect(() => {
-                checkIsModelConstructor(function MyModel() {});
+                checkIsModelConstructor(class MyModel {});
             }).to.not.throw();
         });
 
@@ -44,13 +44,13 @@ describe('rev.model', () => {
                 }).to.throw(errorMessage);
             expect(() => { checkIsModelConstructor(null);
                 }).to.throw(errorMessage);
-            expect(() => { checkIsModelConstructor(<any> 22);
+            expect(() => { checkIsModelConstructor(22 as any);
                 }).to.throw(errorMessage);
-            expect(() => { checkIsModelConstructor(<any> 'string');
+            expect(() => { checkIsModelConstructor('string' as any);
                 }).to.throw(errorMessage);
-            expect(() => { checkIsModelConstructor(() => {});
+            expect(() => { checkIsModelConstructor(class MyTest {});
                 }).to.throw(errorMessage);
-            expect(() => { checkIsModelConstructor(<any> {name: 'Fred'});
+            expect(() => { checkIsModelConstructor({name: 'Fred'} as any);
                 }).to.throw(errorMessage);
         });
 
@@ -76,15 +76,15 @@ describe('rev.model', () => {
                 }).to.throw(nonObjMsg);
             expect(() => { checkMetadataInitialised(null);
                 }).to.throw(nonObjMsg);
-            expect(() => { checkMetadataInitialised(<any> 22);
+            expect(() => { checkMetadataInitialised(22 as any);
                 }).to.throw(nonObjMsg);
-            expect(() => { checkMetadataInitialised(<any> 'string');
+            expect(() => { checkMetadataInitialised('string' as any);
                 }).to.throw(nonObjMsg);
         });
 
         it('should throw if meta.fields is not set or is not an array', () => {
             expect(() => {
-                checkMetadataInitialised(<any> {});
+                checkMetadataInitialised({} as any);
             }).to.throw(fieldsMissingMsg);
             expect(() => {
                 checkMetadataInitialised({
@@ -93,12 +93,12 @@ describe('rev.model', () => {
             }).to.throw(fieldsMissingMsg);
             expect(() => {
                 checkMetadataInitialised({
-                    fields: <any> 22
+                    fields: 22 as any
                 });
             }).to.throw(fieldsMissingMsg);
             expect(() => {
                 checkMetadataInitialised({
-                    fields: <any> {}
+                    fields: {} as any
                 });
             }).to.throw(fieldsMissingMsg);
         });
@@ -118,7 +118,7 @@ describe('rev.model', () => {
             expect(() => {
                 checkMetadataInitialised({
                     fields: [],
-                    fieldsByName: <any> 22
+                    fieldsByName: 22 as any
                 });
             }).to.throw(notInitedMsg);
         });
