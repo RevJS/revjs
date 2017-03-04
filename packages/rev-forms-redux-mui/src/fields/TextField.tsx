@@ -4,7 +4,7 @@ import * as React from 'react';
 import MUITextField from 'material-ui/TextField';
 
 import { IRevFieldTypeProps } from './types';
-import * as fields from 'rev-models/fields';
+import * as fields from 'rev-models/lib/fields';
 
 export default function TextField(props: IRevFieldTypeProps) {
 

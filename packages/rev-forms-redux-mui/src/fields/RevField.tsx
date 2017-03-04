@@ -2,8 +2,8 @@
 import * as React from 'react';
 import { Field } from 'redux-form';
 import { IRevFormMeta } from '../forms/RevForm';
-import { registry } from 'rev-models/registry';
-import * as fields from 'rev-models/fields';
+import { registry } from 'rev-models/lib/registry';
+import * as fields from 'rev-models/lib/fields';
 import { IRevFieldComponentProps } from './types';
 
 import TextField from './TextField';

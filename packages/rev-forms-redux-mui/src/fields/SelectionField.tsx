@@ -5,7 +5,7 @@ import MUISelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 
 import { IRevFieldTypeProps } from './types';
-import * as fields from 'rev-models/fields';
+import * as fields from 'rev-models/lib/fields';
 
 export default function SelectionField(props: IRevFieldTypeProps) {
 
@@ -20,7 +20,7 @@ export default function SelectionField(props: IRevFieldTypeProps) {
 
     let onChange = (e: any, key: any, val: any) => {
         props.input.onChange(val);
-    }
+    };
 
     return (
         <MUISelect

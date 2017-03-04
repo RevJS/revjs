@@ -1,5 +1,5 @@
-import { IModelMeta } from 'rev-models/models';
-import * as fields from 'rev-models/fields';
+import { IModelMeta } from 'rev-models/lib/models';
+import * as fields from 'rev-models/lib/fields';
 
 export interface IReduxFormInputProps {
     name: string;
@@ -16,7 +16,7 @@ export interface IReduxFormMetaProps {
     autofilled: boolean;
     asyncValidating: boolean;
     dirty: boolean;
-    dispatch: Function;
+    dispatch: (action: any) => void;
     error?: string;
     invalid: boolean;
     pristine: boolean;

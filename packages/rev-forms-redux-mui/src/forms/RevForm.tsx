@@ -1,9 +1,9 @@
 
 import * as React from 'react';
 
-import { Form, reduxForm } from 'redux-form';  /* tslint:disable-line */
+import { reduxForm } from 'redux-form';  /* tslint:disable-line */
 
-import { registry } from 'rev-models/registry';
+import { registry } from 'rev-models/lib/registry';
 // import * as forms from 'rev-forms';
 
 export interface IRevFormProps {
@@ -15,7 +15,7 @@ export interface IRevFormMeta {
     model: string;
 }
 
-export class RevForm extends React.Component<IRevFormProps, void> {
+export class RevFormComponent extends React.Component<IRevFormProps, void> {
 
     static childContextTypes = {
         revFormMeta: React.PropTypes.object
@@ -50,7 +50,7 @@ export class RevForm extends React.Component<IRevFormProps, void> {
 
 }
 
-export default reduxForm({} as any)(RevForm);
+export const RevForm = reduxForm({} as any)(RevFormComponent) as any;
 
 /*
 // import RaisedButton from 'material-ui/RaisedButton';

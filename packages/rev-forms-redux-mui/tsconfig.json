@@ -1,14 +1,8 @@
 {
+    "extends": "../../tsconfig",
     "compilerOptions": {
-        "declaration": true,
-        "declarationDir": "./dist",
-        "listEmittedFiles": true,
-        "outDir": "./dist",
+        "outDir": "./lib",
         "rootDir": "./src",
-        "noImplicitAny": true,
-        "suppressImplicitAnyIndexErrors": true,
-        "module": "commonjs",
-        "target": "es5",
         "jsx": "react"
     },
     "include": [
