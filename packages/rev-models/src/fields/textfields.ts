@@ -45,7 +45,7 @@ export class PasswordField extends TextField {}
 
 export class EmailField extends TextField {
     constructor(name: string, label: string, options?: ITextFieldOptions) {
-        let opts = <ITextFieldOptions> getOptions(options);
+        let opts = getOptions(options) as ITextFieldOptions;
         if (!opts.regEx
             || typeof opts.regEx != 'object'
             || !(opts.regEx instanceof RegExp)) {
@@ -57,7 +57,7 @@ export class EmailField extends TextField {
 
 export class URLField extends TextField {
     constructor(name: string, label: string, options?: ITextFieldOptions) {
-        let opts = <ITextFieldOptions> getOptions(options);
+        let opts = getOptions(options) as ITextFieldOptions;
         if (!opts.regEx
             || typeof opts.regEx != 'object'
             || !(opts.regEx instanceof RegExp)) {

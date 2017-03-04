@@ -42,7 +42,7 @@ export class InMemoryStorage implements IStorage {
                 throw new Error('InMemoryStorage.create() cannot be called on singleton models');
             }
 
-            let modelData = this.getModelData(<any> model.constructor, meta);
+            let modelData = this.getModelData(model.constructor as any, meta);
             let record = {};
             this.writeFields(model, meta, record);
             modelData.push(record);
@@ -54,7 +54,7 @@ export class InMemoryStorage implements IStorage {
             if (!meta.singleton && !where) {
                 throw new Error('InMemoryStorage.update() requires the \'where\' parameter for non-singleton models');
             }
-            let modelData = this.getModelData(<any> model.constructor, meta);
+            let modelData = this.getModelData(model.constructor as any, meta);
             if (meta.singleton) {
                 this.writeFields(model, meta, modelData);
                 resolve(/*true*/);

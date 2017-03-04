@@ -5,13 +5,23 @@ import { Field, TextField, NumberField, SelectionField } from './index';
 import { VALIDATION_MESSAGES as msg } from './validationmsg';
 import { isSet } from '../utils';
 
-export interface IFieldValidator {
-    <T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void;
-}
+export type IFieldValidator =
+    <T extends IModel>(
+        model: T,
+        field: Field,
+        meta: IModelMeta<T>,
+        operation: IModelOperation,
+        result: ModelValidationResult,
+        options?: IValidationOptions) => void;
 
-export interface IAsyncFieldValidator {
-    <T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<void>;
-}
+export type IAsyncFieldValidator =
+    <T extends IModel>(
+        model: T,
+        field: Field,
+        meta: IModelMeta<T>,
+        operation: IModelOperation,
+        result: ModelValidationResult,
+        options?: IValidationOptions) => Promise<void>;
 
 export function requiredValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (!isSet(model[field.name])) {
@@ -198,7 +208,7 @@ export function dateOnlyValidator<T extends IModel>(model: T, field: Field, meta
             return;
         }
         if (typeof model[field.name] != 'string'
-                || !((<string> model[field.name]).match(dateOnlyRegex))
+                || !(model[field.name].match(dateOnlyRegex))
                 || !Date.parse(model[field.name])) {
             result.addFieldError(
                 field.name,
@@ -215,7 +225,7 @@ export function timeOnlyValidator<T extends IModel>(model: T, field: Field, meta
             return;
         }
         if (typeof model[field.name] != 'string'
-                || !((<string> model[field.name]).match(timeOnlyRegex))
+                || !(model[field.name].match(timeOnlyRegex))
                 || !Date.parse('2000-01-01T' + model[field.name])) {
             result.addFieldError(
                 field.name,
@@ -232,7 +242,7 @@ export function dateTimeValidator<T extends IModel>(model: T, field: Field, meta
             return;
         }
         if (typeof model[field.name] != 'string'
-                || !((<string> model[field.name]).match(dateTimeRegex))
+                || !(model[field.name].match(dateTimeRegex))
                 || !Date.parse(model[field.name])) {
             result.addFieldError(
                 field.name,

@@ -43,7 +43,7 @@ export class ModelValidationResult {
         this.validationFinished = true;
     }
 
-    public addFieldError(fieldName: string, message: string, code?: string, data?: Object) {
+    public addFieldError(fieldName: string, message: string, code?: string, data?: any) {
         if (!fieldName) {
             throw new Error(`ValidationError: You must specify fieldName when adding a field error.`);
         }
@@ -66,7 +66,7 @@ export class ModelValidationResult {
         this.fieldErrors[fieldName].push(fieldError);
     }
 
-    public addModelError(message: string, code?: string, data?: Object) {
+    public addModelError(message: string, code?: string, data?: any) {
         if (!message) {
             throw new Error(`ValidationError: You must specify a message for a model error.`);
         }

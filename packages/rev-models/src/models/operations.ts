@@ -34,7 +34,7 @@ export class ModelOperationResult<T> {
         this.results = null;
     }
 
-    public addError(message: string, code?: string, data?: Object) {
+    public addError(message: string, code?: string, data?: any) {
         if (!message) {
             throw new Error(`ModelOperationResult Error: A message must be specified for the operation error.`);
         }
@@ -55,7 +55,7 @@ export class ModelOperationResult<T> {
     }
 }
 
-export interface ILoadOptions {
+export interface ILoadOptions {  // tslint:disable-line
 }
 
 export interface ICreateOptions {

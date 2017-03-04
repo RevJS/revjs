@@ -4,7 +4,7 @@ import { IModel, checkIsModelConstructor } from '../models';
 
 export class ModelRegistry {
 
-    private _modelProto: { [modelName: string]: Function };
+    private _modelProto: { [modelName: string]: new() => any };
     private _modelMeta: { [modelName: string]: IModelMeta<IModel> };
 
     constructor() {

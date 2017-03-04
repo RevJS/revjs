@@ -5,7 +5,6 @@ import * as m from '../index';
 // EXAMPLE:
 // import * as rev from 'rev-models'
 
-
 let TITLES = [
     ['Mr', 'Mr.'],
     ['Mrs', 'Mrs.'],
