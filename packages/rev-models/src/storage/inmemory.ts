@@ -6,15 +6,15 @@ import { ModelOperationResult, ILoadOptions } from '../models/operations';
 import { checkIsModelInstance, checkMetadataInitialised } from '../models/utils';
 
 export class InMemoryStorage implements IStorage {
-    private storage: {
+    _storage: {
         [modelName: string]: any
     } = {};
 
     constructor() {
-        this.storage = {};
+        this._storage = {};
     }
 
-    public load<T extends IModel>(data: T[], meta: IModelMeta<T>, result: ModelOperationResult<T>, options?: ILoadOptions): Promise<void> {
+    load<T extends IModel>(data: T[], meta: IModelMeta<T>, result: ModelOperationResult<T>, options?: ILoadOptions): Promise<void> {
         return new Promise<void>(() => {
 
             checkMetadataInitialised(meta);
@@ -27,12 +27,12 @@ export class InMemoryStorage implements IStorage {
                 throw new Error('InMemoryStorage.load() data must be an array of objects');
             }
 
-            this.storage[meta.name] = data;
+            this._storage[meta.name] = data;
 
         });
     }
 
-    public create<T extends IModel>(model: T, meta: IModelMeta<T>, result: ModelOperationResult<T>, options?: ICreateOptions): Promise<void> {
+    create<T extends IModel>(model: T, meta: IModelMeta<T>, result: ModelOperationResult<T>, options?: ICreateOptions): Promise<void> {
         return new Promise<void>((resolve) => {
 
             checkIsModelInstance(model);
@@ -42,21 +42,21 @@ export class InMemoryStorage implements IStorage {
                 throw new Error('InMemoryStorage.create() cannot be called on singleton models');
             }
 
-            let modelData = this.getModelData(model.constructor as any, meta);
+            let modelData = this._getModelData(model.constructor as any, meta);
             let record = {};
-            this.writeFields(model, meta, record);
+            this._writeFields(model, meta, record);
             modelData.push(record);
         });
     }
 
-    public update<T extends IModel>(model: T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IUpdateOptions): Promise<void> {
+    update<T extends IModel>(model: T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IUpdateOptions): Promise<void> {
         return new Promise<void>((resolve) => {
             if (!meta.singleton && !where) {
                 throw new Error('InMemoryStorage.update() requires the \'where\' parameter for non-singleton models');
             }
-            let modelData = this.getModelData(model.constructor as any, meta);
+            let modelData = this._getModelData(model.constructor as any, meta);
             if (meta.singleton) {
-                this.writeFields(model, meta, modelData);
+                this._writeFields(model, meta, modelData);
                 resolve(/*true*/);
             }
             else {
@@ -65,12 +65,12 @@ export class InMemoryStorage implements IStorage {
         });
     }
 
-    public read<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IReadOptions): Promise<void> {
+    read<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IReadOptions): Promise<void> {
         return new Promise<void>((resolve) => {
             if (!meta.singleton && !where) {
                 throw new Error('InMemoryStorage.read() requires the \'where\' parameter for non-singleton models');
             }
-            let modelData = this.getModelData<T>(model, meta);
+            let modelData = this._getModelData<T>(model, meta);
             if (meta.singleton) {
                 result.result = modelData;
                 resolve();
@@ -83,23 +83,23 @@ export class InMemoryStorage implements IStorage {
         });
     }
 
-    public remove<T extends IModel>(meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<void> {
+    remove<T extends IModel>(meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<void> {
         throw new Error('InMemoryStorage.delete() not yet implemented');
     }
 
-    private getModelData<T extends IModel>(model: new() => T, meta: IModelMeta<T>): any {
-        if (!this.storage[meta.name]) {
+    _getModelData<T extends IModel>(model: new() => T, meta: IModelMeta<T>): any {
+        if (!this._storage[meta.name]) {
             if (meta.singleton) {
-                this.storage[meta.name] = new model();
+                this._storage[meta.name] = new model();
             }
             else {
-                this.storage[meta.name] = [];
+                this._storage[meta.name] = [];
             }
         }
-        return this.storage[meta.name];
+        return this._storage[meta.name];
     }
 
-    private writeFields<T extends IModel>(model: T, meta: IModelMeta<T>, target: any): void {
+    _writeFields<T extends IModel>(model: T, meta: IModelMeta<T>, target: any): void {
         for (let field of meta.fields) {
             target[field.name] = model[field.name];
         }

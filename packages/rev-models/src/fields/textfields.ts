@@ -13,7 +13,7 @@ export interface ITextFieldOptions extends IFieldOptions {
 }
 
 export class TextField extends Field {
-    public options: ITextFieldOptions;
+    options: ITextFieldOptions;
 
     constructor(name: string, label: string, options?: ITextFieldOptions) {
         super(name, label, options);

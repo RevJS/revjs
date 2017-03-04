@@ -21,12 +21,12 @@ export interface IModelError {
 }
 
 export class ModelValidationResult {
-    public valid: boolean;
-    public fieldErrors: {
+    valid: boolean;
+    fieldErrors: {
         [fieldName: string]: IFieldError[]
     };
-    public modelErrors: IModelError[];
-    public validationFinished: boolean;
+    modelErrors: IModelError[];
+    validationFinished: boolean;
 
     constructor(valid?: boolean) {
         if (typeof valid == 'undefined') {
@@ -43,7 +43,7 @@ export class ModelValidationResult {
         this.validationFinished = true;
     }
 
-    public addFieldError(fieldName: string, message: string, code?: string, data?: any) {
+    addFieldError(fieldName: string, message: string, code?: string, data?: any) {
         if (!fieldName) {
             throw new Error(`ValidationError: You must specify fieldName when adding a field error.`);
         }
@@ -66,7 +66,7 @@ export class ModelValidationResult {
         this.fieldErrors[fieldName].push(fieldError);
     }
 
-    public addModelError(message: string, code?: string, data?: any) {
+    addModelError(message: string, code?: string, data?: any) {
         if (!message) {
             throw new Error(`ValidationError: You must specify a message for a model error.`);
         }

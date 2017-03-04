@@ -20,11 +20,11 @@ export interface IOperationError {
 }
 
 export class ModelOperationResult<T> {
-    public success: boolean;
-    public validation?: ModelValidationResult;
-    public result?: T;
-    public results?: T[];
-    public errors: IOperationError[];
+    success: boolean;
+    validation?: ModelValidationResult;
+    result?: T;
+    results?: T[];
+    errors: IOperationError[];
 
     constructor(public operation: IModelOperation) {
         this.success = true;
@@ -34,7 +34,7 @@ export class ModelOperationResult<T> {
         this.results = null;
     }
 
-    public addError(message: string, code?: string, data?: any) {
+    addError(message: string, code?: string, data?: any) {
         if (!message) {
             throw new Error(`ModelOperationResult Error: A message must be specified for the operation error.`);
         }

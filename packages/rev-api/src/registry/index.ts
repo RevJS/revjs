@@ -6,8 +6,8 @@ import { ModelRegistry, registry as revRegistry } from 'rev-models/lib/registry'
 
 export class ModelApiRegistry {
 
-    private _modelRegistry: ModelRegistry;
-    private _apiMeta: {
+    _modelRegistry: ModelRegistry;
+    _apiMeta: {
         [modelName: string]: IApiMeta
     };
 
@@ -24,15 +24,15 @@ export class ModelApiRegistry {
         this._apiMeta = {};
     }
 
-    public getModelRegistry() {
+    getModelRegistry() {
         return this._modelRegistry;
     }
 
-    public isRegistered(modelName: string) {
+    isRegistered(modelName: string) {
         return (modelName && (modelName in this._apiMeta));
     }
 
-    public register<T extends IModel>(model: new() => T, apiMeta: IApiMeta) {
+    register<T extends IModel>(model: new() => T, apiMeta: IApiMeta) {
 
         // Check model constructor
         checkIsModelConstructor(model);
@@ -52,14 +52,14 @@ export class ModelApiRegistry {
         this._apiMeta[modelName] = apiMeta;
     }
 
-    public getApiMeta(modelName: string): IApiMeta {
+    getApiMeta(modelName: string): IApiMeta {
         if (!(modelName in this._apiMeta)) {
             throw new Error(`ApiRegistryError: Model '${modelName}' does not have a registered API.`);
         }
         return this._apiMeta[modelName];
     }
 
-    public clearRegistry() {
+    clearRegistry() {
         this._apiMeta = {};
     }
 }

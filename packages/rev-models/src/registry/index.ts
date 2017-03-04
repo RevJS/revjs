@@ -4,8 +4,8 @@ import { IModel, checkIsModelConstructor } from '../models';
 
 export class ModelRegistry {
 
-    private _modelProto: { [modelName: string]: new() => any };
-    private _modelMeta: { [modelName: string]: IModelMeta<IModel> };
+    _modelProto: { [modelName: string]: new() => any };
+    _modelMeta: { [modelName: string]: IModelMeta<IModel> };
 
     constructor() {
         this._modelProto = {};
@@ -14,11 +14,11 @@ export class ModelRegistry {
 
     // TODO: Support extending existing models
 
-    public isRegistered(modelName: string): boolean {
+    isRegistered(modelName: string): boolean {
         return (modelName in this._modelProto);
     }
 
-    public register<T extends IModel>(model: new() => T, meta?: IModelMeta<T>) {
+    register<T extends IModel>(model: new() => T, meta?: IModelMeta<T>) {
 
         // Check model constructor
         checkIsModelConstructor(model);
@@ -35,25 +35,25 @@ export class ModelRegistry {
         this._modelMeta[modelName] = meta;
     }
 
-    public getModelNames(): string[] {
+    getModelNames(): string[] {
         return Object.keys(this._modelMeta);
     }
 
-    public getProto(modelName: string) {
+    getProto(modelName: string) {
         if (!this.isRegistered(modelName)) {
             throw new Error(`RegistryError: Model  '${modelName}' does not exist in the registry.`);
         }
         return this._modelProto[modelName];
     }
 
-    public getMeta(modelName: string) {
+    getMeta(modelName: string) {
         if (!this.isRegistered(modelName)) {
             throw new Error(`RegistryError: Model  '${modelName}' does not exist in the registry.`);
         }
         return this._modelMeta[modelName];
     }
 
-    public clearRegistry() {
+    clearRegistry() {
         this._modelProto = {};
         this._modelMeta = {};
     }

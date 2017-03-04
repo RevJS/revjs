@@ -26,8 +26,8 @@ export function getOptions(options?: IFieldOptions): IFieldOptions {
 }
 
 export class Field {
-    public validators: IFieldValidator[];
-    public asyncValidators: IAsyncFieldValidator[];
+    validators: IFieldValidator[];
+    asyncValidators: IAsyncFieldValidator[];
 
     constructor(public name: string, public label: string, public options?: IFieldOptions) {
         if (!name || typeof name != 'string') {
@@ -44,7 +44,7 @@ export class Field {
         }
     }
 
-    public validate<T extends IModel>(model: T, meta: IModelMeta<T>, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
+    validate<T extends IModel>(model: T, meta: IModelMeta<T>, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
         let timeout = options && options.timeout ? options.timeout : 5000;
         checkIsModelInstance(model);
         return new Promise((resolve, reject) => {

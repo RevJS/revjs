@@ -14,7 +14,7 @@ export class BooleanField extends Field {
 }
 
 export class SelectionField extends Field {
-    public options: ISelectionFieldOptions;
+    options: ISelectionFieldOptions;
 
     constructor(
             name: string,

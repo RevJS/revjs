@@ -7,7 +7,7 @@ export interface INumberFieldOptions extends IFieldOptions {
 }
 
 export class NumberField extends Field {
-    public options: INumberFieldOptions;
+    options: INumberFieldOptions;
 
     constructor(name: string, label: string, options?: INumberFieldOptions) {
         super(name, label, options);
