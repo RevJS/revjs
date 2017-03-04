@@ -7,8 +7,8 @@ import { ModelRegistry, registry as revRegistry } from 'rev-models/registry';
 export class ModelApiRegistry {
 
     private _modelRegistry: ModelRegistry;
-    private _apiMeta: {
-        [modelName: string]: IApiMeta
+    private _apiHandlers: {
+        [modelName: string]: ApiHandler
     };
 
     constructor(modelRegistry?: ModelRegistry) {
