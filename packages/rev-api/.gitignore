@@ -1,5 +1,0 @@
-node_modules
-*.map
-*.tar.gz
-dist/**/*
-npm-debug.log
