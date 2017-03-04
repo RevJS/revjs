@@ -2,9 +2,7 @@
   "name": "rev-models",
   "version": "0.0.1",
   "description": "RevJS Isomorphic Data Library - Core Data Model Components",
-  "files": [
-    "lib/"
-  ],
+  "main": "lib/index.js",
   "scripts": {
     "build": "run-bin tsc",
     "build-watch": "run-bin tsc --watch",

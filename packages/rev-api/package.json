@@ -2,9 +2,7 @@
   "name": "rev-api",
   "version": "0.0.1",
   "description": "RevJS Isomorphic Data Library - API Library",
-  "files": [
-    "lib/"
-  ],
+  "main": "lib/index.js",
   "scripts": {
     "build": "run-bin tsc",
     "build-watch": "run-bin tsc --watch",
