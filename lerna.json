@@ -4,5 +4,6 @@
     "packages/*"
   ],
   "version": "independent",
-  "concurrency": 1
+  "concurrency": 1,
+  "hoist": true
 }
