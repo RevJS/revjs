@@ -1,4 +1,4 @@
 
-export * from './models';
+export * from './models/operations';
 export * from './decorators';
-export * from './registry';
+export { register } from './registry';

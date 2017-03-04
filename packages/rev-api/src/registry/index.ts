@@ -1,8 +1,8 @@
 
-import { IModel, checkIsModelConstructor } from 'rev-models';
+import { IModel, checkIsModelConstructor } from 'rev-models/lib/models';
 import { IApiMeta, initialiseApiMeta } from '../api/meta';
 
-import { ModelRegistry, registry as revRegistry } from 'rev-models';
+import { ModelRegistry, registry as revRegistry } from 'rev-models/lib/registry';
 
 export class ModelApiRegistry {
 

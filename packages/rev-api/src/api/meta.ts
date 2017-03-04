@@ -1,5 +1,5 @@
 
-import { IModel, IModelMeta, ModelOperationType } from 'rev-models';
+import { IModel, IModelMeta, ModelOperationType } from 'rev-models/lib/models';
 
 export interface IApiMeta {
     operations: ModelOperationType[] | 'all';

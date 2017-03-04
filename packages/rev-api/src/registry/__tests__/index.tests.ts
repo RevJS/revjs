@@ -1,8 +1,8 @@
-import { IModelMeta } from 'rev-models/models';
+import { IModelMeta } from 'rev-models/lib/models';
 // import { ModelOperationType } from 'rev-models/models';
-import * as f from 'rev-models/fields';
+import * as f from 'rev-models/lib/fields';
 import * as registry from '../index';
-import { ModelRegistry, registry as revRegistry } from 'rev-models/registry';
+import { ModelRegistry, registry as revRegistry } from 'rev-models/lib/registry';
 
 import { IApiMeta } from '../../api/meta';
 
@@ -68,11 +68,11 @@ describe('ModelApiRegistry', () => {
         });
 
         it('returns false when a non-string is passed for modelName', () => {
-            expect(testReg.isRegistered(<any> 22)).to.equal(false);
+            expect(testReg.isRegistered(22 as any)).to.equal(false);
         });
 
         it('returns false when an object is passed for modelName', () => {
-            expect(testReg.isRegistered(<any> {test: 1})).to.equal(false);
+            expect(testReg.isRegistered({test: 1} as any)).to.equal(false);
         });
 
     });
@@ -87,7 +87,7 @@ describe('ModelApiRegistry', () => {
 
         it('rejects a non-model constructor with a ModelError', () => {
             expect(() => {
-                testReg.register(<any> {}, apiMeta);
+                testReg.register({} as any, apiMeta);
             }).to.throw('ModelError');
         });
 
@@ -108,7 +108,7 @@ describe('ModelApiRegistry', () => {
         it('throws an error if api metadata is invalid', () => {
             revRegistry.register(TestModel, testMeta);
             expect(() => {
-                testReg.register(TestModel, <any> {});
+                testReg.register(TestModel, {} as any);
             }).to.throw(`ApiMetadataError`);
         });
 

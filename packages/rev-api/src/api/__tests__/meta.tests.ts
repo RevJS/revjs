@@ -1,6 +1,6 @@
-import { IModelMeta } from 'rev-models/models';
-import { initialiseMeta } from 'rev-models/models/meta';
-import * as f from 'rev-models/fields';
+import { IModelMeta } from 'rev-models/lib/models';
+import { initialiseMeta } from 'rev-models/lib/models/meta';
+import * as f from 'rev-models/lib/fields';
 
 import { IApiMeta, initialiseApiMeta } from '../meta';
 
@@ -41,11 +41,11 @@ describe('initialiseApiMeta()', () => {
         expect(() => {
             initialiseApiMeta(testMeta, apiMeta);
         }).to.not.throw();
-        expect(apiMeta.operations).to.deep.equal(['create','read','update','remove']);
+        expect(apiMeta.operations).to.deep.equal(['create', 'read', 'update', 'remove']);
     });
 
     it('throws an error if operations key is missing', () => {
-        apiMeta = <any> {};
+        apiMeta = {} as any;
         expect(() => {
             initialiseApiMeta(testMeta, null);
         }).to.throw('API metadata must contain a valid "operations" entry');
@@ -64,13 +64,13 @@ describe('initialiseApiMeta()', () => {
     });
 
     it('throws an error if operations array contains invalid operations', () => {
-        apiMeta = <any> {
+        apiMeta = {
             operations: [
                 'create',
                 'read',
                 'destroy',
                 'modify'
-            ]};
+            ]} as any;
         expect(() => {
             initialiseApiMeta(testMeta, apiMeta);
         }).to.throw('Invalid operation in operations list');
