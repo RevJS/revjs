@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 // import * as Hapi from 'hapi';
 import * as sinon from 'sinon';
-import { ModelApiRegistry, registry as revApiRegistry } from 'rev-api/registry';
+import { ModelApiRegistry, registry as revApiRegistry } from 'rev-api/lib/registry';
 import { IRevApiOptions, RevApi, URL_MATCH_PATTERN } from '../revapi';
 
 describe('RevApi', () => {

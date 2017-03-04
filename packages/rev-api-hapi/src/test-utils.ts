@@ -1,8 +1,8 @@
 
 import * as Hapi from 'hapi';
 import * as rev from 'rev-models';
-import { ModelRegistry } from 'rev-models/registry';
-import { ModelApiRegistry } from 'rev-api/registry';
+import { ModelRegistry } from 'rev-models/lib/registry';
+import { ModelApiRegistry } from 'rev-api/lib/registry';
 
 export interface IServerOptions {
     addPlugins?: any;

@@ -5,7 +5,7 @@ import * as Hapi from 'hapi';
 import { createServer, createApiRegistry } from '../test-utils';
 import RevApiPlugin from '../index';
 import { IRevApiOptions, RevApi } from '../api/revapi';
-import { ModelApiRegistry } from 'rev-api/registry';
+import { ModelApiRegistry } from 'rev-api/lib/registry';
 
 let pkgJson = require('../../package.json');
 

@@ -1,16 +1,8 @@
 {
+    "extends": "../../tsconfig",
     "compilerOptions": {
-        "declaration": true,
-        "declarationDir": "./dist",
-        "listEmittedFiles": true,
-        "experimentalDecorators": true,
-        "outDir": "./dist",
-        "rootDir": "./src",
-        "noImplicitAny": true,
-        "suppressImplicitAnyIndexErrors": true,
-        "noUnusedLocals": true,
-        "module": "commonjs",
-        "target": "es5"
+        "outDir": "./lib",
+        "rootDir": "./src"
     },
     "include": [
         "./src/**/*"

@@ -2,35 +2,28 @@
   "name": "rev-api-hapi",
   "version": "0.0.1",
   "description": "RevJS Isomorphic Data Library - API Plugin for HapiJS",
+  "main": "lib/index.js",
   "scripts": {
-    "build": "tsc",
-    "build-watch": "tsc --watch",
-    "lint": "tslint ./src/**/*.ts",
-    "test": "mocha --require ./tests-setup.js --recursive \"./src/**/__tests__/*\"",
-    "test-watch": "mocha --require ./tests-setup.js --recursive \"./src/**/__tests__/*\" --watch",
-    "mocha": "mocha --require ./tests-setup.js",
-    "sync-deps": "node ./scripts/sync-deps.js"
+    "build": "run-bin tsc",
+    "build-watch": "run-bin tsc --watch",
+    "lint": "run-bin tslint ./src/**/*.ts",
+    "test": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\"",
+    "test-watch": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\" --watch",
+    "mocha": "run-bin mocha -r ts-node/register"
   },
   "author": "Russell Briggs <russ@paraflyer.net>",
   "license": "MIT",
-  "typings": "index.d.ts",
-  "peerDependencies": {
-    "hapi": "^16.0.0",
+  "typings": "lib/index.d.ts",
+  "dependencies": {
     "rev-api": "0.0.1",
     "rev-models": "0.0.1"
   },
   "devDependencies": {
-    "@types/chai": "3.4.34",
-    "@types/es6-promise": "0.0.32",
     "@types/hapi": "16.0.0",
-    "@types/mocha": "2.2.33",
-    "@types/sinon": "1.16.34",
-    "chai": "3.5.0",
-    "fs-extra": "2.0.0",
-    "mocha": "3.2.0",
-    "sinon": "1.17.7",
-    "ts-node": "1.7.0",
-    "tslint": "4.0.2",
-    "typescript": "2.1.5"
+    "hapi": "^16.0.0",
+    "run-bin": "1.0.0"
+  },
+  "peerDependencies": {
+    "hapi": "^16.0.0"
   }
 }

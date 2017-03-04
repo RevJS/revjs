@@ -1,6 +1,6 @@
 
 import * as Hapi from 'hapi';
-import { ModelApiRegistry, registry as revApiRegistry } from 'rev-api/registry';
+import { ModelApiRegistry, registry as revApiRegistry } from 'rev-api/lib/registry';
 
 export interface IRevApiOptions {
     baseUrl?: string;
