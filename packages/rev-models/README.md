@@ -3,14 +3,9 @@
 RevJS is a rapid application development toolkit designed to simplify creation
 of data-driven JS apps.
 
-The RevJS suite of modules aims to provide the following functionality:
- * Data models & model metadata
- * Fully customiseable field types and validation
- * Data persistence to a variety of databases, and simple in-memory data storage
-   to speed up initial app development
- * Customiseable, automatically generated GraphQL API
- * Helpers for various front-end frameworks for rendering, validating and
-   submitting form data
+The `rev-models` module is the core component of RevJS, which includes a model metadata
+registry, field types, CRUD functions and simple in-memory data storage to help new
+users get up and running quickly.
 
 This project is currently in pre-alpha stages, but is getting closer to alpha!
 
@@ -43,7 +38,7 @@ create(bob);
 
  * Create, Read, Update, Delete access to Person records from a database
 
- * A full GraphQL API for front-end integration
+ * A full GraphQL API (with a swagger specification)
 
  * Fully-customiseable, automatically generated forms for a variety of UI frameworks
 

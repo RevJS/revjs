@@ -1,0 +1,22 @@
+{
+  "name": "rev-models",
+  "version": "0.0.1",
+  "description": "RevJS Isomorphic Data Library - Core Data Model Components",
+  "files": [
+    "lib/"
+  ],
+  "scripts": {
+    "build": "run-bin tsc",
+    "build-watch": "run-bin tsc --watch",
+    "lint": "run-bin tslint ./src/**/*.ts",
+    "test": "run-bin mocha --require ../../scripts/tests-setup.js --recursive \"./src/**/__tests__/*\"",
+    "test-watch": "run-bin mocha --require ../../scripts/tests-setup.js --recursive \"./src/**/__tests__/*\" --watch",
+    "mocha": "run-bin mocha --require ./tests-setup.js"
+  },
+  "author": "Russell Briggs <russ@paraflyer.net>",
+  "license": "MIT",
+  "typings": "lib/index.d.ts",
+  "devDependencies": {
+    "run-bin": "1.0.0"
+  }
+}

@@ -1,0 +1,20 @@
+export declare let VALIDATION_MESSAGES: {
+    required: (label: string) => string;
+    string_empty: (label: string) => string;
+    not_a_string: (label: string) => string;
+    not_a_number: (label: string) => string;
+    not_an_integer: (label: string) => string;
+    not_a_boolean: (label: string) => string;
+    not_a_date: (label: string) => string;
+    not_a_time: (label: string) => string;
+    not_a_datetime: (label: string) => string;
+    min_string_length: (label: string, val: number) => string;
+    max_string_length: (label: string, val: number) => string;
+    min_value: (label: string, val: any) => string;
+    max_value: (label: string, val: any) => string;
+    no_regex_match: (label: string) => string;
+    no_selection_match: (label: string) => string;
+    list_empty: (label: string) => string;
+    selection_not_an_array: (label: string) => string;
+    extra_field: (name: string) => string;
+};

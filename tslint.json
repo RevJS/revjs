@@ -27,6 +27,7 @@
      "no-empty": false,
      "no-string-literal": false,
      "object-literal-shorthand": false,
-     "member-access": [false]
+     "member-access": [false],
+     "prefer-const": [false]
   }
 }
