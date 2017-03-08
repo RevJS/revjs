@@ -97,7 +97,7 @@ describe('rev.fields.selectionfields', () => {
             let opts: ISelectionFieldOptions = {selection: selection};
             let test = new SelectionField('value', opts);
             expect(test.name).to.equal('value');
-            expect(test.options).to.equal(opts);
+            expect(test.options).to.deep.equal(DEFAULT_FIELD_OPTIONS);
             expect(test).is.instanceof(Field);
         });
 

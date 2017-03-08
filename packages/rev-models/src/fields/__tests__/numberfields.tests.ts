@@ -24,7 +24,7 @@ describe('rev.fields.numberfields', () => {
             let opts: IFieldOptions = {};
             let test = new NumberField('value', opts);
             expect(test.name).to.equal('value');
-            expect(test.options).to.equal(opts);
+            expect(test.options).to.deep.equal(DEFAULT_FIELD_OPTIONS);
             expect(test).is.instanceof(Field);
         });
 
@@ -134,7 +134,7 @@ describe('rev.fields.numberfields', () => {
             let opts: IFieldOptions = {};
             let test = new IntegerField('value', opts);
             expect(test.name).to.equal('value');
-            expect(test.options).to.equal(opts);
+            expect(test.options).to.deep.equal(DEFAULT_FIELD_OPTIONS);
             expect(test).is.instanceof(NumberField);
         });
 

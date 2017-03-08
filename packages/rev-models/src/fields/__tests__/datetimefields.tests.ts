@@ -24,7 +24,7 @@ describe('rev.fields.datetimefields', () => {
             let opts: IFieldOptions = {};
             let test = new DateField('value', opts);
             expect(test.name).to.equal('value');
-            expect(test.options).to.equal(opts);
+            expect(test.options).to.deep.equal(DEFAULT_FIELD_OPTIONS);
             expect(test).is.instanceof(Field);
         });
 
@@ -100,7 +100,7 @@ describe('rev.fields.datetimefields', () => {
             let opts: IFieldOptions = {};
             let test = new TimeField('value', opts);
             expect(test.name).to.equal('value');
-            expect(test.options).to.equal(opts);
+            expect(test.options).to.deep.equal(DEFAULT_FIELD_OPTIONS);
             expect(test).is.instanceof(Field);
         });
 
@@ -176,7 +176,7 @@ describe('rev.fields.datetimefields', () => {
             let opts: IFieldOptions = {};
             let test = new DateTimeField('value', opts);
             expect(test.name).to.equal('value');
-            expect(test.options).to.equal(opts);
+            expect(test.options).to.deep.equal(DEFAULT_FIELD_OPTIONS);
             expect(test).is.instanceof(Field);
         });
 

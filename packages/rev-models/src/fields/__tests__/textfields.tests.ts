@@ -24,7 +24,7 @@ describe('rev.fields.textfields', () => {
             let opts: IFieldOptions = {};
             let test = new TextField('name', opts);
             expect(test.name).to.equal('name');
-            expect(test.options).to.equal(opts);
+            expect(test.options).to.deep.equal(DEFAULT_FIELD_OPTIONS);
             expect(test).is.instanceof(Field);
         });
 
@@ -152,7 +152,7 @@ describe('rev.fields.textfields', () => {
             let test = new EmailField('email', opts);
             expect(test).is.instanceof(TextField);
             expect(test.name).to.equal('email');
-            expect(test.options).to.equal(opts);
+            expect(test.options).to.deep.equal(DEFAULT_FIELD_OPTIONS);
             expect(test.options.regEx).to.equal(EMAIL_ADDR_REGEX);
         });
 
@@ -222,7 +222,7 @@ describe('rev.fields.textfields', () => {
             let test = new URLField('website', opts);
             expect(test).is.instanceof(TextField);
             expect(test.name).to.equal('website');
-            expect(test.options).to.equal(opts);
+            expect(test.options).to.deep.equal(DEFAULT_FIELD_OPTIONS);
             expect(test.options.regEx).to.equal(URL_REGEX);
         });
 
