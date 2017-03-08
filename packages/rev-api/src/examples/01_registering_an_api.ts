@@ -3,7 +3,8 @@ import * as rev from 'rev-models';
 import * as api from '../index';
 
 // EXAMPLE:
-// import * as rev from 'rev-models'
+// import * as rev from 'rev-models';
+// import * as api from 'rev-api';
 
 export class Person {
 
@@ -32,6 +33,20 @@ api.register(Person, {
            handler: async (context, email) => {
                console.log('Unsubscribe requested for', email);
                return 'Unsubscribed';
+           }
+        },
+        {
+            name: 'randomMember',
+            args: [
+                new rev.fields.TextField('name'),
+                new rev.fields.IntegerField('minAge', {minValue: 16})
+            ],
+            handler: async (context, name) => {
+               console.log('Getting a random member named', name);
+               return {
+                   first_name: 'Bob',
+                   age: 21
+               };
            }
         }
     ]
