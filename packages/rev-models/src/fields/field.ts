@@ -6,6 +6,7 @@ import { isSet } from '../utils';
 import * as validators from './validators';
 
 export interface IFieldOptions {
+    label?: string;
     required?: boolean;
 }
 
@@ -18,7 +19,7 @@ export function getOptions(options?: IFieldOptions): IFieldOptions {
         if (typeof options != 'object') {
             throw new Error('FieldError: the options parameter must be an object');
         }
-        return options;
+        return Object.assign({}, DEFAULT_FIELD_OPTIONS, options);
     }
     else {
         return Object.assign({}, DEFAULT_FIELD_OPTIONS);
@@ -29,12 +30,9 @@ export class Field {
     validators: IFieldValidator[];
     asyncValidators: IAsyncFieldValidator[];
 
-    constructor(public name: string, public label: string, public options?: IFieldOptions) {
+    constructor(public name: string, public options?: IFieldOptions) {
         if (!name || typeof name != 'string') {
             throw new Error('FieldError: new fields must have a name');
-        }
-        if (!label || typeof label != 'string') {
-            throw new Error('FieldError: new fields must have a label');
         }
         this.options = getOptions(options);
         this.validators = [];

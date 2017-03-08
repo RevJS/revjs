@@ -15,11 +15,11 @@ The basic idea is, this code:
 import { IntegerField, TextField, EmailField, register, create } from 'rev-models';
 
 class Person {
-    @IntegerField('Id')
+    @IntegerField({label: 'Id'})
         id: number;    
-    @TextField('Name')
+    @TextField({label: 'Name'})
         name: string;
-    @EmailField('Email')
+    @EmailField({label: 'Email', required: false})
         email: string;
 }
 

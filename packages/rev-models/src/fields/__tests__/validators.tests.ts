@@ -16,26 +16,31 @@ class TestModel {
     isAwesome: any;
     registered: any;
 }
-let nameField = new fld.TextField('name', 'Name', {
+let nameField = new fld.TextField('name', {
     minLength: 5, maxLength: 10,
     minValue: 'ddd', maxValue: 'jjj',
     regEx: /^abc\d.$/  // abc[number][anything]
 });
-let idField = new fld.IntegerField('id', 'Id');
-let ageField = new fld.NumberField('age', 'Age', {
+let idField = new fld.IntegerField('id');
+let ageField = new fld.NumberField('age', {
     minValue: 18, maxValue: 30
 });
-let genderField = new fld.SelectionField('gender', 'Gender', [
-    ['male', 'Male'],
-    ['female', 'Female']
-]);
-let hobbiesField = new fld.SelectionField('hobbies', 'Hobbies', [
-    ['ironing', 'Ironing'],
-    ['extreme_ironing', 'Extreme Ironing'],
-    ['naked_ironing', 'Naked Ironing']
-], { multiple: true });
-let booleanField = new fld.BooleanField('isAwesome', 'Is Awesome?');
-let dateField = new fld.DateTimeField('registered', 'Date Registered');
+let genderField = new fld.SelectionField('gender', {
+        selection: [
+            ['male', 'Male'],
+            ['female', 'Female']
+        ]
+    });
+let hobbiesField = new fld.SelectionField('hobbies', {
+        selection: [
+            ['ironing', 'Ironing'],
+            ['extreme_ironing', 'Extreme Ironing'],
+            ['naked_ironing', 'Naked Ironing']
+        ],
+        multiple: true
+    });
+let booleanField = new fld.BooleanField('isAwesome');
+let dateField = new fld.DateTimeField('registered');
 
 let op: IModelOperation = {
     type: 'create'
@@ -79,14 +84,14 @@ describe('rev.fields.validators', () => {
         it('returns valid = false when a value is not defined', () => {
             let test = new TestModel();
             vld.requiredValidator(test, nameField, meta, op, vResult, opts);
-            expectFailure('required', nameField.name, msg.required(nameField.label), vResult);
+            expectFailure('required', nameField.name, msg.required(nameField.name), vResult);
         });
 
         it('returns valid = false when a value is null', () => {
             let test = new TestModel();
             test.name = null;
             vld.requiredValidator(test, nameField, meta, op, vResult, opts);
-            expectFailure('required', nameField.name, msg.required(nameField.label), vResult);
+            expectFailure('required', nameField.name, msg.required(nameField.name), vResult);
         });
 
     });
@@ -117,7 +122,7 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.name = 22;
             vld.stringValidator(test, nameField, meta, op, vResult, opts);
-            expectFailure('not_a_string', nameField.name, msg.not_a_string(nameField.label), vResult);
+            expectFailure('not_a_string', nameField.name, msg.not_a_string(nameField.name), vResult);
         });
 
     });
@@ -162,7 +167,7 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.name = '';
             vld.stringEmptyValidator(test, nameField, meta, op, vResult, opts);
-            expectFailure('string_empty', nameField.name, msg.string_empty(nameField.label), vResult);
+            expectFailure('string_empty', nameField.name, msg.string_empty(nameField.name), vResult);
         });
 
     });
@@ -200,14 +205,14 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.name = 'flibble';
             vld.regExValidator(test, nameField, meta, op, vResult, opts);
-            expectFailure('no_regex_match', nameField.name, msg.no_regex_match(nameField.label), vResult);
+            expectFailure('no_regex_match', nameField.name, msg.no_regex_match(nameField.name), vResult);
         });
 
         it('returns valid = false when another value does not match the regex', () => {
             let test = new TestModel();
             test.name = 'abcd';
             vld.regExValidator(test, nameField, meta, op, vResult, opts);
-            expectFailure('no_regex_match', nameField.name, msg.no_regex_match(nameField.label), vResult);
+            expectFailure('no_regex_match', nameField.name, msg.no_regex_match(nameField.name), vResult);
         });
 
     });
@@ -245,14 +250,14 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.age = 'flibble';
             vld.numberValidator(test, ageField, meta, op, vResult, opts);
-            expectFailure('not_a_number', ageField.name, msg.not_a_number(ageField.label), vResult);
+            expectFailure('not_a_number', ageField.name, msg.not_a_number(ageField.name), vResult);
         });
 
         it('returns valid = false when a value is an empty string', () => {
             let test = new TestModel();
             test.age = '';
             vld.numberValidator(test, ageField, meta, op, vResult, opts);
-            expectFailure('not_a_number', ageField.name, msg.not_a_number(ageField.label), vResult);
+            expectFailure('not_a_number', ageField.name, msg.not_a_number(ageField.name), vResult);
         });
 
     });
@@ -297,28 +302,28 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.age = 'flibble';
             vld.integerValidator(test, ageField, meta, op, vResult, opts);
-            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.label), vResult);
+            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.name), vResult);
         });
 
         it('returns valid = false when a value is an empty string', () => {
             let test = new TestModel();
             test.age = '';
             vld.integerValidator(test, ageField, meta, op, vResult, opts);
-            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.label), vResult);
+            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.name), vResult);
         });
 
         it('returns valid = false when a value is a float', () => {
             let test = new TestModel();
             test.age = 12.345;
             vld.integerValidator(test, ageField, meta, op, vResult, opts);
-            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.label), vResult);
+            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.name), vResult);
         });
 
         it('returns valid = false when value is a string representation of a float', () => {
             let test = new TestModel();
             test.age = '12.345';
             vld.integerValidator(test, ageField, meta, op, vResult, opts);
-            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.label), vResult);
+            expectFailure('not_an_integer', ageField.name, msg.not_an_integer(ageField.name), vResult);
         });
 
     });
@@ -356,7 +361,7 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.isAwesome = 22;
             vld.booleanValidator(test, booleanField, meta, op, vResult, opts);
-            expectFailure('not_a_boolean', booleanField.name, msg.not_a_boolean(booleanField.label), vResult);
+            expectFailure('not_a_boolean', booleanField.name, msg.not_a_boolean(booleanField.name), vResult);
         });
 
     });
@@ -410,14 +415,14 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.name = '';
             vld.minStringLengthValidator(test, nameField, meta, op, vResult, opts);
-            expectFailure('min_string_length', nameField.name, msg.min_string_length(nameField.label, nameField.options.minLength), vResult);
+            expectFailure('min_string_length', nameField.name, msg.min_string_length(nameField.name, nameField.options.minLength), vResult);
         });
 
         it('returns valid = false for a short string with spaces', () => {
             let test = new TestModel();
             test.name = ' ab ';
             vld.minStringLengthValidator(test, nameField, meta, op, vResult, opts);
-            expectFailure('min_string_length', nameField.name, msg.min_string_length(nameField.label, nameField.options.minLength), vResult);
+            expectFailure('min_string_length', nameField.name, msg.min_string_length(nameField.name, nameField.options.minLength), vResult);
         });
 
     });
@@ -471,14 +476,14 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.name = 'dfs sfdsf erfwef dfsdf sdfsdf';
             vld.maxStringLengthValidator(test, nameField, meta, op, vResult, opts);
-            expectFailure('max_string_length', nameField.name, msg.max_string_length(nameField.label, nameField.options.maxLength), vResult);
+            expectFailure('max_string_length', nameField.name, msg.max_string_length(nameField.name, nameField.options.maxLength), vResult);
         });
 
         it('returns valid = false for a long string with spaces', () => {
             let test = new TestModel();
             test.name = '     ab      ';
             vld.maxStringLengthValidator(test, nameField, meta, op, vResult, opts);
-            expectFailure('max_string_length', nameField.name, msg.max_string_length(nameField.label, nameField.options.maxLength), vResult);
+            expectFailure('max_string_length', nameField.name, msg.max_string_length(nameField.name, nameField.options.maxLength), vResult);
         });
 
     });
@@ -533,28 +538,28 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.age = 10;
             vld.minValueValidator(test, ageField, meta, op, vResult, opts);
-            expectFailure('min_value', ageField.name, msg.min_value(ageField.label, ageField.options.minValue), vResult);
+            expectFailure('min_value', ageField.name, msg.min_value(ageField.name, ageField.options.minValue), vResult);
         });
 
         it('returns valid = false when number is a lot less than minValue', () => {
             let test = new TestModel();
             test.age = -120;
             vld.minValueValidator(test, ageField, meta, op, vResult, opts);
-            expectFailure('min_value', ageField.name, msg.min_value(ageField.label, ageField.options.minValue), vResult);
+            expectFailure('min_value', ageField.name, msg.min_value(ageField.name, ageField.options.minValue), vResult);
         });
 
         it('returns valid = false when string is less than minValue', () => {
             let test = new TestModel();
             test.name = 'bbb';
             vld.minValueValidator(test, nameField, meta, op, vResult, opts);
-            expectFailure('min_value', nameField.name, msg.min_value(nameField.label, nameField.options.minValue), vResult);
+            expectFailure('min_value', nameField.name, msg.min_value(nameField.name, nameField.options.minValue), vResult);
         });
 
         it('returns valid = false when string is a lot less than minValue', () => {
             let test = new TestModel();
             test.name = '';
             vld.minValueValidator(test, nameField, meta, op, vResult, opts);
-            expectFailure('min_value', nameField.name, msg.min_value(nameField.label, nameField.options.minValue), vResult);
+            expectFailure('min_value', nameField.name, msg.min_value(nameField.name, nameField.options.minValue), vResult);
         });
 
     });
@@ -609,14 +614,14 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.age = 45;
             vld.maxValueValidator(test, ageField, meta, op, vResult, opts);
-            expectFailure('max_value', ageField.name, msg.max_value(ageField.label, ageField.options.maxValue), vResult);
+            expectFailure('max_value', ageField.name, msg.max_value(ageField.name, ageField.options.maxValue), vResult);
         });
 
         it('returns valid = false when string is greater than maxValue', () => {
             let test = new TestModel();
             test.name = 'zzz';
             vld.maxValueValidator(test, nameField, meta, op, vResult, opts);
-            expectFailure('max_value', nameField.name, msg.max_value(nameField.label, nameField.options.maxValue), vResult);
+            expectFailure('max_value', nameField.name, msg.max_value(nameField.name, nameField.options.maxValue), vResult);
         });
 
     });
@@ -647,21 +652,21 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.gender = 'hamster';
             vld.singleSelectionValidator(test, genderField, meta, op, vResult, opts);
-            expectFailure('no_selection_match', genderField.name, msg.no_selection_match(genderField.label), vResult);
+            expectFailure('no_selection_match', genderField.name, msg.no_selection_match(genderField.name), vResult);
         });
 
         it('returns valid = false when the value is a number that is not in the selection', () => {
             let test = new TestModel();
             test.gender = 222;
             vld.singleSelectionValidator(test, genderField, meta, op, vResult, opts);
-            expectFailure('no_selection_match', genderField.name, msg.no_selection_match(genderField.label), vResult);
+            expectFailure('no_selection_match', genderField.name, msg.no_selection_match(genderField.name), vResult);
         });
 
         it('returns valid = false when value is an empty string', () => {
             let test = new TestModel();
             test.gender = '';
             vld.singleSelectionValidator(test, genderField, meta, op, vResult, opts);
-            expectFailure('no_selection_match', genderField.name, msg.no_selection_match(genderField.label), vResult);
+            expectFailure('no_selection_match', genderField.name, msg.no_selection_match(genderField.name), vResult);
         });
 
     });
@@ -699,7 +704,7 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.hobbies = [];
             vld.listEmptyValidator(test, hobbiesField, meta, op, vResult, opts);
-            expectFailure('list_empty', hobbiesField.name, msg.list_empty(hobbiesField.label), vResult);
+            expectFailure('list_empty', hobbiesField.name, msg.list_empty(hobbiesField.name), vResult);
         });
 
     });
@@ -737,49 +742,49 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.hobbies = 'ironing';
             vld.multipleSelectionValidator(test, hobbiesField, meta, op, vResult, opts);
-            expectFailure('selection_not_an_array', hobbiesField.name, msg.selection_not_an_array(hobbiesField.label), vResult);
+            expectFailure('selection_not_an_array', hobbiesField.name, msg.selection_not_an_array(hobbiesField.name), vResult);
         });
 
         it('returns valid = false when value is just a number', () => {
             let test = new TestModel();
             test.hobbies = 222;
             vld.multipleSelectionValidator(test, hobbiesField, meta, op, vResult, opts);
-            expectFailure('selection_not_an_array', hobbiesField.name, msg.selection_not_an_array(hobbiesField.label), vResult);
+            expectFailure('selection_not_an_array', hobbiesField.name, msg.selection_not_an_array(hobbiesField.name), vResult);
         });
 
         it('returns valid = false when value is an object', () => {
             let test = new TestModel();
             test.hobbies = { flibble: true };
             vld.multipleSelectionValidator(test, hobbiesField, meta, op, vResult, opts);
-            expectFailure('selection_not_an_array', hobbiesField.name, msg.selection_not_an_array(hobbiesField.label), vResult);
+            expectFailure('selection_not_an_array', hobbiesField.name, msg.selection_not_an_array(hobbiesField.name), vResult);
         });
 
         it('returns valid = false when one value is not in the selection', () => {
             let test = new TestModel();
             test.hobbies = ['golf'];
             vld.multipleSelectionValidator(test, hobbiesField, meta, op, vResult, opts);
-            expectFailure('no_selection_match', hobbiesField.name, msg.no_selection_match(hobbiesField.label), vResult);
+            expectFailure('no_selection_match', hobbiesField.name, msg.no_selection_match(hobbiesField.name), vResult);
         });
 
         it('returns valid = false when one value is in the selection and one is not in the selection', () => {
             let test = new TestModel();
             test.hobbies = ['ironing', 'golf'];
             vld.multipleSelectionValidator(test, hobbiesField, meta, op, vResult, opts);
-            expectFailure('no_selection_match', hobbiesField.name, msg.no_selection_match(hobbiesField.label), vResult);
+            expectFailure('no_selection_match', hobbiesField.name, msg.no_selection_match(hobbiesField.name), vResult);
         });
 
         it('returns valid = false when one value is a number that is not in the selection', () => {
             let test = new TestModel();
             test.hobbies = [222];
             vld.multipleSelectionValidator(test, hobbiesField, meta, op, vResult, opts);
-            expectFailure('no_selection_match', hobbiesField.name, msg.no_selection_match(hobbiesField.label), vResult);
+            expectFailure('no_selection_match', hobbiesField.name, msg.no_selection_match(hobbiesField.name), vResult);
         });
 
         it('returns valid = false when value is an empty string', () => {
             let test = new TestModel();
             test.hobbies = [''];
             vld.multipleSelectionValidator(test, hobbiesField, meta, op, vResult, opts);
-            expectFailure('no_selection_match', hobbiesField.name, msg.no_selection_match(hobbiesField.label), vResult);
+            expectFailure('no_selection_match', hobbiesField.name, msg.no_selection_match(hobbiesField.name), vResult);
         });
 
     });
@@ -817,35 +822,35 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.registered = new TestModel();
             vld.dateOnlyValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_date', dateField.name, msg.not_a_date(dateField.label), vResult);
+            expectFailure('not_a_date', dateField.name, msg.not_a_date(dateField.name), vResult);
         });
 
         it('returns valid = false when date string also contains a time', () => {
             let test = new TestModel();
             test.registered = '2016-12-01T12:00:00';
             vld.dateOnlyValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_date', dateField.name, msg.not_a_date(dateField.label), vResult);
+            expectFailure('not_a_date', dateField.name, msg.not_a_date(dateField.name), vResult);
         });
 
         it('returns valid = false when date string is an invalid date', () => {
             let test = new TestModel();
             test.registered = '2016-00-12';
             vld.dateOnlyValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_date', dateField.name, msg.not_a_date(dateField.label), vResult);
+            expectFailure('not_a_date', dateField.name, msg.not_a_date(dateField.name), vResult);
         });
 
         it('returns valid = false when string is not in the correct format', () => {
             let test = new TestModel();
             test.registered = '17 May 1985';
             vld.dateOnlyValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_date', dateField.name, msg.not_a_date(dateField.label), vResult);
+            expectFailure('not_a_date', dateField.name, msg.not_a_date(dateField.name), vResult);
         });
 
         it('returns valid = false when string is empty', () => {
             let test = new TestModel();
             test.registered = '';
             vld.dateOnlyValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_date', dateField.name, msg.not_a_date(dateField.label), vResult);
+            expectFailure('not_a_date', dateField.name, msg.not_a_date(dateField.name), vResult);
         });
 
     });
@@ -883,35 +888,35 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.registered = new TestModel();
             vld.timeOnlyValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_time', dateField.name, msg.not_a_time(dateField.label), vResult);
+            expectFailure('not_a_time', dateField.name, msg.not_a_time(dateField.name), vResult);
         });
 
         it('returns valid = false when time string also contains a date', () => {
             let test = new TestModel();
             test.registered = '2016-12-01T15:11:01';
             vld.timeOnlyValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_time', dateField.name, msg.not_a_time(dateField.label), vResult);
+            expectFailure('not_a_time', dateField.name, msg.not_a_time(dateField.name), vResult);
         });
 
         it('returns valid = false when time string is an invalid time', () => {
             let test = new TestModel();
             test.registered = '56:21:32';
             vld.timeOnlyValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_time', dateField.name, msg.not_a_time(dateField.label), vResult);
+            expectFailure('not_a_time', dateField.name, msg.not_a_time(dateField.name), vResult);
         });
 
         it('returns valid = false when string is not in the correct format', () => {
             let test = new TestModel();
             test.registered = '5:21 pm';
             vld.timeOnlyValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_time', dateField.name, msg.not_a_time(dateField.label), vResult);
+            expectFailure('not_a_time', dateField.name, msg.not_a_time(dateField.name), vResult);
         });
 
         it('returns valid = false when string is empty', () => {
             let test = new TestModel();
             test.registered = '';
             vld.timeOnlyValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_time', dateField.name, msg.not_a_time(dateField.label), vResult);
+            expectFailure('not_a_time', dateField.name, msg.not_a_time(dateField.name), vResult);
         });
 
     });
@@ -949,49 +954,49 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.registered = new TestModel();
             vld.dateTimeValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.label), vResult);
+            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.name), vResult);
         });
 
         it('returns valid = false when datetime string does not contain a time', () => {
             let test = new TestModel();
             test.registered = '2016-12-01';
             vld.dateTimeValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.label), vResult);
+            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.name), vResult);
         });
 
         it('returns valid = false when datetime string has an invalid date', () => {
             let test = new TestModel();
             test.registered = '2016-00-12T12:22:33';
             vld.dateTimeValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.label), vResult);
+            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.name), vResult);
         });
 
         it('returns valid = false when datetime string has an invalid time', () => {
             let test = new TestModel();
             test.registered = '2016-01-12T25:22:33';
             vld.dateTimeValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.label), vResult);
+            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.name), vResult);
         });
 
         it('returns valid = false when datetime string contains milliseconds and TZ', () => {
             let test = new TestModel();
             test.registered = '2016-01-12T11:22:33.000Z';
             vld.dateTimeValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.label), vResult);
+            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.name), vResult);
         });
 
         it('returns valid = false when string is not in the correct format', () => {
             let test = new TestModel();
             test.registered = '17 May 1985 11:22:33';
             vld.dateTimeValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.label), vResult);
+            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.name), vResult);
         });
 
         it('returns valid = false when string is empty', () => {
             let test = new TestModel();
             test.registered = '';
             vld.dateTimeValidator(test, dateField, meta, op, vResult, opts);
-            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.label), vResult);
+            expectFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.name), vResult);
         });
 
     });

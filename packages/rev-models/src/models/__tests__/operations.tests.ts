@@ -39,7 +39,7 @@ describe('rev.model.operations', () => {
     };
 
     let rwOps = rewire('../operations');
-    let ops: typeof operations & typeof rwOps = <any> rwOps;
+    let ops: typeof operations & typeof rwOps = rwOps as any;
     ops.__set__({
         registry_1: {
             registry: {
@@ -69,10 +69,10 @@ describe('rev.model.operations', () => {
     beforeEach(() => {
         testMeta = {
             fields: [
-                new TextField('name', 'Name'),
-                new SelectionField('gender', 'Gender', GENDERS),
-                new IntegerField('age', 'Age', { required: false, minValue: 10 }),
-                new EmailField('email', 'E-mail', { required: false })
+                new TextField('name'),
+                new SelectionField('gender', {selection: GENDERS}),
+                new IntegerField('age', { required: false, minValue: 10 }),
+                new EmailField('email', { required: false })
             ]
         };
         initialiseMeta(TestModel, testMeta);

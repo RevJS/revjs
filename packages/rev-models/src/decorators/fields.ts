@@ -15,85 +15,85 @@ function addFieldMeta(target: any, fieldName: string, fieldObj: fld.Field) {
 
 // Text Fields
 
-export function TextField(label: string, options?: ITextFieldOptions)
+export function TextField(options?: ITextFieldOptions)
 {
     return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.TextField(propName, label, options));
+        addFieldMeta(target, propName, new fld.TextField(propName, options));
     };
 }
 
-export function PasswordField(label: string, options?: ITextFieldOptions)
+export function PasswordField(options?: ITextFieldOptions)
 {
     return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.PasswordField(propName, label, options));
+        addFieldMeta(target, propName, new fld.PasswordField(propName, options));
     };
 }
 
-export function EmailField(label: string, options?: ITextFieldOptions)
+export function EmailField(options?: ITextFieldOptions)
 {
     return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.EmailField(propName, label, options));
+        addFieldMeta(target, propName, new fld.EmailField(propName, options));
     };
 }
 
-export function URLField(label: string, options?: ITextFieldOptions)
+export function URLField(options?: ITextFieldOptions)
 {
     return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.URLField(propName, label, options));
+        addFieldMeta(target, propName, new fld.URLField(propName, options));
     };
 }
 
 // Number Fields
 
-export function NumberField(label: string, options?: INumberFieldOptions)
+export function NumberField(options?: INumberFieldOptions)
 {
     return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.NumberField(propName, label, options));
+        addFieldMeta(target, propName, new fld.NumberField(propName, options));
     };
 }
 
-export function IntegerField(label: string, options?: INumberFieldOptions)
+export function IntegerField(options?: INumberFieldOptions)
 {
     return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.IntegerField(propName, label, options));
+        addFieldMeta(target, propName, new fld.IntegerField(propName, options));
     };
 }
 
 // Selection Fields
 
-export function BooleanField(label: string, options?: IFieldOptions)
+export function BooleanField(options?: IFieldOptions)
 {
     return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.BooleanField(propName, label, options));
+        addFieldMeta(target, propName, new fld.BooleanField(propName, options));
     };
 }
 
-export function SelectionField(label: string, selection: string[][], options?: ISelectionFieldOptions)
+export function SelectionField(options: ISelectionFieldOptions)
 {
     return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.SelectionField(propName, label, selection, options));
+        addFieldMeta(target, propName, new fld.SelectionField(propName, options));
     };
 }
 
 // Date & Time Fields
 
-export function DateField(label: string, options?: IFieldOptions)
+export function DateField(options?: IFieldOptions)
 {
     return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.DateField(propName, label, options));
+        addFieldMeta(target, propName, new fld.DateField(propName, options));
     };
 }
 
-export function TimeField(label: string, options?: IFieldOptions)
+export function TimeField(options?: IFieldOptions)
 {
     return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.TimeField(propName, label, options));
+        addFieldMeta(target, propName, new fld.TimeField(propName, options));
     };
 }
 
-export function DateTimeField(label: string, options?: IFieldOptions)
+export function DateTimeField(options?: IFieldOptions)
 {
     return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.DateTimeField(propName, label, options));
+        addFieldMeta(target, propName, new fld.DateTimeField(propName, options));
     };
 }

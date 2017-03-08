@@ -15,7 +15,7 @@ describe('rev.decorators.fields', () => {
 
         it('TextField', () => {
             class MyClass {
-                @d.TextField('test')
+                @d.TextField()
                     test: string;
             }
             expectFieldMeta(MyClass, 'test', f.TextField);
@@ -23,7 +23,7 @@ describe('rev.decorators.fields', () => {
 
         it('PasswordField', () => {
             class MyClass {
-                @d.PasswordField('test')
+                @d.PasswordField()
                     test: string;
             }
             expectFieldMeta(MyClass, 'test', f.PasswordField);
@@ -31,7 +31,7 @@ describe('rev.decorators.fields', () => {
 
         it('EmailField', () => {
             class MyClass {
-                @d.EmailField('test')
+                @d.EmailField()
                     test: string;
             }
             expectFieldMeta(MyClass, 'test', f.EmailField);
@@ -39,7 +39,7 @@ describe('rev.decorators.fields', () => {
 
         it('URLField', () => {
             class MyClass {
-                @d.URLField('test')
+                @d.URLField()
                     test: string;
             }
             expectFieldMeta(MyClass, 'test', f.URLField);
@@ -51,7 +51,7 @@ describe('rev.decorators.fields', () => {
 
         it('NumberField', () => {
             class MyClass {
-                @d.NumberField('test')
+                @d.NumberField()
                     test: string;
             }
             expectFieldMeta(MyClass, 'test', f.NumberField);
@@ -59,7 +59,7 @@ describe('rev.decorators.fields', () => {
 
         it('IntegerField', () => {
             class MyClass {
-                @d.IntegerField('test')
+                @d.IntegerField()
                     test: string;
             }
             expectFieldMeta(MyClass, 'test', f.IntegerField);
@@ -71,7 +71,7 @@ describe('rev.decorators.fields', () => {
 
         it('BooleanField', () => {
             class MyClass {
-                @d.BooleanField('test')
+                @d.BooleanField()
                     test: string;
             }
             expectFieldMeta(MyClass, 'test', f.BooleanField);
@@ -84,7 +84,7 @@ describe('rev.decorators.fields', () => {
 
         it('SelectionField', () => {
             class MyClass {
-                @d.SelectionField('test', selection)
+                @d.SelectionField({selection: selection})
                     test: string;
             }
             expectFieldMeta(MyClass, 'test', f.SelectionField);
@@ -96,7 +96,7 @@ describe('rev.decorators.fields', () => {
 
         it('DateField', () => {
             class MyClass {
-                @d.DateField('test')
+                @d.DateField()
                     test: string;
             }
             expectFieldMeta(MyClass, 'test', f.DateField);
@@ -104,7 +104,7 @@ describe('rev.decorators.fields', () => {
 
         it('TimeField', () => {
             class MyClass {
-                @d.TimeField('test')
+                @d.TimeField()
                     test: string;
             }
             expectFieldMeta(MyClass, 'test', f.TimeField);
@@ -112,7 +112,7 @@ describe('rev.decorators.fields', () => {
 
         it('DateTimeField', () => {
             class MyClass {
-                @d.DateTimeField('test')
+                @d.DateTimeField()
                     test: string;
             }
             expectFieldMeta(MyClass, 'test', f.DateTimeField);

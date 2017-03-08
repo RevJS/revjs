@@ -14,18 +14,18 @@ let TITLES = [
 
 export class Person {
 
-    @m.SelectionField('Title', TITLES, { required: false })
+    @m.SelectionField({label: 'Title', selection: TITLES, required: false })
         title: string;
-    @m.TextField('First Name')
+    @m.TextField({label: 'First Name'})
         first_name: string;
-    @m.TextField('Last Name')
+    @m.TextField({label: 'Last Name'})
         last_name: string;
-    @m.IntegerField('Age', { required: false })
+    @m.IntegerField({label: 'Age', required: false })
         age: number;
 
-    @m.EmailField('Email')
+    @m.EmailField({label: 'Email'})
         email: string;
-    @m.BooleanField('Registered for Newsletter?')
+    @m.BooleanField({label: 'Registered for Newsletter?'})
         newsletter: boolean;
 }
 

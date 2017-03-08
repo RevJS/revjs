@@ -15,8 +15,8 @@ export interface ITextFieldOptions extends IFieldOptions {
 export class TextField extends Field {
     options: ITextFieldOptions;
 
-    constructor(name: string, label: string, options?: ITextFieldOptions) {
-        super(name, label, options);
+    constructor(name: string, options?: ITextFieldOptions) {
+        super(name, options);
         let o = this.options;
         let v = this.validators;
         v.push(validators.stringValidator);
@@ -44,25 +44,25 @@ export class TextField extends Field {
 export class PasswordField extends TextField {}
 
 export class EmailField extends TextField {
-    constructor(name: string, label: string, options?: ITextFieldOptions) {
+    constructor(name: string, options?: ITextFieldOptions) {
         let opts = getOptions(options) as ITextFieldOptions;
         if (!opts.regEx
             || typeof opts.regEx != 'object'
             || !(opts.regEx instanceof RegExp)) {
             opts.regEx = EMAIL_ADDR_REGEX;
         }
-        super(name, label, opts);
+        super(name, opts);
     }
 }
 
 export class URLField extends TextField {
-    constructor(name: string, label: string, options?: ITextFieldOptions) {
+    constructor(name: string, options?: ITextFieldOptions) {
         let opts = getOptions(options) as ITextFieldOptions;
         if (!opts.regEx
             || typeof opts.regEx != 'object'
             || !(opts.regEx instanceof RegExp)) {
             opts.regEx = URL_REGEX;
         }
-        super(name, label, opts);
+        super(name, opts);
     }
 }

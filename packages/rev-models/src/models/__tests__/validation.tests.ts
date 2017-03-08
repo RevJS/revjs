@@ -31,7 +31,7 @@ describe('rev.model.validation', () => {
 
         it('throws an error when valid is not a boolean', () => {
             expect(() => {
-                new ModelValidationResult(<any> 'flibble');
+                new ModelValidationResult('flibble' as any);
             }).to.throw('must be a boolean');
         });
 
@@ -254,12 +254,12 @@ describe('rev.model.validation', () => {
 
         let meta: IModelMeta<TestModel> = {
             fields: [
-                new IntegerField('id', 'Id', { minValue: 10 }),
-                new TextField('name', 'Name'),
-                new DateField('date', 'Date', { required: false })
+                new IntegerField('id', { minValue: 10 }),
+                new TextField('name'),
+                new DateField('date', { required: false })
             ],
-            validate: <sinon.SinonSpy> null,
-            validateAsync: <sinon.SinonStub> null
+            validate: null as sinon.SinonSpy,
+            validateAsync: null as sinon.SinonStub
         };
 
         initialiseMeta(TestModel, meta);
@@ -295,8 +295,8 @@ describe('rev.model.validation', () => {
             return validateModel(test, meta, {type: 'create'})
                 .then((res) => {
                     expect(res.valid).to.equal(true);
-                    expect((<any> meta.validate).callCount).to.equal(1);
-                    expect((<any> meta.validateAsync).callCount).to.equal(1);
+                    expect((meta.validate as any).callCount).to.equal(1);
+                    expect((meta.validateAsync as any).callCount).to.equal(1);
                 });
         });
 
@@ -316,9 +316,9 @@ describe('rev.model.validation', () => {
             let test = new TestModel();
             let uninitialisedMeta: IModelMeta<TestModel> = {
                 fields: [
-                    new IntegerField('id', 'Id', { minValue: 10 }),
-                    new TextField('name', 'Name'),
-                    new DateField('date', 'Date', { required: false })
+                    new IntegerField('id', { minValue: 10 }),
+                    new TextField('name'),
+                    new DateField('date', { required: false })
                 ]
             };
 
@@ -355,7 +355,7 @@ describe('rev.model.validation', () => {
 
         it('should return an invalid result if extra fields are present', () => {
 
-            let test = <any> new TestModel();
+            let test = new TestModel() as any;
             test.id = 11;
             test.name = 'Harry';
             test.date = new Date();
@@ -524,8 +524,8 @@ describe('rev.model.validation', () => {
 
         let meta: IModelMeta<TestModel> = {
             fields: [],
-            validateRemoval: <sinon.SinonSpy> null,
-            validateRemovalAsync: <sinon.SinonStub> null
+            validateRemoval: null as sinon.SinonSpy,
+            validateRemovalAsync: null as sinon.SinonStub
         };
         let op: IModelOperation = {
             type: 'remove',
@@ -554,17 +554,17 @@ describe('rev.model.validation', () => {
             return validateModelRemoval(meta, op)
                 .then((res) => {
                     expect(res.valid).to.equal(true);
-                    expect((<any> meta.validateRemoval).callCount).to.equal(1);
-                    expect((<any> meta.validateRemovalAsync).callCount).to.equal(1);
+                    expect((meta.validateRemoval as any).callCount).to.equal(1);
+                    expect((meta.validateRemovalAsync as any).callCount).to.equal(1);
                 });
         });
 
         it('should reject if un-initialised metadata is passed', () => {
             let uninitialisedMeta: IModelMeta<TestModel> = {
                 fields: [
-                    new IntegerField('id', 'Id', { minValue: 10 }),
-                    new TextField('name', 'Name'),
-                    new DateField('date', 'Date', { required: false })
+                    new IntegerField('id', { minValue: 10 }),
+                    new TextField('name'),
+                    new DateField('date', { required: false })
                 ]
             };
 

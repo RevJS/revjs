@@ -27,7 +27,7 @@ export function requiredValidator<T extends IModel>(model: T, field: Field, meta
     if (!isSet(model[field.name])) {
         result.addFieldError(
             field.name,
-            msg.required(field.label),
+            msg.required(field.name),
             'required'
         );
     }
@@ -37,7 +37,7 @@ export function stringValidator<T extends IModel>(model: T, field: Field, meta: 
     if (isSet(model[field.name]) && typeof model[field.name] != 'string') {
         result.addFieldError(
             field.name,
-            msg.not_a_string(field.label),
+            msg.not_a_string(field.name),
             'not_a_string'
         );
     }
@@ -48,7 +48,7 @@ export function stringEmptyValidator<T extends IModel>(model: T, field: Field, m
             && model[field.name].length == 0) {
         result.addFieldError(
             field.name,
-            msg.string_empty(field.label),
+            msg.string_empty(field.name),
             'string_empty'
         );
     }
@@ -61,7 +61,7 @@ export function regExValidator<T extends IModel>(model: T, field: TextField, met
             && !field.options.regEx.test(model[field.name])) {
         result.addFieldError(
             field.name,
-            msg.no_regex_match(field.label),
+            msg.no_regex_match(field.name),
             'no_regex_match'
         );
     }
@@ -72,7 +72,7 @@ export function numberValidator<T extends IModel>(model: T, field: Field, meta: 
         isNaN(model[field.name]) || model[field.name] === '')) {
         result.addFieldError(
             field.name,
-            msg.not_a_number(field.label),
+            msg.not_a_number(field.name),
             'not_a_number'
         );
     }
@@ -82,7 +82,7 @@ export function integerValidator<T extends IModel>(model: T, field: Field, meta:
     if (isSet(model[field.name]) && !(/^(-?[1-9][0-9]*|0)$/.test(model[field.name]))) {
         result.addFieldError(
             field.name,
-            msg.not_an_integer(field.label),
+            msg.not_an_integer(field.name),
             'not_an_integer'
         );
     }
@@ -92,7 +92,7 @@ export function booleanValidator<T extends IModel>(model: T, field: Field, meta:
     if (isSet(model[field.name]) && typeof model[field.name] != 'boolean') {
         result.addFieldError(
             field.name,
-            msg.not_a_boolean(field.label),
+            msg.not_a_boolean(field.name),
             'not_a_boolean'
         );
     }
@@ -103,7 +103,7 @@ export function minStringLengthValidator<T extends IModel>(model: T, field: Text
             && model[field.name].length < field.options.minLength) {
         result.addFieldError(
             field.name,
-            msg.min_string_length(field.label, field.options.minLength),
+            msg.min_string_length(field.name, field.options.minLength),
             'min_string_length'
         );
     }
@@ -114,7 +114,7 @@ export function maxStringLengthValidator<T extends IModel>(model: T, field: Text
             && model[field.name].length > field.options.maxLength) {
         result.addFieldError(
             field.name,
-            msg.max_string_length(field.label, field.options.maxLength),
+            msg.max_string_length(field.name, field.options.maxLength),
             'max_string_length'
         );
     }
@@ -125,7 +125,7 @@ export function minValueValidator<T extends IModel>(model: T, field: TextField |
             && model[field.name] < field.options.minValue) {
         result.addFieldError(
             field.name,
-            msg.min_value(field.label, field.options.minValue),
+            msg.min_value(field.name, field.options.minValue),
             'min_value'
         );
     }
@@ -136,7 +136,7 @@ export function maxValueValidator<T extends IModel>(model: T, field: TextField |
             && model[field.name] > field.options.maxValue) {
         result.addFieldError(
             field.name,
-            msg.max_value(field.label, field.options.maxValue),
+            msg.max_value(field.name, field.options.maxValue),
             'max_value'
         );
     }
@@ -144,14 +144,14 @@ export function maxValueValidator<T extends IModel>(model: T, field: TextField |
 
 export function singleSelectionValidator<T extends IModel>(model: T, field: SelectionField, meta: IModelMeta<T>, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
-        for (let opt of field.selection) {
+        for (let opt of field.options.selection) {
             if (opt[0] == model[field.name]) {
                 return;
             }
         }
         result.addFieldError(
             field.name,
-            msg.no_selection_match(field.label),
+            msg.no_selection_match(field.name),
             'no_selection_match'
         );
     }
@@ -162,7 +162,7 @@ export function listEmptyValidator<T extends IModel>(model: T, field: Field, met
             && model[field.name].length == 0) {
         result.addFieldError(
             field.name,
-            msg.list_empty(field.label),
+            msg.list_empty(field.name),
             'list_empty'
         );
     }
@@ -173,14 +173,14 @@ export function multipleSelectionValidator<T extends IModel>(model: T, field: Se
         if (typeof model[field.name] != 'object' || !(model[field.name] instanceof Array)) {
             result.addFieldError(
                 field.name,
-                msg.selection_not_an_array(field.label),
+                msg.selection_not_an_array(field.name),
                 'selection_not_an_array'
             );
         }
         else {
             let matches = 0;
             for (let val of model[field.name]) {
-                for (let opt of field.selection) {
+                for (let opt of field.options.selection) {
                     if (opt[0] == val) {
                         matches++;
                         break;
@@ -190,7 +190,7 @@ export function multipleSelectionValidator<T extends IModel>(model: T, field: Se
             if (matches < model[field.name].length) {
                 result.addFieldError(
                     field.name,
-                    msg.no_selection_match(field.label),
+                    msg.no_selection_match(field.name),
                     'no_selection_match'
                 );
             }
@@ -212,7 +212,7 @@ export function dateOnlyValidator<T extends IModel>(model: T, field: Field, meta
                 || !Date.parse(model[field.name])) {
             result.addFieldError(
                 field.name,
-                msg.not_a_date(field.label),
+                msg.not_a_date(field.name),
                 'not_a_date'
             );
         }
@@ -229,7 +229,7 @@ export function timeOnlyValidator<T extends IModel>(model: T, field: Field, meta
                 || !Date.parse('2000-01-01T' + model[field.name])) {
             result.addFieldError(
                 field.name,
-                msg.not_a_time(field.label),
+                msg.not_a_time(field.name),
                 'not_a_time'
             );
         }
@@ -246,7 +246,7 @@ export function dateTimeValidator<T extends IModel>(model: T, field: Field, meta
                 || !Date.parse(model[field.name])) {
             result.addFieldError(
                 field.name,
-                msg.not_a_datetime(field.label),
+                msg.not_a_datetime(field.name),
                 'not_a_datetime'
             );
         }

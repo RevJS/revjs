@@ -56,9 +56,9 @@ describe('rev.storage.inmemory', () => {
     beforeEach(() => {
         meta = {
             fields: [
-                new fld.TextField('name', 'Name'),
-                new fld.IntegerField('age', 'Age', { required: false }),
-                new fld.SelectionField('gender', 'Gender', GENDERS),
+                new fld.TextField('name'),
+                new fld.IntegerField('age', { required: false }),
+                new fld.SelectionField('gender', {selection: GENDERS}),
                 new fld.BooleanField('newsletter', 'Newsletter?'),
                 new fld.DateField('date_registered', 'Date Registered')
             ]

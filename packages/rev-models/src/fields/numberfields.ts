@@ -9,8 +9,8 @@ export interface INumberFieldOptions extends IFieldOptions {
 export class NumberField extends Field {
     options: INumberFieldOptions;
 
-    constructor(name: string, label: string, options?: INumberFieldOptions) {
-        super(name, label, options);
+    constructor(name: string, options?: INumberFieldOptions) {
+        super(name, options);
         this.validators.push(validators.numberValidator);
         if (typeof this.options.minValue != 'undefined') {
             this.validators.push(validators.minValueValidator);
@@ -22,8 +22,8 @@ export class NumberField extends Field {
 }
 
 export class IntegerField extends NumberField {
-    constructor(name: string, label: string, options?: INumberFieldOptions) {
-        super(name, label, options);
+    constructor(name: string, options?: INumberFieldOptions) {
+        super(name, options);
         let validatorIdx = this.options.required ? 2 : 1;
         this.validators.splice(validatorIdx, 0, validators.integerValidator);
     }

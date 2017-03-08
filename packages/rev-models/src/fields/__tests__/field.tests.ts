@@ -35,9 +35,8 @@ describe('rev.fields.field', () => {
             let opts: IFieldOptions = {
                 required: true
             };
-            let test = new Field('name', 'Name', opts);
+            let test = new Field('name', opts);
             expect(test.name).to.equal('name');
-            expect(test.label).to.equal('Name');
             expect(test.options).to.equal(opts);
         });
 
@@ -54,28 +53,28 @@ describe('rev.fields.field', () => {
         });
 
         it('sets default field options if they are not specified', () => {
-            let test = new Field('name', 'Name');
+            let test = new Field('name');
             expect(test.options).to.deep.equal(DEFAULT_FIELD_OPTIONS);
         });
 
         it('throws an error if options is not an object', () => {
             expect(() => {
-                new Field('name', 'Name', () => '33');
+                new Field('name', () => '33');
             }).to.throw('the options parameter must be an object');
         });
 
         it('adds the "required" validator if options.required is true', () => {
-            let test = new Field('name', 'Name', { required: true });
+            let test = new Field('name', { required: true });
             expect(test.validators[0]).to.equal(requiredValidator);
         });
 
         it('adds the "required" validator if options.required is not specified', () => {
-            let test = new Field('name', 'Name', { });
+            let test = new Field('name', { });
             expect(test.validators[0]).to.equal(requiredValidator);
         });
 
         it('does not add any validators if options.required is false', () => {
-            let test = new Field('name', 'Name', { required: false });
+            let test = new Field('name', { required: false });
             expect(test.validators.length).to.equal(0);
         });
 
@@ -83,10 +82,10 @@ describe('rev.fields.field', () => {
 
     describe('Field - validate()', () => {
         let testModel = {
-            name: <any> null
+            name: null as any
         };
         let testMeta = {
-            fields: [new Field('name', 'Name')]
+            fields: [new Field('name')]
         };
         let result: ModelValidationResult;
 
@@ -95,14 +94,14 @@ describe('rev.fields.field', () => {
         });
 
         it('returns a resolved promise when validation completes - no validators', () => {
-            let test = new Field('name', 'Name', { required: false });
+            let test = new Field('name', { required: false });
             return expect(
                 test.validate(testModel, testMeta, {type: 'create'}, result)
             ).to.eventually.have.property('valid', true);
         });
 
         it('returns a resolved promise when validation completes - required validator', () => {
-            let test = new Field('name', 'Name', { required: true });
+            let test = new Field('name', { required: true });
             testModel.name = 'Frank';
             return expect(
                 test.validate(testModel, testMeta, {type: 'create'}, result)
@@ -110,21 +109,21 @@ describe('rev.fields.field', () => {
         });
 
         it('validation fails as expected when required field not set', () => {
-            let test = new Field('name', 'Name', { required: true });
+            let test = new Field('name', { required: true });
             return expect(
                 test.validate({ name: null }, testMeta, {type: 'create'}, result)
             ).to.eventually.have.property('valid', false);
         });
 
         it('throws an error if a model instance is not passed', () => {
-            let test = new Field('name', 'Name');
+            let test = new Field('name');
             expect(() => {
-                test.validate(<any> 'test', testMeta, {type: 'create'}, result);
+                test.validate('test' as any, testMeta, {type: 'create'}, result);
             }).to.throw('not a model instance');
         });
 
         it('returns valid = true when validation completes with a valid async validator', () => {
-            let test = new Field('name', 'Name', { required: false });
+            let test = new Field('name', { required: false });
             test.asyncValidators.push(quickValidAsyncValidator);
             return expect(
                 test.validate(testModel, testMeta, {type: 'create'}, result)
@@ -132,7 +131,7 @@ describe('rev.fields.field', () => {
         });
 
         it('returns valid = false when validation completes with an invalid async validator', () => {
-            let test = new Field('name', 'Name', { required: false });
+            let test = new Field('name', { required: false });
             test.asyncValidators.push(quickInvalidAsyncValidator);
             return expect(
                 test.validate(testModel, testMeta, {type: 'create'}, result)
@@ -140,7 +139,7 @@ describe('rev.fields.field', () => {
         });
 
         it('returns valid = false when validation completes with a valid and an invalid async validator', () => {
-            let test = new Field('name', 'Name', { required: false });
+            let test = new Field('name', { required: false });
             test.asyncValidators.push(quickValidAsyncValidator);
             test.asyncValidators.push(quickInvalidAsyncValidator);
             return expect(
@@ -149,7 +148,7 @@ describe('rev.fields.field', () => {
         });
 
         it('returns a rejected promise when async validation times out', () => {
-            let test = new Field('name', 'Name', { required: false });
+            let test = new Field('name', { required: false });
             test.asyncValidators.push(slowInvalidAsyncValidator);
             return expect(
                 test.validate(testModel, testMeta, {type: 'create'}, result, {
