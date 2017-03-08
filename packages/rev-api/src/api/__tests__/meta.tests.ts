@@ -44,6 +44,19 @@ describe('initialiseApiMeta()', () => {
         expect(apiMeta.operations).to.deep.equal(['create', 'read', 'update', 'remove']);
     });
 
+    it('throws an error if model metadata is not initialised', () => {
+        let modelMeta = { fields: [] } as any;
+        apiMeta = {
+            operations: 'all'
+        };
+        expect(() => {
+            initialiseApiMeta(null, apiMeta);
+        }).to.throw('Supplied metadata is not an object');
+        expect(() => {
+            initialiseApiMeta(modelMeta, apiMeta);
+        }).to.throw('Supplied metadata has not been initialised');
+    });
+
     it('throws an error if operations key is missing', () => {
         apiMeta = {} as any;
         expect(() => {
