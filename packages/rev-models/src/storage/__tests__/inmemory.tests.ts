@@ -59,8 +59,8 @@ describe('rev.storage.inmemory', () => {
                 new fld.TextField('name'),
                 new fld.IntegerField('age', { required: false }),
                 new fld.SelectionField('gender', {selection: GENDERS}),
-                new fld.BooleanField('newsletter', 'Newsletter?'),
-                new fld.DateField('date_registered', 'Date Registered')
+                new fld.BooleanField('newsletter'),
+                new fld.DateField('date_registered')
             ]
         }
         initialiseMeta(TestModel, meta);

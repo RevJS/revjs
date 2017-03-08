@@ -97,7 +97,8 @@ describe('rev.fields.selectionfields', () => {
             let opts: ISelectionFieldOptions = {selection: selection};
             let test = new SelectionField('value', opts);
             expect(test.name).to.equal('value');
-            expect(test.options).to.deep.equal(DEFAULT_FIELD_OPTIONS);
+            expect(test.options).to.deep.equal(
+                Object.assign({}, DEFAULT_FIELD_OPTIONS, opts));
             expect(test).is.instanceof(Field);
         });
 
@@ -138,7 +139,7 @@ describe('rev.fields.selectionfields', () => {
         it('cannot be created with a selection that is not an array', () => {
             expect(() => {
                 new SelectionField('value', {selection: 'aaa' as any});
-            }).to.throw('"selection" parameter must be an array');
+            }).to.throw('"selection" option must be set to an array');
         });
 
         it('cannot be created with a single-dimension selection array', () => {

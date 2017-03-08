@@ -37,19 +37,13 @@ describe('rev.fields.field', () => {
             };
             let test = new Field('name', opts);
             expect(test.name).to.equal('name');
-            expect(test.options).to.equal(opts);
+            expect(test.options).to.deep.equal(opts);
         });
 
         it('cannot be created without a name', () => {
             expect(() => {
                 new Field(undefined, undefined);
             }).to.throw('new fields must have a name');
-        });
-
-        it('cannot be created without a label', () => {
-            expect(() => {
-                new Field('name', undefined);
-            }).to.throw('new fields must have a label');
         });
 
         it('sets default field options if they are not specified', () => {

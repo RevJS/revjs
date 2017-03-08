@@ -24,9 +24,9 @@ describe('initialiseMeta() - metadata only', () => {
     beforeEach(() => {
         testMeta = {
             fields: [
-                new IntegerField('id', 'Id'),
-                new TextField('name', 'Name'),
-                new DateField('date', 'Date')
+                new IntegerField('id'),
+                new TextField('name'),
+                new DateField('date')
             ]
         };
         testMeta2 = { fields: [] };
@@ -37,7 +37,7 @@ describe('initialiseMeta() - metadata only', () => {
             initialiseMeta(TestModel, null);
         }).to.throw('You must define the fields metadata for the model');
         expect(() => {
-            initialiseMeta(TestModel, <IModelMeta<TestModel>> {});
+            initialiseMeta(TestModel, {} as IModelMeta<TestModel>);
         }).to.throw('You must define the fields metadata for the model');
     });
 
@@ -45,8 +45,8 @@ describe('initialiseMeta() - metadata only', () => {
         expect(() => {
             initialiseMeta(TestModel, {
                 fields: [
-                    new TextField('flibble', 'Jibble'),
-                    <IntegerField> getAnyObject()
+                    new TextField('flibble'),
+                    getAnyObject() as IntegerField
                 ]
             });
         }).to.throw('is not an instance of rev.Field');
@@ -71,9 +71,9 @@ describe('initialiseMeta() - metadata only', () => {
         expect(() => {
             initialiseMeta(TestModel, {
                 fields: [
-                    new TextField('flibble', 'Jibble'),
-                    new TextField('wibble', 'Some Field'),
-                    new IntegerField('flibble', 'The Duplicate')
+                    new TextField('flibble'),
+                    new TextField('wibble'),
+                    new IntegerField('flibble')
                 ]
             });
         }).to.throw('Field "flibble" is defined more than once');
@@ -119,11 +119,11 @@ describe('initialiseMeta() - with decorators', () => {
 
     it('creates metadata as expected when only decorators are used', () => {
         class MyClass {
-            @d.IntegerField('ID')
+            @d.IntegerField()
                 id: number;
-            @d.TextField('Name')
+            @d.TextField()
                 name: string;
-            @d.BooleanField('Active?')
+            @d.BooleanField()
                 active: boolean;
         }
         let meta = initialiseMeta(MyClass);
@@ -133,11 +133,11 @@ describe('initialiseMeta() - with decorators', () => {
 
     it('decorator metadata is added to empty metadata', () => {
         class MyClass {
-            @d.IntegerField('ID')
+            @d.IntegerField()
                 id: number;
-            @d.TextField('Name')
+            @d.TextField()
                 name: string;
-            @d.BooleanField('Active?')
+            @d.BooleanField()
                 active: boolean;
         }
         let meta = initialiseMeta(MyClass, {});
@@ -147,16 +147,16 @@ describe('initialiseMeta() - with decorators', () => {
 
     it('decorator metadata is added to existing metadata', () => {
         class MyClass {
-            @d.IntegerField('ID')
+            @d.IntegerField()
                 id: number;
-            @d.TextField('Name')
+            @d.TextField()
                 name: string;
-            @d.BooleanField('Active?')
+            @d.BooleanField()
                 active: boolean;
         }
         let baseMeta: IModelMeta<MyClass> = {
             fields: [
-                new TextField('flibble', 'Flibble')
+                new TextField('flibble')
             ]
         };
         let meta = initialiseMeta(MyClass, baseMeta);
@@ -166,7 +166,7 @@ describe('initialiseMeta() - with decorators', () => {
 
     it('removes the __fields property once it has been transferred to metadata', () => {
         class MyClass {
-            @d.TextField('Name')
+            @d.TextField()
                 name: string;
         }
         expect((MyClass.prototype as any).__fields).to.be.an('Array');
@@ -184,7 +184,7 @@ describe('initialiseMeta() - with decorators', () => {
 
     it('throws an error if meta.fields is not an array', () => {
         class MyClass {
-            @d.TextField('Name')
+            @d.TextField()
                 name: string;
         }
         let meta: any = {

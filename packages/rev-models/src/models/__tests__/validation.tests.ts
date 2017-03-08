@@ -381,7 +381,7 @@ describe('rev.model.validation', () => {
                 .then((res) => {
                     expect(res.valid).to.equal(false);
                     expect(res.fieldErrors['id'].length).to.equal(1);
-                    expect(res.fieldErrors['id'][0]['message']).to.equal(msg.min_value('Id', 10));
+                    expect(res.fieldErrors['id'][0]['message']).to.equal(msg.min_value('id', 10));
                     expect(res.fieldErrors['id'][0]['code']).to.equal('min_value');
                 });
         });
@@ -395,7 +395,7 @@ describe('rev.model.validation', () => {
                 .then((res) => {
                     expect(res.valid).to.equal(false);
                     expect(res.fieldErrors['name'].length).to.equal(1);
-                    expect(res.fieldErrors['name'][0]['message']).to.equal(msg.required('Name'));
+                    expect(res.fieldErrors['name'][0]['message']).to.equal(msg.required('name'));
                     expect(res.fieldErrors['name'][0]['code']).to.equal('required');
                 });
         });

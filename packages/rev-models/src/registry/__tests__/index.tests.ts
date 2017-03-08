@@ -23,9 +23,9 @@ describe('ModelRegistry', () => {
         testReg = new registry.ModelRegistry();
         testMeta = {
             fields: [
-                new IntegerField('id', 'Id'),
-                new TextField('name', 'Name'),
-                new DateField('date', 'Date')
+                new IntegerField('id'),
+                new TextField('name'),
+                new DateField('date')
             ]
         };
         testMeta2 = { fields: [] };
@@ -51,11 +51,11 @@ describe('ModelRegistry', () => {
         });
 
         it('returns false when a non-string is passed', () => {
-            expect(testReg.isRegistered(<any> 22)).to.equal(false);
+            expect(testReg.isRegistered(22 as any)).to.equal(false);
         });
 
         it('returns false when an object is passed', () => {
-            expect(testReg.isRegistered(<any> {test: 1})).to.equal(false);
+            expect(testReg.isRegistered({test: 1} as any)).to.equal(false);
         });
 
     });
@@ -70,9 +70,9 @@ describe('ModelRegistry', () => {
 
         it('adds a decorated model to the registry. No need to pass metadata.', () => {
             class DecoratedModel {
-                @d.TextField('Name')
+                @d.TextField()
                     name: string;
-                @d.IntegerField('Age')
+                @d.IntegerField()
                     age: number;
             }
             testReg.register(DecoratedModel);
@@ -82,7 +82,7 @@ describe('ModelRegistry', () => {
 
         it('rejects a non-model constructor with a ModelError', () => {
             expect(() => {
-                testReg.register(<any> {}, testMeta);
+                testReg.register({} as any, testMeta);
             }).to.throw('ModelError');
         });
 

@@ -148,11 +148,14 @@ describe('rev.fields.textfields', () => {
         });
 
         it('creates a field with properties as expected', () => {
-            let opts: IFieldOptions = {};
-            let test = new EmailField('email', opts);
+            let opts: IFieldOptions = Object.assign(
+                {}, DEFAULT_FIELD_OPTIONS,
+                { regEx: EMAIL_ADDR_REGEX }
+            );
+            let test = new EmailField('email');
             expect(test).is.instanceof(TextField);
             expect(test.name).to.equal('email');
-            expect(test.options).to.deep.equal(DEFAULT_FIELD_OPTIONS);
+            expect(test.options).to.deep.equal(opts);
             expect(test.options.regEx).to.equal(EMAIL_ADDR_REGEX);
         });
 
@@ -218,11 +221,14 @@ describe('rev.fields.textfields', () => {
         });
 
         it('creates a field with properties as expected', () => {
-            let opts: IFieldOptions = {};
-            let test = new URLField('website', opts);
+            let opts: IFieldOptions = Object.assign(
+                {}, DEFAULT_FIELD_OPTIONS,
+                { regEx: URL_REGEX }
+            );
+            let test = new URLField('website');
             expect(test).is.instanceof(TextField);
             expect(test.name).to.equal('website');
-            expect(test.options).to.deep.equal(DEFAULT_FIELD_OPTIONS);
+            expect(test.options).to.deep.equal(opts);
             expect(test.options.regEx).to.equal(URL_REGEX);
         });
 
