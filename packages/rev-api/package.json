@@ -15,9 +15,11 @@
   "license": "MIT",
   "typings": "lib/index.d.ts",
   "dependencies": {
+    "graphql": "0.9.1",
     "rev-models": "0.0.1"
   },
   "devDependencies": {
+    "@types/graphql": "0.8.6",
     "run-bin": "1.0.0"
   }
 }
