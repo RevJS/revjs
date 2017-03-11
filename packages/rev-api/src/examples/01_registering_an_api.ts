@@ -26,17 +26,15 @@ rev.register(Person);
 
 api.register(Person, {
     operations: ['read'],
-    methods: [
-        {
-           name: 'unsubscribe',
+    methods: {
+        unsubscribe: {
            args: ['email'],
            handler: async (context, email) => {
                console.log('Unsubscribe requested for', email);
                return 'Unsubscribed';
            }
         },
-        {
-            name: 'randomMember',
+        randomMember: {
             args: [
                 new rev.fields.TextField('name'),
                 new rev.fields.IntegerField('minAge', {minValue: 16})
@@ -49,5 +47,5 @@ api.register(Person, {
                };
            }
         }
-    ]
+    }
 });
