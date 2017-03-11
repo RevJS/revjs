@@ -29,6 +29,15 @@ let apiMeta: IApiMeta;
 
 describe('initialiseApiMeta() - operations', () => {
 
+    it('does not throw if api metadata has an empty list of operations', () => {
+        apiMeta = {
+            operations: []
+        };
+        expect(() => {
+            initialiseApiMeta(testMeta, apiMeta);
+        }).to.not.throw();
+    });
+
     it('does not throw if api metadata has a valid list of operations', () => {
         apiMeta = {
             operations: [ 'create', 'read' ]
@@ -220,6 +229,63 @@ describe('initialiseApiMeta() - methods', () => {
         expect(apiMeta.methods.testMethod.args).to.have.length(2);
         expect(apiMeta.methods.testMethod.args[0]).to.equal(dateField);
         expect(apiMeta.methods.testMethod.args[1]).to.equal(testField);
+    });
+
+    it('throws an error when method definition is missing keys', () => {
+        apiMeta = {
+            operations: [],
+            methods: {
+                testMethod: {} as any
+            }
+        };
+        expect(() => {
+            initialiseApiMeta(testMeta, apiMeta);
+        }).to.throw('API methods must define an args array and a handler function');
+    });
+
+    it('throws an error when method definition keys are invalid', () => {
+        apiMeta = {
+            operations: [],
+            methods: {
+                testMethod: {
+                    args: { test: 'fail' } as any,
+                    handler: 'nah' as any
+                }
+            }
+        };
+        expect(() => {
+            initialiseApiMeta(testMeta, apiMeta);
+        }).to.throw('API methods must define an args array and a handler function');
+    });
+
+    it('throws an error when field name does not match the model', () => {
+        apiMeta = {
+            operations: [],
+            methods: {
+                testMethod: {
+                    args: ['id', 'not_valid'],
+                    handler: (() => {}) as any
+                }
+            }
+        };
+        expect(() => {
+            initialiseApiMeta(testMeta, apiMeta);
+        }).to.throw(`Field 'not_valid' does not exist in model`);
+    });
+
+    it('throws an error when an invalid type is passed as an arg', () => {
+        apiMeta = {
+            operations: [],
+            methods: {
+                testMethod: {
+                    args: ['id', new Date() as any, nameField],
+                    handler: (() => {}) as any
+                }
+            }
+        };
+        expect(() => {
+            initialiseApiMeta(testMeta, apiMeta);
+        }).to.throw(`must either be an instance of a Field or a string`);
     });
 
 });
