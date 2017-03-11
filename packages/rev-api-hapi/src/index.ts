@@ -11,7 +11,7 @@ catch (e) {
     version = require('../package.json').version;
 }
 
-function RevApiPlugin(server: Hapi.Server, options: IRevApiOptions, next: any) {
+export function RevApiPlugin(server: Hapi.Server, options: IRevApiOptions, next: any) {
     server.expose('version', version);
     server.expose('api', new RevApi(server, options));
     next();
@@ -21,5 +21,3 @@ function RevApiPlugin(server: Hapi.Server, options: IRevApiOptions, next: any) {
     name: 'revApi',
     version: version
 };
-
-export default RevApiPlugin;
