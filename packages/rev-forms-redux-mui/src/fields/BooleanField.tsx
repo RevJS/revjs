@@ -26,7 +26,7 @@ export default function BooleanField(props: IRevFieldTypeProps) {
     return (
         <MUICheckbox
             name={props.field.name}
-            label={props.field.label}
+            label={props.field.options.label || props.field.name}
             checked={checked}
             onCheck={onCheck}
             onFocus={props.input.onFocus}

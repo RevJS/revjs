@@ -15,7 +15,7 @@ export default function TextField(props: IRevFieldTypeProps) {
     return (
         <MUITextField
             name={props.field.name}
-            floatingLabelText={props.field.label}
+            floatingLabelText={props.field.options.label || props.field.name}
             type={type}
             value={props.input.value}
             onChange={props.input.onChange}

@@ -25,14 +25,14 @@ export default function SelectionField(props: IRevFieldTypeProps) {
     return (
         <MUISelect
             name={props.field.name}
-            floatingLabelText={props.field.label}
+            floatingLabelText={props.field.options.label || props.field.name}
             value={props.input.value}
             onChange={onChange}
             onFocus={props.input.onFocus}
             onBlur={props.input.onBlur}
             style={styles.select}
             fullWidth={true}>
-        {field.selection.map(
+        {field.options.selection.map(
             (option, idx) => <MenuItem key={idx} value={option[0]} primaryText={option[1]} />
         )}
         </MUISelect>
