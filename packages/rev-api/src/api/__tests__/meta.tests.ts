@@ -12,20 +12,24 @@ class TestModel {
     date: Date = new Date();
 }
 
+let idField = new f.IntegerField('id');
+let nameField = new f.TextField('name');
+let dateField = new f.DateField('date');
+
 let testMeta: IModelMeta<TestModel> = {
     fields: [
-        new f.IntegerField('id', 'Id'),
-        new f.TextField('name', 'Name'),
-        new f.DateField('date', 'Date')
+        idField,
+        nameField,
+        dateField
     ]
 };
 initialiseMeta(TestModel, testMeta);
 
 let apiMeta: IApiMeta;
 
-describe('initialiseApiMeta()', () => {
+describe('initialiseApiMeta() - operations', () => {
 
-    it('does not throw if api metadata is a valid list of operations', () => {
+    it('does not throw if api metadata has a valid list of operations', () => {
         apiMeta = {
             operations: [ 'create', 'read' ]
         };
@@ -87,6 +91,135 @@ describe('initialiseApiMeta()', () => {
         expect(() => {
             initialiseApiMeta(testMeta, apiMeta);
         }).to.throw('Invalid operation in operations list');
+    });
+
+});
+
+describe('initialiseApiMeta() - methods', () => {
+
+    it('does not throw if api metadata has an empty dict of methods', () => {
+        apiMeta = {
+            operations: ['create'],
+            methods: {}
+        };
+        expect(() => {
+            initialiseApiMeta(testMeta, apiMeta);
+        }).to.not.throw();
+    });
+
+    it('does not throw if api metadata defines a method with no args', () => {
+        apiMeta = {
+            operations: ['create'],
+            methods: {
+                testMethod: {
+                    args: [],
+                    handler: (() => {}) as any
+                }
+            }
+        };
+        expect(() => {
+            initialiseApiMeta(testMeta, apiMeta);
+        }).to.not.throw();
+    });
+
+    it('sets up metadata for a method with one Field arg', () => {
+        let testField = new f.TextField('arg1');
+        apiMeta = {
+            operations: ['create'],
+            methods: {
+                testMethod: {
+                    args: [
+                        testField
+                    ],
+                    handler: (() => {}) as any
+                }
+            }
+        };
+        initialiseApiMeta(testMeta, apiMeta);
+        expect(apiMeta.methods).to.be.an('object');
+        expect(apiMeta.methods).to.have.property('testMethod');
+        expect(apiMeta.methods.testMethod.args).to.have.length(1);
+        expect(apiMeta.methods.testMethod.args[0]).to.equal(testField);
+    });
+
+    it('sets up metadata for a method with two Field args', () => {
+        let testField1 = new f.TextField('arg1');
+        let testField2 = new f.IntegerField('arg2');
+        apiMeta = {
+            operations: ['create'],
+            methods: {
+                testMethod: {
+                    args: [
+                        testField1,
+                        testField2
+                    ],
+                    handler: (() => {}) as any
+                }
+            }
+        };
+        initialiseApiMeta(testMeta, apiMeta);
+        expect(apiMeta.methods).to.be.an('object');
+        expect(apiMeta.methods).to.have.property('testMethod');
+        expect(apiMeta.methods.testMethod.args).to.have.length(2);
+        expect(apiMeta.methods.testMethod.args[0]).to.equal(testField1);
+        expect(apiMeta.methods.testMethod.args[1]).to.equal(testField2);
+    });
+
+    it('sets up metadata for a method with one field-name arg', () => {
+        apiMeta = {
+            operations: ['create'],
+            methods: {
+                testMethod: {
+                    args: ['name'],
+                    handler: (() => {}) as any
+                }
+            }
+        };
+        initialiseApiMeta(testMeta, apiMeta);
+        expect(apiMeta.methods).to.be.an('object');
+        expect(apiMeta.methods).to.have.property('testMethod');
+        expect(apiMeta.methods.testMethod.args).to.have.length(1);
+        expect(apiMeta.methods.testMethod.args[0]).to.equal(nameField);
+    });
+
+    it('sets up metadata for a method with two field-name args', () => {
+        apiMeta = {
+            operations: ['create'],
+            methods: {
+                testMethod: {
+                    args: ['name', 'date'],
+                    handler: (() => {}) as any
+                }
+            }
+        };
+        initialiseApiMeta(testMeta, apiMeta);
+        expect(apiMeta.methods).to.be.an('object');
+        expect(apiMeta.methods).to.have.property('testMethod');
+        expect(apiMeta.methods.testMethod.args).to.have.length(2);
+        expect(apiMeta.methods.testMethod.args[0]).to.equal(nameField);
+        expect(apiMeta.methods.testMethod.args[1]).to.equal(dateField);
+    });
+
+    it('sets up metadata for a method with mixed args', () => {
+        let testField = new f.TextField('arg1');
+        apiMeta = {
+            operations: ['create'],
+            methods: {
+                testMethod: {
+                    args: [
+                        'date',
+                        testField
+                    ],
+                    handler: (() => {}) as any
+                }
+            }
+        };
+        initialiseApiMeta(testMeta, apiMeta);
+        expect(apiMeta.methods).to.be.an('object');
+        expect(apiMeta.methods).to.have.property('testMethod');
+        expect(apiMeta.methods.testMethod.args).to.have.length(2);
+        expect(apiMeta.methods.testMethod.args[0]).to.equal(dateField);
+        expect(apiMeta.methods.testMethod.args[1]).to.equal(testField);
     });
 
 });
