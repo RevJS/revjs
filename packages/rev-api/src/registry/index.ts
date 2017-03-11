@@ -52,6 +52,10 @@ export class ModelApiRegistry {
         this._apiMeta[modelName] = apiMeta;
     }
 
+    getModelNames(): string[] {
+        return Object.keys(this._apiMeta);
+    }
+
     getApiMeta(modelName: string): IApiMeta {
         if (!(modelName in this._apiMeta)) {
             throw new Error(`ApiRegistryError: Model '${modelName}' does not have a registered API.`);
