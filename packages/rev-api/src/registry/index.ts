@@ -1,6 +1,8 @@
 
 import { IModel, checkIsModelConstructor } from 'rev-models/lib/models';
 import { IApiMeta, initialiseApiMeta } from '../api/meta';
+import { getGraphQLSchema } from '../api/graphql';
+import { GraphQLSchema } from 'graphql';
 
 import { ModelRegistry, registry as revRegistry } from 'rev-models/lib/registry';
 
@@ -61,6 +63,10 @@ export class ModelApiRegistry {
             throw new Error(`ApiRegistryError: Model '${modelName}' does not have a registered API.`);
         }
         return this._apiMeta[modelName];
+    }
+
+    getGraphQLSchema(): GraphQLSchema {
+        return getGraphQLSchema(this);
     }
 
     clearRegistry() {

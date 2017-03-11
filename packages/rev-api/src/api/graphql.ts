@@ -14,6 +14,36 @@ export function getGraphQLSchema(registry: ModelApiRegistry): GraphQLSchema {
 
     const schema: any = {};
 
+    const ModelType = new GraphQLObjectType({
+        name: 'SomeModel',
+        fields: {
+            name: {
+                type: GraphQLString,
+                resolve(root: any, args: any, context: any) {
+                    return 'test name';
+                }
+            }
+        },
+    });
+    let queries = {
+        name: 'query',
+        fields: {}
+    };
+    for (let modelName of registry.getModelNames()) {
+        queries.fields[modelName] = {
+            type: ModelType,
+            args: {
+                id: { type: GraphQLInt }
+            },
+            resolve(root: any, args: any, context: any) {
+                console.log('WHERE', args['where']);
+                return {};
+            }
+        };
+    }
+    schema.query = new GraphQLObjectType(queries);
+
+
     const MutationResultType = new GraphQLObjectType({
         name: 'MutationResultType',
         fields: {
@@ -25,25 +55,25 @@ export function getGraphQLSchema(registry: ModelApiRegistry): GraphQLSchema {
             }
         }
     });
-
+    let mutations = {
+        name: 'mutation',
+        fields: {}
+    };
     for (let modelName of registry.getModelNames()) {
-        schema[modelName] = new GraphQLObjectType({
-            name: modelName + ' Mutations',
-            fields: {
-                create: {
-                    type: MutationResultType,
-                    args: {
-                        id: { type: new GraphQLNonNull(GraphQLInt) }
-                    },
-                    resolve: (value, { id }) => {
-                        return {
-                            status: 'test'
-                        };
-                    }
-                }
+        let mutationName = modelName + '_create';
+        mutations.fields[mutationName] = {
+            type: MutationResultType,
+            args: {
+                id: { type: new GraphQLNonNull(GraphQLInt) }
             },
-        });
+            resolve: (value: any, args: any) => {
+                return {
+                    status: 'test'
+                };
+            }
+        };
     }
+    schema.mutation = new GraphQLObjectType(mutations);
 
     return new GraphQLSchema(schema);
 }
