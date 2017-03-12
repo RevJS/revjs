@@ -43,6 +43,6 @@ export function createApiRegistry() {
     modelRegistry.register(TestModel);
 
     let apiRegistry = new ModelApiRegistry(modelRegistry);
-    apiRegistry.register(TestModel, { operations: 'all' });
+    apiRegistry.register(TestModel, { methods: 'all' });
     return apiRegistry;
 }

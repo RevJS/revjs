@@ -13,21 +13,22 @@ import {
 
 import * as GraphQLJSON from 'graphql-type-json';
 
+const ModelType = new GraphQLObjectType({
+    name: 'TestModel',
+    fields: {
+        name: {
+            type: GraphQLString,
+            resolve(root: any, args: any, context: any) {
+                return 'test';
+            }
+        }
+    },
+});
+
 export function getGraphQLSchema(registry: ModelApiRegistry): GraphQLSchema {
 
     const schema: any = {};
 
-    const ModelType = new GraphQLObjectType({
-        name: 'SomeModel',
-        fields: {
-            name: {
-                type: GraphQLString,
-                resolve(root: any, args: any, context: any) {
-                    return 'test name';
-                }
-            }
-        },
-    });
     let queries = {
         name: 'query',
         fields: {}

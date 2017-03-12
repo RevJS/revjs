@@ -1,6 +1,6 @@
 
 import { IModel, checkIsModelConstructor } from 'rev-models/lib/models';
-import { IApiMeta, initialiseApiMeta } from '../api/meta';
+import { IApiMeta, initialiseApiMeta, IApiMetaDefinition } from '../api/meta';
 import { getGraphQLSchema } from '../graphql/schema';
 import { GraphQLSchema } from 'graphql';
 
@@ -34,7 +34,7 @@ export class ModelApiRegistry {
         return (modelName && (modelName in this._apiMeta));
     }
 
-    register<T extends IModel>(model: new() => T, apiMeta: IApiMeta) {
+    register<T extends IModel>(model: new() => T, apiMeta: IApiMetaDefinition) {
 
         // Check model constructor
         checkIsModelConstructor(model);
@@ -46,15 +46,14 @@ export class ModelApiRegistry {
             throw new Error(`ApiRegistryError: Model '${modelName}' already has a registered API.`);
         }
 
-        // Check api meta
+        // Load model metadata
         let modelMeta = this._modelRegistry.getMeta(modelName);
-        initialiseApiMeta(modelMeta, apiMeta);
 
         // Add api meta to the registry
-        this._apiMeta[modelName] = apiMeta;
+        this._apiMeta[modelName] = initialiseApiMeta(modelMeta, apiMeta);
     }
 
-    getModelNames(): string[] {
+    getModelNames(operation?: string): string[] {
         return Object.keys(this._apiMeta);
     }
 

@@ -25,8 +25,11 @@ export class Person {
 rev.register(Person);
 
 api.register(Person, {
-    operations: ['read'],
     methods: {
+        read: true,
+        create: true,
+        update: true,
+        remove: true,
         unsubscribe: {
            args: ['email'],
            handler: async (context, email) => {

@@ -12,48 +12,65 @@ export interface IApiMethod {
     handler: (context: IApiMethodContext, ...args: any[]) => Promise<any>;
 }
 
+export interface IApiMetaDefinition {
+    methods: {
+        [name: string]: IApiMethod | boolean;
+    } | string[] | 'all';
+}
+
 export interface IApiMeta {
-    operations: string[] | 'all';
-    methods?: {
-        [name: string]: IApiMethod;
+    methods: {
+        [name: string]: IApiMethod | boolean;
     };
 }
 
 let modelOps = ['create', 'read', 'update', 'remove'];
 
-export function initialiseApiMeta<T extends IModel>(modelMeta: IModelMeta<T>, apiMeta: IApiMeta) {
+export function initialiseApiMeta<T extends IModel>(
+        modelMeta: IModelMeta<T>,
+        apiMeta: IApiMetaDefinition): IApiMeta {
 
     checkMetadataInitialised(modelMeta);
 
-    // Check and update apiMeta.operations
-    if (!apiMeta || !apiMeta.operations
-            || (!(apiMeta.operations instanceof Array)
-                && apiMeta.operations != 'all')) {
-        throw new Error('ApiMetadataError: API metadata must contain a valid "operations" entry.');
+    // Set up API Metadata
+    if (!apiMeta || !apiMeta.methods
+        || (typeof apiMeta.methods != 'object'
+            && apiMeta.methods != 'all')) {
+        throw new Error(`ApiMetadataError: API metadata must include a valid 'methods' key.`);
     }
-    if (apiMeta.operations == 'all') {
-        apiMeta.operations = modelOps.map((op) => op);
+
+    if (apiMeta.methods == 'all') {
+        apiMeta.methods = {};
+        for (let methodName of modelOps) {
+            apiMeta.methods[methodName] = true;
+        }
     }
-    else {
-        for (let op of apiMeta.operations) {
-            if (!op || typeof op != 'string' || modelOps.indexOf(op) < 0) {
-                throw new Error(`ApiMetadataError: Invalid operation in operations list: '${op}'.`);
-            }
+    else if (apiMeta.methods instanceof Array) {
+        let methods = apiMeta.methods;
+        apiMeta.methods = {};
+        for (let methodName of methods) {
+            apiMeta.methods[methodName] = true;
         }
     }
 
-    // Check and update apiMeta.methods
-    if (apiMeta.methods) {
-        for (const methodName in apiMeta.methods) {
-            const method = apiMeta.methods[methodName];
+    for (const methodName in apiMeta.methods) {
+        const method = apiMeta.methods[methodName];
 
-            if (typeof method != 'object'
-                    || !method.args || !method.handler
+        if (!method || (typeof method != 'boolean' && typeof method != 'object')) {
+            throw new Error(`ApiMetadataError: Invalid method definition for '${methodName}'.`);
+        }
+
+        if (typeof method == 'boolean') {  // System method
+            if (modelOps.indexOf(methodName) < 0) {
+                throw new Error(`ApiMetadataError: Method '${methodName}' is not recognised.`);
+            }
+        }
+        else {  // Custom method
+            if (!method.args || !method.handler
                     || typeof method.args != 'object' || !(method.args instanceof Array)
                     || typeof method.handler != 'function') {
-                throw new Error('ApiMetadataError: API methods must define an args array and a handler function');
+                throw new Error('ApiMetadataError: Custom API methods must define an args array and a handler function');
             }
-
             // Check and convert method args to an array of Fields
             for (let i = 0; i < method.args.length; i++) {
                 let arg = method.args[i];
@@ -72,4 +89,5 @@ export function initialiseApiMeta<T extends IModel>(modelMeta: IModelMeta<T>, ap
         }
     }
 
+    return apiMeta as IApiMeta;
 }

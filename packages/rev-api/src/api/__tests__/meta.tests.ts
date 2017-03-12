@@ -2,7 +2,7 @@ import { IModelMeta } from 'rev-models/lib/models';
 import { initialiseMeta } from 'rev-models/lib/models/meta';
 import * as f from 'rev-models/lib/fields';
 
-import { IApiMeta, initialiseApiMeta } from '../meta';
+import { initialiseApiMeta, IApiMethod, IApiMetaDefinition, IApiMeta } from '../meta';
 
 import { expect } from 'chai';
 
@@ -25,101 +25,125 @@ let testMeta: IModelMeta<TestModel> = {
 };
 initialiseMeta(TestModel, testMeta);
 
+let apiMetaDef: IApiMetaDefinition;
 let apiMeta: IApiMeta;
 
-describe('initialiseApiMeta() - operations', () => {
+describe('initialiseApiMeta() - system methods', () => {
 
-    it('does not throw if api metadata has an empty list of operations', () => {
-        apiMeta = {
-            operations: []
+    it('does not throw if api metadata has an empty list of methods', () => {
+        apiMetaDef = {
+            methods: {}
         };
         expect(() => {
-            initialiseApiMeta(testMeta, apiMeta);
+            initialiseApiMeta(testMeta, apiMetaDef);
         }).to.not.throw();
     });
 
-    it('does not throw if api metadata has a valid list of operations', () => {
-        apiMeta = {
-            operations: [ 'create', 'read' ]
+    it('does not throw if api metadata has a valid list of methods', () => {
+        apiMetaDef = {
+            methods: {create: true, read: true }
         };
         expect(() => {
-            initialiseApiMeta(testMeta, apiMeta);
+            initialiseApiMeta(testMeta, apiMetaDef);
         }).to.not.throw();
     });
 
-    it('converts "all" to the complete list of operations', () => {
-        apiMeta = {
-            operations: 'all'
+    it('converts "all" to the full list of system methods', () => {
+        apiMetaDef = {
+            methods: 'all'
         };
-        expect(() => {
-            initialiseApiMeta(testMeta, apiMeta);
-        }).to.not.throw();
-        expect(apiMeta.operations).to.deep.equal(['create', 'read', 'update', 'remove']);
+        apiMeta = initialiseApiMeta(testMeta, apiMetaDef);
+        expect(apiMeta).to.deep.equal({
+            methods: {
+                read: true,
+                create: true,
+                update: true,
+                remove: true
+            }
+        });
+    });
+
+    it('converts method string array as expected', () => {
+        apiMetaDef = {
+            methods: [ 'create', 'update' ]
+        };
+        apiMeta = initialiseApiMeta(testMeta, apiMetaDef);
+        expect(apiMeta).to.deep.equal({
+            methods: {
+                create: true,
+                update: true
+            }
+        });
     });
 
     it('throws an error if model metadata is not initialised', () => {
         let modelMeta = { fields: [] } as any;
-        apiMeta = {
-            operations: 'all'
+        apiMetaDef = {
+            methods: { read: true }
         };
         expect(() => {
-            initialiseApiMeta(null, apiMeta);
+            initialiseApiMeta(null, apiMetaDef);
         }).to.throw('Supplied metadata is not an object');
         expect(() => {
-            initialiseApiMeta(modelMeta, apiMeta);
+            initialiseApiMeta(modelMeta, apiMetaDef);
         }).to.throw('Supplied metadata has not been initialised');
     });
 
-    it('throws an error if operations key is missing', () => {
-        apiMeta = {} as any;
+    it('throws an error if methods key is missing', () => {
+        apiMetaDef = {} as any;
         expect(() => {
             initialiseApiMeta(testMeta, null);
-        }).to.throw('API metadata must contain a valid "operations" entry');
+        }).to.throw(`API metadata must include a valid 'methods' key`);
         expect(() => {
-            initialiseApiMeta(testMeta, apiMeta);
-        }).to.throw('API metadata must contain a valid "operations" entry');
+            initialiseApiMeta(testMeta, apiMetaDef);
+        }).to.throw(`API metadata must include a valid 'methods' key`);
     });
 
-    it('throws an error if operations key is not "all" or an array', () => {
+    it('throws an error if methods key is not an object', () => {
         expect(() => {
-            initialiseApiMeta(testMeta, { operations: 'some' } as any);
-        }).to.throw('API metadata must contain a valid "operations" entry');
-        expect(() => {
-            initialiseApiMeta(testMeta, { operations: {} } as any);
-        }).to.throw('API metadata must contain a valid "operations" entry');
+            initialiseApiMeta(testMeta, { methods: 'some' } as any);
+        }).to.throw(`API metadata must include a valid 'methods' key`);
     });
 
-    it('throws an error if operations array contains invalid operations', () => {
-        apiMeta = {
-            operations: [
-                'create',
-                'read',
-                'destroy',
-                'modify'
-            ]} as any;
+    it('throws an error if methods array contains invalid methods', () => {
+        apiMetaDef = {
+            methods: [ 'create', 'read', 'destroy', 'update' ]
+        };
         expect(() => {
-            initialiseApiMeta(testMeta, apiMeta);
-        }).to.throw('Invalid operation in operations list');
+            initialiseApiMeta(testMeta, apiMetaDef);
+        }).to.throw(`Method 'destroy' is not recognised`);
+    });
+
+    it('throws an error if methods object contains invalid methods', () => {
+        apiMetaDef = {
+            methods: {
+                create: true,
+                read: true,
+                destroy: true,
+                update: true
+            }} as any;
+        expect(() => {
+            initialiseApiMeta(testMeta, apiMetaDef);
+        }).to.throw(`Method 'destroy' is not recognised`);
     });
 
 });
 
-describe('initialiseApiMeta() - methods', () => {
+describe('initialiseApiMeta() - custom methods', () => {
 
     it('does not throw if api metadata has an empty dict of methods', () => {
-        apiMeta = {
-            operations: ['create'],
+        apiMetaDef = {
             methods: {}
         };
         expect(() => {
-            initialiseApiMeta(testMeta, apiMeta);
+            initialiseApiMeta(testMeta, apiMetaDef);
         }).to.not.throw();
     });
 
     it('does not throw if api metadata defines a method with no args', () => {
-        apiMeta = {
-            operations: ['create'],
+        apiMetaDef = {
             methods: {
+                create: true,
                 testMethod: {
                     args: [],
                     handler: (() => {}) as any
@@ -127,15 +151,15 @@ describe('initialiseApiMeta() - methods', () => {
             }
         };
         expect(() => {
-            initialiseApiMeta(testMeta, apiMeta);
+            initialiseApiMeta(testMeta, apiMetaDef);
         }).to.not.throw();
     });
 
     it('sets up metadata for a method with one Field arg', () => {
         let testField = new f.TextField('arg1');
-        apiMeta = {
-            operations: ['create'],
+        apiMetaDef = {
             methods: {
+                create: true,
                 testMethod: {
                     args: [
                         testField
@@ -144,19 +168,20 @@ describe('initialiseApiMeta() - methods', () => {
                 }
             }
         };
-        initialiseApiMeta(testMeta, apiMeta);
-        expect(apiMeta.methods).to.be.an('object');
-        expect(apiMeta.methods).to.have.property('testMethod');
-        expect(apiMeta.methods.testMethod.args).to.have.length(1);
-        expect(apiMeta.methods.testMethod.args[0]).to.equal(testField);
+        apiMeta = initialiseApiMeta(testMeta, apiMetaDef);
+        expect(apiMetaDef.methods).to.be.an('object');
+        expect(apiMetaDef.methods).to.have.property('testMethod');
+        let method = apiMeta.methods.testMethod as IApiMethod;
+        expect(method.args).to.have.length(1);
+        expect(method.args[0]).to.equal(testField);
     });
 
     it('sets up metadata for a method with two Field args', () => {
         let testField1 = new f.TextField('arg1');
         let testField2 = new f.IntegerField('arg2');
-        apiMeta = {
-            operations: ['create'],
+        apiMetaDef = {
             methods: {
+                create: true,
                 testMethod: {
                     args: [
                         testField1,
@@ -166,54 +191,57 @@ describe('initialiseApiMeta() - methods', () => {
                 }
             }
         };
-        initialiseApiMeta(testMeta, apiMeta);
-        expect(apiMeta.methods).to.be.an('object');
-        expect(apiMeta.methods).to.have.property('testMethod');
-        expect(apiMeta.methods.testMethod.args).to.have.length(2);
-        expect(apiMeta.methods.testMethod.args[0]).to.equal(testField1);
-        expect(apiMeta.methods.testMethod.args[1]).to.equal(testField2);
+        apiMeta = initialiseApiMeta(testMeta, apiMetaDef);
+        expect(apiMetaDef.methods).to.be.an('object');
+        expect(apiMetaDef.methods).to.have.property('testMethod');
+        let method = apiMeta.methods.testMethod as IApiMethod;
+        expect(method.args).to.have.length(2);
+        expect(method.args[0]).to.equal(testField1);
+        expect(method.args[1]).to.equal(testField2);
     });
 
     it('sets up metadata for a method with one field-name arg', () => {
-        apiMeta = {
-            operations: ['create'],
+        apiMetaDef = {
             methods: {
+                create: true,
                 testMethod: {
                     args: ['name'],
                     handler: (() => {}) as any
                 }
             }
         };
-        initialiseApiMeta(testMeta, apiMeta);
-        expect(apiMeta.methods).to.be.an('object');
-        expect(apiMeta.methods).to.have.property('testMethod');
-        expect(apiMeta.methods.testMethod.args).to.have.length(1);
-        expect(apiMeta.methods.testMethod.args[0]).to.equal(nameField);
+        apiMeta = initialiseApiMeta(testMeta, apiMetaDef);
+        expect(apiMetaDef.methods).to.be.an('object');
+        expect(apiMetaDef.methods).to.have.property('testMethod');
+        let method = apiMeta.methods.testMethod as IApiMethod;
+        expect(method.args).to.have.length(1);
+        expect(method.args[0]).to.equal(nameField);
     });
 
     it('sets up metadata for a method with two field-name args', () => {
-        apiMeta = {
-            operations: ['create'],
+        apiMetaDef = {
             methods: {
+                create: true,
                 testMethod: {
                     args: ['name', 'date'],
                     handler: (() => {}) as any
                 }
             }
         };
-        initialiseApiMeta(testMeta, apiMeta);
-        expect(apiMeta.methods).to.be.an('object');
-        expect(apiMeta.methods).to.have.property('testMethod');
-        expect(apiMeta.methods.testMethod.args).to.have.length(2);
-        expect(apiMeta.methods.testMethod.args[0]).to.equal(nameField);
-        expect(apiMeta.methods.testMethod.args[1]).to.equal(dateField);
+        apiMeta = initialiseApiMeta(testMeta, apiMetaDef);
+        expect(apiMetaDef.methods).to.be.an('object');
+        expect(apiMetaDef.methods).to.have.property('testMethod');
+        let method = apiMeta.methods.testMethod as IApiMethod;
+        expect(method.args).to.have.length(2);
+        expect(method.args[0]).to.equal(nameField);
+        expect(method.args[1]).to.equal(dateField);
     });
 
     it('sets up metadata for a method with mixed args', () => {
         let testField = new f.TextField('arg1');
-        apiMeta = {
-            operations: ['create'],
+        apiMetaDef = {
             methods: {
+                create: true,
                 testMethod: {
                     args: [
                         'date',
@@ -223,29 +251,28 @@ describe('initialiseApiMeta() - methods', () => {
                 }
             }
         };
-        initialiseApiMeta(testMeta, apiMeta);
-        expect(apiMeta.methods).to.be.an('object');
-        expect(apiMeta.methods).to.have.property('testMethod');
-        expect(apiMeta.methods.testMethod.args).to.have.length(2);
-        expect(apiMeta.methods.testMethod.args[0]).to.equal(dateField);
-        expect(apiMeta.methods.testMethod.args[1]).to.equal(testField);
+        apiMeta = initialiseApiMeta(testMeta, apiMetaDef);
+        expect(apiMetaDef.methods).to.be.an('object');
+        expect(apiMetaDef.methods).to.have.property('testMethod');
+        let method = apiMeta.methods.testMethod as IApiMethod;
+        expect(method.args).to.have.length(2);
+        expect(method.args[0]).to.equal(dateField);
+        expect(method.args[1]).to.equal(testField);
     });
 
     it('throws an error when method definition is missing keys', () => {
-        apiMeta = {
-            operations: [],
+        apiMetaDef = {
             methods: {
                 testMethod: {} as any
             }
         };
         expect(() => {
-            initialiseApiMeta(testMeta, apiMeta);
+            initialiseApiMeta(testMeta, apiMetaDef);
         }).to.throw('API methods must define an args array and a handler function');
     });
 
     it('throws an error when method definition keys are invalid', () => {
-        apiMeta = {
-            operations: [],
+        apiMetaDef = {
             methods: {
                 testMethod: {
                     args: { test: 'fail' } as any,
@@ -254,13 +281,12 @@ describe('initialiseApiMeta() - methods', () => {
             }
         };
         expect(() => {
-            initialiseApiMeta(testMeta, apiMeta);
+            initialiseApiMeta(testMeta, apiMetaDef);
         }).to.throw('API methods must define an args array and a handler function');
     });
 
     it('throws an error when field name does not match the model', () => {
-        apiMeta = {
-            operations: [],
+        apiMetaDef = {
             methods: {
                 testMethod: {
                     args: ['id', 'not_valid'],
@@ -269,13 +295,12 @@ describe('initialiseApiMeta() - methods', () => {
             }
         };
         expect(() => {
-            initialiseApiMeta(testMeta, apiMeta);
+            initialiseApiMeta(testMeta, apiMetaDef);
         }).to.throw(`Field 'not_valid' does not exist in model`);
     });
 
     it('throws an error when an invalid type is passed as an arg', () => {
-        apiMeta = {
-            operations: [],
+        apiMetaDef = {
             methods: {
                 testMethod: {
                     args: ['id', new Date() as any, nameField],
@@ -284,7 +309,7 @@ describe('initialiseApiMeta() - methods', () => {
             }
         };
         expect(() => {
-            initialiseApiMeta(testMeta, apiMeta);
+            initialiseApiMeta(testMeta, apiMetaDef);
         }).to.throw(`must either be an instance of a Field or a string`);
     });
 
