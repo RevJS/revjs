@@ -4,7 +4,7 @@ import { IModelOperationResult } from 'rev-models/lib/models';
 import {
     GraphQLObjectType,
     GraphQLNonNull,
-    GraphQLString,
+    // GraphQLString,
     GraphQLInt,
     // GraphQLBoolean,
     // GraphQLList,
@@ -13,37 +13,37 @@ import {
 
 import * as GraphQLJSON from 'graphql-type-json';
 
-const ModelType = new GraphQLObjectType({
-    name: 'TestModel',
-    fields: {
-        name: {
-            type: GraphQLString,
-            resolve(root: any, args: any, context: any) {
-                return 'test';
-            }
-        }
-    },
-});
+import { NoModelsType, DummyModelType } from './types';
+
 
 export function getGraphQLSchema(registry: ModelApiRegistry): GraphQLSchema {
 
     const schema: any = {};
 
+    let readModels = registry.getModelNamesByMethod('read');
+
     let queries = {
         name: 'query',
         fields: {}
     };
-    for (let modelName of registry.getModelNames()) {
-        queries.fields[modelName] = {
-            type: ModelType,
-            args: {
-                id: { type: GraphQLInt }
-            },
-            resolve(root: any, args: any, context: any) {
-                console.log('WHERE', args['where']);
-                return {};
-            }
+    if (readModels.length == 0) {
+        queries.fields['no_models'] = {
+            type: NoModelsType
         };
+    }
+    else {
+        for (let modelName of readModels) {
+            queries.fields[modelName] = {
+                type: DummyModelType,
+                args: {
+                    id: { type: GraphQLInt }
+                },
+                resolve(root: any, args: any, context: any) {
+                    console.log('WHERE', args['where']);
+                    return {};
+                }
+            };
+        }
     }
     schema.query = new GraphQLObjectType(queries);
 
@@ -52,23 +52,28 @@ export function getGraphQLSchema(registry: ModelApiRegistry): GraphQLSchema {
         fields: {}
     };
     for (let modelName of registry.getModelNames()) {
-        let mutationName = modelName + '_create';
-        mutations.fields[mutationName] = {
-            type: GraphQLJSON,
-            args: {
-                id: { type: new GraphQLNonNull(GraphQLInt) }
-            },
-            resolve: (value: any, args: any): IModelOperationResult<any> => {
-                return {
-                    operation: {
-                        name: 'create'
-                    },
-                    success: false
-                };
-            }
-        };
+        let meta = registry.getApiMeta(modelName);
+        for (let methodName in meta.methods) {
+            let mutationName = modelName + '_' + methodName;
+            mutations.fields[mutationName] = {
+                type: GraphQLJSON,
+                args: {
+                    id: { type: new GraphQLNonNull(GraphQLInt) }
+                },
+                resolve: (value: any, args: any): IModelOperationResult<any> => {
+                    return {
+                        operation: {
+                            name: 'create'
+                        },
+                        success: false
+                    };
+                }
+            };
+        }
     }
-    schema.mutation = new GraphQLObjectType(mutations);
+    if (Object.keys(mutations.fields).length > 0) {
+        schema.mutation = new GraphQLObjectType(mutations);
+    }
 
     return new GraphQLSchema(schema);
 }
