@@ -2,10 +2,14 @@ import { ModelValidationResult } from '../../models/validation';
 import { IFieldOptions, Field, DEFAULT_FIELD_OPTIONS } from '../field';
 import { NumberField, IntegerField } from '../numberfields';
 import { numberValidator, requiredValidator, minValueValidator, maxValueValidator, integerValidator } from '../validators';
+import { IModelOperation } from '../../models/operations';
 
 import { expect } from 'chai';
 
 describe('rev.fields.numberfields', () => {
+    let testOp: IModelOperation = {
+        name: 'create'
+    };
 
     describe('NumberField', () => {
         let testModel = {
@@ -61,14 +65,14 @@ describe('rev.fields.numberfields', () => {
         it('successfully validates a number value', () => {
             let test = new NumberField('value', { required: true });
             testModel.value = 42.5;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('successfully validates a number value in a string', () => {
             let test = new NumberField('value', { required: true });
             testModel.value = '12.345';
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', true);
         });
 
@@ -79,28 +83,28 @@ describe('rev.fields.numberfields', () => {
                 maxValue: 50
             });
             testModel.value = 42.123;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new NumberField('value', { required: false });
             testModel.value = null;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('does not validate on null value if field is required', () => {
             let test = new NumberField('value', { required: true });
             testModel.value = null;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', false);
         });
 
         it('does not validate on non-numeric value', () => {
             let test = new NumberField('value', { required: true });
             testModel.value = 'I am a number, honest guv!...';
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', false);
         });
 
@@ -111,7 +115,7 @@ describe('rev.fields.numberfields', () => {
                 maxValue: 50.2
             });
             testModel.value = 22.72;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', false);
         });
 
@@ -173,14 +177,14 @@ describe('rev.fields.numberfields', () => {
         it('successfully validates an integer value', () => {
             let test = new IntegerField('value', { required: true });
             testModel.value = 42;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('successfully validates an integer value in a string', () => {
             let test = new IntegerField('value', { required: true });
             testModel.value = '12';
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', true);
         });
 
@@ -191,28 +195,28 @@ describe('rev.fields.numberfields', () => {
                 maxValue: 50
             });
             testModel.value = 42;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new IntegerField('value', { required: false });
             testModel.value = null;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('does not validate on null value if field is required', () => {
             let test = new IntegerField('value', { required: true });
             testModel.value = null;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', false);
         });
 
         it('does not validate on non-integer value', () => {
             let test = new IntegerField('value', { required: true });
             testModel.value = 42.5;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', false);
         });
 
@@ -223,7 +227,7 @@ describe('rev.fields.numberfields', () => {
                 maxValue: 50
             });
             testModel.value = 22;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', false);
         });
 

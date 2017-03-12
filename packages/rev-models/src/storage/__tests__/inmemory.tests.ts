@@ -62,11 +62,11 @@ describe('rev.storage.inmemory', () => {
                 new fld.BooleanField('newsletter'),
                 new fld.DateField('date_registered')
             ]
-        }
+        };
         initialiseMeta(TestModel, meta);
         storage = new InMemoryStorage();
-        loadResult = new ModelOperationResult<TestModel>({type: 'create'});
-        readResult = new ModelOperationResult<TestModel>({type: 'read'});
+        loadResult = new ModelOperationResult<TestModel>({name: 'create'});
+        readResult = new ModelOperationResult<TestModel>({name: 'read'});
     });
 
     describe('initial state - singleton model', () => {

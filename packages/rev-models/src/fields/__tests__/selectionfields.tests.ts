@@ -2,10 +2,14 @@ import { BooleanField, SelectionField, ISelectionFieldOptions } from '../selecti
 import { ModelValidationResult } from '../../models/validation';
 import { IFieldOptions, Field, DEFAULT_FIELD_OPTIONS } from '../field';
 import { booleanValidator, requiredValidator, singleSelectionValidator, stringEmptyValidator, listEmptyValidator, multipleSelectionValidator } from '../validators';
+import { IModelOperation } from '../../models/operations';
 
 import { expect } from 'chai';
 
 describe('rev.fields.selectionfields', () => {
+    let testOp: IModelOperation = {
+        name: 'create'
+    };
 
     describe('BooleanField', () => {
         let testModel = {
@@ -47,28 +51,28 @@ describe('rev.fields.selectionfields', () => {
         it('successfully validates a boolean value', () => {
             let test = new BooleanField('is_awesome', { required: true });
             testModel.is_awesome = false;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new BooleanField('is_awesome', { required: false });
             testModel.is_awesome = null;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('does not validate on null value if field is required', () => {
             let test = new BooleanField('is_awesome', { required: true });
             testModel.is_awesome = null;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', false);
         });
 
         it('does not validate on non-boolean value', () => {
             let test = new BooleanField('is_awesome', { required: true });
             testModel.is_awesome = 'evidently!';
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', false);
         });
 
@@ -161,42 +165,42 @@ describe('rev.fields.selectionfields', () => {
         it('successfully validates a single value', () => {
             let test = new SelectionField('value', {selection: selection});
             testModel.value = 'option2';
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('successfully validates multiple values', () => {
             let test = new SelectionField('value', {selection: selection, multiple: true });
             testModel.value = ['option1', 'option3'];
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new SelectionField('value', {selection: selection, required: false });
             testModel.value = null;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', true);
         });
 
         it('does not validate on null value if field is required', () => {
             let test = new SelectionField('value', {selection: selection, required: true });
             testModel.value = null;
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', false);
         });
 
         it('does not validate an invalid single value', () => {
             let test = new SelectionField('value', {selection: selection});
             testModel.value = 'I am not an option';
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', false);
         });
 
         it('does not validate an invalid multi-value', () => {
             let test = new SelectionField('value', {selection: selection});
             testModel.value = ['option1', 'nope', 'option3'];
-            return expect(test.validate(testModel, testMeta, {type: 'create'}, result))
+            return expect(test.validate(testModel, testMeta, testOp, result))
                 .to.eventually.have.property('valid', false);
         });
 

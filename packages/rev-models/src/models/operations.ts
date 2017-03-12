@@ -6,10 +6,8 @@ import { OPERATION_MESSAGES as msg } from './operationmsg';
 import * as storage from '../storage';
 import { IWhereQuery } from '../operators/operators';
 
-export type ModelOperationType = 'create' | 'read' | 'update' | 'remove';
-
 export interface IModelOperation {
-    type: ModelOperationType;
+    name: string;
     where?: IWhereQuery;
 }
 
@@ -20,13 +18,15 @@ export interface IOperationError {
 }
 
 export class ModelOperationResult<T> {
+    operation: IModelOperation;
     success: boolean;
     validation?: ModelValidationResult;
     result?: T;
     results?: T[];
     errors: IOperationError[];
 
-    constructor(public operation: IModelOperation) {
+    constructor(operation: IModelOperation) {
+        this.operation = operation;
         this.success = true;
         this.errors = [];
         this.validation = null;
@@ -93,7 +93,7 @@ export function create<T extends IModel>(model: T, options?: ICreateOptions): Pr
         }
 
         let operation: IModelOperation = {
-            type: 'create'
+            name: 'create'
         };
         let operationResult = new ModelOperationResult<T>(operation);
         validateModel(model, meta, operation, options ? options.validation : null)
@@ -137,7 +137,7 @@ export function update<T extends IModel>(model: T, where?: IWhereQuery, options?
         }
 
         let operation: IModelOperation = {
-            type: 'update',
+            name: 'update',
             where: where
         };
         let operationResult = new ModelOperationResult<T>(operation);
@@ -186,7 +186,7 @@ export function remove<T extends IModel>(model: new() => T, where?: IWhereQuery,
         }
 
         let operation: IModelOperation = {
-            type: 'remove',
+            name: 'remove',
             where: where
         };
         let operationResult = new ModelOperationResult<T>(operation);
@@ -227,7 +227,7 @@ export function read<T extends IModel>(model: new() => T, where?: IWhereQuery, o
 
         let store = storage.get(meta.storage);
         let operation: IModelOperation = {
-            type: 'read',
+            name: 'read',
             where: where
         };
         let operationResult = new ModelOperationResult<T>(operation);

@@ -276,7 +276,7 @@ describe('rev.model.validation', () => {
             test.name = 'Harry';
             test.date = new Date();
 
-            return validateModel(test, meta, {type: 'create'})
+            return validateModel(test, meta, {name: 'create'})
                 .then((res) => {
                     expect(res.valid).to.equal(true);
                 });
@@ -292,7 +292,7 @@ describe('rev.model.validation', () => {
             meta.validate = sinon.spy();
             meta.validateAsync = sinon.stub().returns(Promise.resolve());
 
-            return validateModel(test, meta, {type: 'create'})
+            return validateModel(test, meta, {name: 'create'})
                 .then((res) => {
                     expect(res.valid).to.equal(true);
                     expect((meta.validate as any).callCount).to.equal(1);
@@ -303,7 +303,7 @@ describe('rev.model.validation', () => {
         it('should reject if a model instance is not passed', () => {
             let test: any = () => {};
 
-            return validateModel(test, meta, {type: 'create'})
+            return validateModel(test, meta, {name: 'create'})
                 .then((res) => {
                     expect(false, 'Did not reject').to.be.true;
                 })
@@ -322,7 +322,7 @@ describe('rev.model.validation', () => {
                 ]
             };
 
-            return validateModel(test, uninitialisedMeta, {type: 'create'})
+            return validateModel(test, uninitialisedMeta, {name: 'create'})
                 .then((res) => {
                     expect(false, 'Did not reject').to.be.true;
                 })
@@ -344,7 +344,7 @@ describe('rev.model.validation', () => {
 
         it('should reject if operation is not a create or update', () => {
             let test = new TestModel();
-            return validateModel(test, meta, {type: 'remove'})
+            return validateModel(test, meta, {name: 'remove'})
                 .then((res) => {
                     expect(false, 'Did not reject').to.be.true;
                 })
@@ -361,7 +361,7 @@ describe('rev.model.validation', () => {
             test.date = new Date();
             test.extra = 'stuff';
 
-            return validateModel(test, meta, {type: 'create'})
+            return validateModel(test, meta, {name: 'create'})
                 .then((res) => {
                     expect(res.valid).to.equal(false);
                     expect(res.modelErrors.length).to.equal(1);
@@ -377,7 +377,7 @@ describe('rev.model.validation', () => {
             test.name = 'Harry';
             test.date = new Date();
 
-            return validateModel(test, meta, {type: 'create'})
+            return validateModel(test, meta, {name: 'create'})
                 .then((res) => {
                     expect(res.valid).to.equal(false);
                     expect(res.fieldErrors['id'].length).to.equal(1);
@@ -391,7 +391,7 @@ describe('rev.model.validation', () => {
             let test = new TestModel();
             test.id = 11;
 
-            return validateModel(test, meta, {type: 'create'})
+            return validateModel(test, meta, {name: 'create'})
                 .then((res) => {
                     expect(res.valid).to.equal(false);
                     expect(res.fieldErrors['name'].length).to.equal(1);
@@ -411,7 +411,7 @@ describe('rev.model.validation', () => {
                 result.addFieldError('name', 'That name is too stupid!', 'daftness', { stupidityLevel: 10 });
             };
 
-            return validateModel(test, meta, {type: 'create'})
+            return validateModel(test, meta, {name: 'create'})
                 .then((res) => {
                     meta.validate = undefined;
                     expect(res.valid).to.equal(false);
@@ -433,7 +433,7 @@ describe('rev.model.validation', () => {
                 throw new Error('Validator epic fail...');
             };
 
-            return expect(validateModel(test, meta, {type: 'create'}))
+            return expect(validateModel(test, meta, {name: 'create'}))
                 .to.be.rejectedWith('Validator epic fail...');
         });
 
@@ -451,7 +451,7 @@ describe('rev.model.validation', () => {
                 });
             };
 
-            return validateModel(test, meta, {type: 'create'})
+            return validateModel(test, meta, {name: 'create'})
                 .then((res) => {
                     meta.validateAsync = undefined;
                     expect(res.valid).to.equal(false);
@@ -473,7 +473,7 @@ describe('rev.model.validation', () => {
                 throw new Error('Async Validator epic fail...');
             };
 
-            return expect(validateModel(test, meta, {type: 'create'}))
+            return expect(validateModel(test, meta, {name: 'create'}))
                 .to.be.rejectedWith('Async Validator epic fail...');
         });
 
@@ -488,7 +488,7 @@ describe('rev.model.validation', () => {
                 return Promise.reject(new Error('Can handle rejection...'));
             };
 
-            return expect(validateModel(test, meta, {type: 'create'}))
+            return expect(validateModel(test, meta, {name: 'create'}))
                 .to.be.rejectedWith('Can handle rejection...');
         });
 
@@ -507,7 +507,7 @@ describe('rev.model.validation', () => {
                 });
             };
 
-            return validateModel(test, meta, {type: 'create'}, { timeout: 10})
+            return validateModel(test, meta, {name: 'create'}, { timeout: 10})
                 .then((res) => {
                     expect(false, 'Did not reject').to.be.true;
                 })
@@ -528,7 +528,7 @@ describe('rev.model.validation', () => {
             validateRemovalAsync: null as sinon.SinonStub
         };
         let op: IModelOperation = {
-            type: 'remove',
+            name: 'remove',
             where: {}
         };
 
@@ -588,7 +588,7 @@ describe('rev.model.validation', () => {
         });
 
         it('should reject if operation is not a create or update', () => {
-            return validateModelRemoval(meta, {type: 'create', where: {}})
+            return validateModelRemoval(meta, {name: 'create', where: {}})
                 .then((res) => {
                     expect(false, 'Did not reject').to.be.true;
                 })
@@ -598,7 +598,7 @@ describe('rev.model.validation', () => {
         });
 
         it('should reject if operation where clause is not provided', () => {
-            return validateModelRemoval(meta, {type: 'remove'})
+            return validateModelRemoval(meta, {name: 'remove'})
                 .then((res) => {
                     expect(false, 'Did not reject').to.be.true;
                 })

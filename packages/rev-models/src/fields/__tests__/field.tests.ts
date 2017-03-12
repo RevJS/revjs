@@ -28,6 +28,9 @@ function slowInvalidAsyncValidator<T extends IModel>(model: T, field: Field, met
 }
 
 describe('rev.fields.field', () => {
+    let testOp: IModelOperation = {
+        name: 'create'
+    };
 
     describe('Field - constructor()', () => {
 
@@ -90,7 +93,7 @@ describe('rev.fields.field', () => {
         it('returns a resolved promise when validation completes - no validators', () => {
             let test = new Field('name', { required: false });
             return expect(
-                test.validate(testModel, testMeta, {type: 'create'}, result)
+                test.validate(testModel, testMeta, testOp, result)
             ).to.eventually.have.property('valid', true);
         });
 
@@ -98,21 +101,21 @@ describe('rev.fields.field', () => {
             let test = new Field('name', { required: true });
             testModel.name = 'Frank';
             return expect(
-                test.validate(testModel, testMeta, {type: 'create'}, result)
+                test.validate(testModel, testMeta, testOp, result)
             ).to.eventually.have.property('valid', true);
         });
 
         it('validation fails as expected when required field not set', () => {
             let test = new Field('name', { required: true });
             return expect(
-                test.validate({ name: null }, testMeta, {type: 'create'}, result)
+                test.validate({ name: null }, testMeta, testOp, result)
             ).to.eventually.have.property('valid', false);
         });
 
         it('throws an error if a model instance is not passed', () => {
             let test = new Field('name');
             expect(() => {
-                test.validate('test' as any, testMeta, {type: 'create'}, result);
+                test.validate('test' as any, testMeta, testOp, result);
             }).to.throw('not a model instance');
         });
 
@@ -120,7 +123,7 @@ describe('rev.fields.field', () => {
             let test = new Field('name', { required: false });
             test.asyncValidators.push(quickValidAsyncValidator);
             return expect(
-                test.validate(testModel, testMeta, {type: 'create'}, result)
+                test.validate(testModel, testMeta, testOp, result)
             ).to.eventually.have.property('valid', true);
         });
 
@@ -128,7 +131,7 @@ describe('rev.fields.field', () => {
             let test = new Field('name', { required: false });
             test.asyncValidators.push(quickInvalidAsyncValidator);
             return expect(
-                test.validate(testModel, testMeta, {type: 'create'}, result)
+                test.validate(testModel, testMeta, testOp, result)
             ).to.eventually.have.property('valid', false);
         });
 
@@ -137,7 +140,7 @@ describe('rev.fields.field', () => {
             test.asyncValidators.push(quickValidAsyncValidator);
             test.asyncValidators.push(quickInvalidAsyncValidator);
             return expect(
-                test.validate(testModel, testMeta, {type: 'create'}, result)
+                test.validate(testModel, testMeta, testOp, result)
             ).to.eventually.have.property('valid', false);
         });
 
@@ -145,7 +148,7 @@ describe('rev.fields.field', () => {
             let test = new Field('name', { required: false });
             test.asyncValidators.push(slowInvalidAsyncValidator);
             return expect(
-                test.validate(testModel, testMeta, {type: 'create'}, result, {
+                test.validate(testModel, testMeta, testOp, result, {
                     timeout: 100
                 })
             ).to.be.rejectedWith('timed out');

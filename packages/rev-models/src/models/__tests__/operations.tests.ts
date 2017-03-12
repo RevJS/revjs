@@ -97,7 +97,7 @@ describe('rev.model.operations', () => {
     describe('ModelOperationResult - constructor()', () => {
 
         it('sets up an empty result as expected', () => {
-            let op: IModelOperation = {type: 'create'};
+            let op: IModelOperation = {name: 'create'};
             let res = new ModelOperationResult(op);
             expect(res.success).to.equal(true);
             expect(res.operation).to.equal(op);
@@ -114,7 +114,7 @@ describe('rev.model.operations', () => {
         let res: ModelOperationResult<{}>;
 
         beforeEach(() => {
-            res = new ModelOperationResult({type: 'create'});
+            res = new ModelOperationResult({name: 'create'});
         });
 
         it('adds an error with specified message', () => {

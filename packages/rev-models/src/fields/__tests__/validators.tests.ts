@@ -43,7 +43,7 @@ let booleanField = new fld.BooleanField('isAwesome');
 let dateField = new fld.DateTimeField('registered');
 
 let op: IModelOperation = {
-    type: 'create'
+    name: 'create'
 };
 
 let meta: IModelMeta<TestModel> = {

@@ -93,7 +93,7 @@ export function validateModel<T extends IModel>(model: T, meta: IModelMeta<T>, o
     return new Promise((resolve, reject) => {
         checkIsModelInstance(model);
         checkMetadataInitialised(meta);
-        if (!operation || typeof operation != 'object' || ['create', 'update'].indexOf(operation.type) == -1) {
+        if (!operation || typeof operation != 'object' || ['create', 'update'].indexOf(operation.name) == -1) {
             throw new Error('validateModel() - invalid operation specified - should either be a create or update operation.');
         }
         let timeout = options && options.timeout ? options.timeout : 5000;
@@ -134,8 +134,8 @@ export function validateModel<T extends IModel>(model: T, meta: IModelMeta<T>, o
 export function validateModelRemoval<T extends IModel>(meta: IModelMeta<T>, operation: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
     return new Promise((resolve, reject) => {
         checkMetadataInitialised(meta);
-        if (!operation || typeof operation != 'object' || operation.type != 'remove') {
-            throw new Error('validateModelRemoval() - invalid operation specified - operation.type must be "remove".');
+        if (!operation || typeof operation != 'object' || operation.name != 'remove') {
+            throw new Error('validateModelRemoval() - invalid operation specified - operation.name must be "remove".');
         }
         if (!operation.where || typeof operation.where != 'object') {
             throw new Error('validateModelRemoval() - invalid operation where clause specified.');
