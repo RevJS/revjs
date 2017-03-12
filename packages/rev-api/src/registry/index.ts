@@ -1,7 +1,7 @@
 
 import { IModel, checkIsModelConstructor } from 'rev-models/lib/models';
 import { IApiMeta, initialiseApiMeta } from '../api/meta';
-import { getGraphQLSchema } from '../api/graphql';
+import { getGraphQLSchema } from '../graphql/schema';
 import { GraphQLSchema } from 'graphql';
 
 import { ModelRegistry, registry as revRegistry } from 'rev-models/lib/registry';

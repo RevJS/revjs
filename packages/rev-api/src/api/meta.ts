@@ -1,5 +1,5 @@
 
-import { IModel, IModelMeta, ModelOperationType } from 'rev-models/lib/models';
+import { IModel, IModelMeta } from 'rev-models/lib/models';
 import { checkMetadataInitialised } from 'rev-models/lib/models/utils';
 import * as fields from 'rev-models/lib/fields';
 
@@ -13,13 +13,13 @@ export interface IApiMethod {
 }
 
 export interface IApiMeta {
-    operations: ModelOperationType[] | 'all';
+    operations: string[] | 'all';
     methods?: {
         [name: string]: IApiMethod;
     };
 }
 
-let modelOps: ModelOperationType[] = ['create', 'read', 'update', 'remove'];
+let modelOps = ['create', 'read', 'update', 'remove'];
 
 export function initialiseApiMeta<T extends IModel>(modelMeta: IModelMeta<T>, apiMeta: IApiMeta) {
 
@@ -56,7 +56,7 @@ export function initialiseApiMeta<T extends IModel>(modelMeta: IModelMeta<T>, ap
 
             // Check and convert method args to an array of Fields
             for (let i = 0; i < method.args.length; i++) {
-                let arg = method.args[i]
+                let arg = method.args[i];
                 if (typeof arg == 'string') {
                     if (!(arg in modelMeta.fieldsByName)) {
                         throw new Error(`ApiMetadataError: Field '${arg}' does not exist in model '${modelMeta.name}'.`);

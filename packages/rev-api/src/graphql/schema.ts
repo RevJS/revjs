@@ -1,4 +1,5 @@
 import { ModelApiRegistry } from '../registry/index';
+import { IModelOperationResult } from 'rev-models/lib/models';
 
 import {
     GraphQLObjectType,
@@ -9,6 +10,8 @@ import {
     // GraphQLList,
     GraphQLSchema
 } from 'graphql';
+
+import * as GraphQLJSON from 'graphql-type-json';
 
 export function getGraphQLSchema(registry: ModelApiRegistry): GraphQLSchema {
 
@@ -43,18 +46,6 @@ export function getGraphQLSchema(registry: ModelApiRegistry): GraphQLSchema {
     }
     schema.query = new GraphQLObjectType(queries);
 
-
-    const MutationResultType = new GraphQLObjectType({
-        name: 'MutationResultType',
-        fields: {
-            status: {
-                type: GraphQLString,
-                resolve(root, args, context) {
-                    return 'done';
-                }
-            }
-        }
-    });
     let mutations = {
         name: 'mutation',
         fields: {}
@@ -62,13 +53,16 @@ export function getGraphQLSchema(registry: ModelApiRegistry): GraphQLSchema {
     for (let modelName of registry.getModelNames()) {
         let mutationName = modelName + '_create';
         mutations.fields[mutationName] = {
-            type: MutationResultType,
+            type: GraphQLJSON,
             args: {
                 id: { type: new GraphQLNonNull(GraphQLInt) }
             },
-            resolve: (value: any, args: any) => {
+            resolve: (value: any, args: any): IModelOperationResult<any> => {
                 return {
-                    status: 'test'
+                    operation: {
+                        name: 'create'
+                    },
+                    success: false
                 };
             }
         };
