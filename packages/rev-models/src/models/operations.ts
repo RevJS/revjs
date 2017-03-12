@@ -17,13 +17,22 @@ export interface IOperationError {
     [key: string]: any;
 }
 
-export class ModelOperationResult<T> {
+export interface IModelOperationResult<T> {
     operation: IModelOperation;
     success: boolean;
     validation?: ModelValidationResult;
     result?: T;
     results?: T[];
-    errors: IOperationError[];
+    errors?: IOperationError[];
+}
+
+export class ModelOperationResult<T> implements IModelOperationResult<T> {
+    operation: IModelOperation;
+    success: boolean;
+    validation?: ModelValidationResult;
+    result?: T;
+    results?: T[];
+    errors?: IOperationError[];
 
     constructor(operation: IModelOperation) {
         this.operation = operation;
