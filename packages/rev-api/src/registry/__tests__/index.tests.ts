@@ -7,7 +7,7 @@ import { ModelRegistry, registry as revRegistry } from 'rev-models/lib/registry'
 import * as rewire from 'rewire';
 import * as sinon from 'sinon';
 
-import { IApiMeta } from '../../api/meta';
+import { IApiMetaDefinition } from '../../api/meta';
 
 import { expect } from 'chai';
 
@@ -25,7 +25,7 @@ let testMeta: IModelMeta<TestModel> = {
     ]
 };
 
-let apiMeta: IApiMeta;
+let apiMeta: IApiMetaDefinition;
 
 describe('ModelApiRegistry', () => {
     let testModelReg: ModelRegistry;
@@ -36,7 +36,7 @@ describe('ModelApiRegistry', () => {
         revRegistry.clearRegistry();
         testApiReg = new registry.ModelApiRegistry();
         apiMeta = {
-            operations: [ 'read' ]
+            methods: [ 'read' ]
         };
     });
 
@@ -127,6 +127,32 @@ describe('ModelApiRegistry', () => {
             revRegistry.register(TestModel, testMeta);
             testApiReg.register(TestModel, apiMeta);
             expect(testApiReg.getModelNames()).to.deep.equal(['TestModel']);
+        });
+
+    });
+
+    describe('getModelNamesByMethod()', () => {
+
+        it('returns an empty list when no model APIs are registered', () => {
+            expect(testApiReg.getModelNamesByMethod('read')).to.deep.equal([]);
+        });
+
+        it('returns list of model names that have the specified method registered', () => {
+            apiMeta = {
+                methods: [ 'read' ]
+            }
+            revRegistry.register(TestModel, testMeta);
+            testApiReg.register(TestModel, apiMeta);
+            expect(testApiReg.getModelNamesByMethod('read')).to.deep.equal(['TestModel']);
+        });
+
+        it('does not return models that do not have the specified method registered', () => {
+            apiMeta = {
+                methods: [ 'create' ]
+            }
+            revRegistry.register(TestModel, testMeta);
+            testApiReg.register(TestModel, apiMeta);
+            expect(testApiReg.getModelNamesByMethod('read')).to.deep.equal([]);
         });
 
     });

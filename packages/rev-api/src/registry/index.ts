@@ -53,8 +53,19 @@ export class ModelApiRegistry {
         this._apiMeta[modelName] = initialiseApiMeta(modelMeta, apiMeta);
     }
 
-    getModelNames(operation?: string): string[] {
+    getModelNames(): string[] {
         return Object.keys(this._apiMeta);
+    }
+
+    getModelNamesByMethod(methodName: string): string[] {
+        let matches: string[] = [];
+        for (let modelName in this._apiMeta) {
+            if (this._apiMeta[modelName].methods[methodName]) {
+                matches.push(modelName);
+            }
+
+        }
+        return matches;
     }
 
     getApiMeta(modelName: string): IApiMeta {
