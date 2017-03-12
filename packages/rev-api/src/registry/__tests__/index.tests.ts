@@ -4,6 +4,9 @@ import * as f from 'rev-models/lib/fields';
 import * as registry from '../index';
 import { ModelRegistry, registry as revRegistry } from 'rev-models/lib/registry';
 
+import * as rewire from 'rewire';
+import * as sinon from 'sinon';
+
 import { IApiMeta } from '../../api/meta';
 
 import { expect } from 'chai';
@@ -141,6 +144,23 @@ describe('ModelApiRegistry', () => {
             expect(() => {
                 testApiReg.getApiMeta('TestModel');
             }).to.throw(`Model 'TestModel' does not have a registered API`);
+        });
+
+    });
+
+    describe('getGraphQLSchema()', () => {
+        let rwRegistry = rewire('../index') as any;
+        let schemaSpy = {
+            getGraphQLSchema: sinon.stub().returns('test')
+        };
+        rwRegistry.__set__('schema_1', schemaSpy);
+
+        it('should return result of external getGraphQLSchema function', () => {
+            expect(schemaSpy.getGraphQLSchema.callCount).to.equal(0);
+            let reg = new rwRegistry.ModelApiRegistry();
+            expect(reg.getGraphQLSchema()).to.equal('test');
+            expect(schemaSpy.getGraphQLSchema.callCount).to.equal(1);
+            expect(schemaSpy.getGraphQLSchema.getCall(0).args[0]).to.equal(reg);
         });
 
     });
