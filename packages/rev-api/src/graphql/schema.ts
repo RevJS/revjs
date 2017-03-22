@@ -13,7 +13,8 @@ import {
 
 import * as GraphQLJSON from 'graphql-type-json';
 
-import { NoModelsType, DummyModelType } from './types';
+import { DummyModelType } from './types';
+import { GraphQLString } from 'graphql';
 
 
 export function getGraphQLSchema(registry: ModelApiRegistry): GraphQLSchema {
@@ -28,7 +29,10 @@ export function getGraphQLSchema(registry: ModelApiRegistry): GraphQLSchema {
     };
     if (readModels.length == 0) {
         queries.fields['no_models'] = {
-            type: NoModelsType
+            type: GraphQLString,
+            resolve() {
+                return 'No models have been registered for read access';
+            }
         };
     }
     else {

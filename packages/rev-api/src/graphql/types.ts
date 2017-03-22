@@ -1,17 +1,5 @@
 import { GraphQLObjectType, GraphQLString } from 'graphql';
 
-export const NoModelsType = new GraphQLObjectType({
-    name: 'NoModels',
-    fields: {
-        name: {
-            type: GraphQLString,
-            resolve() {
-                return 'No models have been enabled for read';
-            }
-        }
-    },
-});
-
 export const DummyModelType = new GraphQLObjectType({
     name: 'DummyModel',
     fields: {
