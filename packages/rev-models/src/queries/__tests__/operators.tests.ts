@@ -1,3 +1,19 @@
+
+import { getQueryObjectOperator } from '../operators';
+
+let query = {
+    a: 1,
+    b: 2,
+    $or: [
+        { c: 1}
+    ]
+};
+
+let parsed = getQueryObjectOperator(null, query);
+
+console.log(parsed);
+
+/*
 import { expect } from 'chai';
 import {
     validateQuery,
@@ -108,3 +124,4 @@ describe('validateQueryValueList()', () => {
         }
     });
 });
+*/
