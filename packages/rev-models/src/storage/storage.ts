@@ -3,7 +3,7 @@ import { ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from '..
 import { InMemoryStorage } from './inmemory';
 import { ModelOperationResult } from '../models/operations';
 import { IModel } from '../models/model';
-import { IWhereQuery } from '../operators/operators';
+import { IWhereQuery } from '../queries/operators';
 export * from './inmemory';
 
 export interface IStorage {

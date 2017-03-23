@@ -4,7 +4,7 @@ import { IValidationOptions, validateModel, ModelValidationResult, validateModel
 import { registry } from '../registry';
 import { OPERATION_MESSAGES as msg } from './operationmsg';
 import * as storage from '../storage';
-import { IWhereQuery } from '../operators/operators';
+import { IWhereQuery } from '../queries/operators';
 
 export interface IModelOperation {
     name: string;
