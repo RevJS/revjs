@@ -4,6 +4,7 @@
 
 import { pretty } from '../utils/index';
 import { IModelMeta } from '../models/meta';
+import { checkMetadataInitialised } from '../models/utils';
 
 const conjunctionOperators = ['$and', '$or'];
 
@@ -30,6 +31,8 @@ export function getQueryObjectOperator<T>(
     if (!value || typeof value != 'object' || Object.keys(value).length == 0) {
         throw new Error(`${pretty(value)} is not a query object`);
     }
+
+    checkMetadataInitialised(meta);
 
     let keys = Object.keys(value);
     if (keys.length == 1) {

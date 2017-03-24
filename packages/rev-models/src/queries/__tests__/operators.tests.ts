@@ -33,6 +33,12 @@ describe('getQueryObjectOperator() - parameters', () => {
         }
     });
 
+    it('throws if uninitialised metadata is passed', () => {
+        expect(() => {
+            getQueryObjectOperator({ name: 'bob' }, {});
+        }).to.throw('MetadataError');
+    });
+
     it('does not throw for a valid query', () => {
         expect(() => {
             getQueryObjectOperator({ name: 'bob' }, meta);
