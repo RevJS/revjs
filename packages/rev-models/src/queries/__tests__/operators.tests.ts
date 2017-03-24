@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import * as d from '../../decorators';
-import { getQueryObjectOperator } from '../operators';
+import { getQueryNodeForQuery } from '../operators';
 import { initialiseMeta } from '../../models/meta';
 
 class TestModel {
@@ -23,25 +23,25 @@ let invalidQueryObjects = [
     new Date(),
 ];
 
-describe('getQueryObjectOperator() - parameters', () => {
+describe('getQueryNodeForQuery() - parameters', () => {
 
     it('throws if an invalid query object is passed', () => {
         for (let val of invalidQueryObjects) {
             expect(() => {
-                getQueryObjectOperator('wibble', meta);
+                getQueryNodeForQuery('wibble', meta);
             }, 'value: ' + val).to.throw('is not a query object');
         }
     });
 
     it('throws if uninitialised metadata is passed', () => {
         expect(() => {
-            getQueryObjectOperator({ name: 'bob' }, {});
+            getQueryNodeForQuery({ name: 'bob' }, {});
         }).to.throw('MetadataError');
     });
 
     it('does not throw for a valid query', () => {
         expect(() => {
-            getQueryObjectOperator({ name: 'bob' }, meta);
+            getQueryNodeForQuery({ name: 'bob' }, meta);
         }).to.not.throw();
     });
 

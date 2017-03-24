@@ -18,15 +18,15 @@ export const OPERATORS = {
     $in: ValueListOperator,
     $nin: ValueListOperator,
 
-    $and: ConjunctionOperator,
-    $or: ConjunctionOperator
+    $and: ConjunctionNode,
+    $or: ConjunctionNode
 };
 
-// Returns an Operator tree for a query object
-export function getQueryObjectOperator<T>(
+// Returns a QueryNode tree for a query object
+export function getQueryNodeForQuery<T>(
         value: any,
         meta: IModelMeta<T>,
-        parent?: Operator<T>) {
+        parent?: QueryNode<T>) {
 
     if (!value || typeof value != 'object' || Object.keys(value).length == 0) {
         throw new Error(`${pretty(value)} is not a query object`);
@@ -38,10 +38,10 @@ export function getQueryObjectOperator<T>(
     if (keys.length == 1) {
         let key = keys[0];
         if (conjunctionOperators.indexOf(key) > -1) {
-            return new ConjunctionOperator(key, value[key], meta, parent);
+            return new ConjunctionNode(key, value[key], meta, parent);
         }
         else if (key in meta.fieldsByName) {
-            return new FieldOperator(key, value[key], meta, parent);
+            return new FieldNode(key, value[key], meta, parent);
         }
         throw new Error(`'${key}' is not a recognised field or conjunction operator`);
     }
@@ -52,17 +52,17 @@ export function getQueryObjectOperator<T>(
         token[key] = value[key];
         queryTokens.push(token);
     }
-    return new ConjunctionOperator('$and', queryTokens, meta, parent);
+    return new ConjunctionNode('$and', queryTokens, meta, parent);
 }
 
-export class Operator<T> {
-    public children: Array<Operator<T>>;
+export class QueryNode<T> {
+    public children: Array<QueryNode<T>>;
     public result: boolean;
 
     constructor(
         public operator: string,
         public meta: IModelMeta<T>,
-        public parent: Operator<T>) {
+        public parent: QueryNode<T>) {
 
         this.children = [];
     }
@@ -81,13 +81,13 @@ export class Operator<T> {
 
 }
 
-export class ConjunctionOperator<T> extends Operator<T> {
+export class ConjunctionNode<T> extends QueryNode<T> {
 
     constructor(
             operator: string,
             value: any,
             meta: IModelMeta<T>,
-            parent: Operator<T>) {
+            parent: QueryNode<T>) {
 
         super(operator, meta, parent);
         this.assertOperatorIsOneOf(conjunctionOperators);
@@ -96,18 +96,18 @@ export class ConjunctionOperator<T> extends Operator<T> {
         }
         for (let elem of value) {
             this.assertIsNonEmptyObject(elem);
-            this.children.push(getQueryObjectOperator(elem, meta, this));
+            this.children.push(getQueryNodeForQuery(elem, meta, this));
         }
     }
 }
 
-export class FieldOperator<T> extends Operator<T> {
+export class FieldNode<T> extends QueryNode<T> {
 
     constructor(
             public fieldName: string,
             value: any,
             meta: IModelMeta<T>,
-            parent: Operator<T>) {
+            parent: QueryNode<T>) {
 
         super(fieldName, meta, parent);
         if (value) {
@@ -116,13 +116,13 @@ export class FieldOperator<T> extends Operator<T> {
     }
 }
 
-export class ValueOperator<T> extends Operator<T> {
+export class ValueOperator<T> extends QueryNode<T> {
 
     constructor(
             public operator: string,
             value: any,
             meta: IModelMeta<T>,
-            parent: Operator<T>) {
+            parent: QueryNode<T>) {
 
         super(operator, meta, parent);
         if (value) {
@@ -131,13 +131,13 @@ export class ValueOperator<T> extends Operator<T> {
     }
 }
 
-export class ValueListOperator<T> extends Operator<T> {
+export class ValueListOperator<T> extends QueryNode<T> {
 
     constructor(
             operator: string,
             value: any,
             meta: IModelMeta<T>,
-            parent: Operator<T>) {
+            parent: QueryNode<T>) {
 
         super(operator, meta, parent);
         if (value) {
