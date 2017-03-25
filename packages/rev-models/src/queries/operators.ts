@@ -6,27 +6,11 @@ import { pretty } from '../utils/index';
 import { IModelMeta } from '../models/meta';
 import { checkMetadataInitialised } from '../models/utils';
 
-const conjunctionOperators = ['$and', '$or'];
-
-export const OPERATORS = {
-    $gt: ValueOperator,
-    $gte: ValueOperator,
-    $lt: ValueOperator,
-    $lte: ValueOperator,
-    $ne: ValueOperator,
-
-    $in: ValueListOperator,
-    $nin: ValueListOperator,
-
-    $and: ConjunctionNode,
-    $or: ConjunctionNode
-};
-
 // Returns a QueryNode tree for a query object
 export function getQueryNodeForQuery<T>(
         value: any,
         meta: IModelMeta<T>,
-        parent?: QueryNode<T>) {
+        parent?: QueryNode<T>): QueryNode<T> {
 
     if (!value || typeof value != 'object' || Object.keys(value).length == 0) {
         throw new Error(`${pretty(value)} is not a query object`);
@@ -37,8 +21,8 @@ export function getQueryNodeForQuery<T>(
     let keys = Object.keys(value);
     if (keys.length == 1) {
         let key = keys[0];
-        if (conjunctionOperators.indexOf(key) > -1) {
-            return new ConjunctionNode(key, value[key], meta, parent);
+        if (CONJUNCTION_OPERATORS.indexOf(key) > -1) {
+            return new (OPERATORS[key])(key, value[key], meta, parent);
         }
         else if (key in meta.fieldsByName) {
             return new FieldNode(key, value[key], meta, parent);
@@ -52,7 +36,7 @@ export function getQueryNodeForQuery<T>(
         token[key] = value[key];
         queryTokens.push(token);
     }
-    return new ConjunctionNode('$and', queryTokens, meta, parent);
+    return new OPERATORS.$and('$and', queryTokens, meta, parent);
 }
 
 export class QueryNode<T> {
@@ -90,7 +74,7 @@ export class ConjunctionNode<T> extends QueryNode<T> {
             parent: QueryNode<T>) {
 
         super(operator, meta, parent);
-        this.assertOperatorIsOneOf(conjunctionOperators);
+        this.assertOperatorIsOneOf(CONJUNCTION_OPERATORS);
         if (!value || !(value instanceof Array)) {
             throw new Error(`${pretty(value)} should be an array`);
         }
@@ -145,6 +129,22 @@ export class ValueListOperator<T> extends QueryNode<T> {
         }
     }
 }
+
+export const CONJUNCTION_OPERATORS = ['$and', '$or'];
+
+export const OPERATORS = {
+    $gt: ValueOperator,
+    $gte: ValueOperator,
+    $lt: ValueOperator,
+    $lte: ValueOperator,
+    $ne: ValueOperator,
+
+    $in: ValueListOperator,
+    $nin: ValueListOperator,
+
+    $and: ConjunctionNode,
+    $or: ConjunctionNode
+};
 
 export interface IWhereQuery {
     [fielName: string]: null | string | number | boolean | Date | IWhereQuery;
