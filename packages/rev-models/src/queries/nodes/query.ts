@@ -1,22 +1,18 @@
 import { IModelMeta } from '../../models/meta';
+import { IQueryParser, IQueryNode } from '../types';
+
 import { pretty } from '../../utils/index';
 
-export class QueryNode<T> {
-    public children: Array<QueryNode<T>>;
-    public result: boolean;
+export class QueryNode<T> implements IQueryNode<T> {
+    public children: Array<IQueryNode<T>>;
 
     constructor(
+        public parser: IQueryParser,
         public operator: string,
         public meta: IModelMeta<T>,
-        public parent: QueryNode<T>) {
+        public parent: IQueryNode<T>) {
 
         this.children = [];
-    }
-
-    assertOperatorIsOneOf(operators: string[]) {
-        if (operators.indexOf(this.operator) == -1) {
-            throw new Error(`unrecognised operator '${this.operator}'`);
-        }
     }
 
     assertIsNonEmptyObject(value: any) {

@@ -1,25 +1,28 @@
 import { IModelMeta } from '../../models/meta';
-import { CONJUNCTION_OPERATORS, getQueryNodeForQuery } from '../operators';
-import { pretty } from '../../utils/index';
 
 import { QueryNode } from './query';
+import { IQueryParser, IQueryNode } from '../types';
 
 export class ConjunctionNode<T> extends QueryNode<T> {
 
     constructor(
+            parser: IQueryParser,
             operator: string,
             value: any,
             meta: IModelMeta<T>,
-            parent: QueryNode<T>) {
+            parent: IQueryNode<T>) {
 
-        super(operator, meta, parent);
-        this.assertOperatorIsOneOf(CONJUNCTION_OPERATORS);
+        super(parser, operator, meta, parent);
+
+        if (!(this.operator in parser.CONJUNCTION_OPERATORS)) {
+            throw new Error(`unrecognised conjunction operator '${this.operator}'`);
+        }
         if (!value || !(value instanceof Array)) {
-            throw new Error(`${pretty(value)} should be an array`);
+            throw new Error(`value for '${this.operator}' must be an array`);
         }
         for (let elem of value) {
             this.assertIsNonEmptyObject(elem);
-            this.children.push(getQueryNodeForQuery(elem, meta, this));
+            this.children.push(parser.getQueryNodeForQuery(elem, meta, this));
         }
     }
 }
