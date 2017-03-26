@@ -28,7 +28,7 @@ let invalidQueryObjects = [
 describe('class QueryParser - constructor', () => {
     let parser: QueryParser;
     let conjunctionOperators = ['$and', '$or'];
-    let fieldOperators = ['$gt', '$gte', '$lt', '$lte', '$ne', '$in', '$nin'];
+    let fieldOperators = ['$eq', '$ne', '$gt', '$gte', '$lt', '$lte', '$in', '$nin'];
 
     before(() => {
         parser = new QueryParser();

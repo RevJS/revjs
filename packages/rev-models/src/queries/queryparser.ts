@@ -17,11 +17,12 @@ export class QueryParser implements IQueryParser {
         });
 
         this.registerFieldOperators({
+            $eq: ValueOperator,
+            $ne: ValueOperator,
             $gt: ValueOperator,
             $gte: ValueOperator,
             $lt: ValueOperator,
             $lte: ValueOperator,
-            $ne: ValueOperator,
 
             $in: ValueListOperator,
             $nin: ValueListOperator
