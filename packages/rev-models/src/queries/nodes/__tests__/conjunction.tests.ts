@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 
-import * as d from '../../decorators';
-import { initialiseMeta } from '../../models/meta';
-import { ConjunctionNode } from '../nodes/conjunction';
-import { QueryParser } from '../queryparser';
+import * as d from '../../../decorators';
+import { initialiseMeta } from '../../../models/meta';
+import { ConjunctionNode } from '../conjunction';
+import { QueryParser } from '../../queryparser';
 
 class TestModel {
     @d.IntegerField()
