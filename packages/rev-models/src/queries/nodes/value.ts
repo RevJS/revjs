@@ -7,14 +7,17 @@ export class ValueOperator<T> extends QueryNode<T> {
 
     constructor(
             parser: IQueryParser,
-            public operator: string,
+            operator: string,
             public value: any,
             meta: IModelMeta<T>,
             parent: IQueryNode<T>) {
 
         super(parser, operator, meta, parent);
-        if (!isFieldValue(value)) {
-            throw new Error(`invalid field value '${value}'`);
+        if (!(this.operator in parser.FIELD_OPERATORS)) {
+            throw new Error(`unrecognised field operator '${this.operator}'`);
+        }
+        else if (!isFieldValue(this.value)) {
+            throw new Error(`invalid field value '${this.value}'`);
         }
     }
 }
