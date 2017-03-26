@@ -2,8 +2,9 @@ import { expect } from 'chai';
 
 import * as d from '../../../decorators';
 import { initialiseMeta } from '../../../models/meta';
-import { FieldNode, ValueOperator } from '../field';
+import { FieldNode } from '../field';
 import { QueryParser } from '../../queryparser';
+import { ValueOperator } from '../value';
 
 class TestModel {
     @d.IntegerField()

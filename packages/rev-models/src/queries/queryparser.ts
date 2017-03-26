@@ -1,6 +1,9 @@
 
 import { ConjunctionNode } from './nodes/conjunction';
-import { ValueOperator, ValueListOperator, FieldNode } from './nodes/field';
+import { FieldNode } from './nodes/field';
+import { ValueOperator } from './nodes/value';
+import { ValueListOperator } from './nodes/valuelist';
+
 import { IModelMeta } from '../models/meta';
 import { IQueryParser, IQueryNode, IOperatorRegister } from './types';
 import { pretty } from '../utils/index';
