@@ -10,7 +10,7 @@ export interface IModelMeta<T extends IModel> {
         [fieldName: string]: Field
     };
     singleton?: boolean;
-    storage?: string;
+    backend?: string;
     validate?: (model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => void;
     validateAsync?: (model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => Promise<void>;
     validateRemoval?: (operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => void;
@@ -68,7 +68,7 @@ export function initialiseMeta<T extends IModel>(model: new() => T, meta?: IMode
         }
         meta.fieldsByName[field.name] = field;
     }
-    meta.storage = meta.storage ? meta.storage : 'default';
+    meta.backend = meta.backend ? meta.backend : 'default';
     meta.label = meta.label ? meta.label : meta.name;
     meta.singleton = meta.singleton ? true : false;
 

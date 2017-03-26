@@ -1,7 +1,7 @@
 
 export interface IModelOptions {
     singleton?: boolean;
-    storage?: string;
+    backend?: string;
 }
 
 export interface IModel {

@@ -31,7 +31,7 @@ describe('rev.model.operations', () => {
 
     let testMeta: IModelMeta<TestModel>;
 
-    let storageSpy: {
+    let backendSpy: {
         create?: sinon.SinonSpy;
         read?: sinon.SinonSpy;
         update?: sinon.SinonSpy;
@@ -51,12 +51,12 @@ describe('rev.model.operations', () => {
                 }
             }
         },
-        storage: {
-            get: (storageName: string) => {
-                if (storageName != 'default') {
-                    throw new Error('mock_storage_get_error');
+        backends: {
+            get: (backendName: string) => {
+                if (backendName != 'default') {
+                    throw new Error('mock_backend_get_error');
                 }
-                return storageSpy;
+                return backendSpy;
             }
         }
     });
@@ -77,7 +77,7 @@ describe('rev.model.operations', () => {
         };
         initialiseMeta(TestModel, testMeta);
 
-        storageSpy = {
+        backendSpy = {
             create: sinon.spy((model: any, meta: any, result: any) => {
                 return Promise.resolve();
             }),
@@ -197,14 +197,14 @@ describe('rev.model.operations', () => {
 
     describe('create()', () => {
 
-        it('calls storage.create() and returns successful result if model is valid', () => {
+        it('calls backend.create() and returns successful result if model is valid', () => {
             let model = new TestModel();
             model.name = 'Bob';
             model.gender = 'male';
             return ops.create(model)
                 .then((res) => {
-                    expect(storageSpy.create.callCount).to.equal(1);
-                    let createCall = storageSpy.create.getCall(0);
+                    expect(backendSpy.create.callCount).to.equal(1);
+                    let createCall = backendSpy.create.getCall(0);
                     expect(createCall.args[0]).to.equal(model);
                     expect(createCall.args[1]).to.equal(testMeta);
                     expect(res.success).to.be.true;
@@ -226,11 +226,11 @@ describe('rev.model.operations', () => {
                 .to.be.rejectedWith('mock_getMeta_error');
         });
 
-        it('rejects if storage.get fails (e.g. invalid storage specified)', () => {
+        it('rejects if backends.get fails (e.g. invalid backend specified)', () => {
             let model = new TestModel();
-            testMeta.storage = 'dbase';
+            testMeta.backend = 'dbase';
             return expect(ops.create(model))
-                .to.be.rejectedWith('mock_storage_get_error');
+                .to.be.rejectedWith('mock_backend_get_error');
         });
 
         it('rejects for singleton models', () => {
@@ -270,10 +270,10 @@ describe('rev.model.operations', () => {
                 });
         });
 
-        it('returns any operation errors added by the storage', () => {
-            storageSpy = {
+        it('returns any operation errors added by the backend', () => {
+            backendSpy = {
                 create: sinon.spy((model: any, meta: any, result: any) => {
-                    result.addError('error_from_storage');
+                    result.addError('error_from_backend');
                     return Promise.resolve(result);
                 })
             };
@@ -284,21 +284,21 @@ describe('rev.model.operations', () => {
                 .then((res) => {
                     expect(res.success).to.be.false;
                     expect(res.errors.length).to.equal(1);
-                    expect(res.errors[0].message).to.equal('error_from_storage');
+                    expect(res.errors[0].message).to.equal('error_from_backend');
                 });
         });
 
-        it('rejects when storage.create rejects', () => {
-            storageSpy = {
+        it('rejects when backend.create rejects', () => {
+            backendSpy = {
                 create: sinon.spy((model: any, meta: any, result: any) => {
-                    return Promise.reject(new Error('rejection_from_storage'));
+                    return Promise.reject(new Error('rejection_from_backend'));
                 })
             };
             let model = new TestModel();
             model.name = 'Bob';
             model.gender = 'male';
             return expect(ops.create(model))
-                .to.be.rejectedWith('rejection_from_storage');
+                .to.be.rejectedWith('rejection_from_backend');
         });
 
     });
@@ -307,14 +307,14 @@ describe('rev.model.operations', () => {
 
         let whereClause = {}; // where-clause stuff TO DO!
 
-        it('calls storage.update() and returns successful result if model is valid', () => {
+        it('calls backend.update() and returns successful result if model is valid', () => {
             let model = new TestModel();
             model.name = 'Bob';
             model.gender = 'male';
             return ops.update(model, whereClause)
                 .then((res) => {
-                    expect(storageSpy.update.callCount).to.equal(1);
-                    let updateCall = storageSpy.update.getCall(0);
+                    expect(backendSpy.update.callCount).to.equal(1);
+                    let updateCall = backendSpy.update.getCall(0);
                     expect(updateCall.args[0]).to.equal(model);
                     expect(updateCall.args[1]).to.equal(testMeta);
                     expect(res.success).to.be.true;
@@ -336,11 +336,11 @@ describe('rev.model.operations', () => {
                 .to.be.rejectedWith('mock_getMeta_error');
         });
 
-        it('rejects if storage.get fails (e.g. invalid storage specified)', () => {
+        it('rejects if backends.get fails (e.g. invalid backend specified)', () => {
             let model = new TestModel();
-            testMeta.storage = 'dbase';
+            testMeta.backend = 'dbase';
             return expect(ops.update(model, whereClause))
-                .to.be.rejectedWith('mock_storage_get_error');
+                .to.be.rejectedWith('mock_backend_get_error');
         });
 
         it('rejects when model is not a singleton and where clause is not specified', () => {
@@ -380,10 +380,10 @@ describe('rev.model.operations', () => {
                 });
         });
 
-        it('returns any operation errors added by the storage', () => {
-            storageSpy = {
+        it('returns any operation errors added by the backend', () => {
+            backendSpy = {
                 update: sinon.spy((model: any, meta: any, where: any, result: any) => {
-                    result.addError('error_from_storage');
+                    result.addError('error_from_backend');
                     return Promise.resolve(result);
                 })
             };
@@ -394,21 +394,21 @@ describe('rev.model.operations', () => {
                 .then((res) => {
                     expect(res.success).to.be.false;
                     expect(res.errors.length).to.equal(1);
-                    expect(res.errors[0].message).to.equal('error_from_storage');
+                    expect(res.errors[0].message).to.equal('error_from_backend');
                 });
         });
 
-        it('rejects when storage.update rejects', () => {
-            storageSpy = {
+        it('rejects when backend.update rejects', () => {
+            backendSpy = {
                 update: sinon.spy((model: any, meta: any, where: any, result: any) => {
-                    return Promise.reject(new Error('rejection_from_storage'));
+                    return Promise.reject(new Error('rejection_from_backend'));
                 })
             };
             let model = new TestModel();
             model.name = 'Bob';
             model.gender = 'male';
             return expect(ops.update(model, whereClause))
-                .to.be.rejectedWith('rejection_from_storage');
+                .to.be.rejectedWith('rejection_from_backend');
         });
 
     });
@@ -417,11 +417,11 @@ describe('rev.model.operations', () => {
 
         let whereClause = {}; // where-clause stuff TO DO!
 
-        it('calls storage.remove() and returns successful result if model is valid', () => {
+        it('calls backend.remove() and returns successful result if model is valid', () => {
             return ops.remove(TestModel, whereClause)
                 .then((res) => {
-                    expect(storageSpy.remove.callCount).to.equal(1);
-                    let removeCall = storageSpy.remove.getCall(0);
+                    expect(backendSpy.remove.callCount).to.equal(1);
+                    let removeCall = backendSpy.remove.getCall(0);
                     expect(removeCall.args[0]).to.equal(testMeta);
                     expect(removeCall.args[1]).to.equal(whereClause);
                     expect(res.success).to.be.true;
@@ -447,10 +447,10 @@ describe('rev.model.operations', () => {
                 .to.be.rejectedWith('mock_getMeta_error');
         });
 
-        it('rejects if storage.get fails (e.g. invalid storage specified)', () => {
-            testMeta.storage = 'dbase';
+        it('rejects if backends.get fails (e.g. invalid backend specified)', () => {
+            testMeta.backend = 'dbase';
             return expect(ops.remove(TestModel, whereClause))
-                .to.be.rejectedWith('mock_storage_get_error');
+                .to.be.rejectedWith('mock_backend_get_error');
         });
 
         it('rejects when model is a singleton', () => {
@@ -466,7 +466,7 @@ describe('rev.model.operations', () => {
             return ops.remove(TestModel, whereClause)
                 .then((res) => {
                     expect(res.success).to.be.false;
-                    expect(storageSpy.remove.callCount).to.equal(0);
+                    expect(backendSpy.remove.callCount).to.equal(0);
                     expect(res.errors.length).to.equal(1);
                     expect(res.errors[0].message).to.equal(msg.failed_validation('TestModel'));
                     expect(res.errors[0]['code']).to.equal('failed_validation');
@@ -487,7 +487,7 @@ describe('rev.model.operations', () => {
             return ops.remove(TestModel, whereClause)
                 .then((res) => {
                     expect(res.success).to.be.false;
-                    expect(storageSpy.remove.callCount).to.equal(0);
+                    expect(backendSpy.remove.callCount).to.equal(0);
                     expect(res.errors.length).to.equal(1);
                     expect(res.errors[0].message).to.equal(msg.failed_validation('TestModel'));
                     expect(res.errors[0]['code']).to.equal('failed_validation');
@@ -498,10 +498,10 @@ describe('rev.model.operations', () => {
                 });
         });
 
-        it('returns any operation errors added by the storage', () => {
-            storageSpy = {
+        it('returns any operation errors added by the backend', () => {
+            backendSpy = {
                 remove: sinon.spy((meta: any, where: any, result: any) => {
-                    result.addError('error_from_storage');
+                    result.addError('error_from_backend');
                     return Promise.resolve(result);
                 })
             };
@@ -509,18 +509,18 @@ describe('rev.model.operations', () => {
                 .then((res) => {
                     expect(res.success).to.be.false;
                     expect(res.errors.length).to.equal(1);
-                    expect(res.errors[0].message).to.equal('error_from_storage');
+                    expect(res.errors[0].message).to.equal('error_from_backend');
                 });
         });
 
-        it('rejects when storage.remove rejects', () => {
-            storageSpy = {
+        it('rejects when backend.remove rejects', () => {
+            backendSpy = {
                 remove: sinon.spy((meta: any, where: any, result: any) => {
-                    return Promise.reject(new Error('rejection_from_storage'));
+                    return Promise.reject(new Error('rejection_from_backend'));
                 })
             };
             return expect(ops.remove(TestModel, whereClause))
-                .to.be.rejectedWith('rejection_from_storage');
+                .to.be.rejectedWith('rejection_from_backend');
         });
 
     });
@@ -529,11 +529,11 @@ describe('rev.model.operations', () => {
 
         let whereClause = {}; // where-clause stuff TO DO!
 
-        it('calls storage.read() and returns results', () => {
+        it('calls backend.read() and returns results', () => {
             return ops.read(TestModel, whereClause)
                 .then((res) => {
-                    expect(storageSpy.read.callCount).to.equal(1);
-                    let readCall = storageSpy.read.getCall(0);
+                    expect(backendSpy.read.callCount).to.equal(1);
+                    let readCall = backendSpy.read.getCall(0);
                     expect(readCall.args[0]).to.equal(TestModel);
                     expect(readCall.args[1]).to.equal(testMeta);
                     expect(readCall.args[2]).to.equal(whereClause);
@@ -543,11 +543,11 @@ describe('rev.model.operations', () => {
                 });
         });
 
-        it('allows storage.read() to be called without a where clause', () => {
+        it('allows backend.read() to be called without a where clause', () => {
             return ops.read(TestModel)
                 .then((res) => {
-                    expect(storageSpy.read.callCount).to.equal(1);
-                    let readCall = storageSpy.read.getCall(0);
+                    expect(backendSpy.read.callCount).to.equal(1);
+                    let readCall = backendSpy.read.getCall(0);
                     expect(readCall.args[0]).to.equal(TestModel);
                     expect(readCall.args[1]).to.equal(testMeta);
                     expect(readCall.args[2]).to.deep.equal({});
@@ -575,16 +575,16 @@ describe('rev.model.operations', () => {
                 .to.be.rejectedWith('read() cannot be called with a where clause for singleton models');
         });
 
-        it('rejects if storage.get fails (e.g. invalid storage specified)', () => {
-            testMeta.storage = 'dbase';
+        it('rejects if backends.get fails (e.g. invalid backend specified)', () => {
+            testMeta.backend = 'dbase';
             return expect(ops.read(TestModel, whereClause))
-                .to.be.rejectedWith('mock_storage_get_error');
+                .to.be.rejectedWith('mock_backend_get_error');
         });
 
-        it('returns any operation errors added by the storage', () => {
-            storageSpy = {
+        it('returns any operation errors added by the backend', () => {
+            backendSpy = {
                 read: sinon.spy((model: any, meta: any, where: any, result: any) => {
-                    result.addError('error_from_storage');
+                    result.addError('error_from_backend');
                     return Promise.resolve(result);
                 })
             };
@@ -592,18 +592,18 @@ describe('rev.model.operations', () => {
                 .then((res) => {
                     expect(res.success).to.be.false;
                     expect(res.errors.length).to.equal(1);
-                    expect(res.errors[0].message).to.equal('error_from_storage');
+                    expect(res.errors[0].message).to.equal('error_from_backend');
                 });
         });
 
-        it('rejects when storage.read rejects', () => {
-            storageSpy = {
+        it('rejects when backend.read rejects', () => {
+            backendSpy = {
                 read: sinon.spy((model: any, meta: any, where: any, result: any) => {
-                    return Promise.reject(new Error('rejection_from_storage'));
+                    return Promise.reject(new Error('rejection_from_backend'));
                 })
             };
             return expect(ops.read(TestModel, whereClause))
-                .to.be.rejectedWith('rejection_from_storage');
+                .to.be.rejectedWith('rejection_from_backend');
         });
 
     });

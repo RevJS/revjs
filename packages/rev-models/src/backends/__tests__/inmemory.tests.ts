@@ -1,11 +1,11 @@
 
 import { expect } from 'chai';
-import { InMemoryStorage } from '../inmemory';
+import { InMemoryBackend } from '../inmemory';
 import { IModelMeta, initialiseMeta } from '../../models/meta';
 import * as fld from '../../fields';
 import { ModelOperationResult } from '../../models/operations';
 
-describe('rev.storage.inmemory', () => {
+describe('rev.backends.inmemory', () => {
 
     class TestModel {
         name: string;
@@ -49,7 +49,7 @@ describe('rev.storage.inmemory', () => {
     ];
 
     let meta: IModelMeta<TestModel>;
-    let storage: InMemoryStorage;
+    let backend: InMemoryBackend;
     let loadResult: ModelOperationResult<TestModel>;
     let readResult: ModelOperationResult<TestModel>;
 
@@ -64,7 +64,7 @@ describe('rev.storage.inmemory', () => {
             ]
         };
         initialiseMeta(TestModel, meta);
-        storage = new InMemoryStorage();
+        backend = new InMemoryBackend();
         loadResult = new ModelOperationResult<TestModel>({name: 'create'});
         readResult = new ModelOperationResult<TestModel>({name: 'read'});
     });
@@ -73,7 +73,7 @@ describe('rev.storage.inmemory', () => {
 
         it('read() returns a model instance result with all undefined values', () => {
             meta.singleton = true;
-            return storage.read(TestModel, meta, null, readResult)
+            return backend.read(TestModel, meta, null, readResult)
                 .then(() => {
                     expect(readResult.result).to.be.instanceOf(TestModel);
                     expect(readResult.results).to.be.null;
@@ -89,7 +89,7 @@ describe('rev.storage.inmemory', () => {
     describe('initial state - non-singleton model', () => {
 
         it('read() returns an empty list', () => {
-            return storage.read(TestModel, meta, {}, readResult)
+            return backend.read(TestModel, meta, {}, readResult)
                 .then(() => {
                     expect(readResult.result).to.be.null;
                     expect(readResult.results).to.be.instanceOf(Array);
@@ -104,8 +104,8 @@ describe('rev.storage.inmemory', () => {
         // TODO TEST LIMIT
 
         it('returns all records when where clause = {}', () => {
-            storage.load(testData, meta, loadResult);
-            return storage.read(TestModel, meta, {}, readResult)
+            backend.load(testData, meta, loadResult);
+            return backend.read(TestModel, meta, {}, readResult)
                 .then(() => {
                     expect(readResult.result).to.be.null;
                     expect(readResult.results).to.deep.equal(testData);

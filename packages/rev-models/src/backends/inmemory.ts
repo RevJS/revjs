@@ -1,11 +1,11 @@
 
-import { IStorage } from './';
+import { IBackend } from './';
 import { IModelMeta } from '../models/meta';
 import { IModel, ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from '../models';
 import { ModelOperationResult, ILoadOptions } from '../models/operations';
 import { checkIsModelInstance, checkMetadataInitialised } from '../models/utils';
 
-export class InMemoryStorage implements IStorage {
+export class InMemoryBackend implements IBackend {
     _storage: {
         [modelName: string]: any
     } = {};
@@ -19,12 +19,12 @@ export class InMemoryStorage implements IStorage {
 
             checkMetadataInitialised(meta);
             if (meta.singleton) {
-                throw new Error('InMemoryStorage.load() cannot be used with a singleton model');
+                throw new Error('InMemoryBackend.load() cannot be used with a singleton model');
             }
 
             if (typeof data != 'object' || !(data instanceof Array)
                     || (data.length > 0 && typeof data[0] != 'object')) {
-                throw new Error('InMemoryStorage.load() data must be an array of objects');
+                throw new Error('InMemoryBackend.load() data must be an array of objects');
             }
 
             this._storage[meta.name] = data;
@@ -39,7 +39,7 @@ export class InMemoryStorage implements IStorage {
             checkMetadataInitialised(meta);
 
             if (meta.singleton) {
-                throw new Error('InMemoryStorage.create() cannot be called on singleton models');
+                throw new Error('InMemoryBackend.create() cannot be called on singleton models');
             }
 
             let modelData = this._getModelData(model.constructor as any, meta);
@@ -52,7 +52,7 @@ export class InMemoryStorage implements IStorage {
     update<T extends IModel>(model: T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IUpdateOptions): Promise<void> {
         return new Promise<void>((resolve) => {
             if (!meta.singleton && !where) {
-                throw new Error('InMemoryStorage.update() requires the \'where\' parameter for non-singleton models');
+                throw new Error('InMemoryBackend.update() requires the \'where\' parameter for non-singleton models');
             }
             let modelData = this._getModelData(model.constructor as any, meta);
             if (meta.singleton) {
@@ -60,7 +60,7 @@ export class InMemoryStorage implements IStorage {
                 resolve(/*true*/);
             }
             else {
-                throw new Error('InMemoryStorage.update() not yet implemented for non-singleton models');
+                throw new Error('InMemoryBackend.update() not yet implemented for non-singleton models');
             }
         });
     }
@@ -68,7 +68,7 @@ export class InMemoryStorage implements IStorage {
     read<T extends IModel>(model: new() => T, meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IReadOptions): Promise<void> {
         return new Promise<void>((resolve) => {
             if (!meta.singleton && !where) {
-                throw new Error('InMemoryStorage.read() requires the \'where\' parameter for non-singleton models');
+                throw new Error('InMemoryBackend.read() requires the \'where\' parameter for non-singleton models');
             }
             let modelData = this._getModelData<T>(model, meta);
             if (meta.singleton) {
@@ -84,7 +84,7 @@ export class InMemoryStorage implements IStorage {
     }
 
     remove<T extends IModel>(meta: IModelMeta<T>, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<void> {
-        throw new Error('InMemoryStorage.delete() not yet implemented');
+        throw new Error('InMemoryBackend.delete() not yet implemented');
     }
 
     _getModelData<T extends IModel>(model: new() => T, meta: IModelMeta<T>): any {

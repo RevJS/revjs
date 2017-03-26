@@ -86,13 +86,13 @@ describe('initialiseMeta() - metadata only', () => {
         expect(testMeta.fieldsByName[fieldNames[0]]).to.be.instanceOf(Field);
     });
 
-    it('should set up meta.storage ("default" if not defined)', () => {
-        testMeta.storage = undefined;
-        testMeta2.storage = 'main_db';
+    it('should set up meta.backend ("default" if not defined)', () => {
+        testMeta.backend = undefined;
+        testMeta2.backend = 'main_db';
         initialiseMeta(TestModel, testMeta);
         initialiseMeta(TestModel2, testMeta2);
-        expect(testMeta.storage).to.equal('default');
-        expect(testMeta2.storage).to.equal('main_db');
+        expect(testMeta.backend).to.equal('default');
+        expect(testMeta2.backend).to.equal('main_db');
     });
 
     it('should set up meta.label (if not set, should equal model name)', () => {

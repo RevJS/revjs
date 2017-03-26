@@ -3,7 +3,7 @@ import { checkIsModelInstance, checkIsModelConstructor } from './utils';
 import { IValidationOptions, validateModel, ModelValidationResult, validateModelRemoval } from './validation';
 import { registry } from '../registry';
 import { OPERATION_MESSAGES as msg } from './operationmsg';
-import * as storage from '../storage';
+import * as backends from '../backends';
 import { IWhereQuery } from '../queries/query';
 
 export interface IModelOperation {
@@ -95,7 +95,7 @@ export function create<T extends IModel>(model: T, options?: ICreateOptions): Pr
         checkIsModelInstance(model);
 
         let meta = registry.getMeta(model.constructor.name);
-        let store = storage.get(meta.storage);
+        let store = backends.get(meta.backend);
 
         if (meta.singleton) {
             throw new Error('create() cannot be called on singleton models');
@@ -139,7 +139,7 @@ export function update<T extends IModel>(model: T, where?: IWhereQuery, options?
         // TODO: Validate 'where' parameter
 
         let meta = registry.getMeta(model.constructor.name);
-        let store = storage.get(meta.storage);
+        let store = backends.get(meta.backend);
 
         if (!meta.singleton && (!where || typeof where != 'object')) {
             throw new Error('update() must be called with a where clause for non-singleton models');
@@ -188,7 +188,7 @@ export function remove<T extends IModel>(model: new() => T, where?: IWhereQuery,
         }
 
         let meta = registry.getMeta(model.name);
-        let store = storage.get(meta.storage);
+        let store = backends.get(meta.backend);
 
         if (meta.singleton) {
             throw new Error('remove() cannot be called on singleton models');
@@ -234,7 +234,7 @@ export function read<T extends IModel>(model: new() => T, where?: IWhereQuery, o
             throw new Error('read() cannot be called with a where clause for singleton models');
         }
 
-        let store = storage.get(meta.storage);
+        let store = backends.get(meta.backend);
         let operation: IModelOperation = {
             name: 'read',
             where: where
