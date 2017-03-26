@@ -27,8 +27,8 @@ describe('class ConjunctionNode<T> - constructor', () => {
 
     it('throws if value is not an array', () => {
         expect(() => {
-            new ConjunctionNode(parser, '$gt', [], meta, null);
-        }).to.throw('unrecognised conjunction operator');
+            new ConjunctionNode(parser, '$and', {}, meta, null);
+        }).to.throw('must be an array');
     });
 
     it('creates a conjunction node with the correct operator', () => {
