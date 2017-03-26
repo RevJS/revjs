@@ -21,14 +21,11 @@ export class FieldNode<T> extends QueryNode<T> {
         else if (isFieldValue(value)) {
             this.children.push(new ValueOperator(parser, '$eq', value, meta, this));
         }
-        else if (!value || typeof value != 'object') {
+        else if (!value || typeof value != 'object' || Object.keys(value).length == 0) {
             throw new Error(`invalid field query value for field '${fieldName}'`);
         }
         else {
             let keys = Object.keys(value);
-            if (keys.length == 0) {
-                throw new Error(`invalid field query object for field '${fieldName}'`);
-            }
             for (let key of keys) {
                 if (!(key in parser.FIELD_OPERATORS)) {
                     throw new Error(`unrecognised field operator '${key}'`);
