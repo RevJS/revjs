@@ -5,3 +5,11 @@
 export interface IWhereQuery {
     [fieldOrOperator: string]: null | string | number | boolean | Date | IWhereQuery;
 }
+
+export function isFieldValue(value: any) {
+    return (typeof value == 'string'
+        || typeof value == 'boolean'
+        || (typeof value == 'number' && !isNaN(value))
+        || (typeof value == 'object' && value instanceof Date)
+        || value === null);
+}
