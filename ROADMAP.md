@@ -6,6 +6,8 @@
 
 ## v0.2.0
 
+* MongoDB Backend
+* Knowledge of Primary Key
 * Documentation!
 
 ## Other Future Releases

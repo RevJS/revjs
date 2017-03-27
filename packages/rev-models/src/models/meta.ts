@@ -1,8 +1,7 @@
 import { Field } from '../fields/field';
-import { IModel, IModelOperation } from './index';
-import { ModelValidationResult, IValidationOptions } from './validation';
+import { Model } from './model';
 
-export interface IModelMeta<T extends IModel> {
+export interface IModelMeta {
     name?: string;
     label?: string;
     fields?: Field[];
@@ -11,13 +10,9 @@ export interface IModelMeta<T extends IModel> {
     };
     singleton?: boolean;
     backend?: string;
-    validate?: (model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => void;
-    validateAsync?: (model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => Promise<void>;
-    validateRemoval?: (operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => void;
-    validateRemovalAsync?: (operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => Promise<void>;
 }
 
-export function initialiseMeta<T extends IModel>(model: new() => T, meta?: IModelMeta<T>): IModelMeta<T> {
+export function initialiseMeta(model: new() => Model, meta?: IModelMeta): IModelMeta {
 
     let modelName = model.name;
 
@@ -73,4 +68,16 @@ export function initialiseMeta<T extends IModel>(model: new() => T, meta?: IMode
     meta.singleton = meta.singleton ? true : false;
 
     return meta;
+}
+
+export function checkMetadataInitialised(meta: IModelMeta) {
+    if (!meta || typeof meta != 'object') {
+        throw new Error('MetadataError: Supplied metadata is not an object.');
+    }
+    if (!meta.fields || typeof meta.fields != 'object' || !(meta.fields instanceof Array)) {
+        throw new Error('MetadataError: Supplied metadata does not contain fields array.');
+    }
+    if (!meta.fieldsByName || typeof meta.fieldsByName != 'object') {
+        throw new Error('MetadataError: Supplied metadata has not been initialised.');
+    }
 }

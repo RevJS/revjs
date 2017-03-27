@@ -12,7 +12,7 @@ let TITLES = [
     ['Dr', 'Dr.']
 ];
 
-export class Person {
+export class Person extends Model {
 
     @m.SelectionField({label: 'Title', selection: TITLES, required: false })
         title: string;
@@ -30,3 +30,10 @@ export class Person {
 }
 
 m.register(Person);
+
+let bob = new Person({
+    first_name: 'bob',
+    last_name: 'smith'
+});
+
+bob.update()
