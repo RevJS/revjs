@@ -1,8 +1,8 @@
-//import { Field } from '../../fields/index';
+import { Field } from '../../fields/index';
 import { initialiseMeta } from '../meta';
 import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
-//import * as d from '../../decorators';
+import * as d from '../../decorators';
 import { Model } from '../model';
 
 class TestModel extends Model {
@@ -69,51 +69,52 @@ describe('initialiseMeta() - metadata only', () => {
             initialiseMeta(TestModel);
         }).to.not.throw();
     });
-/*
+
     it('throws an error if a field name is defined twice', () => {
         expect(() => {
-            initialiseMeta(TestModel, {
+            TestModel.meta = {
                 fields: [
                     new TextField('flibble'),
                     new TextField('wibble'),
                     new IntegerField('flibble')
                 ]
-            });
+            };
+            initialiseMeta(TestModel);
         }).to.throw('Field "flibble" is defined more than once');
     });
 
     it('creates the fieldsByName property as expected', () => {
-        initialiseMeta(TestModel, testMeta);
-        let fieldNames = testMeta.fields.map((f) => f.name);
-        expect(Object.keys(testMeta.fieldsByName)).to.deep.equal(fieldNames);
-        expect(testMeta.fieldsByName[fieldNames[0]]).to.be.instanceOf(Field);
+        initialiseMeta(TestModel);
+        let fieldNames = TestModel.meta.fields.map((f) => f.name);
+        expect(Object.keys(TestModel.meta.fieldsByName)).to.deep.equal(fieldNames);
+        expect(TestModel.meta.fieldsByName[fieldNames[0]]).to.be.instanceOf(Field);
     });
 
     it('should set up meta.backend ("default" if not defined)', () => {
-        testMeta.backend = undefined;
-        testMeta2.backend = 'main_db';
-        initialiseMeta(TestModel, testMeta);
-        initialiseMeta(TestModel2, testMeta2);
-        expect(testMeta.backend).to.equal('default');
-        expect(testMeta2.backend).to.equal('main_db');
+        TestModel.meta.backend = undefined;
+        TestModel2.meta.backend = 'main_db';
+        initialiseMeta(TestModel);
+        initialiseMeta(TestModel2);
+        expect(TestModel.meta.backend).to.equal('default');
+        expect(TestModel2.meta.backend).to.equal('main_db');
     });
 
     it('should set up meta.label (if not set, should equal model name)', () => {
-        testMeta.label = undefined;
-        testMeta2.label = 'Awesome Entity';
-        initialiseMeta(TestModel, testMeta);
-        initialiseMeta(TestModel2, testMeta2);
-        expect(testMeta.label).to.equal('TestModel');
-        expect(testMeta2.label).to.equal('Awesome Entity');
+        TestModel.meta.label = undefined;
+        TestModel2.meta.label = 'Awesome Entity';
+        initialiseMeta(TestModel);
+        initialiseMeta(TestModel2);
+        expect(TestModel.meta.label).to.equal('TestModel');
+        expect(TestModel2.meta.label).to.equal('Awesome Entity');
     });
 
     it('should set up meta.singleton (defaults to false)', () => {
-        testMeta.singleton = undefined;
-        testMeta2.singleton = true;
-        initialiseMeta(TestModel, testMeta);
-        initialiseMeta(TestModel2, testMeta2);
-        expect(testMeta.singleton).to.equal(false);
-        expect(testMeta2.singleton).to.equal(true);
+        TestModel.meta.singleton = undefined;
+        TestModel2.meta.singleton = true;
+        initialiseMeta(TestModel);
+        initialiseMeta(TestModel2);
+        expect(TestModel.meta.singleton).to.equal(false);
+        expect(TestModel2.meta.singleton).to.equal(true);
     });
 
 });
@@ -129,9 +130,9 @@ describe('initialiseMeta() - with decorators', () => {
             @d.BooleanField()
                 active: boolean;
         }
-        let meta = initialiseMeta(MyClass);
-        expect(meta.fields).to.have.length(3);
-        expect(meta.fieldsByName).to.have.keys('id', 'name', 'active');
+        initialiseMeta(MyClass);
+        expect(MyClass.meta.fields).to.have.length(3);
+        expect(MyClass.meta.fieldsByName).to.have.keys('id', 'name', 'active');
     });
 
     it('decorator metadata is added to empty metadata', () => {
@@ -143,9 +144,10 @@ describe('initialiseMeta() - with decorators', () => {
             @d.BooleanField()
                 active: boolean;
         }
-        let meta = initialiseMeta(MyClass, {});
-        expect(meta.fields).to.have.length(3);
-        expect(meta.fieldsByName).to.have.keys('id', 'name', 'active');
+        MyClass.meta = {};
+        initialiseMeta(MyClass);
+        expect(MyClass.meta.fields).to.have.length(3);
+        expect(MyClass.meta.fieldsByName).to.have.keys('id', 'name', 'active');
     });
 
     it('decorator metadata is added to existing metadata', () => {
@@ -157,14 +159,14 @@ describe('initialiseMeta() - with decorators', () => {
             @d.BooleanField()
                 active: boolean;
         }
-        let baseMeta: IModelMeta = {
+        MyClass.meta = {
             fields: [
                 new TextField('flibble')
             ]
         };
-        let meta = initialiseMeta(MyClass, baseMeta);
-        expect(meta.fields).to.have.length(4);
-        expect(meta.fieldsByName).to.have.keys('flibble', 'id', 'name', 'active');
+        initialiseMeta(MyClass);
+        expect(MyClass.meta.fields).to.have.length(4);
+        expect(MyClass.meta.fieldsByName).to.have.keys('flibble', 'id', 'name', 'active');
     });
 
     it('removes the __fields property once it has been transferred to metadata', () => {
@@ -190,12 +192,12 @@ describe('initialiseMeta() - with decorators', () => {
             @d.TextField()
                 name: string;
         }
-        let meta: any = {
+        MyClass.meta = {
             fields: {}
-        };
+        } as any;
         expect(() => {
-            initialiseMeta(MyClass, meta);
+            initialiseMeta(MyClass);
         }).to.throw('fields entry must be an array');
     });
-*/
+
 });
