@@ -17,7 +17,7 @@ export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T)
     let modelName = model.name;
     let meta: IModelMeta;
     if (model.hasOwnProperty('meta')) {
-        meta = (model as any).meta;
+        meta = model.meta;
     }
 
     // Load fields from prototype __fields property if present (fields added via decorators)
@@ -71,17 +71,21 @@ export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T)
     meta.label = meta.label ? meta.label : meta.name;
     meta.singleton = meta.singleton ? true : false;
 
-    (model as any).meta = meta;
+    model.meta = meta;
 }
 
-export function checkMetadataInitialised(meta: IModelMeta) {
+export function checkMetadataInitialised(model: any): void {
+    if (!model || typeof model != 'function') {
+        throw new Error('MetadataError: Supplied model is not a class.');
+    }
+    let meta = model.meta;
     if (!meta || typeof meta != 'object') {
-        throw new Error('MetadataError: Supplied metadata is not an object.');
+        throw new Error('MetadataError: Model metadata is not an object.');
     }
     if (!meta.fields || typeof meta.fields != 'object' || !(meta.fields instanceof Array)) {
-        throw new Error('MetadataError: Supplied metadata does not contain fields array.');
+        throw new Error('MetadataError: Model metadata does not contain fields array.');
     }
     if (!meta.fieldsByName || typeof meta.fieldsByName != 'object') {
-        throw new Error('MetadataError: Supplied metadata has not been initialised.');
+        throw new Error('MetadataError: Model metadata has not been initialised.');
     }
 }

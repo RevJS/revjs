@@ -19,8 +19,8 @@ export function modelRemove<T extends Model>(model: T, where?: IWhereQuery, opti
             throw new Error('remove() must be called with a where clause');
         }
 
+        checkMetadataInitialised(model.constructor);
         let meta = model.getMeta();
-        checkMetadataInitialised(meta);
         let backend = backends.get(meta.backend);
 
         if (meta.singleton) {

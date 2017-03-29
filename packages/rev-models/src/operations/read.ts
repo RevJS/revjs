@@ -16,10 +16,8 @@ export function modelRead<T extends Model>(model: new() => T, where?: IWhereQuer
     return new Promise((resolve, reject) => {
 
         checkIsModelConstructor(model);
-
-        let meta = model['getMeta']();
-        checkMetadataInitialised(meta);
-
+        checkMetadataInitialised(model);
+        let meta = model.meta;
         if (meta.singleton && where) {
             throw new Error('read() cannot be called with a where clause for singleton models');
         }

@@ -17,8 +17,8 @@ export function modelUpdate<T extends Model>(model: T, where?: IWhereQuery, opti
 
         // TODO: Validate 'where' parameter
 
+        checkMetadataInitialised(model.constructor);
         let meta = model.getMeta();
-        checkMetadataInitialised(meta);
         let backend = backends.get(meta.backend);
 
         if (!meta.singleton && (!where || typeof where != 'object')) {

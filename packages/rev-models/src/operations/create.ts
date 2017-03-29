@@ -15,7 +15,7 @@ export function modelCreate<T extends Model>(model: T, options?: ICreateOptions)
     return new Promise((resolve, reject) => {
 
         let meta = model.getMeta();
-        checkMetadataInitialised(meta);
+        checkMetadataInitialised(model.constructor);
         let backend = backends.get(meta.backend);
 
         if (meta.singleton) {

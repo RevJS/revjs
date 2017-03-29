@@ -11,8 +11,8 @@ export interface IValidationOptions {
 export function modelValidate<T extends Model>(model: T, operation: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
     return new Promise((resolve, reject) => {
 
+        checkMetadataInitialised(model.constructor);
         let meta = model.getMeta();
-        checkMetadataInitialised(meta);
 
         if (!operation || typeof operation != 'object' || ['create', 'update'].indexOf(operation.name) == -1) {
             throw new Error('validateModel() - invalid operation specified - should either be a create or update operation.');
