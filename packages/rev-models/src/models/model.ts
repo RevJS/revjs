@@ -49,20 +49,8 @@ export class Model {
         return modelRead(this.constructor as any, where, options);
     }
 
-    validate(operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
-        return;
-    }
-
-    validateAsync(operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<void> {
-        return Promise.resolve(undefined);
-    }
-
-    validateRemoval(operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
-        return;
-    }
-
-    validateRemovalAsync(operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<void> {
-        return Promise.resolve(undefined);
+    validate(operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
+        return Promise.resolve(new ModelValidationResult());
     }
 
 }
