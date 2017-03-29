@@ -1,8 +1,7 @@
 
 import { IBackend } from './';
-import { IModelMeta, checkMetadataInitialised } from '../models/meta';
+import { IModelMeta } from '../models/meta';
 import { ModelOperationResult } from '../operations/operationresult';
-import { checkIsModelInstance } from '../models/utils';
 import { Model } from '../models/model';
 import { ICreateOptions } from '../operations/create';
 import { IUpdateOptions } from '../operations/update';
@@ -18,10 +17,10 @@ export class InMemoryBackend implements IBackend {
         this._storage = {};
     }
 
-    load<T extends Model>(data: T[], meta: IModelMeta, result: ModelOperationResult<T>): Promise<void> {
+    load<T extends Model>(data: T[], model: new(...args: any[]) => T, result: ModelOperationResult<T>): Promise<void> {
         return new Promise<void>(() => {
 
-            checkMetadataInitialised(meta);
+            let meta = model.meta;
             if (meta.singleton) {
                 throw new Error('InMemoryBackend.load() cannot be used with a singleton model');
             }
@@ -36,12 +35,10 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    create<T extends Model>(model: T, meta: IModelMeta, result: ModelOperationResult<T>, options?: ICreateOptions): Promise<void> {
+    create<T extends Model>(model: T, result: ModelOperationResult<T>, options?: ICreateOptions): Promise<void> {
         return new Promise<void>((resolve) => {
 
-            checkIsModelInstance(model);
-            checkMetadataInitialised(meta);
-
+            let meta = model.getMeta();
             if (meta.singleton) {
                 throw new Error('InMemoryBackend.create() cannot be called on singleton models');
             }
@@ -50,11 +47,14 @@ export class InMemoryBackend implements IBackend {
             let record = {};
             this._writeFields(model, meta, record);
             modelData.push(record);
+
         });
     }
 
-    update<T extends Model>(model: T, meta: IModelMeta, where: any, result: ModelOperationResult<T>, options?: IUpdateOptions): Promise<void> {
+    update<T extends Model>(model: T, where: any, result: ModelOperationResult<T>, options?: IUpdateOptions): Promise<void> {
         return new Promise<void>((resolve) => {
+
+            let meta = model.getMeta();
             if (!meta.singleton && !where) {
                 throw new Error('InMemoryBackend.update() requires the \'where\' parameter for non-singleton models');
             }
@@ -66,11 +66,14 @@ export class InMemoryBackend implements IBackend {
             else {
                 throw new Error('InMemoryBackend.update() not yet implemented for non-singleton models');
             }
+
         });
     }
 
-    read<T extends Model>(model: new() => T, meta: IModelMeta, where: any, result: ModelOperationResult<T>, options?: IReadOptions): Promise<void> {
+    read<T extends Model>(model: new() => T, where: any, result: ModelOperationResult<T>, options?: IReadOptions): Promise<void> {
         return new Promise<void>((resolve) => {
+
+            let meta = model.meta;
             if (!meta.singleton && !where) {
                 throw new Error('InMemoryBackend.read() requires the \'where\' parameter for non-singleton models');
             }
@@ -84,10 +87,11 @@ export class InMemoryBackend implements IBackend {
                 result.results = modelData;
                 resolve();
             }
+
         });
     }
 
-    remove<T extends Model>(meta: IModelMeta, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<void> {
+    remove<T extends Model>(model: T, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<void> {
         throw new Error('InMemoryBackend.delete() not yet implemented');
     }
 

@@ -1,5 +1,5 @@
 import { Field } from '../../fields/index';
-import { initialiseMeta } from '../meta';
+import { initialiseMeta, checkMetadataInitialised } from '../meta';
 import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
 import * as d from '../../decorators';
@@ -198,6 +198,81 @@ describe('initialiseMeta() - with decorators', () => {
         expect(() => {
             initialiseMeta(MyClass);
         }).to.throw('fields entry must be an array');
+    });
+
+});
+
+describe('checkMetadataInitialised()', () => {
+
+    let nonClassMsg = 'MetadataError: Supplied model is not a class.';
+    let nonObjMsg = 'MetadataError: Model metadata is not an object.';
+    let fieldsMissingMsg = 'MetadataError: Model metadata does not contain fields array.';
+    let notInitedMsg = 'MetadataError: Model metadata has not been initialised.';
+
+    beforeEach(() => {
+        TestModel.meta = {
+            fields: [
+                new IntegerField('id'),
+                new TextField('name'),
+                new DateField('date')
+            ]
+        };
+    });
+
+    it('should not throw if model has initialised metadata', () => {
+        expect(() => {
+            initialiseMeta(TestModel);
+            checkMetadataInitialised(TestModel);
+        }).to.not.throw();
+    });
+
+    it('should throw if model is not a class constructor', () => {
+        expect(() => {
+            checkMetadataInitialised(new Date());
+        }).to.throw(nonClassMsg);
+    });
+
+    it('should throw if model metadata is a non-object', () => {
+        let nonObjects = [undefined, null, 22, 'string'];
+        for (let obj of nonObjects) {
+            expect(() => {
+                TestModel.meta = obj;
+                checkMetadataInitialised(TestModel);
+            }).to.throw(nonObjMsg);
+        }
+    });
+
+    it('should throw if meta.fields is not set or is not an array', () => {
+        let nonArrays = [undefined, null, {}, 22, 'string'];
+        for (let obj of nonArrays) {
+            expect(() => {
+                TestModel.meta = { fields: obj } as any;
+                checkMetadataInitialised(TestModel);
+            }).to.throw(fieldsMissingMsg);
+        }
+    });
+
+    it('should throw if meta.fieldsByName is not set or is not an object', () => {
+        expect(() => {
+            TestModel.meta = {
+                fields: []
+            };
+            checkMetadataInitialised(TestModel);
+        }).to.throw(notInitedMsg);
+        expect(() => {
+            TestModel.meta = {
+                fields: [],
+                fieldsByName: null
+            };
+            checkMetadataInitialised(TestModel);
+        }).to.throw(notInitedMsg);
+        expect(() => {
+            TestModel.meta = {
+                fields: [],
+                fieldsByName: 22 as any
+            };
+            checkMetadataInitialised(TestModel);
+        }).to.throw(notInitedMsg);
     });
 
 });
