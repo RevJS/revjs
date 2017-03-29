@@ -46,7 +46,7 @@ let op: IModelOperation = {
     name: 'create'
 };
 
-let meta: IModelMeta<TestModel> = {
+let meta: IModelMeta = {
     fields: [
         idField, nameField, ageField, genderField,
         booleanField, dateField

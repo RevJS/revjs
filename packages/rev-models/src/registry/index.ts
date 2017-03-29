@@ -1,11 +1,12 @@
 
 import { IModelMeta, initialiseMeta } from '../models/meta';
-import { IModel, checkIsModelConstructor } from '../models';
+import { Model } from '../models/model';
+import { checkIsModelConstructor } from '../models/utils';
 
 export class ModelRegistry {
 
     _modelProto: { [modelName: string]: new() => any };
-    _modelMeta: { [modelName: string]: IModelMeta<IModel> };
+    _modelMeta: { [modelName: string]: IModelMeta };
 
     constructor() {
         this._modelProto = {};
@@ -18,7 +19,7 @@ export class ModelRegistry {
         return (modelName in this._modelProto);
     }
 
-    register<T extends IModel>(model: new() => T, meta?: IModelMeta<T>) {
+    register<T extends Model>(model: new(...args: any[]) => T, meta?: IModelMeta) {
 
         // Check model constructor
         checkIsModelConstructor(model);
@@ -61,6 +62,6 @@ export class ModelRegistry {
 
 export const registry = new ModelRegistry();
 
-export function register<T extends IModel>(model: new() => T, meta?: IModelMeta<T>) {
+export function register<T extends Model>(model: new(...args: any[]) => T, meta?: IModelMeta) {
     registry.register(model, meta);
 }

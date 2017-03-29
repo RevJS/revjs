@@ -13,8 +13,8 @@ class TestModel {
 
 class TestModel2 {}
 
-let testMeta: IModelMeta<TestModel>;
-let testMeta2: IModelMeta<TestModel2>;
+let testMeta: IModelMeta;
+let testMeta2: IModelMeta;
 
 describe('ModelRegistry', () => {
     let testReg: registry.ModelRegistry;

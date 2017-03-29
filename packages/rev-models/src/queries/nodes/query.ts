@@ -9,7 +9,7 @@ export class QueryNode<T> implements IQueryNode<T> {
     constructor(
         public parser: IQueryParser,
         public operator: string,
-        public meta: IModelMeta<T>,
+        public meta: IModelMeta,
         public parent: IQueryNode<T>) {
 
         this.children = [];

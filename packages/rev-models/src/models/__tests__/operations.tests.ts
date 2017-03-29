@@ -29,7 +29,7 @@ describe('rev.model.operations', () => {
         ['female', 'Female']
     ];
 
-    let testMeta: IModelMeta<TestModel>;
+    let testMeta: IModelMeta;
 
     let backendSpy: {
         create?: sinon.SinonSpy;

@@ -24,6 +24,6 @@ export interface IQueryParser {
 
     getQueryNodeForQuery<T>(
         value: any,
-        meta: IModelMeta<T>,
+        meta: IModelMeta,
         parent?: IQueryNode<T>): IQueryNode<T>;
 }

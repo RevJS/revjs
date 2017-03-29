@@ -3,17 +3,18 @@ import { IModelMeta, initialiseMeta } from '../meta';
 import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
 import * as d from '../../decorators';
+import { Model } from '../model';
 
-class TestModel {
+class TestModel extends Model {
     id: number = 1;
     name: string = 'A Test Model';
     date: Date = new Date();
 }
 
-class TestModel2 {}
+class TestModel2 extends Model {}
 
-let testMeta: IModelMeta<TestModel>;
-let testMeta2: IModelMeta<TestModel2>;
+let testMeta: IModelMeta;
+let testMeta2: IModelMeta;
 
 function getAnyObject() {
     return Object.assign({});
@@ -37,7 +38,7 @@ describe('initialiseMeta() - metadata only', () => {
             initialiseMeta(TestModel, null);
         }).to.throw('You must define the fields metadata for the model');
         expect(() => {
-            initialiseMeta(TestModel, {} as IModelMeta<TestModel>);
+            initialiseMeta(TestModel, {} as IModelMeta);
         }).to.throw('You must define the fields metadata for the model');
     });
 
@@ -118,7 +119,7 @@ describe('initialiseMeta() - metadata only', () => {
 describe('initialiseMeta() - with decorators', () => {
 
     it('creates metadata as expected when only decorators are used', () => {
-        class MyClass {
+        class MyClass extends Model {
             @d.IntegerField()
                 id: number;
             @d.TextField()
@@ -132,7 +133,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('decorator metadata is added to empty metadata', () => {
-        class MyClass {
+        class MyClass extends Model {
             @d.IntegerField()
                 id: number;
             @d.TextField()
@@ -146,7 +147,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('decorator metadata is added to existing metadata', () => {
-        class MyClass {
+        class MyClass extends Model {
             @d.IntegerField()
                 id: number;
             @d.TextField()
@@ -154,7 +155,7 @@ describe('initialiseMeta() - with decorators', () => {
             @d.BooleanField()
                 active: boolean;
         }
-        let baseMeta: IModelMeta<MyClass> = {
+        let baseMeta: IModelMeta = {
             fields: [
                 new TextField('flibble')
             ]
@@ -165,7 +166,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('removes the __fields property once it has been transferred to metadata', () => {
-        class MyClass {
+        class MyClass extends Model {
             @d.TextField()
                 name: string;
         }
@@ -175,7 +176,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('throws an error if for some reason prototype.__fields is not an array', () => {
-        class MyClass {}
+        class MyClass extends Model {}
         (MyClass.prototype as any).__fields = 'flibble';
         expect(() => {
             initialiseMeta(MyClass);
@@ -183,7 +184,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('throws an error if meta.fields is not an array', () => {
-        class MyClass {
+        class MyClass extends Model {
             @d.TextField()
                 name: string;
         }

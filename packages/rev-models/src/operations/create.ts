@@ -27,7 +27,7 @@ export function modelCreate<T extends Model>(model: T, options?: ICreateOptions)
         };
         let operationResult = new ModelOperationResult<T>(operation);
 
-        modelValidate(model, meta, operation, options ? options.validation : null)
+        modelValidate(model, operation, options ? options.validation : null)
             .then((validationResult) => {
 
                 operationResult.validation = validationResult;

@@ -11,7 +11,7 @@ export class FieldNode<T> extends QueryNode<T> {
             parser: IQueryParser,
             public fieldName: string,
             value: any,
-            meta: IModelMeta<T>,
+            meta: IModelMeta,
             parent: IQueryNode<T>) {
 
         super(parser, fieldName, meta, parent);

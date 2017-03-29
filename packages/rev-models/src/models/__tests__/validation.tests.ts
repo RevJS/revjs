@@ -252,7 +252,7 @@ describe('rev.model.validation', () => {
             date: Date;
         }
 
-        let meta: IModelMeta<TestModel> = {
+        let meta: IModelMeta = {
             fields: [
                 new IntegerField('id', { minValue: 10 }),
                 new TextField('name'),
@@ -314,7 +314,7 @@ describe('rev.model.validation', () => {
 
         it('should reject if un-initialised metadata is passed', () => {
             let test = new TestModel();
-            let uninitialisedMeta: IModelMeta<TestModel> = {
+            let uninitialisedMeta: IModelMeta = {
                 fields: [
                     new IntegerField('id', { minValue: 10 }),
                     new TextField('name'),
@@ -522,7 +522,7 @@ describe('rev.model.validation', () => {
 
         class TestModel {}
 
-        let meta: IModelMeta<TestModel> = {
+        let meta: IModelMeta = {
             fields: [],
             validateRemoval: null as sinon.SinonSpy,
             validateRemovalAsync: null as sinon.SinonStub
@@ -560,7 +560,7 @@ describe('rev.model.validation', () => {
         });
 
         it('should reject if un-initialised metadata is passed', () => {
-            let uninitialisedMeta: IModelMeta<TestModel> = {
+            let uninitialisedMeta: IModelMeta = {
                 fields: [
                     new IntegerField('id', { minValue: 10 }),
                     new TextField('name'),

@@ -9,7 +9,7 @@ export class ValueOperator<T> extends QueryNode<T> {
             parser: IQueryParser,
             operator: string,
             public value: any,
-            meta: IModelMeta<T>,
+            meta: IModelMeta,
             parent: IQueryNode<T>) {
 
         super(parser, operator, meta, parent);

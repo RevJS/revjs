@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { InMemoryBackend } from '../inmemory';
 import { IModelMeta, initialiseMeta } from '../../models/meta';
 import * as fld from '../../fields';
-import { ModelOperationResult } from '../../models/operations';
+import { ModelOperationResult } from '../../operations/operationresult';
 
 describe('rev.backends.inmemory', () => {
 
@@ -48,7 +48,7 @@ describe('rev.backends.inmemory', () => {
         ['female', 'Female']
     ];
 
-    let meta: IModelMeta<TestModel>;
+    let meta: IModelMeta;
     let backend: InMemoryBackend;
     let loadResult: ModelOperationResult<TestModel>;
     let readResult: ModelOperationResult<TestModel>;

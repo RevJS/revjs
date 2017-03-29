@@ -42,7 +42,7 @@ export class QueryParser implements IQueryParser {
 
     getQueryNodeForQuery<T>(
             value: any,
-            meta: IModelMeta<T>,
+            meta: IModelMeta,
             parent?: IQueryNode<T>): IQueryNode<T> {
 
         if (!value || typeof value != 'object' || Object.keys(value).length == 0) {

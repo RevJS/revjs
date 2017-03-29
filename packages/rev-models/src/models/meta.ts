@@ -12,7 +12,7 @@ export interface IModelMeta {
     backend?: string;
 }
 
-export function initialiseMeta(model: new() => Model, meta?: IModelMeta): IModelMeta {
+export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T, meta?: IModelMeta): IModelMeta {
 
     let modelName = model.name;
 

@@ -2,23 +2,23 @@ import { expect } from 'chai';
 import { IFieldOptions, Field, DEFAULT_FIELD_OPTIONS } from '../field';
 import { requiredValidator } from '../validators';
 import { ModelValidationResult } from '../../models/validation';
-import { IModel, IModelOperation } from '../../models/index';
+import { Model, IModelOperation } from '../../models/index';
 import { IModelMeta } from '../../models/meta';
 
-function quickValidAsyncValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: IModelOperation, result: ModelValidationResult) {
+function quickValidAsyncValidator<T extends Model>(model: T, field: Field, meta: IModelMeta, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         resolve();
     });
 }
 
-function quickInvalidAsyncValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: IModelOperation, result: ModelValidationResult) {
+function quickInvalidAsyncValidator<T extends Model>(model: T, field: Field, meta: IModelMeta, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         result.addFieldError('name', 'name field is invalid');
         resolve();
     });
 }
 
-function slowInvalidAsyncValidator<T extends IModel>(model: T, field: Field, meta: IModelMeta<T>, operation: IModelOperation, result: ModelValidationResult) {
+function slowInvalidAsyncValidator<T extends Model>(model: T, field: Field, meta: IModelMeta, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         setTimeout(() => {
             result.addFieldError('name', 'name field is invalid');
