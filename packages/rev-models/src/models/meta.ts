@@ -12,9 +12,10 @@ export interface IModelMeta {
     backend?: string;
 }
 
-export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T, meta?: IModelMeta): IModelMeta {
+export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T): void {
 
     let modelName = model.name;
+    let meta = (model as any).meta;
 
     // Load fields from prototype __fields property if present (fields added via decorators)
     let proto = model.prototype;

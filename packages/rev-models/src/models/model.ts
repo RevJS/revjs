@@ -19,7 +19,7 @@ export interface IModelData {
 }
 
 export class Model {
-    static meta: IModelMeta;
+    static meta: IModelMeta = {};
     static getMeta() {
         return this.meta;
     }
