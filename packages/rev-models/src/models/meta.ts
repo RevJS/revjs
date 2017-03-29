@@ -15,7 +15,10 @@ export interface IModelMeta {
 export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T): void {
 
     let modelName = model.name;
-    let meta = (model as any).meta;
+    let meta: IModelMeta;
+    if (model.hasOwnProperty('meta')) {
+        meta = (model as any).meta;
+    }
 
     // Load fields from prototype __fields property if present (fields added via decorators)
     let proto = model.prototype;
@@ -68,7 +71,7 @@ export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T)
     meta.label = meta.label ? meta.label : meta.name;
     meta.singleton = meta.singleton ? true : false;
 
-    return meta;
+    (model as any).meta = meta;
 }
 
 export function checkMetadataInitialised(meta: IModelMeta) {
