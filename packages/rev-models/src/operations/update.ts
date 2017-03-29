@@ -19,7 +19,7 @@ export function modelUpdate<T extends Model>(model: T, where?: IWhereQuery, opti
 
         let meta = model.getMeta();
         checkMetadataInitialised(meta);
-        let store = backends.get(meta.backend);
+        let backend = backends.get(meta.backend);
 
         if (!meta.singleton && (!where || typeof where != 'object')) {
             throw new Error('update() must be called with a where clause for non-singleton models');
@@ -37,7 +37,7 @@ export function modelUpdate<T extends Model>(model: T, where?: IWhereQuery, opti
                 operationResult.validation = validationResult;
 
                 if (validationResult.valid) {
-                    store.update<typeof model>(model, where, operationResult, options)
+                    backend.update<typeof model>(model, where, operationResult, options)
                         .then(() => {
                             resolve(operationResult);
                         })

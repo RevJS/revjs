@@ -24,13 +24,13 @@ export function modelRead<T extends Model>(model: new() => T, where?: IWhereQuer
             throw new Error('read() cannot be called with a where clause for singleton models');
         }
 
-        let store = backends.get(meta.backend);
+        let backend = backends.get(meta.backend);
         let operation: IModelOperation = {
             name: 'read',
             where: where
         };
         let operationResult = new ModelOperationResult<T>(operation);
-        store.read(model, where || {}, operationResult, options)
+        backend.read(model, where || {}, operationResult, options)
             .then(() => {
                 resolve(operationResult);
             })

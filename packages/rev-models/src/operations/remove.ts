@@ -21,7 +21,7 @@ export function modelRemove<T extends Model>(model: T, where?: IWhereQuery, opti
 
         let meta = model.getMeta();
         checkMetadataInitialised(meta);
-        let store = backends.get(meta.backend);
+        let backend = backends.get(meta.backend);
 
         if (meta.singleton) {
             throw new Error('remove() cannot be called on singleton models');
@@ -39,7 +39,7 @@ export function modelRemove<T extends Model>(model: T, where?: IWhereQuery, opti
                 operationResult.validation = validationResult;
 
                 if (validationResult.valid) {
-                    store.remove<T>(model, where, operationResult, options)
+                    backend.remove<T>(model, where, operationResult, options)
                         .then(() => {
                             resolve(operationResult);
                         })
