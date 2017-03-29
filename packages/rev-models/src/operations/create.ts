@@ -33,7 +33,7 @@ export function modelCreate<T extends Model>(model: T, options?: ICreateOptions)
                 operationResult.validation = validationResult;
 
                 if (validationResult.valid) {
-                    store.create<typeof model>(model, meta, operationResult, options)
+                    store.create<typeof model>(model, operationResult, options)
                         .then(() => {
                             resolve(operationResult);
                         })

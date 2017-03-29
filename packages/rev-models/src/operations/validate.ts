@@ -1,5 +1,5 @@
 import { Model } from '../models/model';
-import { IModelMeta, checkMetadataInitialised } from '../models/meta';
+import { checkMetadataInitialised } from '../models/meta';
 import { IModelOperation } from './operation';
 import { ModelValidationResult } from '../validation/validationresult';
 import { VALIDATION_MESSAGES as msg } from '../validation/validationmsg';
@@ -33,8 +33,7 @@ export function modelValidate<T extends Model>(model: T, operation: IModelOperat
         Promise.all(promises)
             .then(() => {
                 // Trigger model validation
-                model.validate(operation, result, options);
-                return model.validateAsync(operation, result, options);
+                return model.validate(operation, options);
             })
             .then(() => {
                 resolve(result);
@@ -48,8 +47,9 @@ export function modelValidate<T extends Model>(model: T, operation: IModelOperat
     });
 }
 
-export function modelValidateForRemoval<T extends Model>(meta: IModelMeta, operation: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
+export function modelValidateForRemoval<T extends Model>(model: T, operation: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
     return new Promise((resolve, reject) => {
+        let meta = model.getMeta();
         checkMetadataInitialised(meta);
         if (!operation || typeof operation != 'object' || operation.name != 'remove') {
             throw new Error('validateModelRemoval() - invalid operation specified - operation.name must be "remove".');
@@ -60,21 +60,14 @@ export function modelValidateForRemoval<T extends Model>(meta: IModelMeta, opera
         let timeout = options && options.timeout ? options.timeout : 5000;
         let result = new ModelValidationResult();
 
-        if (meta.validateRemoval) {
-            meta.validateRemoval(operation, result, options);
-        }
-        if (meta.validateRemovalAsync) {
-            meta.validateRemovalAsync(operation, result, options)
-                .then(() => {
-                    resolve(result);
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        }
-        else {
-            resolve(result);
-        }
+        model.validateRemoval(operation, options)
+            .then(() => {
+                resolve(result);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+
         setTimeout(() => {
             reject(new Error(`validateRemoval() - timed out after ${timeout} milliseconds`));
         }, timeout);

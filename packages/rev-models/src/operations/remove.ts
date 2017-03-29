@@ -33,13 +33,13 @@ export function modelRemove<T extends Model>(model: T, where?: IWhereQuery, opti
         };
         let operationResult = new ModelOperationResult<T>(operation);
 
-        modelValidateForRemoval(meta, operation, options ? options.validation : null)
+        modelValidateForRemoval(model, operation, options ? options.validation : null)
             .then((validationResult) => {
 
                 operationResult.validation = validationResult;
 
                 if (validationResult.valid) {
-                    store.remove<T>(meta, where, operationResult, options)
+                    store.remove<T>(model, where, operationResult, options)
                         .then(() => {
                             resolve(operationResult);
                         })

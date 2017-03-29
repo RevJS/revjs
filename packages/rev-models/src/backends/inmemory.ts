@@ -1,9 +1,13 @@
 
 import { IBackend } from './';
-import { IModelMeta } from '../models/meta';
-import { Model, ICreateOptions, IReadOptions, IUpdateOptions, IRemoveOptions } from '../models';
-import { ModelOperationResult, ILoadOptions } from '../models/operations';
-import { checkIsModelInstance, checkMetadataInitialised } from '../models/utils';
+import { IModelMeta, checkMetadataInitialised } from '../models/meta';
+import { ModelOperationResult } from '../operations/operationresult';
+import { checkIsModelInstance } from '../models/utils';
+import { Model } from '../models/model';
+import { ICreateOptions } from '../operations/create';
+import { IUpdateOptions } from '../operations/update';
+import { IReadOptions } from '../operations/read';
+import { IRemoveOptions } from '../operations/remove';
 
 export class InMemoryBackend implements IBackend {
     _storage: {
@@ -14,7 +18,7 @@ export class InMemoryBackend implements IBackend {
         this._storage = {};
     }
 
-    load<T extends Model>(data: T[], meta: IModelMeta, result: ModelOperationResult<T>, options?: ILoadOptions): Promise<void> {
+    load<T extends Model>(data: T[], meta: IModelMeta, result: ModelOperationResult<T>): Promise<void> {
         return new Promise<void>(() => {
 
             checkMetadataInitialised(meta);

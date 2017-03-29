@@ -30,7 +30,7 @@ export function modelRead<T extends Model>(model: new() => T, where?: IWhereQuer
             where: where
         };
         let operationResult = new ModelOperationResult<T>(operation);
-        store.read(model, meta, where || {}, operationResult, options)
+        store.read(model, where || {}, operationResult, options)
             .then(() => {
                 resolve(operationResult);
             })

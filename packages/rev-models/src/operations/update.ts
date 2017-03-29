@@ -37,7 +37,7 @@ export function modelUpdate<T extends Model>(model: T, where?: IWhereQuery, opti
                 operationResult.validation = validationResult;
 
                 if (validationResult.valid) {
-                    store.update<typeof model>(model, meta, where, operationResult, options)
+                    store.update<typeof model>(model, where, operationResult, options)
                         .then(() => {
                             resolve(operationResult);
                         })

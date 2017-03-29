@@ -53,4 +53,8 @@ export class Model {
         return Promise.resolve(new ModelValidationResult());
     }
 
+    validateRemoval(operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
+        return Promise.resolve(new ModelValidationResult());
+    }
+
 }
