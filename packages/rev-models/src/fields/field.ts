@@ -7,7 +7,6 @@ import { IModelMeta } from '../models/meta';
 import { IModelOperation } from '../operations/operation';
 import { ModelValidationResult } from '../validation/validationresult';
 import { IValidationOptions } from '../operations/validate';
-import { checkIsModelInstance } from '../models/utils';
 
 export interface IFieldOptions {
     label?: string;
@@ -48,7 +47,6 @@ export class Field {
 
     validate<T extends Model>(model: T, meta: IModelMeta, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
         let timeout = options && options.timeout ? options.timeout : 5000;
-        checkIsModelInstance(model);
         return new Promise((resolve, reject) => {
             // Run synchronous validators
             for (let validator of this.validators) {
