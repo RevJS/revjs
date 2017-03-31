@@ -173,18 +173,4 @@ describe('Model class - operation functions', () => {
         expect(res).to.equal('test_value');
     });
 
-    it('Model.validateForRemoval() calls modelValidateForRemoval function as expected', () => {
-        rwModule.__set__({
-            validate_1: { modelValidateForRemoval: functionSpy }
-        });
-        let testOperation = {} as any;
-        let testOptions = {};
-        let res = model.validateForRemoval(testOperation, testOptions);
-        expect(functionSpy.callCount).to.equal(1);
-        expect(functionSpy.getCall(0).args[0]).to.equal(model);
-        expect(functionSpy.getCall(0).args[1]).to.equal(testOperation);
-        expect(functionSpy.getCall(0).args[2]).to.equal(testOptions);
-        expect(res).to.equal('test_value');
-    });
-
 });
