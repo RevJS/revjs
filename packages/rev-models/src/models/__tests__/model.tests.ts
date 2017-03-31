@@ -1,5 +1,7 @@
 import { expect } from 'chai';
 import { Model } from '../model';
+import * as rewire from 'rewire';
+import * as sinon from 'sinon';
 
 class EmptyModel extends Model {
 }
@@ -9,6 +11,10 @@ class TestModel extends Model {
     address: string;
     postcode: string;
 }
+
+TestModel.meta = {
+    label: 'Test Model'
+};
 
 describe('Model class - initial state', () => {
 
@@ -58,4 +64,127 @@ describe('Model class - constructor', () => {
 
 });
 
-// TODO: Tests for model methods!
+describe('Model class - getMeta()', () => {
+
+    it('EmptyModel.getMeta() should be undefined', () => {
+        let model = new EmptyModel();
+        expect(model.getMeta()).to.be.undefined;
+    });
+
+    it('TestModel.getMeta() should be as expected', () => {
+        let model = new TestModel();
+        expect(model.getMeta()).to.deep.equal({
+            label: 'Test Model'
+        });
+    });
+
+});
+
+describe('Model class - operation functions', () => {
+
+    let rwModule = rewire('../model') as any;
+    let rwModel = rwModule.Model as new() => Model;
+
+    let functionSpy: sinon.SinonSpy;
+    let model: RWTestModel;
+
+    class RWTestModel extends rwModel {}
+
+    beforeEach(() => {
+        functionSpy = sinon.stub().returns('test_value');
+        rwModule.__set__({
+            create_1: { modelCreate: null },
+            read_1: { modelRead: null },
+            update_1: { modelUpdate: null },
+            remove_1: { modelRemove: null },
+            validate_1: {
+                modelValidate: null,
+                modelValidateForRemoval: null
+            }
+        });
+        model = new RWTestModel();
+    });
+
+    it('Model.create() calls modelCreate function as expected', () => {
+        rwModule.__set__({
+            create_1: { modelCreate: functionSpy }
+        });
+        let testOptions = {};
+        let res = model.create(testOptions);
+        expect(functionSpy.callCount).to.equal(1);
+        expect(functionSpy.getCall(0).args[0]).to.equal(model);
+        expect(functionSpy.getCall(0).args[1]).to.equal(testOptions);
+        expect(res).to.equal('test_value');
+    });
+
+    it('Model.update() calls modelUpdate function as expected', () => {
+        rwModule.__set__({
+            update_1: { modelUpdate: functionSpy }
+        });
+        let testWhere = {};
+        let testOptions = {};
+        let res = model.update(testWhere, testOptions);
+        expect(functionSpy.callCount).to.equal(1);
+        expect(functionSpy.getCall(0).args[0]).to.equal(model);
+        expect(functionSpy.getCall(0).args[1]).to.equal(testWhere);
+        expect(functionSpy.getCall(0).args[2]).to.equal(testOptions);
+        expect(res).to.equal('test_value');
+    });
+
+    it('Model.remove() calls modelRemove function as expected', () => {
+        rwModule.__set__({
+            remove_1: { modelRemove: functionSpy }
+        });
+        let testWhere = {};
+        let testOptions = {};
+        let res = model.remove(testWhere, testOptions);
+        expect(functionSpy.callCount).to.equal(1);
+        expect(functionSpy.getCall(0).args[0]).to.equal(model);
+        expect(functionSpy.getCall(0).args[1]).to.equal(testWhere);
+        expect(functionSpy.getCall(0).args[2]).to.equal(testOptions);
+        expect(res).to.equal('test_value');
+    });
+
+    it('Model.read() calls modelRead function as expected', () => {
+        rwModule.__set__({
+            read_1: { modelRead: functionSpy }
+        });
+        let testWhere = {};
+        let testOptions = {};
+        let res = model.read(testWhere, testOptions);
+        expect(functionSpy.callCount).to.equal(1);
+        expect(functionSpy.getCall(0).args[0]).to.equal(RWTestModel);
+        expect(functionSpy.getCall(0).args[1]).to.equal(testWhere);
+        expect(functionSpy.getCall(0).args[2]).to.equal(testOptions);
+        expect(res).to.equal('test_value');
+    });
+
+    it('Model.validate() calls modelValidate function as expected', () => {
+        rwModule.__set__({
+            validate_1: { modelValidate: functionSpy }
+        });
+        let testOperation = {} as any;
+        let testOptions = {};
+        let res = model.validate(testOperation, testOptions);
+        expect(functionSpy.callCount).to.equal(1);
+        expect(functionSpy.getCall(0).args[0]).to.equal(model);
+        expect(functionSpy.getCall(0).args[1]).to.equal(testOperation);
+        expect(functionSpy.getCall(0).args[2]).to.equal(testOptions);
+        expect(res).to.equal('test_value');
+    });
+
+    it('Model.validateForRemoval() calls modelValidateForRemoval function as expected', () => {
+        rwModule.__set__({
+            validate_1: { modelValidateForRemoval: functionSpy }
+        });
+        let testOperation = {} as any;
+        let testOptions = {};
+        let res = model.validateForRemoval(testOperation, testOptions);
+        expect(functionSpy.callCount).to.equal(1);
+        expect(functionSpy.getCall(0).args[0]).to.equal(model);
+        expect(functionSpy.getCall(0).args[1]).to.equal(testOperation);
+        expect(functionSpy.getCall(0).args[2]).to.equal(testOptions);
+        expect(res).to.equal('test_value');
+    });
+
+});
