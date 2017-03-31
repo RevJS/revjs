@@ -28,7 +28,7 @@ export function modelRemove<T extends Model>(model: T, where?: IWhereQuery, opti
         }
 
         let operation: IModelOperation = {
-            name: 'remove',
+            operation: 'remove',
             where: where
         };
         let operationResult = new ModelOperationResult<T>(operation);

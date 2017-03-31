@@ -14,8 +14,8 @@ export interface ICreateOptions {
 export function modelCreate<T extends Model>(model: T, options?: ICreateOptions): Promise<ModelOperationResult<T>> {
     return new Promise((resolve, reject) => {
 
-        let meta = model.getMeta();
         checkMetadataInitialised(model.constructor);
+        let meta = model.getMeta();
         let backend = backends.get(meta.backend);
 
         if (meta.singleton) {
@@ -23,7 +23,7 @@ export function modelCreate<T extends Model>(model: T, options?: ICreateOptions)
         }
 
         let operation: IModelOperation = {
-            name: 'create'
+            operation: 'create'
         };
         let operationResult = new ModelOperationResult<T>(operation);
 

@@ -24,7 +24,7 @@ export function modelRead<T extends Model>(model: new() => T, where?: IWhereQuer
 
         let backend = backends.get(meta.backend);
         let operation: IModelOperation = {
-            name: 'read',
+            operation: 'read',
             where: where
         };
         let operationResult = new ModelOperationResult<T>(operation);

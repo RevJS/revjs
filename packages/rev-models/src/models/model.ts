@@ -7,7 +7,7 @@ import { IUpdateOptions, modelUpdate } from '../operations/update';
 import { IRemoveOptions, modelRemove } from '../operations/remove';
 import { IReadOptions, modelRead } from '../operations/read';
 import { ModelValidationResult } from '../validation/validationresult';
-import { IValidationOptions } from '../operations/validate';
+import { IValidationOptions, modelValidate } from '../operations/validate';
 
 export interface IModelOptions {
     singleton?: boolean;
@@ -54,7 +54,7 @@ export class Model {
     }
 
     validate(operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
-        return Promise.resolve(new ModelValidationResult());
+        return modelValidate(this, operation, options);
     }
 
     validateRemoval(operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {

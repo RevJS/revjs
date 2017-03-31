@@ -8,23 +8,22 @@ export interface IValidationOptions {
     timeout?: number;
 }
 
-export function modelValidate<T extends Model>(model: T, operation: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
+export function modelValidate<T extends Model>(model: T, operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
     return new Promise((resolve, reject) => {
 
         checkMetadataInitialised(model.constructor);
         let meta = model.getMeta();
 
-        if (!operation || typeof operation != 'object' || ['create', 'update'].indexOf(operation.name) == -1) {
-            throw new Error('validateModel() - invalid operation specified - should either be a create or update operation.');
-        }
         let timeout = options && options.timeout ? options.timeout : 5000;
         let result = new ModelValidationResult();
+
         // First, check if model contains fields that are not in meta
         for (let field in model) {
             if (!(field in meta.fieldsByName)) {
                 result.addModelError(msg.extra_field(field), 'extra_field');
             }
         }
+
         // Trigger field validation
         let promises: Array<Promise<ModelValidationResult>> = [];
         for (let field of meta.fields) {
@@ -32,17 +31,14 @@ export function modelValidate<T extends Model>(model: T, operation: IModelOperat
         }
         Promise.all(promises)
             .then(() => {
-                // Trigger model validation
-                return model.validate(operation, options);
-            })
-            .then(() => {
                 resolve(result);
             })
             .catch((err) => {
                 reject(err);
             });
+
         setTimeout(() => {
-            reject(new Error(`validateModel() - timed out after ${timeout} milliseconds`));
+            reject(new Error(`modelValidate() - timed out after ${timeout} milliseconds`));
         }, timeout);
     });
 }
@@ -51,7 +47,7 @@ export function modelValidateForRemoval<T extends Model>(model: T, operation: IM
     return new Promise((resolve, reject) => {
         let meta = model.getMeta();
         checkMetadataInitialised(meta);
-        if (!operation || typeof operation != 'object' || operation.name != 'remove') {
+        if (!operation || typeof operation != 'object' || operation.operation != 'remove') {
             throw new Error('validateModelRemoval() - invalid operation specified - operation.name must be "remove".');
         }
         if (!operation.where || typeof operation.where != 'object') {
