@@ -43,7 +43,7 @@ export function modelValidate<T extends Model>(model: T, operation?: IModelOpera
     });
 }
 
-export function modelValidateForRemoval<T extends Model>(model: T, operation: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
+export function modelValidateForRemoval<T extends Model>(model: T, operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
     return new Promise((resolve, reject) => {
         let meta = model.getMeta();
         checkMetadataInitialised(meta);
@@ -56,7 +56,7 @@ export function modelValidateForRemoval<T extends Model>(model: T, operation: IM
         let timeout = options && options.timeout ? options.timeout : 5000;
         let result = new ModelValidationResult();
 
-        model.validateRemoval(operation, options)
+        model.validateForRemoval(operation, options)
             .then(() => {
                 resolve(result);
             })
