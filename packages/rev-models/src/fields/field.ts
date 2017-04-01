@@ -3,7 +3,6 @@ import { isSet } from '../utils';
 import * as validators from '../validation/validators';
 import { IFieldValidator, IAsyncFieldValidator } from '../validation/validators';
 import { Model } from '../models/model';
-import { IModelMeta } from '../models/meta';
 import { IModelOperation } from '../operations/operation';
 import { ModelValidationResult } from '../validation/validationresult';
 import { IValidationOptions } from '../operations/validate';
@@ -45,7 +44,7 @@ export class Field {
         }
     }
 
-    validate<T extends Model>(model: T, meta: IModelMeta, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
+    validate<T extends Model>(model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
         let timeout = options && options.timeout ? options.timeout : 5000;
         return new Promise((resolve, reject) => {
             // Run synchronous validators

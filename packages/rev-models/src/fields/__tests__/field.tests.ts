@@ -1,24 +1,24 @@
 import { expect } from 'chai';
 import { IFieldOptions, Field, DEFAULT_FIELD_OPTIONS } from '../field';
-import { requiredValidator } from '../validators';
-import { ModelValidationResult } from '../../models/validation';
-import { Model, IModelOperation } from '../../models/index';
-import { IModelMeta } from '../../models/meta';
+import { requiredValidator } from '../../validation/validators';
+import { ModelValidationResult } from '../../validation/validationresult';
+import { Model } from '../../models/model';
+import { IModelOperation } from '../../operations/operation';
 
-function quickValidAsyncValidator<T extends Model>(model: T, field: Field, meta: IModelMeta, operation: IModelOperation, result: ModelValidationResult) {
+function quickValidAsyncValidator<T extends Model>(model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         resolve();
     });
 }
 
-function quickInvalidAsyncValidator<T extends Model>(model: T, field: Field, meta: IModelMeta, operation: IModelOperation, result: ModelValidationResult) {
+function quickInvalidAsyncValidator<T extends Model>(model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         result.addFieldError('name', 'name field is invalid');
         resolve();
     });
 }
 
-function slowInvalidAsyncValidator<T extends Model>(model: T, field: Field, meta: IModelMeta, operation: IModelOperation, result: ModelValidationResult) {
+function slowInvalidAsyncValidator<T extends Model>(model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         setTimeout(() => {
             result.addFieldError('name', 'name field is invalid');
@@ -27,10 +27,18 @@ function slowInvalidAsyncValidator<T extends Model>(model: T, field: Field, meta
     });
 }
 
+class TestModel extends Model {
+    name: string;
+}
+
 describe('rev.fields.field', () => {
     let testOp: IModelOperation = {
-        name: 'create'
+        operation: 'create'
     };
+
+    beforeEach(() => {
+        TestModel.meta = {};
+    });
 
     describe('Field - constructor()', () => {
 
@@ -78,22 +86,18 @@ describe('rev.fields.field', () => {
     });
 
     describe('Field - validate()', () => {
-        let testModel = {
-            name: null as any
-        };
-        let testMeta = {
-            fields: [new Field('name')]
-        };
+        let testModel: TestModel;
         let result: ModelValidationResult;
 
         beforeEach(() => {
+            testModel = new TestModel({ name: null });
             result = new ModelValidationResult();
         });
 
         it('returns a resolved promise when validation completes - no validators', () => {
             let test = new Field('name', { required: false });
             return expect(
-                test.validate(testModel, testMeta, testOp, result)
+                test.validate(testModel, testOp, result)
             ).to.eventually.have.property('valid', true);
         });
 
@@ -101,29 +105,22 @@ describe('rev.fields.field', () => {
             let test = new Field('name', { required: true });
             testModel.name = 'Frank';
             return expect(
-                test.validate(testModel, testMeta, testOp, result)
+                test.validate(testModel, testOp, result)
             ).to.eventually.have.property('valid', true);
         });
 
         it('validation fails as expected when required field not set', () => {
             let test = new Field('name', { required: true });
             return expect(
-                test.validate({ name: null }, testMeta, testOp, result)
+                test.validate(testModel, testOp, result)
             ).to.eventually.have.property('valid', false);
-        });
-
-        it('throws an error if a model instance is not passed', () => {
-            let test = new Field('name');
-            expect(() => {
-                test.validate('test' as any, testMeta, testOp, result);
-            }).to.throw('not a model instance');
         });
 
         it('returns valid = true when validation completes with a valid async validator', () => {
             let test = new Field('name', { required: false });
             test.asyncValidators.push(quickValidAsyncValidator);
             return expect(
-                test.validate(testModel, testMeta, testOp, result)
+                test.validate(testModel, testOp, result)
             ).to.eventually.have.property('valid', true);
         });
 
@@ -131,7 +128,7 @@ describe('rev.fields.field', () => {
             let test = new Field('name', { required: false });
             test.asyncValidators.push(quickInvalidAsyncValidator);
             return expect(
-                test.validate(testModel, testMeta, testOp, result)
+                test.validate(testModel, testOp, result)
             ).to.eventually.have.property('valid', false);
         });
 
@@ -140,7 +137,7 @@ describe('rev.fields.field', () => {
             test.asyncValidators.push(quickValidAsyncValidator);
             test.asyncValidators.push(quickInvalidAsyncValidator);
             return expect(
-                test.validate(testModel, testMeta, testOp, result)
+                test.validate(testModel, testOp, result)
             ).to.eventually.have.property('valid', false);
         });
 
@@ -148,7 +145,7 @@ describe('rev.fields.field', () => {
             let test = new Field('name', { required: false });
             test.asyncValidators.push(slowInvalidAsyncValidator);
             return expect(
-                test.validate(testModel, testMeta, testOp, result, {
+                test.validate(testModel, testOp, result, {
                     timeout: 100
                 })
             ).to.be.rejectedWith('timed out');

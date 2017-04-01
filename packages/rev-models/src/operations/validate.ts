@@ -27,7 +27,7 @@ export function modelValidate<T extends Model>(model: T, operation?: IModelOpera
         // Trigger field validation
         let promises: Array<Promise<ModelValidationResult>> = [];
         for (let field of meta.fields) {
-            promises.push(field.validate(model, meta, operation, result, options));
+            promises.push(field.validate(model, operation, result, options));
         }
         Promise.all(promises)
             .then(() => {
