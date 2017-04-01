@@ -2,12 +2,12 @@ import { IModelMeta } from './meta';
 import { ModelOperationResult } from '../operations/operationresult';
 import { IModelOperation } from '../operations/operation';
 import { IWhereQuery } from '../queries/query';
-import { ICreateOptions, modelCreate } from '../operations/create';
-import { IUpdateOptions, modelUpdate } from '../operations/update';
-import { IRemoveOptions, modelRemove } from '../operations/remove';
-import { IReadOptions, modelRead } from '../operations/read';
+import { ICreateOptions, create } from '../operations/create';
+import { IUpdateOptions, update } from '../operations/update';
+import { IRemoveOptions, remove } from '../operations/remove';
+import { IReadOptions, read } from '../operations/read';
 import { ModelValidationResult } from '../validation/validationresult';
-import { IValidationOptions, modelValidate } from '../operations/validate';
+import { IValidationOptions, validate } from '../operations/validate';
 
 export interface IModelOptions {
     singleton?: boolean;
@@ -38,23 +38,23 @@ export class Model {
     }
 
     create(options?: ICreateOptions): Promise<ModelOperationResult<this>> {
-        return modelCreate(this, options);
+        return create(this, options);
     }
 
     update(where?: IWhereQuery, options?: IUpdateOptions): Promise<ModelOperationResult<this>> {
-        return modelUpdate(this, where, options);
+        return update(this, where, options);
     }
 
     remove(where?: IWhereQuery, options?: IRemoveOptions): Promise<ModelOperationResult<this>> {
-        return modelRemove(this, where, options);
+        return remove(this, where, options);
     }
 
     read(where?: IWhereQuery, options?: IReadOptions): Promise<ModelOperationResult<this>> {
-        return modelRead(this.constructor as any, where, options);
+        return read(this.constructor as any, where, options);
     }
 
     validate(operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
-        return modelValidate(this, operation, options);
+        return validate(this, operation, options);
     }
 
 }

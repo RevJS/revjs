@@ -12,7 +12,7 @@ export interface IReadOptions {
     fields?: string[];
 }
 
-export function modelRead<T extends Model>(model: new() => T, where?: IWhereQuery, options?: IReadOptions): Promise<ModelOperationResult<T>> {
+export function read<T extends Model>(model: new() => T, where?: IWhereQuery, options?: IReadOptions): Promise<ModelOperationResult<T>> {
     return new Promise((resolve, reject) => {
 
         checkIsModelConstructor(model);

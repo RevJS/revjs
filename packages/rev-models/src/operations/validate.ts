@@ -8,7 +8,7 @@ export interface IValidationOptions {
     timeout?: number;
 }
 
-export function modelValidate<T extends Model>(model: T, operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
+export function validate<T extends Model>(model: T, operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
     return new Promise((resolve, reject) => {
 
         checkMetadataInitialised(model.constructor);

@@ -1,6 +1,6 @@
 
 import { Model } from '../models/model';
-import { IValidationOptions, modelValidate } from './validate';
+import { IValidationOptions, validate } from './validate';
 import { ModelOperationResult } from './operationresult';
 import { checkMetadataInitialised } from '../models/meta';
 import * as backends from '../backends';
@@ -11,7 +11,7 @@ export interface ICreateOptions {
     validation?: IValidationOptions;
 }
 
-export function modelCreate<T extends Model>(model: T, options?: ICreateOptions): Promise<ModelOperationResult<T>> {
+export function create<T extends Model>(model: T, options?: ICreateOptions): Promise<ModelOperationResult<T>> {
     return new Promise((resolve, reject) => {
 
         checkMetadataInitialised(model.constructor);
@@ -27,7 +27,7 @@ export function modelCreate<T extends Model>(model: T, options?: ICreateOptions)
         };
         let operationResult = new ModelOperationResult<T>(operation);
 
-        modelValidate(model, operation, options ? options.validation : null)
+        validate(model, operation, options ? options.validation : null)
             .then((validationResult) => {
 
                 operationResult.validation = validationResult;

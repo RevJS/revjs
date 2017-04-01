@@ -9,7 +9,7 @@ export interface IRemoveOptions {
     limit?: number;
 }
 
-export function modelRemove<T extends Model>(model: T, where?: IWhereQuery, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
+export function remove<T extends Model>(model: T, where?: IWhereQuery, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
     return new Promise((resolve, reject) => {
 
         if (!where || typeof where != 'object') {

@@ -1,4 +1,4 @@
-import { IValidationOptions, modelValidate } from './validate';
+import { IValidationOptions, validate } from './validate';
 import { Model } from '../models/model';
 import { IWhereQuery } from '../queries/query';
 import { ModelOperationResult } from './operationresult';
@@ -12,7 +12,7 @@ export interface IUpdateOptions {
     validation?: IValidationOptions;
 }
 
-export function modelUpdate<T extends Model>(model: T, where?: IWhereQuery, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
+export function update<T extends Model>(model: T, where?: IWhereQuery, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
     return new Promise((resolve, reject) => {
 
         // TODO: Validate 'where' parameter
@@ -31,7 +31,7 @@ export function modelUpdate<T extends Model>(model: T, where?: IWhereQuery, opti
         };
         let operationResult = new ModelOperationResult<T>(operation);
 
-        modelValidate(model, operation, options ? options.validation : null)
+        validate(model, operation, options ? options.validation : null)
             .then((validationResult) => {
 
                 operationResult.validation = validationResult;

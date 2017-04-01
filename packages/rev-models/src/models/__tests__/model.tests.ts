@@ -93,10 +93,10 @@ describe('Model class - operation functions', () => {
     beforeEach(() => {
         functionSpy = sinon.stub().returns('test_value');
         rwModule.__set__({
-            create_1: { modelCreate: null },
-            read_1: { modelRead: null },
-            update_1: { modelUpdate: null },
-            remove_1: { modelRemove: null },
+            create_1: { create: null },
+            read_1: { read: null },
+            update_1: { update: null },
+            remove_1: { remove: null },
             validate_1: {
                 modelValidate: null,
                 modelValidateForRemoval: null
@@ -107,7 +107,7 @@ describe('Model class - operation functions', () => {
 
     it('Model.create() calls modelCreate function as expected', () => {
         rwModule.__set__({
-            create_1: { modelCreate: functionSpy }
+            create_1: { create: functionSpy }
         });
         let testOptions = {};
         let res = model.create(testOptions);
@@ -119,7 +119,7 @@ describe('Model class - operation functions', () => {
 
     it('Model.update() calls modelUpdate function as expected', () => {
         rwModule.__set__({
-            update_1: { modelUpdate: functionSpy }
+            update_1: { update: functionSpy }
         });
         let testWhere = {};
         let testOptions = {};
@@ -133,7 +133,7 @@ describe('Model class - operation functions', () => {
 
     it('Model.remove() calls modelRemove function as expected', () => {
         rwModule.__set__({
-            remove_1: { modelRemove: functionSpy }
+            remove_1: { remove: functionSpy }
         });
         let testWhere = {};
         let testOptions = {};
@@ -147,7 +147,7 @@ describe('Model class - operation functions', () => {
 
     it('Model.read() calls modelRead function as expected', () => {
         rwModule.__set__({
-            read_1: { modelRead: functionSpy }
+            read_1: { read: functionSpy }
         });
         let testWhere = {};
         let testOptions = {};
@@ -161,7 +161,7 @@ describe('Model class - operation functions', () => {
 
     it('Model.validate() calls modelValidate function as expected', () => {
         rwModule.__set__({
-            validate_1: { modelValidate: functionSpy }
+            validate_1: { validate: functionSpy }
         });
         let testOperation = {} as any;
         let testOptions = {};
