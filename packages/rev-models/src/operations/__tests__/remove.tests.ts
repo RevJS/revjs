@@ -21,7 +21,7 @@ let rewired = rewire('../remove');
 let rwRemove: typeof remove & typeof rewired = rewired as any;
 let mockBackend: MockBackend;
 
-describe('remove()', () => {
+describe('rev.operations.remove()', () => {
 
     let whereClause = {}; // where-clause stuff TO DO!
 

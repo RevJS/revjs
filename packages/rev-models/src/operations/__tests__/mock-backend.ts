@@ -16,6 +16,7 @@ export class MockBackend implements IBackend {
     readStub = sinon.stub().returns(Promise.resolve());
 
     errorsToAdd: string[] = [];
+    results: any[] = null;
 
     create<T extends Model>(model: T, result: ModelOperationResult<T>, options: ICreateOptions): Promise<void> {
         this.addErrors(result);
@@ -33,6 +34,7 @@ export class MockBackend implements IBackend {
     }
 
     read<T extends Model>(model: new() => T, where: IWhereQuery, result: ModelOperationResult<T>, options: IReadOptions): Promise<void> {
+        result.results = this.results;
         this.addErrors(result);
         return this.readStub.apply(null, arguments);
     }
