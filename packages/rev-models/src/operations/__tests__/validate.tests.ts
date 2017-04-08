@@ -3,10 +3,10 @@ import * as d from '../../decorators';
 import { initialiseMeta } from '../../models/meta';
 import { Model } from '../../models/model';
 import { TextField } from '../../fields/';
-import { modelValidate } from '../validate';
+import { validate } from '../validate';
 import { VALIDATION_MESSAGES as msg } from '../../validation/validationmsg';
 
-describe('modelValidate()', () => {
+describe('validate()', () => {
 
     class TestModel extends Model {
         @d.IntegerField({ minValue: 10 })
@@ -27,7 +27,7 @@ describe('modelValidate()', () => {
             date: new Date()
         });
 
-        return modelValidate(test, {operation: 'create'})
+        return validate(test, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(true);
             });
@@ -40,7 +40,7 @@ describe('modelValidate()', () => {
         };
         let test = new UninitedModel();
 
-        return modelValidate(test, {operation: 'create'})
+        return validate(test, {operation: 'create'})
             .then((res) => {
                 expect(false, 'Did not reject').to.be.true;
             })
@@ -58,7 +58,7 @@ describe('modelValidate()', () => {
             extra: 'stuff'
         });
 
-        return modelValidate(test, {operation: 'create'})
+        return validate(test, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.modelErrors.length).to.equal(1);
@@ -75,7 +75,7 @@ describe('modelValidate()', () => {
             date: new Date()
         });
 
-        return modelValidate(test, {operation: 'create'})
+        return validate(test, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.fieldErrors['id'].length).to.equal(1);
@@ -90,7 +90,7 @@ describe('modelValidate()', () => {
             id: 11
         });
 
-        return modelValidate(test, {operation: 'create'})
+        return validate(test, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.fieldErrors['name'].length).to.equal(1);
@@ -117,7 +117,7 @@ describe('modelValidate()', () => {
         DelayModel.meta.fields.push(delayField);
         let test = new DelayModel();
 
-        return modelValidate(test, {operation: 'create'}, { timeout: 10})
+        return validate(test, {operation: 'create'}, { timeout: 10})
             .then((res) => {
                 expect(false, 'Did not reject').to.be.true;
             })

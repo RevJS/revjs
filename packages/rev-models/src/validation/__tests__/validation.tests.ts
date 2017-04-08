@@ -1,11 +1,6 @@
-import { IntegerField, TextField, DateField } from '../../fields';
-import { ModelValidationResult, validateModel, validateModelRemoval } from '../validation';
-import { IModelOperation } from '../index';
-import { IModelMeta, initialiseMeta } from '../meta';
-import { VALIDATION_MESSAGES as msg } from '../../fields/validationmsg';
 
 import { expect } from 'chai';
-import * as sinon from 'sinon';
+import { ModelValidationResult } from '../validationresult';
 
 describe('rev.model.validation', () => {
 
