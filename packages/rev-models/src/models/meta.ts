@@ -79,13 +79,9 @@ export function checkMetadataInitialised(model: any): void {
         throw new Error('MetadataError: Supplied model is not a class.');
     }
     let meta = model.meta;
-    if (!meta || typeof meta != 'object') {
-        throw new Error('MetadataError: Model metadata is not an object.');
-    }
-    if (!meta.fields || typeof meta.fields != 'object' || !(meta.fields instanceof Array)) {
-        throw new Error('MetadataError: Model metadata does not contain fields array.');
-    }
-    if (!meta.fieldsByName || typeof meta.fieldsByName != 'object') {
+    if (!meta || typeof meta != 'object'
+            || !meta.fields || typeof meta.fields != 'object' || !(meta.fields instanceof Array)
+            || !meta.fieldsByName || typeof meta.fieldsByName != 'object') {
         throw new Error('MetadataError: Model metadata has not been initialised.');
     }
 }

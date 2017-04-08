@@ -205,8 +205,6 @@ describe('initialiseMeta() - with decorators', () => {
 describe('checkMetadataInitialised()', () => {
 
     let nonClassMsg = 'MetadataError: Supplied model is not a class.';
-    let nonObjMsg = 'MetadataError: Model metadata is not an object.';
-    let fieldsMissingMsg = 'MetadataError: Model metadata does not contain fields array.';
     let notInitedMsg = 'MetadataError: Model metadata has not been initialised.';
 
     beforeEach(() => {
@@ -238,7 +236,7 @@ describe('checkMetadataInitialised()', () => {
             expect(() => {
                 TestModel.meta = obj;
                 checkMetadataInitialised(TestModel);
-            }).to.throw(nonObjMsg);
+            }).to.throw(notInitedMsg);
         }
     });
 
@@ -248,7 +246,7 @@ describe('checkMetadataInitialised()', () => {
             expect(() => {
                 TestModel.meta = { fields: obj } as any;
                 checkMetadataInitialised(TestModel);
-            }).to.throw(fieldsMissingMsg);
+            }).to.throw(notInitedMsg);
         }
     });
 
