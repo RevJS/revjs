@@ -7,7 +7,7 @@ import { ValueListOperator } from './nodes/valuelist';
 import { IModelMeta } from '../models/meta';
 import { IQueryParser, IQueryNode, IOperatorRegister } from './types';
 import { pretty } from '../utils/index';
-import { checkMetadataInitialised } from '../models/utils';
+import { checkMetadataInitialised } from '../models/meta';
 
 export class QueryParser implements IQueryParser {
     CONJUNCTION_OPERATORS: IOperatorRegister = {};

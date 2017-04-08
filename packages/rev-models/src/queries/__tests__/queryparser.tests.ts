@@ -5,8 +5,9 @@ import { initialiseMeta } from '../../models/meta';
 import { QueryParser } from '../queryparser';
 import { ConjunctionNode } from '../nodes/conjunction';
 import { FieldNode } from '../nodes/field';
+import { Model } from '../../models/model';
 
-class TestModel {
+class TestModel extends Model {
     @d.IntegerField()
         id: number;
     @d.TextField()
@@ -15,7 +16,8 @@ class TestModel {
         active: boolean;
 }
 
-const meta = initialiseMeta(TestModel);
+initialiseMeta(TestModel);
+const meta = TestModel.meta;
 
 let invalidQueryObjects = [
     null,
