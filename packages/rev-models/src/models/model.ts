@@ -46,7 +46,7 @@ export class Model {
     }
 
     remove(where?: IWhereQuery, options?: IRemoveOptions): Promise<ModelOperationResult<this>> {
-        return remove(this, where, options);
+        return remove(this.constructor as any, where, options);
     }
 
     read(where?: IWhereQuery, options?: IReadOptions): Promise<ModelOperationResult<this>> {

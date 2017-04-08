@@ -139,7 +139,7 @@ describe('Model class - operation functions', () => {
         let testOptions = {};
         let res = model.remove(testWhere, testOptions);
         expect(functionSpy.callCount).to.equal(1);
-        expect(functionSpy.getCall(0).args[0]).to.equal(model);
+        expect(functionSpy.getCall(0).args[0]).to.equal(RWTestModel);
         expect(functionSpy.getCall(0).args[1]).to.equal(testWhere);
         expect(functionSpy.getCall(0).args[2]).to.equal(testOptions);
         expect(res).to.equal('test_value');

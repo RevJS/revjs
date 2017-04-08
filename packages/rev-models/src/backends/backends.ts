@@ -12,8 +12,8 @@ export * from './inmemory';
 export interface IBackend {
     create<T extends Model>(model: T, result: ModelOperationResult<T>, options: ICreateOptions): Promise<void>;
     update<T extends Model>(model: T, where: IWhereQuery, result: ModelOperationResult<T>, options: IUpdateOptions): Promise<void>;
+    remove<T extends Model>(model: new() => T, where: IWhereQuery, result: ModelOperationResult<T>, options: IRemoveOptions): Promise<void>;
     read<T extends Model>(model: new() => T, where: IWhereQuery, result: ModelOperationResult<T>, options: IReadOptions): Promise<void>;
-    remove<T extends Model>(model: T, where: IWhereQuery, result: ModelOperationResult<T>, options: IRemoveOptions): Promise<void>;
 }
 
 let configuredBackends: {[backendName: string]: IBackend};

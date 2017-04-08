@@ -91,7 +91,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    remove<T extends Model>(model: T, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<void> {
+    remove<T extends Model>(model: new() => T, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<void> {
         throw new Error('InMemoryBackend.delete() not yet implemented');
     }
 
