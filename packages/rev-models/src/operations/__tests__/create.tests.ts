@@ -8,6 +8,7 @@ import * as create from '../create';
 import { MockBackend } from './mock-backend';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { initialiseMeta } from '../../models/meta';
+import { OPERATION_MESSAGES as msg } from '../operationmsg';
 
 let GENDERS = [
     ['male', 'Male'],
@@ -85,11 +86,9 @@ describe('rev.operations.create()', () => {
             .to.be.rejectedWith('create() cannot be called on singleton models');
     });
 
-/*
-
     it('completes with unsuccessful result when model required fields not set', () => {
         let model = new TestModel();
-        return ops.create(model)
+        return rwCreate.create(model)
             .then((res) => {
                 expect(res.success).to.be.false;
                 expect(res.errors.length).to.equal(1);
@@ -106,7 +105,7 @@ describe('rev.operations.create()', () => {
         model.gender = 'fish';
         model.age = 9;
         model.email = 'www.google.com';
-        return ops.create(model)
+        return rwCreate.create(model)
             .then((res) => {
                 expect(res.success).to.be.false;
                 expect(res.errors.length).to.equal(1);
@@ -118,34 +117,26 @@ describe('rev.operations.create()', () => {
     });
 
     it('returns any operation errors added by the backend', () => {
-        backendSpy = {
-            create: sinon.spy((model: any, meta: any, result: any) => {
-                result.addError('error_from_backend');
-                return Promise.resolve(result);
-            })
-        };
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        return ops.create(model)
+        mockBackend.errorsToAdd = ['some_backend_error'];
+        return rwCreate.create(model)
             .then((res) => {
                 expect(res.success).to.be.false;
                 expect(res.errors.length).to.equal(1);
-                expect(res.errors[0].message).to.equal('error_from_backend');
+                expect(res.errors[0].message).to.equal('some_backend_error');
             });
     });
 
     it('rejects when backend.create rejects', () => {
-        backendSpy = {
-            create: sinon.spy((model: any, meta: any, result: any) => {
-                return Promise.reject(new Error('rejection_from_backend'));
-            })
-        };
+        let expectedError = new Error('epic fail!');
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        return expect(ops.create(model))
-            .to.be.rejectedWith('rejection_from_backend');
+        mockBackend.createStub.returns(Promise.reject(expectedError));
+        return expect(rwCreate.create(model))
+            .to.be.rejectedWith(expectedError);
     });
-*/
+
 });
