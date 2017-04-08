@@ -27,7 +27,7 @@ export class MockBackend implements IBackend {
         return this.updateStub.apply(null, arguments);
     }
 
-    remove<T extends Model>(model: T, where: IWhereQuery, result: ModelOperationResult<T>, options: IRemoveOptions): Promise<void> {
+    remove<T extends Model>(model: new() => T, where: IWhereQuery, result: ModelOperationResult<T>, options: IRemoveOptions): Promise<void> {
         this.addErrors(result);
         return this.removeStub.apply(null, arguments);
     }
