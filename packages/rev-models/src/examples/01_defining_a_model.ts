@@ -29,6 +29,10 @@ export class Person extends rev.Model {
         newsletter: boolean;
 }
 
+Person.meta = {
+    label: 'Registered Person',
+};
+
 rev.register(Person);
 
 let bob = new Person({
@@ -36,4 +40,15 @@ let bob = new Person({
     last_name: 'smith'
 });
 
-bob.update();
+rev.create(bob)
+    .then((result) => {
+        if (result.success) {
+            console.log('Bob was created!');
+        }
+        else {
+            console.log('Creation failed: ', result);
+        }
+    })
+    .catch((err) => {
+        console.error(err);
+    })
