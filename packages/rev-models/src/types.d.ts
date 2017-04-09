@@ -5,4 +5,5 @@ declare interface ObjectConstructor {
 
 declare interface Function {
     name: string;
+    meta?: any;
 }

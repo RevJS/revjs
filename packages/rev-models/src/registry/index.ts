@@ -1,24 +1,23 @@
 
-import { IModelMeta, initialiseMeta } from '../models/meta';
-import { IModel, checkIsModelConstructor } from '../models';
+import { initialiseMeta } from '../models/meta';
+import { Model } from '../models/model';
+import { checkIsModelConstructor } from '../models/utils';
 
 export class ModelRegistry {
 
-    _modelProto: { [modelName: string]: new() => any };
-    _modelMeta: { [modelName: string]: IModelMeta<IModel> };
+    _models: { [modelName: string]: new() => any };
 
     constructor() {
-        this._modelProto = {};
-        this._modelMeta = {};
+        this._models = {};
     }
 
     // TODO: Support extending existing models
 
     isRegistered(modelName: string): boolean {
-        return (modelName in this._modelProto);
+        return (modelName in this._models);
     }
 
-    register<T extends IModel>(model: new() => T, meta?: IModelMeta<T>) {
+    register<T extends Model>(model: new(...args: any[]) => T) {
 
         // Check model constructor
         checkIsModelConstructor(model);
@@ -28,39 +27,30 @@ export class ModelRegistry {
         }
 
         // Initialise model metadata
-        meta = initialiseMeta(model, meta);
+        initialiseMeta(model);
 
         // Add prototype and metadata to the registry
-        this._modelProto[modelName] = model;
-        this._modelMeta[modelName] = meta;
+        this._models[modelName] = model;
     }
 
     getModelNames(): string[] {
-        return Object.keys(this._modelMeta);
+        return Object.keys(this._models);
     }
 
-    getProto(modelName: string) {
+    getModel(modelName: string) {
         if (!this.isRegistered(modelName)) {
             throw new Error(`RegistryError: Model  '${modelName}' does not exist in the registry.`);
         }
-        return this._modelProto[modelName];
-    }
-
-    getMeta(modelName: string) {
-        if (!this.isRegistered(modelName)) {
-            throw new Error(`RegistryError: Model  '${modelName}' does not exist in the registry.`);
-        }
-        return this._modelMeta[modelName];
+        return this._models[modelName];
     }
 
     clearRegistry() {
-        this._modelProto = {};
-        this._modelMeta = {};
+        this._models = {};
     }
 }
 
 export const registry = new ModelRegistry();
 
-export function register<T extends IModel>(model: new() => T, meta?: IModelMeta<T>) {
-    registry.register(model, meta);
+export function register<T extends Model>(model: new(...args: any[]) => T) {
+    registry.register(model);
 }

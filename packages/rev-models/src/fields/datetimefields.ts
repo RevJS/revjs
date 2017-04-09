@@ -1,6 +1,6 @@
 
 import { Field, IFieldOptions } from './field';
-import * as validators from './validators';
+import * as validators from '../validation/validators';
 
 export class DateField extends Field {
     constructor(name: string, options?: IFieldOptions) {

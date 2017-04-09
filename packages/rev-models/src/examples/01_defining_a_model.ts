@@ -1,6 +1,6 @@
 
 import '../polyfills';
-import * as m from '../index';
+import * as rev from '../index';
 
 // EXAMPLE:
 // import * as rev from 'rev-models'
@@ -12,21 +12,43 @@ let TITLES = [
     ['Dr', 'Dr.']
 ];
 
-export class Person {
+export class Person extends rev.Model {
 
-    @m.SelectionField({label: 'Title', selection: TITLES, required: false })
+    @rev.SelectionField({label: 'Title', selection: TITLES, required: false })
         title: string;
-    @m.TextField({label: 'First Name'})
+    @rev.TextField({label: 'First Name'})
         first_name: string;
-    @m.TextField({label: 'Last Name'})
+    @rev.TextField({label: 'Last Name'})
         last_name: string;
-    @m.IntegerField({label: 'Age', required: false })
+    @rev.IntegerField({label: 'Age', required: false })
         age: number;
 
-    @m.EmailField({label: 'Email'})
+    @rev.EmailField({label: 'Email'})
         email: string;
-    @m.BooleanField({label: 'Registered for Newsletter?'})
+    @rev.BooleanField({label: 'Registered for Newsletter?'})
         newsletter: boolean;
 }
 
-m.register(Person);
+Person.meta = {
+    label: 'Registered Person',
+};
+
+rev.register(Person);
+
+let bob = new Person({
+    first_name: 'bob',
+    last_name: 'smith'
+});
+
+rev.create(bob)
+    .then((result) => {
+        if (result.success) {
+            console.log('Bob was created!');
+        }
+        else {
+            console.log('Creation failed: ', result);
+        }
+    })
+    .catch((err) => {
+        console.error(err);
+    })

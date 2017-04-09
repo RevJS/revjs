@@ -1,8 +1,7 @@
 import { Field } from '../fields/field';
-import { IModel, IModelOperation } from './index';
-import { ModelValidationResult, IValidationOptions } from './validation';
+import { Model } from './model';
 
-export interface IModelMeta<T extends IModel> {
+export interface IModelMeta {
     name?: string;
     label?: string;
     fields?: Field[];
@@ -11,15 +10,15 @@ export interface IModelMeta<T extends IModel> {
     };
     singleton?: boolean;
     backend?: string;
-    validate?: (model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => void;
-    validateAsync?: (model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => Promise<void>;
-    validateRemoval?: (operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => void;
-    validateRemovalAsync?: (operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => Promise<void>;
 }
 
-export function initialiseMeta<T extends IModel>(model: new() => T, meta?: IModelMeta<T>): IModelMeta<T> {
+export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T): void {
 
     let modelName = model.name;
+    let meta: IModelMeta;
+    if (model.hasOwnProperty('meta')) {
+        meta = model.meta;
+    }
 
     // Load fields from prototype __fields property if present (fields added via decorators)
     let proto = model.prototype;
@@ -72,5 +71,17 @@ export function initialiseMeta<T extends IModel>(model: new() => T, meta?: IMode
     meta.label = meta.label ? meta.label : meta.name;
     meta.singleton = meta.singleton ? true : false;
 
-    return meta;
+    model.meta = meta;
+}
+
+export function checkMetadataInitialised(model: any): void {
+    if (!model || typeof model != 'function') {
+        throw new Error('MetadataError: Supplied model is not a class.');
+    }
+    let meta = model.meta;
+    if (!meta || typeof meta != 'object'
+            || !meta.fields || typeof meta.fields != 'object' || !(meta.fields instanceof Array)
+            || !meta.fieldsByName || typeof meta.fieldsByName != 'object') {
+        throw new Error('MetadataError: Model metadata has not been initialised.');
+    }
 }

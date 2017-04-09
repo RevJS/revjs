@@ -25,10 +25,11 @@ class Person {
 
 rev.register(Person)
 
-let bob = new Person();
-bob.id = 1;
-bob.name = 'Bob';
-bob.email = 'bob@bob.com';
+let bob = new Person({
+    id: 1,
+    name: 'Bob',
+    email: 'bob@bob.com'
+});
 
 rev.create(bob);
 

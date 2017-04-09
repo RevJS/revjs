@@ -1,15 +1,15 @@
-import { IModelMeta } from '../../models/meta';
 import { IQueryParser, IQueryNode } from '../types';
 
 import { pretty } from '../../utils/index';
+import { Model } from '../../models/model';
 
-export class QueryNode<T> implements IQueryNode<T> {
+export class QueryNode<T extends Model> implements IQueryNode<T> {
     public children: Array<IQueryNode<T>>;
 
     constructor(
         public parser: IQueryParser,
         public operator: string,
-        public meta: IModelMeta<T>,
+        public model: new() => T,
         public parent: IQueryNode<T>) {
 
         this.children = [];

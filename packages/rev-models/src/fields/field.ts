@@ -1,9 +1,11 @@
-import { IModel, IModelMeta, IModelOperation, checkIsModelInstance } from '../models';
-import { ModelValidationResult, IValidationOptions } from '../models/validation';
-import { IFieldValidator, IAsyncFieldValidator } from './validators';
 import { isSet } from '../utils';
 
-import * as validators from './validators';
+import * as validators from '../validation/validators';
+import { IFieldValidator, IAsyncFieldValidator } from '../validation/validators';
+import { Model } from '../models/model';
+import { IModelOperation } from '../operations/operation';
+import { ModelValidationResult } from '../validation/validationresult';
+import { IValidationOptions } from '../operations/validate';
 
 export interface IFieldOptions {
     label?: string;
@@ -42,19 +44,18 @@ export class Field {
         }
     }
 
-    validate<T extends IModel>(model: T, meta: IModelMeta<T>, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
+    validate<T extends Model>(model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
         let timeout = options && options.timeout ? options.timeout : 5000;
-        checkIsModelInstance(model);
         return new Promise((resolve, reject) => {
             // Run synchronous validators
             for (let validator of this.validators) {
-                validator(model, this, meta, operation, result, options);
+                validator(model, this, operation, result, options);
             }
             // Run asynchronous validators
             if (this.asyncValidators.length > 0) {
                 let promises: Array<Promise<void>> = [];
                 for (let asyncValidator of this.asyncValidators) {
-                    promises.push(asyncValidator(model, this, meta, operation, result, options));
+                    promises.push(asyncValidator(model, this, operation, result, options));
                 }
                 Promise.all(promises)
                     .then(() => {

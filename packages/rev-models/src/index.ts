@@ -1,7 +1,8 @@
 
-export * from './models/operations';
 export * from './decorators';
-export { register } from './registry';
-
 import * as fields from './fields';
 export { fields };
+
+export { Model } from './models/model';
+export { register } from './registry';
+export * from './operations';

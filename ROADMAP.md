@@ -3,9 +3,12 @@
 ## v0.1.0
 
 * Full In-memory CRUD for `rev-models`
+* GraphQL API backend (server + client)
 
 ## v0.2.0
 
+* MongoDB Backend
+* Knowledge of Primary Key
 * Documentation!
 
 ## Other Future Releases
