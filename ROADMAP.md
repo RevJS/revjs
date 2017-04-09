@@ -3,6 +3,7 @@
 ## v0.1.0
 
 * Full In-memory CRUD for `rev-models`
+* GraphQL API backend (server + client)
 
 ## v0.2.0
 
