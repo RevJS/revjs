@@ -1,18 +1,18 @@
 import { QueryNode } from './query';
 import { IQueryParser, IQueryNode } from '../types';
-import { IModelMeta } from '../../models/meta';
 import { isFieldValue } from '../query';
+import { Model } from '../../models/model';
 
-export class ValueListOperator<T> extends QueryNode<T> {
+export class ValueListOperator<T extends Model> extends QueryNode<T> {
 
     constructor(
             parser: IQueryParser,
             operator: string,
             public values: any,
-            meta: IModelMeta,
+            model: new() => T,
             parent: IQueryNode<T>) {
 
-        super(parser, operator, meta, parent);
+        super(parser, operator, model, parent);
         if (!(this.operator in parser.FIELD_OPERATORS)) {
             throw new Error(`unrecognised field operator '${this.operator}'`);
         }
