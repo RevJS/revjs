@@ -16,30 +16,29 @@ class TestModel extends Model {
 }
 
 initialiseMeta(TestModel);
-const meta = TestModel.meta;
 let parser = new QueryParser();
 
 describe('class ConjunctionNode<T> - constructor', () => {
 
     it('throws if operator is not a conjunction operator', () => {
         expect(() => {
-            new ConjunctionNode(parser, '$gt', [], meta, null);
+            new ConjunctionNode(parser, '$gt', [], TestModel, null);
         }).to.throw('unrecognised conjunction operator');
     });
 
     it('throws if value is not an array', () => {
         expect(() => {
-            new ConjunctionNode(parser, '$and', {}, meta, null);
+            new ConjunctionNode(parser, '$and', {}, TestModel, null);
         }).to.throw('must be an array');
     });
 
     it('creates a conjunction node with the correct operator', () => {
-        let node = new ConjunctionNode(parser, '$and', [], meta, null);
+        let node = new ConjunctionNode(parser, '$and', [], TestModel, null);
         expect(node.operator).to.equal('$and');
     });
 
     it('creates a conjunction node with no children if value array is empty', () => {
-        let node = new ConjunctionNode(parser, '$and', [], meta, null);
+        let node = new ConjunctionNode(parser, '$and', [], TestModel, null);
         expect(node.children).to.have.length(0);
     });
 
@@ -48,7 +47,7 @@ describe('class ConjunctionNode<T> - constructor', () => {
             { id: 1 },
             { name: 'bob' },
             { active: true, name: 'bob' }
-        ], meta, null);
+        ], TestModel, null);
         expect(node.children).to.have.length(3);
     });
 

@@ -16,7 +16,6 @@ class TestModel extends Model {
 }
 
 initialiseMeta(TestModel);
-const meta = TestModel.meta;
 
 let parser = new QueryParser();
 
@@ -24,21 +23,21 @@ describe('class ValueOperator<T> - constructor', () => {
 
     it('throws if operator is not a field operator', () => {
         expect(() => {
-            new ValueOperator(parser, '$and', [], meta, null);
+            new ValueOperator(parser, '$and', [], TestModel, null);
         }).to.throw('unrecognised field operator');
     });
 
     it('throws if value is not a valid field value', () => {
         expect(() => {
-            new ValueOperator(parser, '$eq', undefined, meta, null);
+            new ValueOperator(parser, '$eq', undefined, TestModel, null);
         }).to.throw('invalid field value');
         expect(() => {
-            new ValueOperator(parser, '$eq', {}, meta, null);
+            new ValueOperator(parser, '$eq', {}, TestModel, null);
         }).to.throw('invalid field value');
     });
 
     it('stores the operator and value as public properties', () => {
-        let node = new ValueOperator(parser, '$eq', 12, meta, null);
+        let node = new ValueOperator(parser, '$eq', 12, TestModel, null);
         expect(node.operator).to.equal('$eq');
         expect(node.value).to.equal(12);
     });
