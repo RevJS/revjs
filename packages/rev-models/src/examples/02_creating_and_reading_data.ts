@@ -27,10 +27,7 @@ Promise.all([
     rev.create(person2)
 ])
 .then((res) => {
-    return rev.read(Person, {
-        age: { $gt: 20 },
-        newsletter: true
-    });
+    return rev.read(Person);
 })
 .then((res) => {
     console.log(res.results);
