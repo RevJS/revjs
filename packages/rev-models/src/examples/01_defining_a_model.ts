@@ -34,21 +34,3 @@ Person.meta = {
 };
 
 rev.register(Person);
-
-let bob = new Person({
-    first_name: 'bob',
-    last_name: 'smith'
-});
-
-rev.create(bob)
-    .then((result) => {
-        if (result.success) {
-            console.log('Bob was created!');
-        }
-        else {
-            console.log('Creation failed: ', result);
-        }
-    })
-    .catch((err) => {
-        console.error(err);
-    })
