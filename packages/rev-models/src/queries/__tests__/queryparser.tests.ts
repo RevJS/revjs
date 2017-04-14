@@ -64,7 +64,7 @@ describe('class QueryParser - constructor', () => {
         it('throws if an invalid query object is passed', () => {
             for (let val of invalidQueryObjects) {
                 expect(() => {
-                    parser.getQueryNodeForQuery('wibble', TestModel);
+                    parser.getQueryNodeForQuery('wibble' as any, TestModel);
                 }, 'value: ' + val).to.throw('is not a query object');
             }
         });

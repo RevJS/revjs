@@ -1,5 +1,4 @@
 import { Model } from '../models/model';
-import { IWhereQuery } from '../queries/query';
 import { ModelOperationResult } from './operationresult';
 import { checkIsModelConstructor } from '../models/utils';
 import { checkMetadataInitialised } from '../models/meta';
@@ -12,7 +11,7 @@ export interface IReadOptions {
     fields?: string[];
 }
 
-export function read<T extends Model>(model: new() => T, where?: IWhereQuery, options?: IReadOptions): Promise<ModelOperationResult<T>> {
+export function read<T extends Model>(model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T>> {
     return new Promise((resolve, reject) => {
 
         checkIsModelConstructor(model);

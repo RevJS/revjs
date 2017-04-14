@@ -1,7 +1,6 @@
 import { IModelMeta } from './meta';
 import { ModelOperationResult } from '../operations/operationresult';
 import { IModelOperation } from '../operations/operation';
-import { IWhereQuery } from '../queries/query';
 import { ICreateOptions, create } from '../operations/create';
 import { IUpdateOptions, update } from '../operations/update';
 import { IRemoveOptions, remove } from '../operations/remove';
@@ -41,15 +40,15 @@ export class Model {
         return create(this, options);
     }
 
-    update(where?: IWhereQuery, options?: IUpdateOptions): Promise<ModelOperationResult<this>> {
+    update(where?: object, options?: IUpdateOptions): Promise<ModelOperationResult<this>> {
         return update(this, where, options);
     }
 
-    remove(where?: IWhereQuery, options?: IRemoveOptions): Promise<ModelOperationResult<this>> {
+    remove(where?: object, options?: IRemoveOptions): Promise<ModelOperationResult<this>> {
         return remove(this.constructor as any, where, options);
     }
 
-    read(where?: IWhereQuery, options?: IReadOptions): Promise<ModelOperationResult<this>> {
+    read(where?: object, options?: IReadOptions): Promise<ModelOperationResult<this>> {
         return read(this.constructor as any, where, options);
     }
 

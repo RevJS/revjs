@@ -75,7 +75,7 @@ describe('rev.backends.inmemory', () => {
 
         it('read() returns a model instance result with all undefined values', () => {
             TestModel.meta.singleton = true;
-            return backend.read(TestModel, {}, readResult)
+            return backend.read(TestModel, null, readResult)
                 .then(() => {
                     expect(readResult.result).to.be.instanceOf(TestModel);
                     expect(readResult.results).to.be.null;

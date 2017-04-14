@@ -2,7 +2,6 @@
 import { InMemoryBackend } from './inmemory';
 import { ModelOperationResult } from '../operations/operationresult';
 import { Model } from '../models/model';
-import { IWhereQuery } from '../queries/query';
 import { ICreateOptions } from '../operations/create';
 import { IUpdateOptions } from '../operations/update';
 import { IReadOptions } from '../operations/read';
@@ -11,9 +10,9 @@ export * from './inmemory';
 
 export interface IBackend {
     create<T extends Model>(model: T, result: ModelOperationResult<T>, options: ICreateOptions): Promise<ModelOperationResult<T>>;
-    update<T extends Model>(model: T, where: IWhereQuery, result: ModelOperationResult<T>, options: IUpdateOptions): Promise<ModelOperationResult<T>>;
-    remove<T extends Model>(model: new() => T, where: IWhereQuery, result: ModelOperationResult<T>, options: IRemoveOptions): Promise<ModelOperationResult<T>>;
-    read<T extends Model>(model: new() => T, where: IWhereQuery, result: ModelOperationResult<T>, options: IReadOptions): Promise<ModelOperationResult<T>>;
+    update<T extends Model>(model: T, where: object, result: ModelOperationResult<T>, options: IUpdateOptions): Promise<ModelOperationResult<T>>;
+    remove<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T>, options: IRemoveOptions): Promise<ModelOperationResult<T>>;
+    read<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T>, options: IReadOptions): Promise<ModelOperationResult<T>>;
 }
 
 let configuredBackends: {[backendName: string]: IBackend};

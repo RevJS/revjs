@@ -1,5 +1,4 @@
 import { Model } from '../models/model';
-import { IWhereQuery } from '../queries/query';
 import { ModelOperationResult } from './operationresult';
 import { checkIsModelConstructor } from '../models/utils';
 import { checkMetadataInitialised } from '../models/meta';
@@ -10,7 +9,7 @@ export interface IRemoveOptions {
     limit?: number;
 }
 
-export function remove<T extends Model>(model: new() => T, where?: IWhereQuery, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
+export function remove<T extends Model>(model: new() => T, where?: object, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
     return new Promise((resolve, reject) => {
 
         checkIsModelConstructor(model);

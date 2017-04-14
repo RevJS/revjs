@@ -3,7 +3,6 @@ import * as sinon from 'sinon';
 import { IBackend } from '../../backends/backends';
 import { ModelOperationResult } from '../operationresult';
 import { Model } from '../../models/model';
-import { IWhereQuery } from '../../queries/query';
 import { ICreateOptions } from '../create';
 import { IUpdateOptions } from '../update';
 import { IRemoveOptions } from '../remove';
@@ -25,19 +24,19 @@ export class MockBackend implements IBackend {
         return this.getReturnValue(result);
     }
 
-    update<T extends Model>(model: T, where: IWhereQuery, result: ModelOperationResult<T>, options: IUpdateOptions): Promise<ModelOperationResult<T>> {
+    update<T extends Model>(model: T, where: object, result: ModelOperationResult<T>, options: IUpdateOptions): Promise<ModelOperationResult<T>> {
         this.addErrors(result);
         this.updateStub.apply(null, arguments);
         return this.getReturnValue(result);
     }
 
-    remove<T extends Model>(model: new() => T, where: IWhereQuery, result: ModelOperationResult<T>, options: IRemoveOptions): Promise<ModelOperationResult<T>> {
+    remove<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T>, options: IRemoveOptions): Promise<ModelOperationResult<T>> {
         this.addErrors(result);
         this.removeStub.apply(null, arguments);
         return this.getReturnValue(result);
     }
 
-    read<T extends Model>(model: new() => T, where: IWhereQuery, result: ModelOperationResult<T>, options: IReadOptions): Promise<ModelOperationResult<T>> {
+    read<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T>, options: IReadOptions): Promise<ModelOperationResult<T>> {
         result.results = this.results;
         this.addErrors(result);
         this.readStub.apply(null, arguments);

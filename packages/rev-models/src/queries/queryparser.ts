@@ -41,7 +41,7 @@ export class QueryParser implements IQueryParser {
     };
 
     getQueryNodeForQuery<T extends Model>(
-            value: any,
+            value: object,
             model: new() => T,
             parent?: IQueryNode<T>): IQueryNode<T> {
 

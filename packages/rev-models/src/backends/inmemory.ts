@@ -54,7 +54,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    update<T extends Model>(model: T, where: any, result: ModelOperationResult<T>, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
+    update<T extends Model>(model: T, where: object, result: ModelOperationResult<T>, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
         return new Promise<ModelOperationResult<T>>((resolve) => {
 
             let meta = model.getMeta();
@@ -73,12 +73,15 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    read<T extends Model>(model: new() => T, where: any, result: ModelOperationResult<T>, options?: IReadOptions): Promise<ModelOperationResult<T>> {
+    read<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T>, options?: IReadOptions): Promise<ModelOperationResult<T>> {
         return new Promise<ModelOperationResult<T>>((resolve) => {
 
             let meta = model.meta;
             if (!meta.singleton && !where) {
                 throw new Error('read() requires the \'where\' parameter for non-singleton models');
+            }
+            else if (meta.singleton && where) {
+                throw new Error('read() cannot apply a \'where\' parameter to singleton models');
             }
             let modelStorage = this._getModelStorage<T>(model, meta);
             if (meta.singleton) {
@@ -94,7 +97,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    remove<T extends Model>(model: new() => T, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
+    remove<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
         throw new Error('delete() not yet implemented');
     }
 

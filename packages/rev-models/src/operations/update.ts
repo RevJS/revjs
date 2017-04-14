@@ -1,6 +1,5 @@
 import { IValidationOptions, validate } from './validate';
 import { Model } from '../models/model';
-import { IWhereQuery } from '../queries/query';
 import { ModelOperationResult } from './operationresult';
 import { checkMetadataInitialised } from '../models/meta';
 import * as backends from '../backends';
@@ -11,7 +10,7 @@ export interface IUpdateOptions {
     validation?: IValidationOptions;
 }
 
-export function update<T extends Model>(model: T, where?: IWhereQuery, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
+export function update<T extends Model>(model: T, where?: object, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
     return new Promise((resolve, reject) => {
 
         // TODO: Validate 'where' parameter
