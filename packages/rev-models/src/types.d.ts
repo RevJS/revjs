@@ -7,3 +7,7 @@ declare interface Function {
     name: string;
     meta?: any;
 }
+
+declare interface Error {
+    result?: any;
+}
