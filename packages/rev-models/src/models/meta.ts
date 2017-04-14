@@ -2,6 +2,7 @@ import { Field } from '../fields/field';
 import { Model } from './model';
 
 export interface IModelMeta {
+    ctor?: new(...args: any[]) => any;
     name?: string;
     label?: string;
     fields?: Field[];
@@ -52,6 +53,7 @@ export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T)
     }
 
     // Populate default metadata
+    meta.ctor = model;
     if (meta.name) {
         if (modelName != meta.name) {
             throw new Error('MetadataError: Model name does not match meta.name. To register the model under a different name you should rename its constructor.');

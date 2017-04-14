@@ -53,6 +53,11 @@ describe('initialiseMeta() - metadata only', () => {
         }).to.throw('is not an instance of rev.Field');
     });
 
+    it('assigns meta.ctor to the class constructor', () => {
+        initialiseMeta(TestModel);
+        expect(TestModel.meta.ctor).to.equal(TestModel);
+    });
+
     it('if meta.name is passed, it must match the model name', () => {
         expect(() => {
             TestModel.meta = {
