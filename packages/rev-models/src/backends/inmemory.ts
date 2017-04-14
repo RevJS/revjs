@@ -18,7 +18,7 @@ export class InMemoryBackend implements IBackend {
     }
 
     load<T extends Model>(data: T[], model: new(...args: any[]) => T, result: ModelOperationResult<T>): Promise<void> {
-        return new Promise<void>(() => {
+        return new Promise<void>((resolve) => {
 
             let meta = model.meta;
             if (meta.singleton) {
@@ -35,8 +35,8 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    create<T extends Model>(model: T, result: ModelOperationResult<T>, options?: ICreateOptions): Promise<void> {
-        return new Promise<void>((resolve) => {
+    create<T extends Model>(model: T, result: ModelOperationResult<T>, options?: ICreateOptions): Promise<ModelOperationResult<T>> {
+        return new Promise<ModelOperationResult<T>>((resolve) => {
 
             let meta = model.getMeta();
             if (meta.singleton) {
@@ -47,12 +47,13 @@ export class InMemoryBackend implements IBackend {
             let record = {};
             this._writeFields(model, meta, record);
             modelData.push(record);
+            resolve(result);
 
         });
     }
 
-    update<T extends Model>(model: T, where: any, result: ModelOperationResult<T>, options?: IUpdateOptions): Promise<void> {
-        return new Promise<void>((resolve) => {
+    update<T extends Model>(model: T, where: any, result: ModelOperationResult<T>, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
+        return new Promise<ModelOperationResult<T>>((resolve) => {
 
             let meta = model.getMeta();
             if (!meta.singleton && !where) {
@@ -61,7 +62,7 @@ export class InMemoryBackend implements IBackend {
             let modelData = this._getModelData(model.constructor as any, meta);
             if (meta.singleton) {
                 this._writeFields(model, meta, modelData);
-                resolve(/*true*/);
+                resolve(result);
             }
             else {
                 throw new Error('InMemoryBackend.update() not yet implemented for non-singleton models');
@@ -70,8 +71,8 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    read<T extends Model>(model: new() => T, where: any, result: ModelOperationResult<T>, options?: IReadOptions): Promise<void> {
-        return new Promise<void>((resolve) => {
+    read<T extends Model>(model: new() => T, where: any, result: ModelOperationResult<T>, options?: IReadOptions): Promise<ModelOperationResult<T>> {
+        return new Promise<ModelOperationResult<T>>((resolve) => {
 
             let meta = model.meta;
             if (!meta.singleton && !where) {
@@ -80,18 +81,18 @@ export class InMemoryBackend implements IBackend {
             let modelData = this._getModelData<T>(model, meta);
             if (meta.singleton) {
                 result.result = modelData;
-                resolve();
+                resolve(result);
             }
             else {
                 // TODO: Implement filtering
                 result.results = modelData;
-                resolve();
+                resolve(result);
             }
 
         });
     }
 
-    remove<T extends Model>(model: new() => T, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<void> {
+    remove<T extends Model>(model: new() => T, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
         throw new Error('InMemoryBackend.delete() not yet implemented');
     }
 

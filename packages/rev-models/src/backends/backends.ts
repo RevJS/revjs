@@ -10,10 +10,10 @@ import { IRemoveOptions } from '../operations/remove';
 export * from './inmemory';
 
 export interface IBackend {
-    create<T extends Model>(model: T, result: ModelOperationResult<T>, options: ICreateOptions): Promise<void>;
-    update<T extends Model>(model: T, where: IWhereQuery, result: ModelOperationResult<T>, options: IUpdateOptions): Promise<void>;
-    remove<T extends Model>(model: new() => T, where: IWhereQuery, result: ModelOperationResult<T>, options: IRemoveOptions): Promise<void>;
-    read<T extends Model>(model: new() => T, where: IWhereQuery, result: ModelOperationResult<T>, options: IReadOptions): Promise<void>;
+    create<T extends Model>(model: T, result: ModelOperationResult<T>, options: ICreateOptions): Promise<ModelOperationResult<T>>;
+    update<T extends Model>(model: T, where: IWhereQuery, result: ModelOperationResult<T>, options: IUpdateOptions): Promise<ModelOperationResult<T>>;
+    remove<T extends Model>(model: new() => T, where: IWhereQuery, result: ModelOperationResult<T>, options: IRemoveOptions): Promise<ModelOperationResult<T>>;
+    read<T extends Model>(model: new() => T, where: IWhereQuery, result: ModelOperationResult<T>, options: IReadOptions): Promise<ModelOperationResult<T>>;
 }
 
 let configuredBackends: {[backendName: string]: IBackend};

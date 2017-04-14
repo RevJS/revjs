@@ -5,7 +5,6 @@ import { ModelOperationResult } from './operationresult';
 import { checkMetadataInitialised } from '../models/meta';
 import * as backends from '../backends';
 import { IModelOperation } from './operation';
-import { OPERATION_MESSAGES as msg } from './operationmsg';
 
 export interface ICreateOptions {
     validation?: IValidationOptions;
@@ -30,22 +29,18 @@ export function create<T extends Model>(model: T, options?: ICreateOptions): Pro
         validate(model, operation, options ? options.validation : null)
             .then((validationResult) => {
 
-                operationResult.validation = validationResult;
-
-                if (validationResult.valid) {
-                    backend.create<typeof model>(model, operationResult, options)
-                        .then(() => {
-                            resolve(operationResult);
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
+                if (!validationResult.valid) {
+                    throw operationResult.createValidationError(validationResult);
                 }
                 else {
-                    operationResult.addError(msg.failed_validation(meta.name), 'failed_validation');
-                    resolve(operationResult);
+                    operationResult.validation = validationResult;
                 }
 
+                return backend.create(model, operationResult, options);
+
+            })
+            .then((res) => {
+                resolve(res);
             })
             .catch((err) => {
                 reject(err);
