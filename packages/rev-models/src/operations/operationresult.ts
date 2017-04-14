@@ -55,8 +55,8 @@ export class ModelOperationResult<T extends Model> implements IModelOperationRes
     }
 
     createValidationError(validationResult: ModelValidationResult): Error {
-        this.success = false;
         this.validation = validationResult;
+        this.addError('Model failed validation', 'validation_error');
         let err = new Error('ValidationError');
         err.result = this;
         return err;

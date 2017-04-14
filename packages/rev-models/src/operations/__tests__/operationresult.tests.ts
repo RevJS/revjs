@@ -116,12 +116,17 @@ describe('ModelOperationResult - createValidationError()', () => {
         validation.addModelError('Its broke bro!');
     });
 
-    it('changes the properties of the operation result', () => {
+    it('changes the properties of the operation result as expected', () => {
         expect(res.success).to.be.true;
         expect(res.validation).to.be.null;
 
         res.createValidationError(validation);
         expect(res.success).to.be.false;
+        expect(res.errors).to.have.length(1);
+        expect(res.errors[0]).to.deep.equal({
+            message: 'Model failed validation',
+            code: 'validation_error'
+        });
         expect(res.validation).to.equal(validation);
     });
 
