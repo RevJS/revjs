@@ -8,7 +8,7 @@ export class ValueListOperator<T extends Model> extends QueryNode<T> {
     constructor(
             parser: IQueryParser,
             operator: string,
-            public values: any,
+            public values: any[],
             model: new() => T,
             parent: IQueryNode<T>) {
 

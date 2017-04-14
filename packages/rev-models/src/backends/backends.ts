@@ -1,12 +1,11 @@
 
-import { InMemoryBackend } from './inmemory';
+import { InMemoryBackend } from './inmemory/backend';
 import { ModelOperationResult } from '../operations/operationresult';
 import { Model } from '../models/model';
 import { ICreateOptions } from '../operations/create';
 import { IUpdateOptions } from '../operations/update';
 import { IReadOptions } from '../operations/read';
 import { IRemoveOptions } from '../operations/remove';
-export * from './inmemory';
 
 export interface IBackend {
     create<T extends Model>(model: T, result: ModelOperationResult<T>, options: ICreateOptions): Promise<ModelOperationResult<T>>;

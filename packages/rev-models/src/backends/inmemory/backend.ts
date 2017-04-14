@@ -1,12 +1,14 @@
 
-import { IBackend } from './';
-import { IModelMeta } from '../models/meta';
-import { ModelOperationResult } from '../operations/operationresult';
-import { Model } from '../models/model';
-import { ICreateOptions } from '../operations/create';
-import { IUpdateOptions } from '../operations/update';
-import { IReadOptions } from '../operations/read';
-import { IRemoveOptions } from '../operations/remove';
+import { IBackend } from '../';
+import { IModelMeta } from '../../models/meta';
+import { ModelOperationResult } from '../../operations/operationresult';
+import { Model } from '../../models/model';
+import { ICreateOptions } from '../../operations/create';
+import { IUpdateOptions } from '../../operations/update';
+import { IReadOptions } from '../../operations/read';
+import { IRemoveOptions } from '../../operations/remove';
+import { QueryParser } from '../../queries/queryparser';
+import { InMemoryQuery } from './query';
 
 export class InMemoryBackend implements IBackend {
     _storage: {
@@ -73,7 +75,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    read<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T>, options?: IReadOptions): Promise<ModelOperationResult<T>> {
+    read<T extends Model>(model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T>, options?: IReadOptions): Promise<ModelOperationResult<T>> {
         return new Promise<ModelOperationResult<T>>((resolve) => {
 
             let meta = model.meta;
@@ -89,8 +91,15 @@ export class InMemoryBackend implements IBackend {
                 resolve(result);
             }
             else {
-                // TODO: Implement filtering
-                result.results = modelStorage;
+                let parser = new QueryParser();
+                let queryNode = parser.getQueryNodeForQuery(where, model);
+                let query = new InMemoryQuery(queryNode);
+                result.results = [];
+                for (let record of modelStorage) {
+                    if (query.testRecord(record)) {
+                        result.results.push(new model(record));
+                    }
+                }
                 resolve(result);
             }
 
