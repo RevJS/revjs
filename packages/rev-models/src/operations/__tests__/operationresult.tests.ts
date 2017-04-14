@@ -2,6 +2,7 @@
 import { expect } from 'chai';
 import { IModelOperation } from '../operation';
 import { ModelOperationResult } from '../operationresult';
+import { ModelValidationResult } from '../../validation/validationresult';
 
 describe('ModelOperationResult - constructor()', () => {
 
@@ -100,6 +101,35 @@ describe('ModelOperationResult - addError()', () => {
         expect(() => {
             res.addError('Operation took too long', 'timeout', 1000000);
         }).to.throw('You cannot add non-object data to an operation result');
+    });
+
+});
+
+describe('ModelOperationResult - createValidationError()', () => {
+
+    let res: ModelOperationResult<any>;
+    let validation: ModelValidationResult;
+
+    beforeEach(() => {
+        res = new ModelOperationResult({operation: 'create'});
+        validation = new ModelValidationResult();
+        validation.addModelError('Its broke bro!');
+    });
+
+    it('changes the properties of the operation result', () => {
+        expect(res.success).to.be.true;
+        expect(res.validation).to.be.null;
+
+        res.createValidationError(validation);
+        expect(res.success).to.be.false;
+        expect(res.validation).to.equal(validation);
+    });
+
+    it('returns an Error with the correct properties', () => {
+        let result = res.createValidationError(validation);
+        expect(result).to.be.instanceof(Error);
+        expect(result.message).to.equal('ValidationError');
+        expect(result.result).to.equal(res);
     });
 
 });
