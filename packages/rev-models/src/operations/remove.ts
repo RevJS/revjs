@@ -34,8 +34,8 @@ export function remove<T extends Model>(model: new() => T, where?: IWhereQuery, 
         let operationResult = new ModelOperationResult<T>(operation);
 
         backend.remove<T>(model, where, operationResult, options)
-            .then(() => {
-                resolve(operationResult);
+            .then((res) => {
+                resolve(res);
             })
             .catch((err) => {
                 reject(err);

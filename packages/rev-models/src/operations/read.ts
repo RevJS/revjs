@@ -29,8 +29,8 @@ export function read<T extends Model>(model: new() => T, where?: IWhereQuery, op
         };
         let operationResult = new ModelOperationResult<T>(operation);
         backend.read(model, where || {}, operationResult, options)
-            .then(() => {
-                resolve(operationResult);
+            .then((res) => {
+                resolve(res);
             })
             .catch((err) => {
                 reject(err);

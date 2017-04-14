@@ -97,19 +97,22 @@ describe('rev.operations.read()', () => {
             .to.be.rejectedWith(expectedError);
     });
 
-    it('returns any operation errors added by the backend', () => {
-        mockBackend.errorsToAdd = ['error_from_backend'];
+    it('rejects with any operation errors added by the backend', () => {
+        mockBackend.errorsToAdd = ['some_backend_error'];
         return rwRead.read(TestModel, whereClause)
-            .then((res) => {
-                expect(res.success).to.be.false;
-                expect(res.errors.length).to.equal(1);
-                expect(res.errors[0].message).to.equal('error_from_backend');
+            .then((res) => { throw new Error('expected reject'); })
+            .catch((res) => {
+                expect(res).to.be.instanceof(Error);
+                expect(res.result).to.exist;
+                expect(res.result.success).to.be.false;
+                expect(res.result.errors.length).to.equal(1);
+                expect(res.result.errors[0].message).to.equal('some_backend_error');
             });
     });
 
-    it('rejects when backend.read rejects', () => {
+    it('rejects with expected error when backend.read rejects', () => {
         let expectedError = new Error('epic fail!');
-        mockBackend.readStub.returns(Promise.reject(expectedError));
+        mockBackend.errorToThrow = expectedError;
         return expect(rwRead.read(TestModel, whereClause))
             .to.be.rejectedWith(expectedError);
     });
