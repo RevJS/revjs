@@ -8,6 +8,7 @@
 ## v0.2.0
 
 * MongoDB Backend
+* Default field values
 * Knowledge of Primary Key
 * Documentation!
 

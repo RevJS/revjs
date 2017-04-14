@@ -16,11 +16,11 @@ class TestModel extends Model {
         name: string;
     @d.IntegerField({ required: false })
         age: number;
-    @d.SelectionField({ selection: GENDERS })
+    @d.SelectionField({ required: false, selection: GENDERS })
         gender: string;
-    @d.BooleanField()
+    @d.BooleanField({ required: false })
         newsletter: boolean;
-    @d.DateField()
+    @d.DateField({ required: false })
         date_registered: Date;
 
     getDescription?() {
@@ -30,40 +30,42 @@ class TestModel extends Model {
 
 initialiseMeta(TestModel);
 
-let testData: TestModel[] = [
-    new TestModel({
+let testData: Array<Partial<TestModel>> = [
+    {
         name: 'Joe Bloggs',
         age: 20,
         gender: 'male',
         newsletter: true,
         date_registered: new Date('2016-05-26')
-    }),
-    new TestModel({
+    },
+    {
         name: 'Jane Doe',
         age: 23,
         gender: 'female',
         newsletter: true,
         date_registered: new Date('2017-01-01')
-    }),
-    new TestModel({
+    },
+    {
         name: 'Felix The Cat',
         age: 3,
         gender: 'male',
         newsletter: false,
         date_registered: new Date('2016-12-03')
-    })
+    }
 ];
 
 describe('rev.backends.inmemory', () => {
 
     let backend: InMemoryBackend;
     let loadResult: ModelOperationResult<TestModel>;
+    let createResult: ModelOperationResult<TestModel>;
     let readResult: ModelOperationResult<TestModel>;
 
     beforeEach(() => {
         TestModel.meta.singleton = false;
         backend = new InMemoryBackend();
         loadResult = new ModelOperationResult<TestModel>({operation: 'load'});
+        createResult = new ModelOperationResult<TestModel>({operation: 'create'});
         readResult = new ModelOperationResult<TestModel>({operation: 'read'});
     });
 
@@ -71,7 +73,7 @@ describe('rev.backends.inmemory', () => {
 
         it('read() returns a model instance result with all undefined values', () => {
             TestModel.meta.singleton = true;
-            return backend.read(TestModel, null, readResult)
+            return backend.read(TestModel, {}, readResult)
                 .then(() => {
                     expect(readResult.result).to.be.instanceOf(TestModel);
                     expect(readResult.results).to.be.null;
@@ -100,20 +102,48 @@ describe('rev.backends.inmemory', () => {
     describe('load()', () => {
 
         it('populates InMemoryBackend._storage with data', () => {
-            backend.load(TestModel, testData, loadResult);
-            expect(backend._storage['TestModel']).to.equal(testData);
+            return backend.load(TestModel, testData, loadResult)
+                .then(() => {
+                    expect(backend._storage['TestModel']).to.equal(testData);
+                });
         });
 
         it('rejects if model is a singleton', () => {
             TestModel.meta.singleton = true;
-            expect(backend.load(TestModel, testData, loadResult))
+            return expect(backend.load(TestModel, testData, loadResult))
                 .to.be.rejectedWith('cannot be used with a singleton model');
         });
 
         it('rejects if passed data is not an array of objects', () => {
             let badData = ['a', 'b', 'b', 1, 2, 3];
-            expect(backend.load(TestModel, badData as any, loadResult))
+            return expect(backend.load(TestModel, badData as any, loadResult))
                 .to.be.rejectedWith('data must be an array of objects');
+        });
+
+    });
+
+    describe('create()', () => {
+
+        it('stores model data as a plain object and returns a new model instance', () => {
+            let model = new TestModel({
+                name: 'test model',
+                age: 20
+            });
+            return backend.create(model, createResult)
+                .then((res) => {
+                    expect(backend._storage['TestModel']).to.deep.equal([
+                        {
+                            name: 'test model',
+                            age: 20
+                        }
+                    ]);
+                    expect(res.results).to.deep.equal(null);
+                    expect(res.result).to.be.instanceof(TestModel);
+                    expect(res.result).to.not.equal(model);
+                    expect(res.result.name).to.equal(model.name);
+                    expect(res.result.age).to.equal(model.age);
+                    expect(res.result.gender).to.be.undefined;
+                });
         });
 
     });

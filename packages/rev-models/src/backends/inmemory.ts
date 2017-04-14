@@ -17,7 +17,7 @@ export class InMemoryBackend implements IBackend {
         this._storage = {};
     }
 
-    load<T extends Model>(model: new(...args: any[]) => T, data: T[], result: ModelOperationResult<T>): Promise<ModelOperationResult<T>> {
+    load<T extends Model>(model: new(...args: any[]) => T, data: Array<Partial<T>>, result: ModelOperationResult<T>): Promise<ModelOperationResult<T>> {
         return new Promise<ModelOperationResult<T>>((resolve) => {
 
             let meta = model.meta;
@@ -31,6 +31,7 @@ export class InMemoryBackend implements IBackend {
             }
 
             this._storage[meta.name] = data;
+            resolve(result);
 
         });
     }
@@ -43,10 +44,11 @@ export class InMemoryBackend implements IBackend {
                 throw new Error('InMemoryBackend.create() cannot be called on singleton models');
             }
 
-            let modelData = this._getModelData(model.constructor as any, meta);
+            let modelStorage = this._getModelStorage(model.constructor as any, meta);
             let record = {};
             this._writeFields(model, meta, record);
-            modelData.push(record);
+            modelStorage.push(record);
+            result.result = new meta.ctor(record);
             resolve(result);
 
         });
@@ -59,9 +61,9 @@ export class InMemoryBackend implements IBackend {
             if (!meta.singleton && !where) {
                 throw new Error('InMemoryBackend.update() requires the \'where\' parameter for non-singleton models');
             }
-            let modelData = this._getModelData(model.constructor as any, meta);
+            let modelStorage = this._getModelStorage(model.constructor as any, meta);
             if (meta.singleton) {
-                this._writeFields(model, meta, modelData);
+                this._writeFields(model, meta, modelStorage);
                 resolve(result);
             }
             else {
@@ -78,14 +80,14 @@ export class InMemoryBackend implements IBackend {
             if (!meta.singleton && !where) {
                 throw new Error('InMemoryBackend.read() requires the \'where\' parameter for non-singleton models');
             }
-            let modelData = this._getModelData<T>(model, meta);
+            let modelStorage = this._getModelStorage<T>(model, meta);
             if (meta.singleton) {
-                result.result = modelData;
+                result.result = modelStorage;
                 resolve(result);
             }
             else {
                 // TODO: Implement filtering
-                result.results = modelData;
+                result.results = modelStorage;
                 resolve(result);
             }
 
@@ -96,7 +98,7 @@ export class InMemoryBackend implements IBackend {
         throw new Error('InMemoryBackend.delete() not yet implemented');
     }
 
-    _getModelData<T extends Model>(model: new() => T, meta: IModelMeta): any {
+    _getModelStorage<T extends Model>(model: new() => T, meta: IModelMeta): any {
         if (!this._storage[meta.name]) {
             if (meta.singleton) {
                 this._storage[meta.name] = new model();
@@ -110,7 +112,9 @@ export class InMemoryBackend implements IBackend {
 
     _writeFields<T extends Model>(model: T, meta: IModelMeta, target: any): void {
         for (let field of meta.fields) {
-            target[field.name] = model[field.name];
+            if (typeof model[field.name] != 'undefined') {
+                target[field.name] = model[field.name];
+            }
         }
     }
 
