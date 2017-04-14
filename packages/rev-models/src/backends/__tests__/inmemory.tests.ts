@@ -59,6 +59,7 @@ describe('rev.backends.inmemory', () => {
     let backend: InMemoryBackend;
     let loadResult: ModelOperationResult<TestModel>;
     let createResult: ModelOperationResult<TestModel>;
+    let createResult2: ModelOperationResult<TestModel>;
     let readResult: ModelOperationResult<TestModel>;
 
     beforeEach(() => {
@@ -66,6 +67,7 @@ describe('rev.backends.inmemory', () => {
         backend = new InMemoryBackend();
         loadResult = new ModelOperationResult<TestModel>({operation: 'load'});
         createResult = new ModelOperationResult<TestModel>({operation: 'create'});
+        createResult2 = new ModelOperationResult<TestModel>({operation: 'create'});
         readResult = new ModelOperationResult<TestModel>({operation: 'read'});
     });
 
@@ -137,13 +139,53 @@ describe('rev.backends.inmemory', () => {
                             age: 20
                         }
                     ]);
-                    expect(res.results).to.deep.equal(null);
+                    expect(res.results).to.equal(null);
                     expect(res.result).to.be.instanceof(TestModel);
                     expect(res.result).to.not.equal(model);
                     expect(res.result.name).to.equal(model.name);
                     expect(res.result.age).to.equal(model.age);
                     expect(res.result.gender).to.be.undefined;
                 });
+        });
+
+        it('stores multiple records', () => {
+            let model1 = new TestModel({
+                name: 'test model 1',
+                age: 21
+            });
+            let model2 = new TestModel({
+                name: 'test model 2',
+                age: 22
+            });
+            return Promise.all([
+                backend.create(model1, createResult),
+                backend.create(model2, createResult2)
+            ])
+                .then((res) => {
+                    expect(backend._storage['TestModel']).to.deep.equal([
+                        {
+                            name: 'test model 1',
+                            age: 21
+                        },
+                        {
+                            name: 'test model 2',
+                            age: 22
+                        }
+                    ]);
+                    expect(res[0].result).to.be.instanceof(TestModel);
+                    expect(res[1].result).to.be.instanceof(TestModel);
+                    expect(res[0].result).to.not.equal(model1);
+                    expect(res[1].result).to.not.equal(model2);
+                    expect(res[0].result.name).to.equal(model1.name);
+                    expect(res[1].result.name).to.equal(model2.name);
+                });
+        });
+
+        it('rejects if model is a singleton', () => {
+            let model = new TestModel({ name: 'test model' });
+            TestModel.meta.singleton = true;
+            return expect(backend.create(model, createResult))
+                .to.be.rejectedWith('cannot be used with a singleton model');
         });
 
     });

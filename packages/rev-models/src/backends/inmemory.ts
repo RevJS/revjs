@@ -22,12 +22,12 @@ export class InMemoryBackend implements IBackend {
 
             let meta = model.meta;
             if (meta.singleton) {
-                throw new Error('InMemoryBackend.load() cannot be used with a singleton model');
+                throw new Error('load() cannot be used with a singleton model');
             }
 
             if (typeof data != 'object' || !(data instanceof Array)
                     || (data.length > 0 && typeof data[0] != 'object')) {
-                throw new Error('InMemoryBackend.load() data must be an array of objects');
+                throw new Error('load() data must be an array of objects');
             }
 
             this._storage[meta.name] = data;
@@ -41,7 +41,7 @@ export class InMemoryBackend implements IBackend {
 
             let meta = model.getMeta();
             if (meta.singleton) {
-                throw new Error('InMemoryBackend.create() cannot be called on singleton models');
+                throw new Error('create() cannot be used with a singleton model');
             }
 
             let modelStorage = this._getModelStorage(model.constructor as any, meta);
@@ -59,7 +59,7 @@ export class InMemoryBackend implements IBackend {
 
             let meta = model.getMeta();
             if (!meta.singleton && !where) {
-                throw new Error('InMemoryBackend.update() requires the \'where\' parameter for non-singleton models');
+                throw new Error('update() requires the \'where\' parameter for non-singleton models');
             }
             let modelStorage = this._getModelStorage(model.constructor as any, meta);
             if (meta.singleton) {
@@ -67,7 +67,7 @@ export class InMemoryBackend implements IBackend {
                 resolve(result);
             }
             else {
-                throw new Error('InMemoryBackend.update() not yet implemented for non-singleton models');
+                throw new Error('update() not yet implemented for non-singleton models');
             }
 
         });
@@ -78,7 +78,7 @@ export class InMemoryBackend implements IBackend {
 
             let meta = model.meta;
             if (!meta.singleton && !where) {
-                throw new Error('InMemoryBackend.read() requires the \'where\' parameter for non-singleton models');
+                throw new Error('read() requires the \'where\' parameter for non-singleton models');
             }
             let modelStorage = this._getModelStorage<T>(model, meta);
             if (meta.singleton) {
@@ -95,7 +95,7 @@ export class InMemoryBackend implements IBackend {
     }
 
     remove<T extends Model>(model: new() => T, where: any, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
-        throw new Error('InMemoryBackend.delete() not yet implemented');
+        throw new Error('delete() not yet implemented');
     }
 
     _getModelStorage<T extends Model>(model: new() => T, meta: IModelMeta): any {
