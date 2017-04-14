@@ -63,7 +63,7 @@ describe('rev.backends.inmemory', () => {
     beforeEach(() => {
         TestModel.meta.singleton = false;
         backend = new InMemoryBackend();
-        loadResult = new ModelOperationResult<TestModel>({operation: 'create'});
+        loadResult = new ModelOperationResult<TestModel>({operation: 'load'});
         readResult = new ModelOperationResult<TestModel>({operation: 'read'});
     });
 
@@ -97,12 +97,33 @@ describe('rev.backends.inmemory', () => {
 
     });
 
+    describe('load()', () => {
+
+        it('populates InMemoryBackend._storage with data', () => {
+            backend.load(TestModel, testData, loadResult);
+            expect(backend._storage['TestModel']).to.equal(testData);
+        });
+
+        it('rejects if model is a singleton', () => {
+            TestModel.meta.singleton = true;
+            expect(backend.load(TestModel, testData, loadResult))
+                .to.be.rejectedWith('cannot be used with a singleton model');
+        });
+
+        it('rejects if passed data is not an array of objects', () => {
+            let badData = ['a', 'b', 'b', 1, 2, 3];
+            expect(backend.load(TestModel, badData as any, loadResult))
+                .to.be.rejectedWith('data must be an array of objects');
+        });
+
+    });
+
     describe('read()', () => {
 
-        // TODO TEST LIMIT
+        // TODO TEST QUERIES + LIMIT
 
         it('returns all records when where clause = {}', () => {
-            backend.load(testData, TestModel, loadResult);
+            backend.load(TestModel, testData, loadResult);
             return backend.read(TestModel, {}, readResult)
                 .then(() => {
                     expect(readResult.result).to.be.null;

@@ -17,8 +17,8 @@ export class InMemoryBackend implements IBackend {
         this._storage = {};
     }
 
-    load<T extends Model>(data: T[], model: new(...args: any[]) => T, result: ModelOperationResult<T>): Promise<void> {
-        return new Promise<void>((resolve) => {
+    load<T extends Model>(model: new(...args: any[]) => T, data: T[], result: ModelOperationResult<T>): Promise<ModelOperationResult<T>> {
+        return new Promise<ModelOperationResult<T>>((resolve) => {
 
             let meta = model.meta;
             if (meta.singleton) {
