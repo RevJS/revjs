@@ -8,7 +8,6 @@ import * as update from '../update';
 import { MockBackend } from './mock-backend';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { initialiseMeta } from '../../models/meta';
-import { OPERATION_MESSAGES as msg } from '../operationmsg';
 
 let GENDERS = [
     ['male', 'Male'],
@@ -81,55 +80,62 @@ describe('rev.operations.update()', () => {
             .to.be.rejectedWith('update() must be called with a where clause for non-singleton models');
     });
 
-    it('completes with unsuccessful result when model required fields not set', () => {
-        let model = new TestModel();
-        return rwUpdate.update(model, whereClause)
-            .then((res) => {
-                expect(res.success).to.be.false;
-                expect(res.errors.length).to.equal(1);
-                expect(res.errors[0].message).to.equal(msg.failed_validation('TestModel'));
-                expect(res.errors[0]['code']).to.equal('failed_validation');
-                expect(res.validation).to.be.instanceOf(ModelValidationResult);
-                expect(res.validation.valid).to.be.false;
-            });
-    });
-
-    it('completes with unsuccessful result when model fields do not pass validation', () => {
+    it('rejects with unsuccessful result when model fields do not pass validation', () => {
         let model = new TestModel();
         model.name = 'Bill';
         model.gender = 'fish';
         model.age = 9;
         model.email = 'www.google.com';
         return rwUpdate.update(model, whereClause)
-            .then((res) => {
-                expect(res.success).to.be.false;
-                expect(res.errors.length).to.equal(1);
-                expect(res.errors[0].message).to.equal(msg.failed_validation('TestModel'));
-                expect(res.errors[0]['code']).to.equal('failed_validation');
-                expect(res.validation).to.be.instanceOf(ModelValidationResult);
-                expect(res.validation.valid).to.be.false;
+            .then((res) => { throw new Error('expected reject'); })
+            .catch((res) => {
+                expect(res).to.be.instanceof(Error);
+                expect(res.message).to.equal('ValidationError');
+                expect(res.result).to.exist;
+                expect(res.result.success).to.be.false;
+                expect(res.result.validation).to.be.instanceOf(ModelValidationResult);
+                expect(res.result.validation.valid).to.be.false;
             });
     });
 
-    it('returns any operation errors added by the backend', () => {
+    it('rejects with any operation errors added by the backend', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        mockBackend.errorsToAdd = ['error_from_backend'];
+        mockBackend.errorsToAdd = ['some_backend_error'];
         return rwUpdate.update(model, whereClause)
-            .then((res) => {
-                expect(res.success).to.be.false;
-                expect(res.errors.length).to.equal(1);
-                expect(res.errors[0].message).to.equal('error_from_backend');
+            .then((res) => { throw new Error('expected reject'); })
+            .catch((res) => {
+                expect(res).to.be.instanceof(Error);
+                expect(res.result).to.exist;
+                expect(res.result.success).to.be.false;
+                expect(res.result.errors.length).to.equal(1);
+                expect(res.result.errors[0].message).to.equal('some_backend_error');
             });
     });
 
-    it('rejects when backend.update rejects', () => {
+    it('rejects with any operation errors added by the backend', () => {
+        let model = new TestModel();
+        model.name = 'Bob';
+        model.gender = 'male';
+        mockBackend.errorsToAdd = ['some_backend_error'];
+        return rwUpdate.update(model, whereClause)
+            .then((res) => { throw new Error('expected reject'); })
+            .catch((res) => {
+                expect(res).to.be.instanceof(Error);
+                expect(res.result).to.exist;
+                expect(res.result.success).to.be.false;
+                expect(res.result.errors.length).to.equal(1);
+                expect(res.result.errors[0].message).to.equal('some_backend_error');
+            });
+    });
+
+    it('rejects with expected error when backend.update rejects', () => {
         let expectedError = new Error('epic fail!');
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        mockBackend.updateStub.returns(Promise.reject(expectedError));
+        mockBackend.errorToThrow = expectedError;
         return expect(rwUpdate.update(model, whereClause))
             .to.be.rejectedWith(expectedError);
     });
