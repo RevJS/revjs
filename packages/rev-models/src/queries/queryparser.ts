@@ -45,7 +45,7 @@ export class QueryParser implements IQueryParser {
             model: new() => T,
             parent?: IQueryNode<T>): IQueryNode<T> {
 
-        if (!value || typeof value != 'object' || Object.keys(value).length == 0) {
+        if (!value || typeof value != 'object') {
             throw new Error(`${pretty(value)} is not a query object`);
         }
 
