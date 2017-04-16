@@ -17,10 +17,6 @@ export function create<T extends Model>(model: T, options?: ICreateOptions): Pro
         let meta = model.getMeta();
         let backend = backends.get(meta.backend);
 
-        if (meta.singleton) {
-            throw new Error('create() cannot be called on singleton models');
-        }
-
         let operation: IModelOperation = {
             operation: 'create'
         };

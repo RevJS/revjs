@@ -72,19 +72,6 @@ describe('rev.operations.create()', () => {
             .to.be.rejectedWith(expectedError);
     });
 
-    it('rejects for singleton models', () => {
-        class SingletonModel extends Model {
-            @d.TextField() name: string;
-        }
-        SingletonModel.meta = {
-            singleton: true
-        };
-        let model = new SingletonModel();
-        initialiseMeta(SingletonModel);
-        return expect(rwCreate.create(model))
-            .to.be.rejectedWith('create() cannot be called on singleton models');
-    });
-
     it('rejects with unsuccessful result when model required fields not set', () => {
         let model = new TestModel();
         return rwCreate.create(model)

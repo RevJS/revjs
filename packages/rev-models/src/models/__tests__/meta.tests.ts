@@ -113,15 +113,6 @@ describe('initialiseMeta() - metadata only', () => {
         expect(TestModel2.meta.label).to.equal('Awesome Entity');
     });
 
-    it('should set up meta.singleton (defaults to false)', () => {
-        TestModel.meta.singleton = undefined;
-        TestModel2.meta.singleton = true;
-        initialiseMeta(TestModel);
-        initialiseMeta(TestModel2);
-        expect(TestModel.meta.singleton).to.equal(false);
-        expect(TestModel2.meta.singleton).to.equal(true);
-    });
-
 });
 
 describe('initialiseMeta() - with decorators', () => {

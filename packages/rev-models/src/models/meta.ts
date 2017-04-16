@@ -9,7 +9,6 @@ export interface IModelMeta {
     fieldsByName?: {
         [fieldName: string]: Field
     };
-    singleton?: boolean;
     backend?: string;
 }
 
@@ -71,7 +70,6 @@ export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T)
     }
     meta.backend = meta.backend ? meta.backend : 'default';
     meta.label = meta.label ? meta.label : meta.name;
-    meta.singleton = meta.singleton ? true : false;
 
     model.meta = meta;
 }

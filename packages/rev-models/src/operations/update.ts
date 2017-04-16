@@ -19,8 +19,8 @@ export function update<T extends Model>(model: T, where?: object, options?: IUpd
         let meta = model.getMeta();
         let backend = backends.get(meta.backend);
 
-        if (!meta.singleton && (!where || typeof where != 'object')) {
-            throw new Error('update() must be called with a where clause for non-singleton models');
+        if (!where || typeof where != 'object') {
+            throw new Error('update() must be called with a where clause');
         }
 
         let operation: IModelOperation = {

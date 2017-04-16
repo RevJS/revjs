@@ -17,10 +17,6 @@ export function read<T extends Model>(model: new() => T, where?: object, options
         checkIsModelConstructor(model);
         checkMetadataInitialised(model);
         let meta = model.meta;
-        if (meta.singleton && where) {
-            throw new Error('read() cannot be called with a where clause for singleton models');
-        }
-
         let backend = backends.get(meta.backend);
         let operation: IModelOperation = {
             operation: 'read',

@@ -76,18 +76,6 @@ describe('rev.operations.read()', () => {
             .to.be.rejectedWith('MetadataError');
     });
 
-    it('rejects if model is a singleton and a where clause is specified', () => {
-        class SingletonModel extends Model {
-            @d.TextField() name: string;
-        }
-        SingletonModel.meta = {
-            singleton: true
-        };
-        initialiseMeta(SingletonModel);
-        return expect(rwRead.read(SingletonModel, whereClause))
-            .to.be.rejectedWith('read() cannot be called with a where clause for singleton models');
-    });
-
     it('rejects if backends.get fails (e.g. invalid backend specified)', () => {
         let expectedError = new Error('epic fail!');
         rwRead.__set__('backends', {

@@ -74,10 +74,10 @@ describe('rev.operations.update()', () => {
             .to.be.rejectedWith(expectedError);
     });
 
-    it('rejects when model is not a singleton and where clause is not specified', () => {
+    it('rejects when where clause is not specified', () => {
         let model = new TestModel();
         return expect(rwUpdate.update(model))
-            .to.be.rejectedWith('update() must be called with a where clause for non-singleton models');
+            .to.be.rejectedWith('update() must be called with a where clause');
     });
 
     it('rejects with unsuccessful result when model fields do not pass validation', () => {

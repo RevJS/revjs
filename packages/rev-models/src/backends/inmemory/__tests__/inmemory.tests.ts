@@ -63,7 +63,6 @@ describe('rev.backends.inmemory', () => {
     let readResult: ModelOperationResult<TestModel>;
 
     beforeEach(() => {
-        TestModel.meta.singleton = false;
         backend = new InMemoryBackend();
         loadResult = new ModelOperationResult<TestModel>({operation: 'load'});
         createResult = new ModelOperationResult<TestModel>({operation: 'create'});
@@ -71,24 +70,7 @@ describe('rev.backends.inmemory', () => {
         readResult = new ModelOperationResult<TestModel>({operation: 'read'});
     });
 
-    describe('initial state - singleton model', () => {
-
-        it('read() returns a model instance result with all undefined values', () => {
-            TestModel.meta.singleton = true;
-            return backend.read(TestModel, null, readResult)
-                .then(() => {
-                    expect(readResult.result).to.be.instanceOf(TestModel);
-                    expect(readResult.results).to.be.null;
-                    expect(readResult.result.getDescription).to.be.a('function');
-                    for (let field of TestModel.meta.fields) {
-                        expect(readResult.result[field.name]).to.be.undefined;
-                    }
-                });
-        });
-
-    });
-
-    describe('initial state - non-singleton model', () => {
+    describe('initial state', () => {
 
         it('read() returns an empty list', () => {
             return backend.read(TestModel, {}, readResult)
@@ -108,12 +90,6 @@ describe('rev.backends.inmemory', () => {
                 .then(() => {
                     expect(backend._storage['TestModel']).to.equal(testData);
                 });
-        });
-
-        it('rejects if model is a singleton', () => {
-            TestModel.meta.singleton = true;
-            return expect(backend.load(TestModel, testData, loadResult))
-                .to.be.rejectedWith('cannot be used with a singleton model');
         });
 
         it('rejects if passed data is not an array of objects', () => {
@@ -181,18 +157,22 @@ describe('rev.backends.inmemory', () => {
                 });
         });
 
-        it('rejects if model is a singleton', () => {
-            let model = new TestModel({ name: 'test model' });
-            TestModel.meta.singleton = true;
-            return expect(backend.create(model, createResult))
-                .to.be.rejectedWith('cannot be used with a singleton model');
-        });
-
     });
 
     describe('read()', () => {
 
-        // TODO TEST QUERIES + LIMIT
+        it('returns a successful result as expected', () => {
+            return backend.read(TestModel, {}, readResult)
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    /*expect(res.result).to.be.instanceOf(TestModel);
+                    expect(res.results).to.be.null;
+                    expect(res.result.getDescription).to.be.a('function');
+                    for (let field of TestModel.meta.fields) {
+                        expect(res.result[field.name]).to.be.undefined;
+                    }*/
+                });
+        });
 
         it('returns all records when where clause = {}', () => {
             backend.load(TestModel, testData, loadResult);

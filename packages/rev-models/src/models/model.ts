@@ -8,11 +8,6 @@ import { IReadOptions, read } from '../operations/read';
 import { ModelValidationResult } from '../validation/validationresult';
 import { IValidationOptions, validate } from '../operations/validate';
 
-export interface IModelOptions {
-    singleton?: boolean;
-    backend?: string;
-}
-
 export interface IModelData {
     [fieldName: string]: any;
 }

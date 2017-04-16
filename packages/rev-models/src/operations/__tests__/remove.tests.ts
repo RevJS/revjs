@@ -69,18 +69,6 @@ describe('rev.operations.remove()', () => {
             .to.be.rejectedWith('remove() must be called with a where clause');
     });
 
-    it('rejects when model is a singleton', () => {
-        class SingletonModel extends Model {
-            @d.TextField() name: string;
-        }
-        SingletonModel.meta = {
-            singleton: true
-        };
-        initialiseMeta(SingletonModel);
-        return expect(rwRemove.remove(SingletonModel, whereClause))
-            .to.be.rejectedWith('remove() cannot be called on singleton models');
-    });
-
     it('rejects with any operation errors added by the backend', () => {
         mockBackend.errorsToAdd = ['some_backend_error'];
         return rwRemove.remove(TestModel, whereClause)

@@ -22,10 +22,6 @@ export function remove<T extends Model>(model: new() => T, where?: object, optio
             throw new Error('remove() must be called with a where clause');
         }
 
-        if (meta.singleton) {
-            throw new Error('remove() cannot be called on singleton models');
-        }
-
         let operation: IModelOperation = {
             operation: 'remove',
             where: where
