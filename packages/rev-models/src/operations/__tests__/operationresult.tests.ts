@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import { IModelOperation } from '../operation';
 import { ModelOperationResult } from '../operationresult';
 import { ModelValidationResult } from '../../validation/validationresult';
+import { IReadMeta } from '../read';
 
 describe('ModelOperationResult - constructor()', () => {
 
@@ -15,6 +16,7 @@ describe('ModelOperationResult - constructor()', () => {
         expect(res.validation).to.be.undefined;
         expect(res.result).to.be.undefined;
         expect(res.results).to.be.undefined;
+        expect(res.meta).to.be.undefined;
     });
 
 });
@@ -101,6 +103,41 @@ describe('ModelOperationResult - addError()', () => {
         expect(() => {
             res.addError('Operation took too long', 'timeout', 1000000);
         }).to.throw('You cannot add non-object data to an operation result');
+    });
+
+});
+
+describe('ModelOperationResult - setMeta()', () => {
+
+    let res: ModelOperationResult<any, IReadMeta>;
+
+    beforeEach(() => {
+        res = new ModelOperationResult<any, IReadMeta>({operation: 'read'});
+    });
+
+    it('able to add meta when ressult.meta is not defined', () => {
+        expect(res.meta).to.be.undefined;
+        res.setMeta({ limit: 10 });
+        expect(res.meta).to.deep.equal({ limit: 10 });
+    });
+
+    it('can add additional keys to existing meta', () => {
+        res.setMeta({ limit: 10 });
+        expect(res.meta).to.deep.equal({ limit: 10 });
+        res.setMeta({ offset: 5 });
+        expect(res.meta).to.deep.equal({ limit: 10, offset: 5 });
+    });
+
+    it('can set multiple keys', () => {
+        res.setMeta({ limit: 10, offset: 20 });
+        expect(res.meta).to.deep.equal({ limit: 10, offset: 20 });
+    });
+
+    it('keys are merged as expected', () => {
+        res.setMeta({ limit: 10, offset: 20 });
+        expect(res.meta).to.deep.equal({ limit: 10, offset: 20 });
+        res.setMeta({ offset: 0, total_count: 30 });
+        expect(res.meta).to.deep.equal({ limit: 10, offset: 0, total_count: 30 });
     });
 
 });

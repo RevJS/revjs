@@ -60,6 +60,13 @@ export class ModelOperationResult<T extends Model, M extends IOperationMeta> imp
         this.errors.push(operationError);
     }
 
+    setMeta(meta: Partial<M>) {
+        if (!this.meta) {
+            this.meta = {} as any;
+        }
+        Object.assign(this.meta, meta);
+    }
+
     createValidationError(validationResult: ModelValidationResult): Error {
         this.validation = validationResult;
         this.addError('Model failed validation', 'validation_error');
