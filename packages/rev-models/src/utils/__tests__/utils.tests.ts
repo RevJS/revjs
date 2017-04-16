@@ -54,6 +54,15 @@ describe('escapeForRegex()', () => {
         '(', ')', '|', '{', '}', '[', ']'
     ];
 
+    it('throws an error if value is not a string', () => {
+        expect(() => {
+            escapeForRegex(null);
+        }).to.throw('Supplied value is not a string');
+        expect(() => {
+            escapeForRegex({} as any);
+        }).to.throw('Supplied value is not a string');
+    });
+
     for (let char of regExSpecialChars) {
         it(`should escape ${char}`, () => {
             expect(escapeForRegex(part1 + char + part2))

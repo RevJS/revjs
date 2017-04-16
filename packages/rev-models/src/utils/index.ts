@@ -8,5 +8,8 @@ export function printObj(value: any, multiline = false): string {
 }
 
 export function escapeForRegex(str: string) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+    if (typeof str != 'string') {
+        throw new TypeError('Supplied value is not a string!');
+    }
+    return str.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
 }
