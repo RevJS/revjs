@@ -28,10 +28,6 @@ export class ModelOperationResult<T extends Model> implements IModelOperationRes
     constructor(operation: IModelOperation) {
         this.operation = operation;
         this.success = true;
-        this.errors = [];
-        this.validation = null;
-        this.result = null;
-        this.results = null;
     }
 
     addError(message: string, code?: string, data?: any) {
@@ -50,6 +46,9 @@ export class ModelOperationResult<T extends Model> implements IModelOperationRes
                 throw new Error(`ModelOperationResult Error: You cannot add non-object data to an operation result.`);
             }
             Object.assign(operationError, data);
+        }
+        if (!this.errors) {
+            this.errors = [];
         }
         this.errors.push(operationError);
     }

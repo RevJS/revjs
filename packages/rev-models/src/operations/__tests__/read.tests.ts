@@ -55,7 +55,7 @@ describe('rev.operations.read()', () => {
                 expect(readCall.args[1]).to.equal(whereClause);
                 expect(res.success).to.be.true;
                 expect(res.results).to.equal(testResults);
-                expect(res.validation).to.be.null;
+                expect(res.validation).to.be.undefined;
             });
     });
 
@@ -68,7 +68,7 @@ describe('rev.operations.read()', () => {
                 expect(readCall.args[1]).to.deep.equal({});
                 expect(res.success).to.be.true;
                 expect(res.results).to.equal(testResults);
-                expect(res.validation).to.be.null;
+                expect(res.validation).to.be.undefined;
             });
     });
 

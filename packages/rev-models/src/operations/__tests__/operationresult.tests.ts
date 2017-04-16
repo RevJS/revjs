@@ -11,10 +11,10 @@ describe('ModelOperationResult - constructor()', () => {
         let res = new ModelOperationResult(op);
         expect(res.success).to.equal(true);
         expect(res.operation).to.equal(op);
-        expect(res.errors).to.deep.equal([]);
-        expect(res.validation).to.be.null;
-        expect(res.result).to.be.null;
-        expect(res.results).to.be.null;
+        expect(res.errors).to.be.undefined;
+        expect(res.validation).to.be.undefined;
+        expect(res.result).to.be.undefined;
+        expect(res.results).to.be.undefined;
     });
 
 });
@@ -118,7 +118,7 @@ describe('ModelOperationResult - createValidationError()', () => {
 
     it('changes the properties of the operation result as expected', () => {
         expect(res.success).to.be.true;
-        expect(res.validation).to.be.null;
+        expect(res.validation).to.be.undefined;
 
         res.createValidationError(validation);
         expect(res.success).to.be.false;

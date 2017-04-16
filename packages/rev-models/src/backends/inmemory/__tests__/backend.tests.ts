@@ -102,7 +102,7 @@ describe('rev.backends.inmemory', () => {
         it('read() returns an empty list', () => {
             return backend.read(TestModel, {}, readResult, getReadOpts())
                 .then(() => {
-                    expect(readResult.result).to.be.null;
+                    expect(readResult.result).to.be.undefined;
                     expect(readResult.results).to.be.instanceOf(Array);
                     expect(readResult.results.length).to.equal(0);
                 });
@@ -142,7 +142,7 @@ describe('rev.backends.inmemory', () => {
                             age: 20
                         }
                     ]);
-                    expect(res.results).to.equal(null);
+                    expect(res.results).to.be.undefined;
                     expect(res.result).to.be.instanceof(TestModel);
                     expect(res.result).to.not.equal(model);
                     expect(res.result.name).to.equal(model.name);
@@ -192,7 +192,7 @@ describe('rev.backends.inmemory', () => {
             return backend.read(TestModel, {}, readResult, getReadOpts())
                 .then((res) => {
                     expect(res.success).to.be.true;
-                    expect(res.result).to.be.null;
+                    expect(res.result).to.be.undefined;
                     expect(res.results).to.deep.equal([]);
                 });
         });
@@ -201,7 +201,7 @@ describe('rev.backends.inmemory', () => {
             return backend.read(TestModel, { name: { $like: '% Doe' } }, readResult, getReadOpts())
                 .then((res) => {
                     expect(res.success).to.be.true;
-                    expect(res.result).to.be.null;
+                    expect(res.result).to.be.undefined;
                     expect(res.results).to.deep.equal([]);
                 });
         });
@@ -218,7 +218,7 @@ describe('rev.backends.inmemory', () => {
             return backend.read(TestModel, {}, readResult, getReadOpts())
                 .then((res) => {
                     expect(res.success).to.be.true;
-                    expect(res.result).to.be.null;
+                    expect(res.result).to.be.undefined;
                     expect(res.results).to.have.length(5);
                     expect(res.results[0]).to.be.instanceof(TestModel);
                     expect(res.results[1]).to.be.instanceof(TestModel);
@@ -235,7 +235,7 @@ describe('rev.backends.inmemory', () => {
             }, readResult, getReadOpts())
                 .then((res) => {
                     expect(res.success).to.be.true;
-                    expect(res.result).to.be.null;
+                    expect(res.result).to.be.undefined;
                     expect(res.results).to.have.length(2);
                     expect(res.results[0].name).to.equal('John Doe');
                     expect(res.results[1].name).to.equal('Jane Doe');
@@ -248,7 +248,7 @@ describe('rev.backends.inmemory', () => {
             }))
                 .then((res) => {
                     expect(res.success).to.be.true;
-                    expect(res.result).to.be.null;
+                    expect(res.result).to.be.undefined;
                     expect(res.results).to.have.length(3);
                     expect(res.results[0].id).to.equal(1);
                     expect(res.results[1].id).to.equal(2);
@@ -262,7 +262,7 @@ describe('rev.backends.inmemory', () => {
             }))
                 .then((res) => {
                     expect(res.success).to.be.true;
-                    expect(res.result).to.be.null;
+                    expect(res.result).to.be.undefined;
                     expect(res.results).to.have.length(3);
                     expect(res.results[0].id).to.equal(3);
                     expect(res.results[1].id).to.equal(4);
@@ -277,7 +277,7 @@ describe('rev.backends.inmemory', () => {
             }))
                 .then((res) => {
                     expect(res.success).to.be.true;
-                    expect(res.result).to.be.null;
+                    expect(res.result).to.be.undefined;
                     expect(res.results).to.have.length(1);
                     expect(res.results[0].id).to.equal(4);
                 });
