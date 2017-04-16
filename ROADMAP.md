@@ -14,11 +14,12 @@
 
 ## Other Future Releases
 
-Queries
+Queries and CRUD
  * Support `$not` operator
  * Support `$regexp` operator
  * Case-insensitive queries (option for operation methods?)
  * RelatedRecord and RelatedRecordList fields (for model relations)
+ * Support a 'fields' option to read a subset of fields
 
 View modules
  * Support for readonly + hidden fields (with conditional function/expressions)

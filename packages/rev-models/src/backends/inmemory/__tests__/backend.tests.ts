@@ -5,6 +5,8 @@ import { initialiseMeta } from '../../../models/meta';
 import { ModelOperationResult } from '../../../operations/operationresult';
 import { Model } from '../../../models/model';
 import * as d from '../../../decorators';
+import { DEFAULT_CREATE_OPTIONS } from '../../../operations/create';
+import { DEFAULT_READ_OPTIONS } from '../../../operations/read';
 
 let GENDERS = [
     ['male', 'Male'],
@@ -12,6 +14,8 @@ let GENDERS = [
 ];
 
 class TestModel extends Model {
+    @d.IntegerField()
+        id: number;
     @d.TextField()
         name: string;
     @d.IntegerField({ required: false })
@@ -32,13 +36,15 @@ initialiseMeta(TestModel);
 
 let testData: Array<Partial<TestModel>> = [
     {
-        name: 'Joe Doe',
+        id: 1,
+        name: 'John Doe',
         age: 20,
         gender: 'male',
         newsletter: true,
         date_registered: new Date('2016-05-26')
     },
     {
+        id: 2,
         name: 'Jane Doe',
         age: 23,
         gender: 'female',
@@ -46,11 +52,28 @@ let testData: Array<Partial<TestModel>> = [
         date_registered: new Date('2017-01-01')
     },
     {
+        id: 3,
         name: 'Felix The Cat',
         age: 3,
         gender: 'male',
         newsletter: false,
         date_registered: new Date('2016-12-03')
+    },
+    {
+        id: 4,
+        name: 'Rambo',
+        age: 45,
+        gender: 'male',
+        newsletter: true,
+        date_registered: new Date('2015-06-11')
+    },
+    {
+        id: 5,
+        name: 'Frostella the Snowlady',
+        age: 28,
+        gender: 'female',
+        newsletter: false,
+        date_registered: new Date('2016-12-25')
     }
 ];
 
@@ -73,7 +96,7 @@ describe('rev.backends.inmemory', () => {
     describe('initial state', () => {
 
         it('read() returns an empty list', () => {
-            return backend.read(TestModel, {}, readResult)
+            return backend.read(TestModel, {}, readResult, null)
                 .then(() => {
                     expect(readResult.result).to.be.null;
                     expect(readResult.results).to.be.instanceOf(Array);
@@ -107,7 +130,7 @@ describe('rev.backends.inmemory', () => {
                 name: 'test model',
                 age: 20
             });
-            return backend.create(model, createResult)
+            return backend.create(model, createResult, DEFAULT_CREATE_OPTIONS)
                 .then((res) => {
                     expect(backend._storage['TestModel']).to.deep.equal([
                         {
@@ -134,8 +157,8 @@ describe('rev.backends.inmemory', () => {
                 age: 22
             });
             return Promise.all([
-                backend.create(model1, createResult),
-                backend.create(model2, createResult2)
+                backend.create(model1, createResult, DEFAULT_CREATE_OPTIONS),
+                backend.create(model2, createResult2, DEFAULT_CREATE_OPTIONS)
             ])
                 .then((res) => {
                     expect(backend._storage['TestModel']).to.deep.equal([
@@ -162,7 +185,7 @@ describe('rev.backends.inmemory', () => {
     describe('read() - with no data', () => {
 
         it('returns a successful, empty result when where clause = {}', () => {
-            return backend.read(TestModel, {}, readResult)
+            return backend.read(TestModel, {}, readResult, DEFAULT_READ_OPTIONS)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.null;
@@ -171,11 +194,61 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('returns a successful, empty result when where clause sets a filter', () => {
-            return backend.read(TestModel, { name: { $like: '% Doe' } }, readResult)
+            return backend.read(TestModel, { name: { $like: '% Doe' } }, readResult, DEFAULT_READ_OPTIONS)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.null;
                     expect(res.results).to.deep.equal([]);
+                });
+        });
+
+    });
+
+    describe('read() - with data', () => {
+
+        beforeEach(() => {
+            return backend.load(TestModel, testData, loadResult);
+        });
+
+        it('returns all records when where clause = {}', () => {
+            return backend.read(TestModel, {}, readResult, DEFAULT_READ_OPTIONS)
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.result).to.be.null;
+                    expect(res.results).to.have.length(5);
+                    expect(res.results[0]).to.be.instanceof(TestModel);
+                    expect(res.results[1]).to.be.instanceof(TestModel);
+                    expect(res.results[2]).to.be.instanceof(TestModel);
+                    expect(res.results[0].id).to.equal(1);
+                    expect(res.results[1].id).to.equal(2);
+                    expect(res.results[2].id).to.equal(3);
+                });
+        });
+
+        it('returns filtered records when where clause is set', () => {
+            return backend.read(TestModel, {
+                name: { $like: '% Doe' }
+            }, readResult, DEFAULT_READ_OPTIONS)
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.result).to.be.null;
+                    expect(res.results).to.have.length(2);
+                    expect(res.results[0].name).to.equal('John Doe');
+                    expect(res.results[1].name).to.equal('Jane Doe');
+                });
+        });
+
+        it('returns limited number of records when limit is set', () => {
+            return backend.read(TestModel, {}, readResult, {
+                limit: 3
+            })
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.result).to.be.null;
+                    expect(res.results).to.have.length(3);
+                    expect(res.results[0].id).to.equal(1);
+                    expect(res.results[1].id).to.equal(2);
+                    expect(res.results[2].id).to.equal(3);
                 });
         });
 

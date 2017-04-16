@@ -35,7 +35,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    create<T extends Model>(model: T, result: ModelOperationResult<T>, options?: ICreateOptions): Promise<ModelOperationResult<T>> {
+    create<T extends Model>(model: T, result: ModelOperationResult<T>, options: ICreateOptions): Promise<ModelOperationResult<T>> {
         return new Promise<ModelOperationResult<T>>((resolve) => {
 
             let meta = model.getMeta();
@@ -51,7 +51,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    update<T extends Model>(model: T, where: object, result: ModelOperationResult<T>, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
+    update<T extends Model>(model: T, where: object, result: ModelOperationResult<T>, options: IUpdateOptions): Promise<ModelOperationResult<T>> {
         return new Promise<ModelOperationResult<T>>((resolve) => {
 
             if (!where) {
@@ -68,7 +68,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    read<T extends Model>(model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T>, options?: IReadOptions): Promise<ModelOperationResult<T>> {
+    read<T extends Model>(model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T>, options: IReadOptions): Promise<ModelOperationResult<T>> {
         return new Promise<ModelOperationResult<T>>((resolve) => {
 
             let meta = model.meta;
@@ -84,6 +84,9 @@ export class InMemoryBackend implements IBackend {
             for (let record of modelStorage) {
                 if (query.testRecord(record)) {
                     result.results.push(new model(record));
+                    if (result.results.length == options.limit) {
+                        break;
+                    }
                 }
             }
             resolve(result);
@@ -91,7 +94,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    remove<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T>, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
+    remove<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T>, options: IRemoveOptions): Promise<ModelOperationResult<T>> {
         throw new Error('delete() not yet implemented');
     }
 
