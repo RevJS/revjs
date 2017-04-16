@@ -1,6 +1,6 @@
 import { IQueryParser, IQueryNode } from '../types';
 
-import { pretty } from '../../utils/index';
+import { printObj } from '../../utils/index';
 import { Model } from '../../models/model';
 
 export class QueryNode<T extends Model> implements IQueryNode<T> {
@@ -17,7 +17,7 @@ export class QueryNode<T extends Model> implements IQueryNode<T> {
 
     assertIsNonEmptyObject(value: any) {
         if (!value || typeof value != 'object' || Object.keys(value).length == 0) {
-            throw new Error(`element ${pretty(value)} is not valid for '${this.operator}'`);
+            throw new Error(`element ${printObj(value)} is not valid for '${this.operator}'`);
         }
     }
 

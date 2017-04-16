@@ -5,7 +5,7 @@ import { ValueOperator } from './nodes/value';
 import { ValueListOperator } from './nodes/valuelist';
 
 import { IQueryParser, IQueryNode, IOperatorRegister } from './types';
-import { pretty } from '../utils/index';
+import { printObj } from '../utils/index';
 import { checkMetadataInitialised } from '../models/meta';
 import { Model } from '../models/model';
 
@@ -26,6 +26,7 @@ export class QueryParser implements IQueryParser {
             $gte: ValueOperator,
             $lt: ValueOperator,
             $lte: ValueOperator,
+            $like: ValueOperator,
 
             $in: ValueListOperator,
             $nin: ValueListOperator
@@ -46,7 +47,7 @@ export class QueryParser implements IQueryParser {
             parent?: IQueryNode<T>): IQueryNode<T> {
 
         if (!value || typeof value != 'object') {
-            throw new Error(`${pretty(value)} is not a query object`);
+            throw new Error(`${printObj(value)} is not a query object`);
         }
 
         checkMetadataInitialised(model);
