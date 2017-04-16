@@ -84,13 +84,13 @@ export class InMemoryBackend implements IBackend {
             for (let record of modelStorage) {
                 if (query.testRecord(record)) {
                     result.results.push(new model(record));
-                    if (result.results.length == options.limit) {
-                        break;
-                    }
                 }
             }
+            options.offset = Math.max(0, options.offset);
+            options.limit = Math.max(0, options.limit);
+            result.results = result.results.slice(
+                options.offset, options.offset + options.limit);
             resolve(result);
-
         });
     }
 

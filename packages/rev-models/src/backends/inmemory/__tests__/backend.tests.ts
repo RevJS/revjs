@@ -77,6 +77,10 @@ let testData: Array<Partial<TestModel>> = [
     }
 ];
 
+function getReadOpts(options?: object) {
+    return Object.assign({}, DEFAULT_READ_OPTIONS, options);
+}
+
 describe('rev.backends.inmemory', () => {
 
     let backend: InMemoryBackend;
@@ -96,7 +100,7 @@ describe('rev.backends.inmemory', () => {
     describe('initial state', () => {
 
         it('read() returns an empty list', () => {
-            return backend.read(TestModel, {}, readResult, null)
+            return backend.read(TestModel, {}, readResult, getReadOpts())
                 .then(() => {
                     expect(readResult.result).to.be.null;
                     expect(readResult.results).to.be.instanceOf(Array);
@@ -185,7 +189,7 @@ describe('rev.backends.inmemory', () => {
     describe('read() - with no data', () => {
 
         it('returns a successful, empty result when where clause = {}', () => {
-            return backend.read(TestModel, {}, readResult, DEFAULT_READ_OPTIONS)
+            return backend.read(TestModel, {}, readResult, getReadOpts())
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.null;
@@ -194,7 +198,7 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('returns a successful, empty result when where clause sets a filter', () => {
-            return backend.read(TestModel, { name: { $like: '% Doe' } }, readResult, DEFAULT_READ_OPTIONS)
+            return backend.read(TestModel, { name: { $like: '% Doe' } }, readResult, getReadOpts())
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.null;
@@ -211,7 +215,7 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('returns all records when where clause = {}', () => {
-            return backend.read(TestModel, {}, readResult, DEFAULT_READ_OPTIONS)
+            return backend.read(TestModel, {}, readResult, getReadOpts())
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.null;
@@ -228,7 +232,7 @@ describe('rev.backends.inmemory', () => {
         it('returns filtered records when where clause is set', () => {
             return backend.read(TestModel, {
                 name: { $like: '% Doe' }
-            }, readResult, DEFAULT_READ_OPTIONS)
+            }, readResult, getReadOpts())
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.null;
@@ -239,9 +243,9 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('returns limited number of records when limit is set', () => {
-            return backend.read(TestModel, {}, readResult, {
+            return backend.read(TestModel, {}, readResult, getReadOpts({
                 limit: 3
-            })
+            }))
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.null;
@@ -250,6 +254,49 @@ describe('rev.backends.inmemory', () => {
                     expect(res.results[1].id).to.equal(2);
                     expect(res.results[2].id).to.equal(3);
                 });
+        });
+
+        it('offset option works as expected', () => {
+            return backend.read(TestModel, {}, readResult, getReadOpts({
+                offset: 2
+            }))
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.result).to.be.null;
+                    expect(res.results).to.have.length(3);
+                    expect(res.results[0].id).to.equal(3);
+                    expect(res.results[1].id).to.equal(4);
+                    expect(res.results[2].id).to.equal(5);
+                });
+        });
+
+        it('limit and offset work together', () => {
+            return backend.read(TestModel, {}, readResult, getReadOpts({
+                offset: 3,
+                limit: 1
+            }))
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.result).to.be.null;
+                    expect(res.results).to.have.length(1);
+                    expect(res.results[0].id).to.equal(4);
+                });
+        });
+
+        it('out of range limit and offset do not cause errors', () => {
+            Promise.all([
+                backend.read(TestModel, {}, readResult, getReadOpts({
+                    offset: 100,
+                    limit: 40
+                })),
+                backend.read(TestModel, {}, readResult, getReadOpts({
+                    offset: 0,
+                    limit: 40
+                }))
+            ]).then((res) => {
+                expect(res[0].success).to.be.true;
+                expect(res[1].success).to.be.true;
+            });
         });
 
     });
