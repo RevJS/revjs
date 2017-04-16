@@ -6,8 +6,10 @@ import * as backends from '../backends';
 import { IModelOperation } from './operation';
 
 export interface IRemoveOptions {
-    limit?: number;
+    // To be extended by other modules
 }
+
+export const DEFAULT_REMOVE_OPTIONS: IRemoveOptions = {};
 
 export function remove<T extends Model>(model: new() => T, where?: object, options?: IRemoveOptions): Promise<ModelOperationResult<T>> {
     return new Promise((resolve, reject) => {
@@ -27,8 +29,8 @@ export function remove<T extends Model>(model: new() => T, where?: object, optio
             where: where
         };
         let operationResult = new ModelOperationResult<T>(operation);
-
-        backend.remove<T>(model, where, operationResult, options)
+        let opts = Object.assign({}, DEFAULT_REMOVE_OPTIONS, options);
+        backend.remove<T>(model, where, operationResult, opts)
             .then((res) => {
                 resolve(res);
             })

@@ -6,9 +6,10 @@ import * as backends from '../backends';
 import { IModelOperation } from './operation';
 
 export interface IUpdateOptions {
-    limit?: number;
     validation?: IValidationOptions;
 }
+
+export const DEFAULT_UPDATE_OPTIONS: IUpdateOptions = {};
 
 export function update<T extends Model>(model: T, where?: object, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
     return new Promise((resolve, reject) => {
@@ -28,8 +29,8 @@ export function update<T extends Model>(model: T, where?: object, options?: IUpd
             where: where
         };
         let operationResult = new ModelOperationResult<T>(operation);
-
-        validate(model, operation, options ? options.validation : null)
+        let opts = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
+        validate(model, operation, opts.validation ? opts.validation : null)
             .then((validationResult) => {
 
                 if (!validationResult.valid) {
@@ -39,7 +40,7 @@ export function update<T extends Model>(model: T, where?: object, options?: IUpd
                     operationResult.validation = validationResult;
                 }
 
-                return backend.update<typeof model>(model, where, operationResult, options);
+                return backend.update<typeof model>(model, where, operationResult, opts);
 
             })
             .then((res) => {

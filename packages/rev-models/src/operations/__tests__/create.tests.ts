@@ -8,6 +8,7 @@ import * as create from '../create';
 import { MockBackend } from './mock-backend';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { initialiseMeta } from '../../models/meta';
+import { DEFAULT_CREATE_OPTIONS } from "../create";
 
 let GENDERS = [
     ['male', 'Male'],
@@ -52,6 +53,32 @@ describe('rev.operations.create()', () => {
                 expect(res.success).to.be.true;
                 expect(res.validation).to.be.instanceOf(ModelValidationResult);
                 expect(res.validation.valid).to.be.true;
+            });
+    });
+
+    it('calls backend.create() with DEFAULT_CREATE_OPTIONS if no options are set', () => {
+        let model = new TestModel();
+        model.name = 'Bob';
+        model.gender = 'male';
+        return rwCreate.create(model, null)
+            .then((res) => {
+                expect(mockBackend.createStub.callCount).to.equal(1);
+                let readCall = mockBackend.createStub.getCall(0);
+                expect(readCall.args[0]).to.equal(model);
+                expect(readCall.args[2]).to.deep.equal(DEFAULT_CREATE_OPTIONS);
+            });
+    });
+
+    it('calls backend.create() with overridden options if they are set', () => {
+        let model = new TestModel();
+        model.name = 'Bob';
+        model.gender = 'male';
+        return rwCreate.create(model, { validation: {} })
+            .then((res) => {
+                expect(mockBackend.createStub.callCount).to.equal(1);
+                let readCall = mockBackend.createStub.getCall(0);
+                expect(readCall.args[0]).to.equal(model);
+                expect(readCall.args[2].validation).to.deep.equal({});
             });
     });
 

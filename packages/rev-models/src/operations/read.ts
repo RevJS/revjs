@@ -8,8 +8,12 @@ import { IModelOperation } from './operation';
 export interface IReadOptions {
     limit?: number;
     offset?: number;
-    fields?: string[];
 }
+
+export const DEFAULT_READ_OPTIONS: IReadOptions = {
+    limit: 20,
+    offset: 0
+};
 
 export function read<T extends Model>(model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T>> {
     return new Promise((resolve, reject) => {
@@ -23,7 +27,8 @@ export function read<T extends Model>(model: new() => T, where?: object, options
             where: where
         };
         let operationResult = new ModelOperationResult<T>(operation);
-        backend.read(model, where || {}, operationResult, options)
+        let opts = Object.assign({}, DEFAULT_READ_OPTIONS, options);
+        backend.read(model, where || {}, operationResult, opts)
             .then((res) => {
                 resolve(res);
             })

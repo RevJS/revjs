@@ -8,6 +8,7 @@ import * as update from '../update';
 import { MockBackend } from './mock-backend';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { initialiseMeta } from '../../models/meta';
+import { DEFAULT_UPDATE_OPTIONS } from '../update';
 
 let GENDERS = [
     ['male', 'Male'],
@@ -54,6 +55,34 @@ describe('rev.operations.update()', () => {
                 expect(res.success).to.be.true;
                 expect(res.validation).to.be.instanceOf(ModelValidationResult);
                 expect(res.validation.valid).to.be.true;
+            });
+    });
+
+    it('calls backend.update() with DEFAULT_UPDATE_OPTIONS if no options are set', () => {
+        let model = new TestModel();
+        model.name = 'Bob';
+        model.gender = 'male';
+        return rwUpdate.update(model, whereClause)
+            .then((res) => {
+                expect(mockBackend.updateStub.callCount).to.equal(1);
+                let readCall = mockBackend.updateStub.getCall(0);
+                expect(readCall.args[0]).to.equal(model);
+                expect(readCall.args[1]).to.equal(whereClause);
+                expect(readCall.args[3]).to.deep.equal(DEFAULT_UPDATE_OPTIONS);
+            });
+    });
+
+    it('calls backend.update() with overridden options if they are set', () => {
+        let model = new TestModel();
+        model.name = 'Bob';
+        model.gender = 'male';
+        return rwUpdate.update(model, whereClause, { validation: {} })
+            .then((res) => {
+                expect(mockBackend.updateStub.callCount).to.equal(1);
+                let readCall = mockBackend.updateStub.getCall(0);
+                expect(readCall.args[0]).to.equal(model);
+                expect(readCall.args[1]).to.equal(whereClause);
+                expect(readCall.args[3].validation).to.deep.equal({});
             });
     });
 

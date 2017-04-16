@@ -25,6 +25,7 @@
      "forin": false,
      "variable-name": [false],
      "no-empty": false,
+     "no-empty-interface": false,
      "no-string-literal": false,
      "object-literal-shorthand": false,
      "member-access": [false],

@@ -7,6 +7,7 @@ import * as d from '../../decorators';
 import * as read from '../read';
 import { MockBackend } from './mock-backend';
 import { initialiseMeta } from '../../models/meta';
+import { DEFAULT_READ_OPTIONS } from '../read';
 
 class TestModel extends Model {
     @d.TextField()
@@ -28,13 +29,20 @@ let mockBackend: MockBackend;
 
 describe('rev.operations.read()', () => {
 
-    let whereClause = {}; // where-clause stuff TO DO!
+    let whereClause = {};
 
     beforeEach(() => {
         mockBackend = new MockBackend();
         mockBackend.results = testResults;
         rwRead.__set__('backends', {
             get: () => mockBackend
+        });
+    });
+
+    it('DEFAULT_READ_OPTIONS are as expected', () => {
+        expect(DEFAULT_READ_OPTIONS).to.deep.equal({
+            limit: 20,
+            offset: 0
         });
     });
 
@@ -61,6 +69,29 @@ describe('rev.operations.read()', () => {
                 expect(res.success).to.be.true;
                 expect(res.results).to.equal(testResults);
                 expect(res.validation).to.be.null;
+            });
+    });
+
+    it('calls backend.read() with DEFAULT_READ_OPTIONS if no options are set', () => {
+        return rwRead.read(TestModel, whereClause, null)
+            .then((res) => {
+                expect(mockBackend.readStub.callCount).to.equal(1);
+                let readCall = mockBackend.readStub.getCall(0);
+                expect(readCall.args[0]).to.equal(TestModel);
+                expect(readCall.args[1]).to.deep.equal({});
+                expect(readCall.args[3]).to.deep.equal(DEFAULT_READ_OPTIONS);
+            });
+    });
+
+    it('calls backend.read() with overridden options if they are set', () => {
+        return rwRead.read(TestModel, whereClause, { offset: 10 })
+            .then((res) => {
+                expect(mockBackend.readStub.callCount).to.equal(1);
+                let readCall = mockBackend.readStub.getCall(0);
+                expect(readCall.args[0]).to.equal(TestModel);
+                expect(readCall.args[1]).to.deep.equal({});
+                expect(readCall.args[3].limit).to.equal(DEFAULT_READ_OPTIONS.limit);
+                expect(readCall.args[3].offset).to.equal(10);
             });
     });
 

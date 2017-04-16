@@ -10,6 +10,8 @@ export interface ICreateOptions {
     validation?: IValidationOptions;
 }
 
+export const DEFAULT_CREATE_OPTIONS: ICreateOptions = {};
+
 export function create<T extends Model>(model: T, options?: ICreateOptions): Promise<ModelOperationResult<T>> {
     return new Promise((resolve, reject) => {
 
@@ -21,8 +23,8 @@ export function create<T extends Model>(model: T, options?: ICreateOptions): Pro
             operation: 'create'
         };
         let operationResult = new ModelOperationResult<T>(operation);
-
-        validate(model, operation, options ? options.validation : null)
+        let opts = Object.assign({}, DEFAULT_CREATE_OPTIONS, options);
+        validate(model, operation, opts.validation ? opts.validation : null)
             .then((validationResult) => {
 
                 if (!validationResult.valid) {
@@ -32,7 +34,7 @@ export function create<T extends Model>(model: T, options?: ICreateOptions): Pro
                     operationResult.validation = validationResult;
                 }
 
-                return backend.create(model, operationResult, options);
+                return backend.create(model, operationResult, opts);
 
             })
             .then((res) => {

@@ -7,6 +7,7 @@ import * as d from '../../decorators';
 import * as remove from '../remove';
 import { MockBackend } from './mock-backend';
 import { initialiseMeta } from '../../models/meta';
+import { DEFAULT_REMOVE_OPTIONS } from '../remove';
 
 class TestModel extends Model {
     @d.TextField()
@@ -40,6 +41,28 @@ describe('rev.operations.remove()', () => {
                 expect(removeCall.args[0]).to.equal(TestModel);
                 expect(removeCall.args[1]).to.equal(whereClause);
                 expect(res.success).to.be.true;
+            });
+    });
+
+    it('calls backend.read() with DEFAULT_REMOVE_OPTIONS if no options are set', () => {
+        return rwRemove.remove(TestModel, whereClause, null)
+            .then((res) => {
+                expect(mockBackend.removeStub.callCount).to.equal(1);
+                let readCall = mockBackend.removeStub.getCall(0);
+                expect(readCall.args[0]).to.equal(TestModel);
+                expect(readCall.args[1]).to.deep.equal({});
+                expect(readCall.args[3]).to.deep.equal(DEFAULT_REMOVE_OPTIONS);
+            });
+    });
+
+    it('calls backend.read() with overridden options if they are set', () => {
+        return rwRemove.remove(TestModel, whereClause, { somekey: 10 })
+            .then((res) => {
+                expect(mockBackend.removeStub.callCount).to.equal(1);
+                let readCall = mockBackend.removeStub.getCall(0);
+                expect(readCall.args[0]).to.equal(TestModel);
+                expect(readCall.args[1]).to.deep.equal({});
+                expect(readCall.args[3].somekey).to.equal(10);
             });
     });
 
