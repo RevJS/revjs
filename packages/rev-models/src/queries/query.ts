@@ -16,7 +16,7 @@ export function getLikeStrRegExp(likeStr: string) {
     // Can't use a simple RegExp because JS doesn't support lookbehinds :(
     likeStr = escapeForRegex(likeStr);
     if (likeStr == '') {
-        return /^.{0}$/gm; // match only empty strings
+        return /^.{0}$/m; // match only empty strings
     }
     let m: RegExpExecArray;
     let doubleMatcher = /%%/g;
@@ -46,5 +46,5 @@ export function getLikeStrRegExp(likeStr: string) {
         wildcardedStr = likeStr;
     }
     wildcardedStr = wildcardedStr.replace(/%%/g, '%');
-    return new RegExp(wildcardedStr);
+    return new RegExp('^' + wildcardedStr + '$', 'm');
 }
