@@ -75,6 +75,12 @@ export class InMemoryBackend implements IBackend {
             if (!where) {
                 throw new Error('read() requires the \'where\' parameter');
             }
+            if (options.limit < 1) {
+                throw new Error('options.limit cannot be less than 1');
+            }
+            if (options.offset < 0) {
+                throw new Error('options.offset cannot be less than zero');
+            }
 
             let modelStorage = this._getModelStorage<T>(model, meta);
             let parser = new QueryParser();
@@ -86,10 +92,14 @@ export class InMemoryBackend implements IBackend {
                     result.results.push(new model(record));
                 }
             }
-            options.offset = Math.max(0, options.offset);
-            options.limit = Math.max(0, options.limit);
+            result.setMeta({
+                offset: options.offset,
+                limit: options.limit,
+                total_count: result.results.length
+            });
             result.results = result.results.slice(
-                options.offset, options.offset + options.limit);
+                result.meta.offset,
+                result.meta.offset + result.meta.limit);
             resolve(result);
         });
     }

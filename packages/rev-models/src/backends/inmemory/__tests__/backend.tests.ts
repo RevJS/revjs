@@ -88,6 +88,7 @@ describe('rev.backends.inmemory', () => {
     let createResult: ModelOperationResult<TestModel, ICreateMeta>;
     let createResult2: ModelOperationResult<TestModel, ICreateMeta>;
     let readResult: ModelOperationResult<TestModel, IReadMeta>;
+    let readResult2: ModelOperationResult<TestModel, IReadMeta>;
 
     beforeEach(() => {
         backend = new InMemoryBackend();
@@ -95,6 +96,7 @@ describe('rev.backends.inmemory', () => {
         createResult = new ModelOperationResult<TestModel, ICreateMeta>({operation: 'create'});
         createResult2 = new ModelOperationResult<TestModel, ICreateMeta>({operation: 'create'});
         readResult = new ModelOperationResult<TestModel, IReadMeta>({operation: 'read'});
+        readResult2 = new ModelOperationResult<TestModel, IReadMeta>({operation: 'read'});
     });
 
     describe('initial state', () => {
@@ -229,6 +231,20 @@ describe('rev.backends.inmemory', () => {
                 });
         });
 
+        it('returns IReadMeta matching DEFAULT_READ_OPTIONS', () => {
+            return backend.read(TestModel, {}, readResult, getReadOpts())
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.result).to.be.undefined;
+                    expect(res.results).to.have.length(5);
+                    expect(res.meta).to.deep.equal({
+                        limit: DEFAULT_READ_OPTIONS.limit,
+                        offset: DEFAULT_READ_OPTIONS.offset,
+                        total_count: 5
+                    });
+                });
+        });
+
         it('returns filtered records when where clause is set', () => {
             return backend.read(TestModel, {
                 name: { $like: '% Doe' }
@@ -284,19 +300,66 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('out of range limit and offset do not cause errors', () => {
-            Promise.all([
+            return Promise.all([
                 backend.read(TestModel, {}, readResult, getReadOpts({
                     offset: 100,
-                    limit: 40
+                    limit: 5
                 })),
-                backend.read(TestModel, {}, readResult, getReadOpts({
+                backend.read(TestModel, {}, readResult2, getReadOpts({
                     offset: 0,
                     limit: 40
-                }))
+                })),
             ]).then((res) => {
                 expect(res[0].success).to.be.true;
+                expect(res[0].results).to.deep.equal([]);
+                expect(res[0].meta.offset).to.equal(100);
+                expect(res[0].meta.limit).to.equal(5);
                 expect(res[1].success).to.be.true;
+                expect(res[1].results).to.have.length(5);
+                expect(res[1].meta.offset).to.equal(0);
+                expect(res[1].meta.limit).to.equal(40);
             });
+        });
+
+        it('throws an error if where clause is not provided', () => {
+            return expect(
+                backend.read(TestModel, null, readResult, getReadOpts())
+            ).to.be.rejectedWith('read() requires the \'where\' parameter');
+        });
+
+        it('throws an error if options.limit == 0', () => {
+            return expect(
+                backend.read(TestModel, {}, readResult, getReadOpts({
+                    offset: 2,
+                    limit: 0
+                }))
+            ).to.be.rejectedWith('options.limit cannot be less than 1');
+        });
+
+        it('throws an error if options.limit is negative', () => {
+            return expect(
+                backend.read(TestModel, {}, readResult, getReadOpts({
+                    offset: 2,
+                    limit: -12
+                }))
+            ).to.be.rejectedWith('options.limit cannot be less than 1');
+        });
+
+        it('throws an error if options.offset is negative', () => {
+            return expect(
+                backend.read(TestModel, {}, readResult, getReadOpts({
+                    offset: -10,
+                    limit: 10
+                }))
+            ).to.be.rejectedWith('options.offset cannot be less than zero');
+        });
+
+        it('throws when an invalid query is specified', () => {
+            return expect(
+                backend.read(TestModel, {
+                    non_existent_field: 42
+                }, readResult, getReadOpts())
+            ).to.be.rejectedWith('not a recognised field');
         });
 
     });
