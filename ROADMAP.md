@@ -16,6 +16,8 @@
 
 Queries
  * Support `$not` operator
+ * Support `$regexp` operator
+ * Case-insensitive queries (option for operation methods?)
  * RelatedRecord and RelatedRecordList fields (for model relations)
 
 View modules

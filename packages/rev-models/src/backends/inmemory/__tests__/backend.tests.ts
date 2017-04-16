@@ -32,7 +32,7 @@ initialiseMeta(TestModel);
 
 let testData: Array<Partial<TestModel>> = [
     {
-        name: 'Joe Bloggs',
+        name: 'Joe Doe',
         age: 20,
         gender: 'male',
         newsletter: true,
@@ -159,27 +159,23 @@ describe('rev.backends.inmemory', () => {
 
     });
 
-    describe('read()', () => {
+    describe('read() - with no data', () => {
 
-        it('returns a successful result as expected', () => {
+        it('returns a successful, empty result when where clause = {}', () => {
             return backend.read(TestModel, {}, readResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
-                    /*expect(res.result).to.be.instanceOf(TestModel);
-                    expect(res.results).to.be.null;
-                    expect(res.result.getDescription).to.be.a('function');
-                    for (let field of TestModel.meta.fields) {
-                        expect(res.result[field.name]).to.be.undefined;
-                    }*/
+                    expect(res.result).to.be.null;
+                    expect(res.results).to.deep.equal([]);
                 });
         });
 
-        it('returns all records when where clause = {}', () => {
-            backend.load(TestModel, testData, loadResult);
-            return backend.read(TestModel, {}, readResult)
-                .then(() => {
-                    expect(readResult.result).to.be.null;
-                    expect(readResult.results).to.have.length(testData.length);
+        it('returns a successful, empty result when where clause sets a filter', () => {
+            return backend.read(TestModel, { name: { $like: '% Doe' } }, readResult)
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.result).to.be.null;
+                    expect(res.results).to.deep.equal([]);
                 });
         });
 
