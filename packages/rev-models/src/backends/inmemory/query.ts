@@ -5,7 +5,7 @@ import { ConjunctionNode } from '../../queries/nodes/conjunction';
 import { FieldNode } from '../../queries/nodes/field';
 import { ValueOperator } from '../../queries/nodes/value';
 import { ValueListOperator } from '../../queries/nodes/valuelist';
-import { getLikeStrRegExp } from '../../queries/query';
+import { getLikeOperatorRegExp } from '../../queries/query';
 
 export class InMemoryQuery<T extends Model> {
 
@@ -78,7 +78,7 @@ export class InMemoryQuery<T extends Model> {
             if (valueNode.operator == '$lte' && record[fieldName] <= valueNode.value) {
                 return true;
             }
-            if (valueNode.operator == '$like' && getLikeStrRegExp(valueNode.value).test(record[fieldName])) {
+            if (valueNode.operator == '$like' && getLikeOperatorRegExp(valueNode.value).test(record[fieldName])) {
                 return true;
             }
             return false;
@@ -88,7 +88,7 @@ export class InMemoryQuery<T extends Model> {
                 return (valueNode.values.indexOf(record[fieldName]) > -1);
             }
             if (valueNode.operator == '$nin') {
-                return (valueNode.values.indexOf(record[fieldName]) > -1);
+                return (valueNode.values.indexOf(record[fieldName]) == -1);
             }
         }
         else {

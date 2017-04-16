@@ -11,7 +11,7 @@ export function isFieldValue(value: any) {
         || value === null);
 }
 
-export function getLikeStrRegExp(likeStr: string) {
+export function getLikeOperatorRegExp(likeStr: string) {
     // Build a RegExp from string with % wildcards (i.e. LIKE in SQL)
     // Can't use a simple RegExp because JS doesn't support lookbehinds :(
     likeStr = escapeForRegex(likeStr);

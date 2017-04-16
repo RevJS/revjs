@@ -34,7 +34,7 @@ describe('isFieldValue()', () => {
 
 });
 
-describe('getLikeStrRegExp()', () => {
+describe('getLikeOperatorRegExp()', () => {
 
     it('returns an empty string matcher for empty strings', () => {
         let r = getLikeStrRegExp('');
