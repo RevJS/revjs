@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { IBackend } from '../backends';
 import * as backends from '../index';
 import { getAll, resetBackends } from '../backends';
-import { InMemoryBackend } from '../inmemory';
+import { InMemoryBackend } from '../inmemory/backend';
 
 describe('rev.backend', () => {
 

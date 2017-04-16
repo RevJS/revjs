@@ -1,10 +1,10 @@
 
 import { expect } from 'chai';
-import { InMemoryBackend } from '../inmemory';
-import { initialiseMeta } from '../../models/meta';
-import { ModelOperationResult } from '../../operations/operationresult';
-import { Model } from '../../models/model';
-import * as d from '../../decorators';
+import { InMemoryBackend } from '../backend';
+import { initialiseMeta } from '../../../models/meta';
+import { ModelOperationResult } from '../../../operations/operationresult';
+import { Model } from '../../../models/model';
+import * as d from '../../../decorators';
 
 let GENDERS = [
     ['male', 'Male'],
@@ -199,7 +199,7 @@ describe('rev.backends.inmemory', () => {
             return backend.read(TestModel, {}, readResult)
                 .then(() => {
                     expect(readResult.result).to.be.null;
-                    expect(readResult.results).to.deep.equal(testData);
+                    expect(readResult.results).to.have.length(testData.length);
                 });
         });
 

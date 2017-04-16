@@ -32,7 +32,7 @@ describe('class ValueListOperator<T> - constructor', () => {
             new ValueListOperator(parser, '$in', null, TestModel, null);
         }).to.throw('must be an array');
         expect(() => {
-            new ValueListOperator(parser, '$in', {}, TestModel, null);
+            new ValueListOperator(parser, '$in', {} as any, TestModel, null);
         }).to.throw('must be an array');
     });
 
