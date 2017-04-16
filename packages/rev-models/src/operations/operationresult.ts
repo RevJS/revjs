@@ -8,22 +8,29 @@ export interface IOperationError {
     [key: string]: any;
 }
 
-export interface IModelOperationResult<T extends Model> {
-    operation: IModelOperation;
-    success: boolean;
-    validation?: ModelValidationResult;
-    result?: T;
-    results?: T[];
-    errors?: IOperationError[];
+export interface IOperationMeta {
+    // Base interface for operation result metadata
+    // In future we might have common meta, e.g. exec_time
 }
 
-export class ModelOperationResult<T extends Model> implements IModelOperationResult<T> {
+export interface IModelOperationResult<T extends Model, M extends IOperationMeta> {
     operation: IModelOperation;
     success: boolean;
     validation?: ModelValidationResult;
     result?: T;
     results?: T[];
     errors?: IOperationError[];
+    meta?: M;
+}
+
+export class ModelOperationResult<T extends Model, M extends IOperationMeta> implements IModelOperationResult<T, M> {
+    operation: IModelOperation;
+    success: boolean;
+    validation?: ModelValidationResult;
+    result?: T;
+    results?: T[];
+    errors?: IOperationError[];
+    meta?: M;
 
     constructor(operation: IModelOperation) {
         this.operation = operation;

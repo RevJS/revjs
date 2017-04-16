@@ -21,7 +21,7 @@ describe('ModelOperationResult - constructor()', () => {
 
 describe('ModelOperationResult - addError()', () => {
 
-    let res: ModelOperationResult<any>;
+    let res: ModelOperationResult<any, any>;
 
     beforeEach(() => {
         res = new ModelOperationResult({operation: 'create'});
@@ -107,7 +107,7 @@ describe('ModelOperationResult - addError()', () => {
 
 describe('ModelOperationResult - createValidationError()', () => {
 
-    let res: ModelOperationResult<any>;
+    let res: ModelOperationResult<any, any>;
     let validation: ModelValidationResult;
 
     beforeEach(() => {

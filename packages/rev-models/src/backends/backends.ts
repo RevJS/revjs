@@ -2,16 +2,16 @@
 import { InMemoryBackend } from './inmemory/backend';
 import { ModelOperationResult } from '../operations/operationresult';
 import { Model } from '../models/model';
-import { ICreateOptions } from '../operations/create';
-import { IUpdateOptions } from '../operations/update';
-import { IReadOptions } from '../operations/read';
-import { IRemoveOptions } from '../operations/remove';
+import { ICreateOptions, ICreateMeta } from '../operations/create';
+import { IUpdateOptions, IUpdateMeta } from '../operations/update';
+import { IReadOptions, IReadMeta } from '../operations/read';
+import { IRemoveOptions, IRemoveMeta } from '../operations/remove';
 
 export interface IBackend {
-    create<T extends Model>(model: T, result: ModelOperationResult<T>, options: ICreateOptions): Promise<ModelOperationResult<T>>;
-    update<T extends Model>(model: T, where: object, result: ModelOperationResult<T>, options: IUpdateOptions): Promise<ModelOperationResult<T>>;
-    remove<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T>, options: IRemoveOptions): Promise<ModelOperationResult<T>>;
-    read<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T>, options: IReadOptions): Promise<ModelOperationResult<T>>;
+    create<T extends Model>(model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>>;
+    update<T extends Model>(model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>>;
+    remove<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>>;
+    read<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>>;
 }
 
 let configuredBackends: {[backendName: string]: IBackend};

@@ -1,6 +1,6 @@
 import { IValidationOptions, validate } from './validate';
 import { Model } from '../models/model';
-import { ModelOperationResult } from './operationresult';
+import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { checkMetadataInitialised } from '../models/meta';
 import * as backends from '../backends';
 import { IModelOperation } from './operation';
@@ -9,9 +9,13 @@ export interface IUpdateOptions {
     validation?: IValidationOptions;
 }
 
+export interface IUpdateMeta extends IOperationMeta {
+    total_count: number;
+}
+
 export const DEFAULT_UPDATE_OPTIONS: IUpdateOptions = {};
 
-export function update<T extends Model>(model: T, where?: object, options?: IUpdateOptions): Promise<ModelOperationResult<T>> {
+export function update<T extends Model>(model: T, where?: object, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
     return new Promise((resolve, reject) => {
 
         // TODO: Validate 'where' parameter
@@ -28,7 +32,7 @@ export function update<T extends Model>(model: T, where?: object, options?: IUpd
             operation: 'update',
             where: where
         };
-        let operationResult = new ModelOperationResult<T>(operation);
+        let operationResult = new ModelOperationResult<T, IUpdateMeta>(operation);
         let opts = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
         validate(model, operation, opts.validation ? opts.validation : null)
             .then((validationResult) => {

@@ -5,8 +5,8 @@ import { initialiseMeta } from '../../../models/meta';
 import { ModelOperationResult } from '../../../operations/operationresult';
 import { Model } from '../../../models/model';
 import * as d from '../../../decorators';
-import { DEFAULT_CREATE_OPTIONS } from '../../../operations/create';
-import { DEFAULT_READ_OPTIONS } from '../../../operations/read';
+import { DEFAULT_CREATE_OPTIONS, ICreateMeta } from '../../../operations/create';
+import { DEFAULT_READ_OPTIONS, IReadMeta } from '../../../operations/read';
 
 let GENDERS = [
     ['male', 'Male'],
@@ -84,17 +84,17 @@ function getReadOpts(options?: object) {
 describe('rev.backends.inmemory', () => {
 
     let backend: InMemoryBackend;
-    let loadResult: ModelOperationResult<TestModel>;
-    let createResult: ModelOperationResult<TestModel>;
-    let createResult2: ModelOperationResult<TestModel>;
-    let readResult: ModelOperationResult<TestModel>;
+    let loadResult: ModelOperationResult<TestModel, null>;
+    let createResult: ModelOperationResult<TestModel, ICreateMeta>;
+    let createResult2: ModelOperationResult<TestModel, ICreateMeta>;
+    let readResult: ModelOperationResult<TestModel, IReadMeta>;
 
     beforeEach(() => {
         backend = new InMemoryBackend();
-        loadResult = new ModelOperationResult<TestModel>({operation: 'load'});
-        createResult = new ModelOperationResult<TestModel>({operation: 'create'});
-        createResult2 = new ModelOperationResult<TestModel>({operation: 'create'});
-        readResult = new ModelOperationResult<TestModel>({operation: 'read'});
+        loadResult = new ModelOperationResult<TestModel, null>({operation: 'load'});
+        createResult = new ModelOperationResult<TestModel, ICreateMeta>({operation: 'create'});
+        createResult2 = new ModelOperationResult<TestModel, ICreateMeta>({operation: 'create'});
+        readResult = new ModelOperationResult<TestModel, IReadMeta>({operation: 'read'});
     });
 
     describe('initial state', () => {

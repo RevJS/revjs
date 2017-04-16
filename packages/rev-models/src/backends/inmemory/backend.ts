@@ -3,10 +3,10 @@ import { IBackend } from '../';
 import { IModelMeta } from '../../models/meta';
 import { ModelOperationResult } from '../../operations/operationresult';
 import { Model } from '../../models/model';
-import { ICreateOptions } from '../../operations/create';
-import { IUpdateOptions } from '../../operations/update';
-import { IReadOptions } from '../../operations/read';
-import { IRemoveOptions } from '../../operations/remove';
+import { ICreateOptions, ICreateMeta } from '../../operations/create';
+import { IUpdateOptions, IUpdateMeta } from '../../operations/update';
+import { IReadOptions, IReadMeta } from '../../operations/read';
+import { IRemoveOptions, IRemoveMeta } from '../../operations/remove';
 import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
 
@@ -19,8 +19,8 @@ export class InMemoryBackend implements IBackend {
         this._storage = {};
     }
 
-    load<T extends Model>(model: new(...args: any[]) => T, data: Array<Partial<T>>, result: ModelOperationResult<T>): Promise<ModelOperationResult<T>> {
-        return new Promise<ModelOperationResult<T>>((resolve) => {
+    load<T extends Model>(model: new(...args: any[]) => T, data: Array<Partial<T>>, result: ModelOperationResult<T, null>): Promise<ModelOperationResult<T, null>> {
+        return new Promise<ModelOperationResult<T, null>>((resolve) => {
 
             let meta = model.meta;
 
@@ -35,8 +35,8 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    create<T extends Model>(model: T, result: ModelOperationResult<T>, options: ICreateOptions): Promise<ModelOperationResult<T>> {
-        return new Promise<ModelOperationResult<T>>((resolve) => {
+    create<T extends Model>(model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
+        return new Promise<ModelOperationResult<T, ICreateMeta>>((resolve) => {
 
             let meta = model.getMeta();
             let modelStorage = this._getModelStorage(model.constructor as any, meta);
@@ -51,8 +51,8 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    update<T extends Model>(model: T, where: object, result: ModelOperationResult<T>, options: IUpdateOptions): Promise<ModelOperationResult<T>> {
-        return new Promise<ModelOperationResult<T>>((resolve) => {
+    update<T extends Model>(model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+        return new Promise<ModelOperationResult<T, IUpdateMeta>>((resolve) => {
 
             if (!where) {
                 throw new Error('update() requires the \'where\' parameter');
@@ -68,8 +68,8 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    read<T extends Model>(model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T>, options: IReadOptions): Promise<ModelOperationResult<T>> {
-        return new Promise<ModelOperationResult<T>>((resolve) => {
+    read<T extends Model>(model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+        return new Promise<ModelOperationResult<T, IReadMeta>>((resolve) => {
 
             let meta = model.meta;
             if (!where) {
@@ -94,8 +94,8 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    remove<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T>, options: IRemoveOptions): Promise<ModelOperationResult<T>> {
-        throw new Error('delete() not yet implemented');
+    remove<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+        throw new Error('remove() not yet implemented');
     }
 
     _getModelStorage<T extends Model>(model: new() => T, meta: IModelMeta): any {
