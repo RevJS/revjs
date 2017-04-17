@@ -321,6 +321,38 @@ describe('rev.backends.inmemory', () => {
             });
         });
 
+        it('sorts results by a single order_by field', () => {
+            return backend.read(TestModel, {}, readResult, getReadOpts({
+                order_by: ['name']
+            }))
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.results).to.have.length(5);
+                    expect(res.results[0].name).to.equal('Felix The Cat');
+                    expect(res.results[0].id).to.equal(3);
+                    expect(res.results[1].name).to.equal('Frostella the Snowlady');
+                    expect(res.results[1].id).to.equal(5);
+                    expect(res.results[2].name).to.equal('Jane Doe');
+                    expect(res.results[2].id).to.equal(2);
+                });
+        });
+
+        it('sorts results by two order_by fields', () => {
+            return backend.read(TestModel, {}, readResult, getReadOpts({
+                order_by: ['gender desc', 'name']
+            }))
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.results).to.have.length(5);
+                    expect(res.results[0].name).to.equal('Felix The Cat');
+                    expect(res.results[0].id).to.equal(3);
+                    expect(res.results[1].name).to.equal('John Doe');
+                    expect(res.results[1].id).to.equal(1);
+                    expect(res.results[2].name).to.equal('Rambo');
+                    expect(res.results[2].id).to.equal(4);
+                });
+        });
+
         it('throws an error if where clause is not provided', () => {
             return expect(
                 backend.read(TestModel, null, readResult, getReadOpts())

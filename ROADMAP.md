@@ -20,6 +20,7 @@ Queries and CRUD
  * Case-insensitive queries (option for operation methods?)
  * RelatedRecord and RelatedRecordList fields (for model relations)
  * Support a 'fields' option to read a subset of fields
+ * group_by?
 
 View modules
  * Support for readonly + hidden fields (with conditional function/expressions)

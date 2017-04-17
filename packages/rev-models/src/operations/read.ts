@@ -12,6 +12,7 @@ export interface IReadOptions {
 }
 
 export interface IReadMeta extends IOperationMeta {
+    order_by?: string[];
     limit: number;
     offset: number;
     total_count: number;

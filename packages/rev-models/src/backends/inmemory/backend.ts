@@ -9,6 +9,7 @@ import { IReadOptions, IReadMeta } from '../../operations/read';
 import { IRemoveOptions, IRemoveMeta } from '../../operations/remove';
 import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
+import { sortRecords } from './sort';
 
 export class InMemoryBackend implements IBackend {
     _storage: {
@@ -91,6 +92,10 @@ export class InMemoryBackend implements IBackend {
                 if (query.testRecord(record)) {
                     result.results.push(new model(record));
                 }
+            }
+            if (options.order_by) {
+                result.results = sortRecords(result.results, options.order_by) as T[];
+                result.setMeta({ order_by: options.order_by });
             }
             result.setMeta({
                 offset: options.offset,
