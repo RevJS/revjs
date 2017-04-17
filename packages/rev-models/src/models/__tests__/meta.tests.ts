@@ -175,6 +175,71 @@ describe('initialiseMeta() - with decorators', () => {
         expect((MyClass.prototype as any).__fields).to.be.undefined;
     });
 
+    it('meta.primaryKey defaults to []', () => {
+        class MyClass extends Model {
+            @d.IntegerField()
+                id: number;
+            @d.TextField()
+                name: string;
+        }
+        initialiseMeta(MyClass);
+        expect(MyClass.meta.primaryKey).to.deep.equal([]);
+    });
+
+    it('fields with primaryKey set are added to meta.primaryKey', () => {
+        class MyClass extends Model {
+            @d.IntegerField({primaryKey: true})
+                id: number;
+            @d.TextField({primaryKey: true})
+                name: string;
+        }
+        initialiseMeta(MyClass);
+        expect(MyClass.meta.primaryKey).to.deep.equal(['id', 'name']);
+    });
+
+    it('fields with primaryKey set are merged with existing meta.primaryKey', () => {
+        class MyClass extends Model {
+            @d.IntegerField({primaryKey: true})
+                id: number;
+            @d.TextField()
+                name: string;
+        }
+        MyClass.meta = {
+            primaryKey: ['name']
+        };
+        initialiseMeta(MyClass);
+        expect(MyClass.meta.primaryKey).to.deep.equal(['name', 'id']);
+    });
+
+    it('meta.primaryKey is left untouched if fields do not override it', () => {
+        class MyClass extends Model {
+            @d.IntegerField()
+                id: number;
+            @d.TextField()
+                name: string;
+        }
+        MyClass.meta = {
+            primaryKey: ['id', 'name']
+        };
+        initialiseMeta(MyClass);
+        expect(MyClass.meta.primaryKey).to.deep.equal(['id', 'name']);
+    });
+
+    it('throws if an invalid field name is in meta.primaryKey', () => {
+        class MyClass extends Model {
+            @d.IntegerField()
+                id: number;
+            @d.TextField()
+                name: string;
+        }
+        MyClass.meta = {
+            primaryKey: ['id', 'woooo']
+        };
+        expect(() => {
+            initialiseMeta(MyClass);
+        }).to.throw('Primary key field "woooo" is not defined');
+    });
+
     it('throws an error if for some reason prototype.__fields is not an array', () => {
         class MyClass extends Model {}
         (MyClass.prototype as any).__fields = 'flibble';

@@ -10,6 +10,7 @@ import { IValidationOptions } from '../operations/validate';
 export interface IFieldOptions {
     label?: string;
     required?: boolean;
+    primaryKey?: boolean;
 }
 
 export const DEFAULT_FIELD_OPTIONS: IFieldOptions = {

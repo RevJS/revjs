@@ -9,6 +9,7 @@ export interface IModelMeta {
     fieldsByName?: {
         [fieldName: string]: Field
     };
+    primaryKey?: string[];
     backend?: string;
 }
 
@@ -62,11 +63,22 @@ export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T)
         meta.name = modelName;
     }
     meta.fieldsByName = {};
+    if (!meta.primaryKey) {
+        meta.primaryKey = [];
+    }
     for (let field of meta.fields) {
         if (field.name in meta.fieldsByName) {
             throw new Error(`MetadataError: Field "${field.name}" is defined more than once.`);
         }
         meta.fieldsByName[field.name] = field;
+        if (field.options.primaryKey && meta.primaryKey.indexOf(field.name) == -1) {
+            meta.primaryKey.push(field.name);
+        }
+    }
+    for (let field of meta.primaryKey) {
+        if (!(field in meta.fieldsByName)) {
+            throw new Error(`MetadataError: Primary key field "${field}" is not defined.`);
+        }
     }
     meta.backend = meta.backend ? meta.backend : 'default';
     meta.label = meta.label ? meta.label : meta.name;
