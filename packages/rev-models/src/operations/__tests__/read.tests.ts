@@ -7,7 +7,7 @@ import * as d from '../../decorators';
 import * as read from '../read';
 import { MockBackend } from './mock-backend';
 import { initialiseMeta } from '../../models/meta';
-import { DEFAULT_READ_OPTIONS } from '../read';
+import { DEFAULT_READ_OPTIONS, validateOrderBy } from '../read';
 
 class TestModel extends Model {
     @d.TextField()
@@ -116,6 +116,12 @@ describe('rev.operations.read()', () => {
             .to.be.rejectedWith(expectedError);
     });
 
+    it('rejects if order_by option is invalid', () => {
+        return expect(rwRead.read(TestModel, whereClause, {
+            order_by: ['star_sign']
+        })).to.be.rejectedWith(`field 'star_sign' does not exist in model`);
+    });
+
     it('rejects with any operation errors added by the backend', () => {
         mockBackend.errorsToAdd = ['some_backend_error'];
         return rwRead.read(TestModel, whereClause)
@@ -134,6 +140,70 @@ describe('rev.operations.read()', () => {
         mockBackend.errorToThrow = expectedError;
         return expect(rwRead.read(TestModel, whereClause))
             .to.be.rejectedWith(expectedError);
+    });
+
+});
+
+describe('validateOrderBy()', () => {
+
+    it('does no throw when order_by is a single field', () => {
+        expect(() => {
+            validateOrderBy(TestModel, ['name']);
+        }).to.not.throw();
+    });
+
+    it('does no throw when order_by contains multiple fields', () => {
+        expect(() => {
+            validateOrderBy(TestModel, ['name', 'age']);
+        }).to.not.throw();
+    });
+
+    it('does no throw when order_by specifies asc', () => {
+        expect(() => {
+            validateOrderBy(TestModel, ['name asc', 'age']);
+        }).to.not.throw();
+    });
+
+    it('does no throw when order_by specifies desc', () => {
+        expect(() => {
+            validateOrderBy(TestModel, ['name', 'age desc']);
+        }).to.not.throw();
+    });
+
+    it('throws when order_by is not an array', () => {
+        expect(() => {
+            validateOrderBy(TestModel, { name: -1 });
+        }).to.throw('must be an array');
+    });
+
+    it('throws when order_by has no items', () => {
+        expect(() => {
+            validateOrderBy(TestModel, []);
+        }).to.throw('must be an array');
+    });
+
+    it('throws when order_by contains a non-string', () => {
+        expect(() => {
+            validateOrderBy(TestModel, ['name', 27]);
+        }).to.throw('array contains a non-string value');
+    });
+
+    it('throws when order_by entry has too many tokens', () => {
+        expect(() => {
+            validateOrderBy(TestModel, ['name asc desc', 'age']);
+        }).to.throw('invalid entry');
+    });
+
+    it('throws when order_by entry has invalid tokens', () => {
+        expect(() => {
+            validateOrderBy(TestModel, ['name dasc', 'age']);
+        }).to.throw('invalid entry');
+    });
+
+    it('throws when order_by entry does not match a field name', () => {
+        expect(() => {
+            validateOrderBy(TestModel, ['name', 'star_sign']);
+        }).to.throw(`field 'star_sign' does not exist in model`);
     });
 
 });

@@ -6,6 +6,7 @@ import * as backends from '../backends';
 import { IModelOperation } from './operation';
 
 export interface IReadOptions {
+    order_by?: string[];
     limit?: number;
     offset?: number;
 }
@@ -33,6 +34,9 @@ export function read<T extends Model>(model: new() => T, where?: object, options
             where: where
         };
         let operationResult = new ModelOperationResult<T, IReadMeta>(operation);
+        if (options && options.order_by) {
+            validateOrderBy(model, options.order_by);
+        }
         let opts = Object.assign({}, DEFAULT_READ_OPTIONS, options);
         backend.read(model, where || {}, operationResult, opts)
             .then((res) => {
@@ -42,4 +46,27 @@ export function read<T extends Model>(model: new() => T, where?: object, options
                 reject(err);
             });
     });
+}
+
+export function validateOrderBy<T extends Model>(model: new() => T, order_by: any) {
+
+    if (typeof order_by != 'object'
+            || !(order_by instanceof Array)
+            || order_by.length == 0) {
+        throw new Error('read(): order_by: must be an array with at least one item');
+    }
+
+    for (let ob_entry of order_by) {
+        if (typeof ob_entry != 'string') {
+            throw new Error('read(): order_by: array contains a non-string value');
+        }
+        let ob_tokens = ob_entry.split(' ');
+        if (ob_tokens.length > 2
+            || (ob_tokens.length == 2 && ['asc', 'desc'].indexOf(ob_tokens[1]) == -1)) {
+            throw new Error(`read(): order_by: invalid entry '${ob_entry}'`);
+        }
+        if (!(ob_tokens[0] in model.meta.fieldsByName)) {
+            throw new Error(`read(): order_by: field '${ob_tokens[0]}' does not exist in model`);
+        }
+    }
 }
