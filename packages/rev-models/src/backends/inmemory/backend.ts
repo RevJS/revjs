@@ -40,7 +40,7 @@ export class InMemoryBackend implements IBackend {
         return new Promise<ModelOperationResult<T, ICreateMeta>>((resolve) => {
 
             let meta = model.getMeta();
-            let modelStorage = this._getModelStorage(model.constructor as any, meta);
+            let modelStorage = this._getModelStorage(meta);
 
             let record = {};
             this._writeFields(model, meta, record);
@@ -59,12 +59,10 @@ export class InMemoryBackend implements IBackend {
                 throw new Error('update() requires the \'where\' parameter');
             }
 
-            throw new Error('update() not yet implemented');
-
-            // let meta = model.getMeta();
-            // let modelStorage = this._getModelStorage(model.constructor as any, meta);
-            // this._writeFields(model, meta, modelStorage);
-            // resolve(result);
+            /* Library changes needed:
+             *  - primaryKey info needed for easier updates of single models
+             *  - Need ability to update a subset of fields
+            */
 
         });
     }
@@ -83,7 +81,7 @@ export class InMemoryBackend implements IBackend {
                 throw new Error('options.offset cannot be less than zero');
             }
 
-            let modelStorage = this._getModelStorage<T>(model, meta);
+            let modelStorage = this._getModelStorage(meta);
             let parser = new QueryParser();
             let queryNode = parser.getQueryNodeForQuery(where, model);
             let query = new InMemoryQuery(queryNode);
@@ -113,7 +111,7 @@ export class InMemoryBackend implements IBackend {
         throw new Error('remove() not yet implemented');
     }
 
-    _getModelStorage<T extends Model>(model: new() => T, meta: IModelMeta): any {
+    _getModelStorage(meta: IModelMeta): any {
         if (!this._storage[meta.name]) {
             this._storage[meta.name] = [];
         }
