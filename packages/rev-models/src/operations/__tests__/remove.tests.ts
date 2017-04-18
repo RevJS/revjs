@@ -7,7 +7,7 @@ import * as d from '../../decorators';
 import * as remove from '../remove';
 import { MockBackend } from './mock-backend';
 import { initialiseMeta } from '../../models/meta';
-import { DEFAULT_REMOVE_OPTIONS } from '../remove';
+import { DEFAULT_REMOVE_OPTIONS, IRemoveOptions } from '../remove';
 
 class TestModel extends Model {
     @d.TextField()
@@ -24,9 +24,12 @@ let mockBackend: MockBackend;
 
 describe('rev.operations.remove()', () => {
 
-    let whereClause = {}; // where-clause stuff TO DO!
+    let options: IRemoveOptions = {}; // where-clause stuff TO DO!
 
     beforeEach(() => {
+        options = {
+            where: {}
+        };
         mockBackend = new MockBackend();
         rwRemove.__set__('backends', {
             get: () => mockBackend
@@ -34,47 +37,49 @@ describe('rev.operations.remove()', () => {
     });
 
     it('calls backend.remove() and returns successful result if model is valid', () => {
-        return rwRemove.remove(TestModel, whereClause)
+        return rwRemove.remove(TestModel, options)
             .then((res) => {
                 expect(mockBackend.removeStub.callCount).to.equal(1);
                 let removeCall = mockBackend.removeStub.getCall(0);
                 expect(removeCall.args[0]).to.equal(TestModel);
-                expect(removeCall.args[1]).to.equal(whereClause);
+                expect(removeCall.args[1]).to.equal(options.where);
                 expect(res.success).to.be.true;
             });
     });
 
     it('calls backend.read() with DEFAULT_REMOVE_OPTIONS if no options are set', () => {
-        return rwRemove.remove(TestModel, whereClause, null)
+        let testOpts = Object.assign({}, DEFAULT_REMOVE_OPTIONS, options);
+        return rwRemove.remove(TestModel, options)
             .then((res) => {
                 expect(mockBackend.removeStub.callCount).to.equal(1);
-                let readCall = mockBackend.removeStub.getCall(0);
-                expect(readCall.args[0]).to.equal(TestModel);
-                expect(readCall.args[1]).to.deep.equal({});
-                expect(readCall.args[3]).to.deep.equal(DEFAULT_REMOVE_OPTIONS);
+                let removeCall = mockBackend.removeStub.getCall(0);
+                expect(removeCall.args[0]).to.equal(TestModel);
+                expect(removeCall.args[1]).to.deep.equal(options.where);
+                expect(removeCall.args[3]).to.deep.equal(testOpts);
             });
     });
 
     it('calls backend.read() with overridden options if they are set', () => {
-        return rwRemove.remove(TestModel, whereClause, { somekey: 10 })
+        (options as any).someKey = 10;
+        return rwRemove.remove(TestModel, options)
             .then((res) => {
                 expect(mockBackend.removeStub.callCount).to.equal(1);
-                let readCall = mockBackend.removeStub.getCall(0);
-                expect(readCall.args[0]).to.equal(TestModel);
-                expect(readCall.args[1]).to.deep.equal({});
-                expect(readCall.args[3].somekey).to.equal(10);
+                let removeCall = mockBackend.removeStub.getCall(0);
+                expect(removeCall.args[0]).to.equal(TestModel);
+                expect(removeCall.args[1]).to.deep.equal(options.where);
+                expect(removeCall.args[3].someKey).to.equal(10);
             });
     });
 
     it('rejects if passed model is not a model constructor', () => {
         let model: any = {};
-        return expect(rwRemove.remove(model, whereClause))
+        return expect(rwRemove.remove(model, options))
             .to.be.rejectedWith('not a model constructor');
     });
 
     it('rejects if registry.getMeta fails (e.g. model not registered)', () => {
         class UnregisteredModel extends Model {}
-        return expect(rwRemove.remove(UnregisteredModel, whereClause))
+        return expect(rwRemove.remove(UnregisteredModel, options))
             .to.be.rejectedWith('MetadataError');
     });
 
@@ -83,7 +88,7 @@ describe('rev.operations.remove()', () => {
         rwRemove.__set__('backends', {
             get: () => { throw expectedError; }
         });
-        return expect(rwRemove.remove(TestModel, whereClause))
+        return expect(rwRemove.remove(TestModel, options))
             .to.be.rejectedWith(expectedError);
     });
 
@@ -94,7 +99,7 @@ describe('rev.operations.remove()', () => {
 
     it('rejects with any operation errors added by the backend', () => {
         mockBackend.errorsToAdd = ['some_backend_error'];
-        return rwRemove.remove(TestModel, whereClause)
+        return rwRemove.remove(TestModel, options)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -108,7 +113,7 @@ describe('rev.operations.remove()', () => {
     it('rejects with expected error when backend.remove rejects', () => {
         let expectedError = new Error('epic fail!');
         mockBackend.errorToThrow = expectedError;
-        return expect(rwRemove.remove(TestModel, whereClause))
+        return expect(rwRemove.remove(TestModel, options))
             .to.be.rejectedWith(expectedError);
     });
 
