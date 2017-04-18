@@ -2,25 +2,32 @@
 
 ## v0.1.0
 
+* Knowledge of Primary Key (e.g. for update / remove without 'where')
 * Full In-memory CRUD for `rev-models`
 * GraphQL API backend (server + client)
 
 ## v0.2.0
 
+* model validate(operation, result) event handler method
 * MongoDB Backend
 * Default field values
-* Knowledge of Primary Key
+* Auto-ID fields
 * Documentation!
 
 ## Other Future Releases
 
-Queries and CRUD
+Queries
  * Support `$not` operator
  * Support `$regexp` operator
  * Case-insensitive queries (option for operation methods?)
+
+Models
+ * ReadOnly fields (for calculated fields)
+ * FieldResolvers for looking up related or summary fields - in registry
  * RelatedRecord and RelatedRecordList fields (for model relations)
- * Support a 'fields' option to read a subset of fields
+ * Support a 'fields' option to read() a subset of fields
  * group_by?
+ * Hooks (beforeCreate, afterCreate, beforeUpdate, etc) - in registry
 
 View modules
  * Support for readonly + hidden fields (with conditional function/expressions)
