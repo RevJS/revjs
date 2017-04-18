@@ -6,8 +6,9 @@ import * as backends from '../backends';
 import { IModelOperation } from './operation';
 
 export interface IUpdateOptions {
-    validation?: IValidationOptions;
+    where?: object;
     fields?: string[];
+    validation?: IValidationOptions;
 }
 
 export interface IUpdateMeta extends IOperationMeta {
@@ -16,25 +17,23 @@ export interface IUpdateMeta extends IOperationMeta {
 
 export const DEFAULT_UPDATE_OPTIONS: IUpdateOptions = {};
 
-export function update<T extends Model>(model: T, where?: object, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+export function update<T extends Model>(model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
     return new Promise((resolve, reject) => {
-
-        // TODO: Validate 'where' parameter
 
         checkMetadataInitialised(model.constructor);
         let meta = model.getMeta();
         let backend = backends.get(meta.backend);
+        let opts: IUpdateOptions = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
 
-        if (!where || typeof where != 'object') {
+        if (!opts.where || typeof opts.where != 'object') {
             throw new Error('update() must be called with a where clause');
         }
 
         let operation: IModelOperation = {
             operation: 'update',
-            where: where
+            where: opts.where
         };
         let operationResult = new ModelOperationResult<T, IUpdateMeta>(operation);
-        let opts = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
         validate(model, operation, opts.validation ? opts.validation : null)
             .then((validationResult) => {
 
@@ -45,7 +44,7 @@ export function update<T extends Model>(model: T, where?: object, options?: IUpd
                     operationResult.validation = validationResult;
                 }
 
-                return backend.update<typeof model>(model, where, operationResult, opts);
+                return backend.update<typeof model>(model, opts.where, operationResult, opts);
 
             })
             .then((res) => {

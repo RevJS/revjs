@@ -8,7 +8,7 @@ import * as update from '../update';
 import { MockBackend } from './mock-backend';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { initialiseMeta } from '../../models/meta';
-import { DEFAULT_UPDATE_OPTIONS } from '../update';
+import { DEFAULT_UPDATE_OPTIONS, IUpdateOptions } from '../update';
 
 let GENDERS = [
     ['male', 'Male'],
@@ -34,9 +34,12 @@ let mockBackend: MockBackend;
 
 describe('rev.operations.update()', () => {
 
-    let whereClause = {}; // where-clause stuff TO DO!
+    let options: IUpdateOptions;
 
     beforeEach(() => {
+        options = {
+            where: {}
+        };
         mockBackend = new MockBackend();
         rwUpdate.__set__('backends', {
             get: () => mockBackend
@@ -47,7 +50,7 @@ describe('rev.operations.update()', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        return rwUpdate.update(model, whereClause)
+        return rwUpdate.update(model, options)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let updateCall = mockBackend.updateStub.getCall(0);
@@ -62,13 +65,14 @@ describe('rev.operations.update()', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        return rwUpdate.update(model, whereClause)
+        let testOpts = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
+        return rwUpdate.update(model, options)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let readCall = mockBackend.updateStub.getCall(0);
                 expect(readCall.args[0]).to.equal(model);
-                expect(readCall.args[1]).to.equal(whereClause);
-                expect(readCall.args[3]).to.deep.equal(DEFAULT_UPDATE_OPTIONS);
+                expect(readCall.args[1]).to.equal(options.where);
+                expect(readCall.args[3]).to.deep.equal(testOpts);
             });
     });
 
@@ -76,12 +80,13 @@ describe('rev.operations.update()', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        return rwUpdate.update(model, whereClause, { validation: {} })
+        options.validation = {};
+        return rwUpdate.update(model, options)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let readCall = mockBackend.updateStub.getCall(0);
                 expect(readCall.args[0]).to.equal(model);
-                expect(readCall.args[1]).to.equal(whereClause);
+                expect(readCall.args[1]).to.equal(options.where);
                 expect(readCall.args[3].validation).to.deep.equal({});
             });
     });
@@ -115,7 +120,7 @@ describe('rev.operations.update()', () => {
         model.gender = 'fish';
         model.age = 9;
         model.email = 'www.google.com';
-        return rwUpdate.update(model, whereClause)
+        return rwUpdate.update(model, options)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -132,7 +137,7 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorsToAdd = ['some_backend_error'];
-        return rwUpdate.update(model, whereClause)
+        return rwUpdate.update(model, options)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -148,7 +153,7 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorsToAdd = ['some_backend_error'];
-        return rwUpdate.update(model, whereClause)
+        return rwUpdate.update(model, options)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -165,7 +170,7 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorToThrow = expectedError;
-        return expect(rwUpdate.update(model, whereClause))
+        return expect(rwUpdate.update(model, options))
             .to.be.rejectedWith(expectedError);
     });
 
