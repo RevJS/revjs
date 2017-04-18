@@ -7,6 +7,7 @@ import { IModelOperation } from './operation';
 
 export interface IUpdateOptions {
     validation?: IValidationOptions;
+    fields?: string[];
 }
 
 export interface IUpdateMeta extends IOperationMeta {

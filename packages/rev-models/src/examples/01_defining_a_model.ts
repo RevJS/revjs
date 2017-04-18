@@ -14,6 +14,8 @@ let TITLES = [
 
 export class Person extends rev.Model {
 
+    @rev.IntegerField({ primaryKey: true })
+        id: number;
     @rev.SelectionField({label: 'Title', selection: TITLES, required: false })
         title: string;
     @rev.TextField({label: 'First Name'})
@@ -27,6 +29,7 @@ export class Person extends rev.Model {
         email: string;
     @rev.BooleanField({label: 'Registered for Newsletter?'})
         newsletter: boolean;
+
 }
 
 Person.meta = {
