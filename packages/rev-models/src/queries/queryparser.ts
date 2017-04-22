@@ -6,14 +6,15 @@ import { ValueListOperator } from './nodes/valuelist';
 
 import { IQueryParser, IQueryNode, IOperatorRegister } from './types';
 import { printObj } from '../utils/index';
-import { checkMetadataInitialised } from '../models/meta';
 import { Model } from '../models/model';
+import { ModelRegistry } from '../registry/registry';
 
 export class QueryParser implements IQueryParser {
     CONJUNCTION_OPERATORS: IOperatorRegister = {};
     FIELD_OPERATORS: IOperatorRegister = {};
 
-    constructor() {
+    constructor(public registry: ModelRegistry) {
+
         this.registerConjunctionOperators({
             $and: ConjunctionNode,
             $or: ConjunctionNode
@@ -42,25 +43,24 @@ export class QueryParser implements IQueryParser {
     };
 
     getQueryNodeForQuery<T extends Model>(
-            value: object,
             model: new() => T,
+            value: object,
             parent?: IQueryNode<T>): IQueryNode<T> {
 
         if (!value || typeof value != 'object') {
             throw new Error(`${printObj(value)} is not a query object`);
         }
 
-        checkMetadataInitialised(model);
-        const meta = model.meta;
+        const meta = this.registry.getModelMeta(model);
 
         let keys = Object.keys(value);
         if (keys.length == 1) {
             let key = keys[0];
             if (key in this.CONJUNCTION_OPERATORS) {
-                return new (this.CONJUNCTION_OPERATORS[key])(this, key, value[key], model, parent);
+                return new (this.CONJUNCTION_OPERATORS[key])(this, model, key, value[key], parent);
             }
             else if (key in meta.fieldsByName) {
-                return new FieldNode(this, key, value[key], model, parent);
+                return new FieldNode(this, model, key, value[key], parent);
             }
             throw new Error(`'${key}' is not a recognised field or conjunction operator`);
         }
@@ -71,6 +71,6 @@ export class QueryParser implements IQueryParser {
             token[key] = value[key];
             queryTokens.push(token);
         }
-        return new this.CONJUNCTION_OPERATORS.$and(this, '$and', queryTokens, model, parent);
+        return new this.CONJUNCTION_OPERATORS.$and(this, model, '$and', queryTokens, parent);
     }
 }

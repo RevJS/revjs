@@ -8,8 +8,8 @@ export class QueryNode<T extends Model> implements IQueryNode<T> {
 
     constructor(
         public parser: IQueryParser,
-        public operator: string,
         public model: new() => T,
+        public operator: string,
         public parent: IQueryNode<T>) {
 
         this.children = [];

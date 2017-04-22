@@ -7,12 +7,12 @@ export class ValueOperator<T extends Model> extends QueryNode<T> {
 
     constructor(
             parser: IQueryParser,
+            model: new() => T,
             operator: string,
             public value: any,
-            model: new() => T,
             parent: IQueryNode<T>) {
 
-        super(parser, operator, model, parent);
+        super(parser, model, operator, parent);
         if (!(this.operator in parser.FIELD_OPERATORS)) {
             throw new Error(`unrecognised field operator '${this.operator}'`);
         }

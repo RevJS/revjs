@@ -83,8 +83,8 @@ export class InMemoryBackend implements IBackend {
             }
 
             let modelStorage = this._getModelStorage(meta);
-            let parser = new QueryParser();
-            let queryNode = parser.getQueryNodeForQuery(where, model);
+            let parser = new QueryParser(registry);
+            let queryNode = parser.getQueryNodeForQuery(model, where);
             let query = new InMemoryQuery(queryNode);
             result.results = [];
             for (let record of modelStorage) {

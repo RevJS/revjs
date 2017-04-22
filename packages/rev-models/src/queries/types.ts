@@ -1,5 +1,6 @@
 
 import { Model } from '../models/model';
+import { ModelRegistry } from '../registry/registry';
 
 export interface IQueryNode<T extends Model> {
     operator: string;
@@ -10,13 +11,14 @@ export interface IQueryNode<T extends Model> {
 export interface IOperatorRegister {
     [operator: string]: new(
             parser: IQueryParser,
+            model: new() => Model,
             operator: string,
             value: any,
-            model: new() => Model,
             parent: IQueryNode<any>) => IQueryNode<any>;
 }
 
 export interface IQueryParser {
+    registry: ModelRegistry;
     CONJUNCTION_OPERATORS: IOperatorRegister;
     FIELD_OPERATORS: IOperatorRegister;
 
@@ -24,7 +26,7 @@ export interface IQueryParser {
     registerConjunctionOperators(operators: IOperatorRegister): void;
 
     getQueryNodeForQuery<T extends Model>(
-        value: any,
         model: new() => T,
+        value: any,
         parent?: IQueryNode<T>): IQueryNode<T>;
 }

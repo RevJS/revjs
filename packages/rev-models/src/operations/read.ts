@@ -3,7 +3,7 @@ import { Model } from '../models/model';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { IModelOperation } from './operation';
 import { ModelRegistry } from '../registry/registry';
-import { IModelMeta } from '../../lib/models/meta';
+import { IModelMeta } from '../models/meta';
 
 export interface IReadOptions {
     order_by?: string[];

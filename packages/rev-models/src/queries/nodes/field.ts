@@ -9,18 +9,20 @@ export class FieldNode<T extends Model> extends QueryNode<T> {
 
     constructor(
             parser: IQueryParser,
+            model: new() => T,
             public fieldName: string,
             value: any,
-            model: new() => T,
             parent: IQueryNode<T>) {
 
-        super(parser, fieldName, model, parent);
+        super(parser, model, fieldName, parent);
 
-        if (!(fieldName in model.meta.fieldsByName)) {
+        const meta = parser.registry.getModelMeta(model);
+
+        if (!(fieldName in meta.fieldsByName)) {
             throw new Error(`'${fieldName}' is not a recognised field`);
         }
         else if (isFieldValue(value)) {
-            this.children.push(new ValueOperator(parser, '$eq', value, model, this));
+            this.children.push(new ValueOperator(parser, model, '$eq', value, this));
         }
         else if (!value || typeof value != 'object' || Object.keys(value).length == 0) {
             throw new Error(`invalid field query value for field '${fieldName}'`);
@@ -32,7 +34,7 @@ export class FieldNode<T extends Model> extends QueryNode<T> {
                     throw new Error(`unrecognised field operator '${key}'`);
                 }
                 else {
-                    this.children.push(new parser.FIELD_OPERATORS[key](parser, key, value[key], model, this));
+                    this.children.push(new parser.FIELD_OPERATORS[key](parser, model, key, value[key], this));
                 }
             }
         }
