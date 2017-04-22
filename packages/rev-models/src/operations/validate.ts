@@ -1,18 +1,17 @@
 import { Model } from '../models/model';
-import { checkMetadataInitialised } from '../models/meta';
 import { IModelOperation } from './operation';
 import { ModelValidationResult } from '../validation/validationresult';
 import { VALIDATION_MESSAGES as msg } from '../validation/validationmsg';
+import { ModelRegistry } from '../registry/registry';
 
 export interface IValidationOptions {
     timeout?: number;
 }
 
-export function validate<T extends Model>(model: T, operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
+export function validate<T extends Model>(registry: ModelRegistry, model: T, operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
     return new Promise((resolve, reject) => {
 
-        checkMetadataInitialised(model.constructor);
-        let meta = model.getMeta();
+        let meta = registry.getModelMeta(model);
 
         let timeout = options && options.timeout ? options.timeout : 5000;
         let result = new ModelValidationResult();
@@ -27,7 +26,7 @@ export function validate<T extends Model>(model: T, operation?: IModelOperation,
         // Trigger field validation
         let promises: Array<Promise<ModelValidationResult>> = [];
         for (let field of meta.fields) {
-            promises.push(field.validate(model, operation, result, options));
+            promises.push(field.validate(registry, model, operation, result, options));
         }
         Promise.all(promises)
             .then(() => {

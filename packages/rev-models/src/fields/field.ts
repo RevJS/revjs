@@ -6,6 +6,7 @@ import { Model } from '../models/model';
 import { IModelOperation } from '../operations/operation';
 import { ModelValidationResult } from '../validation/validationresult';
 import { IValidationOptions } from '../operations/validate';
+import { ModelRegistry } from '../registry/registry';
 
 export interface IFieldOptions {
     label?: string;
@@ -45,18 +46,18 @@ export class Field {
         }
     }
 
-    validate<T extends Model>(model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
+    validate<T extends Model>(registry: ModelRegistry, model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
         let timeout = options && options.timeout ? options.timeout : 5000;
         return new Promise((resolve, reject) => {
             // Run synchronous validators
             for (let validator of this.validators) {
-                validator(model, this, operation, result, options);
+                validator(registry, model, this, operation, result, options);
             }
             // Run asynchronous validators
             if (this.asyncValidators.length > 0) {
                 let promises: Array<Promise<void>> = [];
                 for (let asyncValidator of this.asyncValidators) {
-                    promises.push(asyncValidator(model, this, operation, result, options));
+                    promises.push(asyncValidator(registry, model, this, operation, result, options));
                 }
                 Promise.all(promises)
                     .then(() => {

@@ -16,3 +16,5 @@ export class Model {
         }
     }
 }
+
+export type ModelCtor = new(...args: any[]) => Model;

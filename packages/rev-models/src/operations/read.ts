@@ -1,9 +1,8 @@
+
 import { Model } from '../models/model';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
-import { checkIsModelConstructor } from '../models/utils';
-import { checkMetadataInitialised } from '../models/meta';
-import * as backends from '../backends';
 import { IModelOperation } from './operation';
+import { ModelRegistry } from '../registry/registry';
 
 export interface IReadOptions {
     order_by?: string[];
@@ -23,13 +22,11 @@ export const DEFAULT_READ_OPTIONS: IReadOptions = {
     offset: 0
 };
 
-export function read<T extends Model>(model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+export function read<T extends Model>(registry: ModelRegistry, model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
     return new Promise((resolve, reject) => {
 
-        checkIsModelConstructor(model);
-        checkMetadataInitialised(model);
-        let meta = model.meta;
-        let backend = backends.get(meta.backend);
+        let meta = registry.getModelMeta(model);
+        let backend = registry.getBackend(meta.backend);
         let operation: IModelOperation = {
             operation: 'read',
             where: where

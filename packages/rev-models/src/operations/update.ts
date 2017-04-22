@@ -1,9 +1,9 @@
+
 import { IValidationOptions, validate } from './validate';
 import { Model } from '../models/model';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
-import { checkMetadataInitialised } from '../models/meta';
-import * as backends from '../backends';
 import { IModelOperation } from './operation';
+import { ModelRegistry } from '../registry/registry';
 
 export interface IUpdateOptions {
     where?: object;
@@ -17,12 +17,11 @@ export interface IUpdateMeta extends IOperationMeta {
 
 export const DEFAULT_UPDATE_OPTIONS: IUpdateOptions = {};
 
-export function update<T extends Model>(model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+export function update<T extends Model>(registry: ModelRegistry, model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
     return new Promise((resolve, reject) => {
 
-        checkMetadataInitialised(model.constructor);
-        let meta = model.getMeta();
-        let backend = backends.get(meta.backend);
+        let meta = registry.getModelMeta(model);
+        let backend = registry.getBackend(meta.backend);
         let opts: IUpdateOptions = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
 
         if (!opts.where || typeof opts.where != 'object') {
@@ -34,7 +33,7 @@ export function update<T extends Model>(model: T, options?: IUpdateOptions): Pro
             where: opts.where
         };
         let operationResult = new ModelOperationResult<T, IUpdateMeta>(operation);
-        validate(model, operation, opts.validation ? opts.validation : null)
+        validate(registry, model, operation, opts.validation ? opts.validation : null)
             .then((validationResult) => {
 
                 if (!validationResult.valid) {
