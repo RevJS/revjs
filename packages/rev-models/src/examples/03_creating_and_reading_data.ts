@@ -1,6 +1,4 @@
 
-import * as rev from '../index';
-
 // EXAMPLE:
 import { models } from './01_defining_a_model_registry';
 import { Person } from './02_defining_a_model';

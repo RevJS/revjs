@@ -4,7 +4,7 @@ import * as rev from '../index';
 
 // EXAMPLE:
 // import * as rev from 'rev-models'
-import { models } from './01_defining_a_registry';
+import { models } from './01_defining_a_model_registry';
 
 let TITLES = [
     ['Mr', 'Mr.'],
@@ -33,8 +33,6 @@ export class Person extends rev.Model {
 
 }
 
-Person.meta = {
-    label: 'Registered Person',
-};
-
-models.register(Person);
+models.register(Person, {
+    label: 'Registered Person'
+});
