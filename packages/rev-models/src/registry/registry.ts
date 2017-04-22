@@ -1,8 +1,13 @@
 
 import { initialiseMeta, IModelMeta } from '../models/meta';
-import { Model } from '../models/model';
+import { Model, ModelCtor } from '../models/model';
 import { checkIsModelConstructor } from '../models/utils';
 import { IBackend } from '../backends/backend';
+import { create, ICreateOptions, ICreateMeta } from '../operations/create';
+import { update, IUpdateOptions, IUpdateMeta } from '../operations/update';
+import { remove, IRemoveOptions, IRemoveMeta } from '../operations/remove';
+import { read, IReadOptions, IReadMeta } from '../operations/read';
+import { ModelOperationResult } from '../operations/operationresult';
 
 export class ModelRegistry {
 
@@ -16,8 +21,27 @@ export class ModelRegistry {
 
     // TODO: Support extending existing models
 
+    /* Model Registration Functions */
+
     isRegistered(modelName: string): boolean {
         return (modelName in this._models);
+    }
+
+    assertModelNameIsRegistered(modelName: string) {
+        if (!this.isRegistered(modelName)) {
+            throw new Error(`RegistryError: Model '${modelName}' is not registered`);
+        }
+    }
+
+    assertModelClassIsRegistered<T extends Model>(modelCtor: new(...args: any[]) => T) {
+        if (!modelCtor || !modelCtor.name) {
+            throw new Error('RegistryError: Supplied object is not a model');
+        }
+        this.assertModelNameIsRegistered(modelCtor.name);
+    }
+
+    assertModelIsRegistered<T extends Model>(model: T) {
+        this.assertModelClassIsRegistered(model.constructor as any);
     }
 
     register<T extends Model>(model: new(...args: any[]) => T, meta?: IModelMeta<T>) {
@@ -40,12 +64,27 @@ export class ModelRegistry {
         return Object.keys(this._models);
     }
 
-    getModelMeta(modelName: string) {
-        if (!this.isRegistered(modelName)) {
-            throw new Error(`RegistryError: Model  '${modelName}' does not exist in the registry.`);
+    getModelMeta(model: string | ModelCtor | Model) {
+        let modelName: string;
+        if (typeof model == 'string') {
+            this.assertModelNameIsRegistered(model);
+            modelName = model;
+        }
+        else if (typeof model == 'object') {
+            this.assertModelIsRegistered(model);
+            modelName = model.constructor.name;
+        }
+        else if (typeof model == 'function') {
+            this.assertModelClassIsRegistered(model);
+            modelName = model.name;
+        }
+        else {
+            throw new Error('Invalid argument for getModelMeta()');
         }
         return this._models[modelName];
     }
+
+    /* Backend Registration Functions */
 
     isBackendRegistered(backendName: string): boolean {
         return (backendName in this._backends);
@@ -83,4 +122,23 @@ export class ModelRegistry {
         this._models = {};
         this._backends = {};
     }
+
+    /* Model CRUD Functions */
+
+    create<T extends Model>(model: T, options?: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
+        return create(this, model, options);
+    }
+
+    update<T extends Model>(model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+        return update(this, model, options);
+    }
+
+    remove<T extends Model>(model: new() => T, options?: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+        return remove(this, model, options);
+    }
+
+    read<T extends Model>(model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+        return read(this, model, where, options);
+    }
+
 }
