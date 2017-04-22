@@ -5,7 +5,7 @@ import { ConjunctionNode } from '../../queries/nodes/conjunction';
 import { FieldNode } from '../../queries/nodes/field';
 import { ValueOperator } from '../../queries/nodes/value';
 import { ValueListOperator } from '../../queries/nodes/valuelist';
-import { getLikeOperatorRegExp } from '../../queries/query';
+import { getLikeOperatorRegExp } from '../../queries/utils';
 
 export class InMemoryQuery<T extends Model> {
 

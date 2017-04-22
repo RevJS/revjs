@@ -1,6 +1,6 @@
 import { QueryNode } from './query';
 import { IQueryParser, IQueryNode } from '../types';
-import { isFieldValue } from '../query';
+import { isFieldValue } from '../utils';
 import { Model } from '../../models/model';
 
 export class ValueListOperator<T extends Model> extends QueryNode<T> {

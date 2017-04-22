@@ -1,7 +1,7 @@
 
 import { QueryNode } from './query';
 import { IQueryParser, IQueryNode } from '../types';
-import { isFieldValue } from '../query';
+import { isFieldValue } from '../utils';
 import { ValueOperator } from './value';
 import { Model } from '../../models/model';
 
