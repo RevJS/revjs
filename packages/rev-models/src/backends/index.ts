@@ -1,2 +1,2 @@
 
-export { IBackend, configure, get } from './backends';
+export { IBackend } from './backend';

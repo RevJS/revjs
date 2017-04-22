@@ -4,6 +4,8 @@ import { IntegerField, TextField, DateField } from '../../fields';
 import * as registry from '../registry';
 import * as d from '../../decorators';
 import { Model } from '../../models/model';
+import { IBackend } from '../../backends/backend';
+import { InMemoryBackend } from '../../backends/inmemory/backend';
 
 class TestModel extends Model {
     id: number = 1;
@@ -17,9 +19,16 @@ class EmptyModel extends Model {}
 
 describe('ModelRegistry', () => {
     let testReg: registry.ModelRegistry;
+    let testBackend: IBackend;
 
     beforeEach(() => {
         testReg = new registry.ModelRegistry();
+        testBackend = {
+            create: () => {},
+            read: () => {},
+            update: () => {},
+            remove: () => {}
+        } as any;
         TestModel.meta = {
             fields: [
                 new IntegerField('id'),
@@ -32,8 +41,9 @@ describe('ModelRegistry', () => {
 
     describe('constructor()', () => {
 
-        it('creates a registry with no models', () => {
+        it('creates a registry with no models and no backends', () => {
             expect(testReg.getModelNames()).to.have.length(0);
+            expect(testReg.getBackendNames()).to.have.length(0);
         });
 
     });
@@ -130,6 +140,65 @@ describe('ModelRegistry', () => {
             expect(() => {
                 testReg.getModel('Jibble');
             }).to.throw('does not exist in the registry');
+        });
+
+    });
+
+    describe('setBackend()', () => {
+
+        it('successfully configures the default backend', () => {
+            testReg.setBackend('default', testBackend);
+            expect(testReg.getBackend('default')).to.equal(testBackend);
+        });
+
+        it('successfully configures a new valid backend', () => {
+            testReg.setBackend('my_db', testBackend);
+            expect(testReg.getBackend('my_db')).to.equal(testBackend);
+        });
+
+        it('successfully configured an InMemory backend', () => {
+            let backend = new InMemoryBackend();
+            testReg.setBackend('default', backend);
+            expect(testReg.getBackend('default')).to.equal(backend);
+        });
+
+        it('throws an error when backendName is not specified', () => {
+            expect(() => {
+                testReg.setBackend(undefined, undefined);
+            }).to.throw('you must specify a name');
+        });
+
+        it('throws an error when backend is not an object', () => {
+            expect(() => {
+                testReg.setBackend('my_backend', (() => {}) as any);
+            }).to.throw('you must pass an instance of a backend class');
+        });
+
+        it('throws an error when backend is missing one or more methods', () => {
+            expect(() => {
+                testReg.setBackend('my_backend', {} as any);
+            }).to.throw('the specified backend does not fully implement the IBackend interface');
+        });
+
+    });
+
+    describe('getBackend()', () => {
+
+        it('gets a backend', () => {
+            testReg.setBackend('my_db', testBackend);
+            expect(testReg.getBackend('my_db')).to.equal(testBackend);
+        });
+
+        it('throws an error if backendName not specified', () => {
+            expect(() => {
+                testReg.getBackend(undefined);
+            }).to.throw('you must specify the name of the backend to get');
+        });
+
+        it('throws an error if backendName has not been configured', () => {
+            expect(() => {
+                testReg.getBackend('non-configured-backend');
+            }).to.throw('has has not been configured');
         });
 
     });
