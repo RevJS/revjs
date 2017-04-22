@@ -4,6 +4,7 @@ import * as rev from '../index';
 
 // EXAMPLE:
 // import * as rev from 'rev-models'
+import { models } from './01_defining_a_registry';
 
 let TITLES = [
     ['Mr', 'Mr.'],
@@ -36,4 +37,4 @@ Person.meta = {
     label: 'Registered Person',
 };
 
-rev.register(Person);
+models.register(Person);

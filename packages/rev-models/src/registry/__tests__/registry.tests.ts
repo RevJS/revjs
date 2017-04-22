@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
 
-import * as registry from '../index';
+import * as registry from '../registry';
 import * as d from '../../decorators';
 import { Model } from '../../models/model';
 
@@ -134,27 +134,4 @@ describe('ModelRegistry', () => {
 
     });
 
-    describe('rev.registry', () => {
-
-        it('should be an instance of ModelRegistry', () => {
-            expect(registry.registry)
-                .to.be.an.instanceOf(registry.ModelRegistry);
-        });
-
-    });
-
-    describe('rev.register()', () => {
-
-        it('should add models to the shared registry', () => {
-            registry.registry.register(TestModel);
-            expect(registry.registry.getModel('TestModel')).to.equal(TestModel);
-        });
-
-        it('should throw an error if something goes wrong', () => {
-            expect(() => {
-                registry.registry.register(TestModel);
-            }).to.throw('already exists in the registry');
-        });
-
-    });
 });

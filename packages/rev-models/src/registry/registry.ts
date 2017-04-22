@@ -48,9 +48,3 @@ export class ModelRegistry {
         this._models = {};
     }
 }
-
-export const registry = new ModelRegistry();
-
-export function register<T extends Model>(model: new(...args: any[]) => T) {
-    registry.register(model);
-}

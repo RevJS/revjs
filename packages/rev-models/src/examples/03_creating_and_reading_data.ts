@@ -1,10 +1,9 @@
 
 import * as rev from '../index';
-import { Person } from './01_defining_a_model';
 
 // EXAMPLE:
-// import * as rev from 'rev-models';
-// import { Person } from './person';
+import { models } from './01_defining_a_model_registry';
+import { Person } from './02_defining_a_model';
 
 let person1 = new Person({
     first_name: 'Bill',
@@ -23,11 +22,11 @@ let person2 = new Person({
 });
 
 Promise.all([
-    rev.create(person1),
-    rev.create(person2)
+    models.create(person1),
+    models.create(person2)
 ])
 .then((res) => {
-    return rev.read(Person);
+    return models.read(Person);
 })
 .then((res) => {
     console.log(res.results);

@@ -23,11 +23,11 @@ Queries
 
 Models
  * ReadOnly fields (for calculated fields)
- * FieldResolvers for looking up related or summary fields - in registry
+ * FieldResolvers for looking up related or summary fields - in registry meta
  * RelatedRecord and RelatedRecordList fields (for model relations)
  * Support a 'fields' option to read() a subset of fields
  * group_by?
- * Hooks (beforeCreate, afterCreate, beforeUpdate, etc) - in registry
+ * Hooks (beforeCreate, afterCreate, beforeUpdate, etc) - in registry meta
 
 View modules
  * Support for readonly + hidden fields (with conditional function/expressions)
