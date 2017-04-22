@@ -1,8 +1,8 @@
 import { Field } from '../fields/field';
 import { Model } from './model';
 
-export interface IModelMeta {
-    ctor?: new(...args: any[]) => any;
+export interface IModelMeta<T> {
+    ctor?: new(...args: any[]) => T;
     name?: string;
     label?: string;
     fields?: Field[];
@@ -13,13 +13,9 @@ export interface IModelMeta {
     backend?: string;
 }
 
-export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T): void {
+export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T, meta?: IModelMeta<T>): IModelMeta<T> {
 
     let modelName = model.name;
-    let meta: IModelMeta;
-    if (model.hasOwnProperty('meta')) {
-        meta = model.meta;
-    }
 
     // Load fields from prototype __fields property if present (fields added via decorators)
     let proto = model.prototype;
@@ -39,7 +35,6 @@ export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T)
         for (let field of proto.__fields) {
             meta.fields.push(field);
         }
-        delete proto.__fields;
     }
 
     // Check metadata
@@ -83,14 +78,10 @@ export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T)
     meta.backend = meta.backend ? meta.backend : 'default';
     meta.label = meta.label ? meta.label : meta.name;
 
-    model.meta = meta;
+    return meta;
 }
 
-export function checkMetadataInitialised(model: any): void {
-    if (!model || typeof model != 'function') {
-        throw new Error('MetadataError: Supplied model is not a class.');
-    }
-    let meta = model.meta;
+export function checkMetadataInitialised(meta: any): void {
     if (!meta || typeof meta != 'object'
             || !meta.fields || typeof meta.fields != 'object' || !(meta.fields instanceof Array)
             || !meta.fieldsByName || typeof meta.fieldsByName != 'object') {

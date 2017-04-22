@@ -1,12 +1,12 @@
 
-import { initialiseMeta } from '../models/meta';
+import { initialiseMeta, IModelMeta } from '../models/meta';
 import { Model } from '../models/model';
 import { checkIsModelConstructor } from '../models/utils';
 import { IBackend } from '../backends/backend';
 
 export class ModelRegistry {
 
-    _models: { [modelName: string]: new() => any };
+    _models: { [modelName: string]: IModelMeta<any> };
     _backends: { [backendName: string]: IBackend };
 
     constructor() {
@@ -20,7 +20,7 @@ export class ModelRegistry {
         return (modelName in this._models);
     }
 
-    register<T extends Model>(model: new(...args: any[]) => T) {
+    register<T extends Model>(model: new(...args: any[]) => T, meta?: IModelMeta<T>) {
 
         // Check model constructor
         checkIsModelConstructor(model);
@@ -30,17 +30,17 @@ export class ModelRegistry {
         }
 
         // Initialise model metadata
-        initialiseMeta(model);
+        let modelMeta = initialiseMeta(model, meta);
 
         // Add prototype and metadata to the registry
-        this._models[modelName] = model;
+        this._models[modelName] = modelMeta;
     }
 
     getModelNames(): string[] {
         return Object.keys(this._models);
     }
 
-    getModel(modelName: string) {
+    getModelMeta(modelName: string) {
         if (!this.isRegistered(modelName)) {
             throw new Error(`RegistryError: Model  '${modelName}' does not exist in the registry.`);
         }

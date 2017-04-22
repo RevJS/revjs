@@ -1,5 +1,5 @@
 import { Field } from '../../fields/index';
-import { initialiseMeta, checkMetadataInitialised } from '../meta';
+import { initialiseMeta, checkMetadataInitialised, IModelMeta } from '../meta';
 import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
 import * as d from '../../decorators';
@@ -17,100 +17,105 @@ function getAnyObject() {
     return Object.assign({});
 }
 
+let testModelMeta: IModelMeta<TestModel>;
+let testModelMetaRes: IModelMeta<TestModel>;
+let testModel2Meta: IModelMeta<TestModel2>;
+let testModel2MetaRes: IModelMeta<TestModel2>;
+
 describe('initialiseMeta() - metadata only', () => {
 
     beforeEach(() => {
-        TestModel.meta = {
+        testModelMeta = {
             fields: [
                 new IntegerField('id'),
                 new TextField('name'),
                 new DateField('date')
             ]
         };
-        TestModel2.meta = { fields: [] };
+        testModel2Meta = { fields: [] };
     });
 
     it('throws an error if fields metadata is missing', () => {
         expect(() => {
-            TestModel.meta = null;
-            initialiseMeta(TestModel);
+            testModelMeta = null;
+            initialiseMeta(TestModel, testModelMeta);
         }).to.throw('You must define the fields metadata for the model');
         expect(() => {
-            TestModel.meta = {};
-            initialiseMeta(TestModel);
+            testModelMeta = {};
+            initialiseMeta(TestModel, testModelMeta);
         }).to.throw('You must define the fields metadata for the model');
     });
 
     it('throws an error if fields array contains invalid items', () => {
         expect(() => {
-            TestModel.meta = {
+            testModelMeta = {
                 fields: [
                     new TextField('flibble'),
                     getAnyObject() as IntegerField
                 ]
             };
-            initialiseMeta(TestModel);
+            initialiseMeta(TestModel, testModelMeta);
         }).to.throw('is not an instance of rev.Field');
     });
 
     it('assigns meta.ctor to the class constructor', () => {
-        initialiseMeta(TestModel);
-        expect(TestModel.meta.ctor).to.equal(TestModel);
+        testModelMetaRes = initialiseMeta(TestModel, testModelMeta);
+        expect(testModelMetaRes.ctor).to.equal(TestModel);
     });
 
     it('if meta.name is passed, it must match the model name', () => {
         expect(() => {
-            TestModel.meta = {
+            testModelMeta = {
                 name: 'Flibble',
                 fields: []
             };
-            initialiseMeta(TestModel);
+            initialiseMeta(TestModel, testModelMeta);
         }).to.throw('Model name does not match meta.name');
         expect(() => {
-            TestModel.meta = {
+            testModelMeta = {
                 name: 'TestModel',
                 fields: []
             };
-            initialiseMeta(TestModel);
+            initialiseMeta(TestModel, testModelMeta);
         }).to.not.throw();
     });
 
     it('throws an error if a field name is defined twice', () => {
         expect(() => {
-            TestModel.meta = {
+            testModelMeta = {
                 fields: [
                     new TextField('flibble'),
                     new TextField('wibble'),
                     new IntegerField('flibble')
                 ]
             };
-            initialiseMeta(TestModel);
+            initialiseMeta(TestModel, testModelMeta);
         }).to.throw('Field "flibble" is defined more than once');
     });
 
     it('creates the fieldsByName property as expected', () => {
-        initialiseMeta(TestModel);
-        let fieldNames = TestModel.meta.fields.map((f) => f.name);
-        expect(Object.keys(TestModel.meta.fieldsByName)).to.deep.equal(fieldNames);
-        expect(TestModel.meta.fieldsByName[fieldNames[0]]).to.be.instanceOf(Field);
+        testModelMetaRes = initialiseMeta(TestModel, testModelMeta);
+        let fieldNames = testModelMeta.fields.map((f) => f.name);
+        expect(Object.keys(testModelMetaRes.fieldsByName)).to.deep.equal(fieldNames);
+        expect(testModelMetaRes.fieldsByName[fieldNames[0]]).to.be.instanceOf(Field);
     });
 
     it('should set up meta.backend ("default" if not defined)', () => {
-        TestModel.meta.backend = undefined;
-        TestModel2.meta.backend = 'main_db';
-        initialiseMeta(TestModel);
-        initialiseMeta(TestModel2);
-        expect(TestModel.meta.backend).to.equal('default');
-        expect(TestModel2.meta.backend).to.equal('main_db');
+        testModelMeta.backend = undefined;
+        testModelMetaRes = initialiseMeta(TestModel, testModelMeta);
+        testModel2Meta.backend = 'main_db';
+        testModel2MetaRes = initialiseMeta(TestModel2, testModel2Meta);
+        expect(testModelMetaRes.backend).to.equal('default');
+        expect(testModel2MetaRes.backend).to.equal('main_db');
     });
 
     it('should set up meta.label (if not set, should equal model name)', () => {
-        TestModel.meta.label = undefined;
-        TestModel2.meta.label = 'Awesome Entity';
-        initialiseMeta(TestModel);
-        initialiseMeta(TestModel2);
-        expect(TestModel.meta.label).to.equal('TestModel');
-        expect(TestModel2.meta.label).to.equal('Awesome Entity');
+        testModelMeta.label = undefined;
+        testModelMetaRes = initialiseMeta(TestModel, testModelMeta);
+        testModel2Meta.label = 'Awesome Entity';
+        testModel2MetaRes = initialiseMeta(TestModel2, testModel2Meta);
+        expect(testModelMetaRes.label).to.equal('TestModel');
+        expect(testModel2MetaRes.label).to.equal('Awesome Entity');
     });
 
 });
@@ -126,9 +131,9 @@ describe('initialiseMeta() - with decorators', () => {
             @d.BooleanField()
                 active: boolean;
         }
-        initialiseMeta(MyClass);
-        expect(MyClass.meta.fields).to.have.length(3);
-        expect(MyClass.meta.fieldsByName).to.have.keys('id', 'name', 'active');
+        let res = initialiseMeta(MyClass);
+        expect(res.fields).to.have.length(3);
+        expect(res.fieldsByName).to.have.keys('id', 'name', 'active');
     });
 
     it('decorator metadata is added to empty metadata', () => {
@@ -140,10 +145,9 @@ describe('initialiseMeta() - with decorators', () => {
             @d.BooleanField()
                 active: boolean;
         }
-        MyClass.meta = {};
-        initialiseMeta(MyClass);
-        expect(MyClass.meta.fields).to.have.length(3);
-        expect(MyClass.meta.fieldsByName).to.have.keys('id', 'name', 'active');
+        let res = initialiseMeta(MyClass, {});
+        expect(res.fields).to.have.length(3);
+        expect(res.fieldsByName).to.have.keys('id', 'name', 'active');
     });
 
     it('decorator metadata is added to existing metadata', () => {
@@ -155,24 +159,24 @@ describe('initialiseMeta() - with decorators', () => {
             @d.BooleanField()
                 active: boolean;
         }
-        MyClass.meta = {
+        let myClassMeta = {
             fields: [
                 new TextField('flibble')
             ]
         };
-        initialiseMeta(MyClass);
-        expect(MyClass.meta.fields).to.have.length(4);
-        expect(MyClass.meta.fieldsByName).to.have.keys('flibble', 'id', 'name', 'active');
+        let res = initialiseMeta(MyClass, myClassMeta);
+        expect(res.fields).to.have.length(4);
+        expect(res.fieldsByName).to.have.keys('flibble', 'id', 'name', 'active');
     });
 
-    it('removes the __fields property once it has been transferred to metadata', () => {
+    it('does not removes the __fields property', () => {
         class MyClass extends Model {
             @d.TextField()
                 name: string;
         }
         expect((MyClass.prototype as any).__fields).to.be.an('Array');
         initialiseMeta(MyClass);
-        expect((MyClass.prototype as any).__fields).to.be.undefined;
+        expect((MyClass.prototype as any).__fields).to.be.an('Array');
     });
 
     it('meta.primaryKey defaults to []', () => {
@@ -182,8 +186,8 @@ describe('initialiseMeta() - with decorators', () => {
             @d.TextField()
                 name: string;
         }
-        initialiseMeta(MyClass);
-        expect(MyClass.meta.primaryKey).to.deep.equal([]);
+        let res = initialiseMeta(MyClass);
+        expect(res.primaryKey).to.deep.equal([]);
     });
 
     it('fields with primaryKey set are added to meta.primaryKey', () => {
@@ -193,8 +197,8 @@ describe('initialiseMeta() - with decorators', () => {
             @d.TextField({primaryKey: true})
                 name: string;
         }
-        initialiseMeta(MyClass);
-        expect(MyClass.meta.primaryKey).to.deep.equal(['id', 'name']);
+        let res = initialiseMeta(MyClass);
+        expect(res.primaryKey).to.deep.equal(['id', 'name']);
     });
 
     it('fields with primaryKey set are merged with existing meta.primaryKey', () => {
@@ -204,11 +208,11 @@ describe('initialiseMeta() - with decorators', () => {
             @d.TextField()
                 name: string;
         }
-        MyClass.meta = {
+        let meta = {
             primaryKey: ['name']
         };
-        initialiseMeta(MyClass);
-        expect(MyClass.meta.primaryKey).to.deep.equal(['name', 'id']);
+        let res = initialiseMeta(MyClass, meta);
+        expect(res.primaryKey).to.deep.equal(['name', 'id']);
     });
 
     it('meta.primaryKey is left untouched if fields do not override it', () => {
@@ -218,11 +222,11 @@ describe('initialiseMeta() - with decorators', () => {
             @d.TextField()
                 name: string;
         }
-        MyClass.meta = {
+        let meta = {
             primaryKey: ['id', 'name']
         };
-        initialiseMeta(MyClass);
-        expect(MyClass.meta.primaryKey).to.deep.equal(['id', 'name']);
+        let res = initialiseMeta(MyClass, meta);
+        expect(res.primaryKey).to.deep.equal(['id', 'name']);
     });
 
     it('throws if an invalid field name is in meta.primaryKey', () => {
@@ -232,11 +236,11 @@ describe('initialiseMeta() - with decorators', () => {
             @d.TextField()
                 name: string;
         }
-        MyClass.meta = {
+        let meta = {
             primaryKey: ['id', 'woooo']
         };
         expect(() => {
-            initialiseMeta(MyClass);
+            initialiseMeta(MyClass, meta);
         }).to.throw('Primary key field "woooo" is not defined');
     });
 
@@ -253,11 +257,11 @@ describe('initialiseMeta() - with decorators', () => {
             @d.TextField()
                 name: string;
         }
-        MyClass.meta = {
+        let meta = {
             fields: {}
         } as any;
         expect(() => {
-            initialiseMeta(MyClass);
+            initialiseMeta(MyClass, meta);
         }).to.throw('fields entry must be an array');
     });
 
@@ -265,11 +269,10 @@ describe('initialiseMeta() - with decorators', () => {
 
 describe('checkMetadataInitialised()', () => {
 
-    let nonClassMsg = 'MetadataError: Supplied model is not a class.';
     let notInitedMsg = 'MetadataError: Model metadata has not been initialised.';
 
     beforeEach(() => {
-        TestModel.meta = {
+        testModelMeta = {
             fields: [
                 new IntegerField('id'),
                 new TextField('name'),
@@ -280,22 +283,16 @@ describe('checkMetadataInitialised()', () => {
 
     it('should not throw if model has initialised metadata', () => {
         expect(() => {
-            initialiseMeta(TestModel);
-            checkMetadataInitialised(TestModel);
+            let res = initialiseMeta(TestModel, testModelMeta);
+            checkMetadataInitialised(res);
         }).to.not.throw();
-    });
-
-    it('should throw if model is not a class constructor', () => {
-        expect(() => {
-            checkMetadataInitialised(new Date());
-        }).to.throw(nonClassMsg);
     });
 
     it('should throw if model metadata is a non-object', () => {
         let nonObjects = [undefined, null, 22, 'string'];
         for (let obj of nonObjects) {
             expect(() => {
-                TestModel.meta = obj;
+                testModelMeta = obj;
                 checkMetadataInitialised(TestModel);
             }).to.throw(notInitedMsg);
         }
@@ -305,7 +302,7 @@ describe('checkMetadataInitialised()', () => {
         let nonArrays = [undefined, null, {}, 22, 'string'];
         for (let obj of nonArrays) {
             expect(() => {
-                TestModel.meta = { fields: obj } as any;
+                testModelMeta = { fields: obj } as any;
                 checkMetadataInitialised(TestModel);
             }).to.throw(notInitedMsg);
         }
@@ -313,20 +310,20 @@ describe('checkMetadataInitialised()', () => {
 
     it('should throw if meta.fieldsByName is not set or is not an object', () => {
         expect(() => {
-            TestModel.meta = {
+            testModelMeta = {
                 fields: []
             };
             checkMetadataInitialised(TestModel);
         }).to.throw(notInitedMsg);
         expect(() => {
-            TestModel.meta = {
+            testModelMeta = {
                 fields: [],
                 fieldsByName: null
             };
             checkMetadataInitialised(TestModel);
         }).to.throw(notInitedMsg);
         expect(() => {
-            TestModel.meta = {
+            testModelMeta = {
                 fields: [],
                 fieldsByName: 22 as any
             };
