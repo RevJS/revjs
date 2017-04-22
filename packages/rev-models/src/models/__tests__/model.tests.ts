@@ -10,24 +10,12 @@ class TestModel extends Model {
     postcode: string;
 }
 
-TestModel.meta = {
-    label: 'Test Model'
-};
-
-describe('Model class - initial state', () => {
-
-    it('static meta property should have no value on the base class', () => {
-        expect(Model.meta).to.be.undefined;
-    });
-
-});
-
 describe('Model class - constructor', () => {
 
     it('should not be possible to instantiate Model instances directly', () => {
         expect(() => {
             new Model();
-        }).to.throw('You should not instantiate the Model class directly')
+        }).to.throw('You should not instantiate the Model class directly');
     });
 
     it('should create a new model with no properties', () => {
@@ -58,22 +46,6 @@ describe('Model class - constructor', () => {
         expect(model.name).to.equal(data.name);
         expect(model.address).to.equal(data.address);
         expect(model.postcode).to.equal(data.postcode);
-    });
-
-});
-
-describe('Model class - getMeta()', () => {
-
-    it('EmptyModel.getMeta() should be undefined', () => {
-        let model = new EmptyModel();
-        expect(model.getMeta()).to.be.undefined;
-    });
-
-    it('TestModel.getMeta() should be as expected', () => {
-        let model = new TestModel();
-        expect(model.getMeta()).to.deep.equal({
-            label: 'Test Model'
-        });
     });
 
 });
