@@ -22,7 +22,7 @@ export class ConjunctionNode<T extends Model> extends QueryNode<T> {
         }
         for (let elem of value) {
             this.assertIsNonEmptyObject(elem);
-            this.children.push(parser.getQueryNodeForQuery(elem, model, this));
+            this.children.push(parser.getQueryNodeForQuery(model, elem, this));
         }
     }
 }

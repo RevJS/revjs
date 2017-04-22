@@ -2,9 +2,10 @@
 import { expect } from 'chai';
 import { Model } from '../../../models/model';
 import * as d from '../../../decorators';
-import { initialiseMeta } from '../../../models/meta';
 import { QueryParser } from '../../../queries/queryparser';
 import { InMemoryQuery } from '../query';
+import { ModelRegistry } from '../../../registry/registry';
+import { InMemoryBackend } from '../backend';
 
 class TestModel extends Model {
     @d.TextField() name: string;
@@ -13,7 +14,6 @@ class TestModel extends Model {
     @d.DateTimeField() registration_date: Date;
     @d.BooleanField() active: boolean;
 }
-initialiseMeta(TestModel);
 
 let record1 = {
     name: 'John Doe',
@@ -31,16 +31,20 @@ let record2 = {
     active: false
 };
 
+let registry: ModelRegistry;
 let parser: QueryParser;
 
 function getQuery(query: object) {
-    return new InMemoryQuery(parser.getQueryNodeForQuery(query, TestModel));
+    return new InMemoryQuery(parser.getQueryNodeForQuery(TestModel, query));
 }
 
 describe('InMemoryQuery', () => {
 
     beforeEach(() => {
-        parser = new QueryParser();
+        registry = new ModelRegistry();
+        registry.registerBackend('default', new InMemoryBackend());
+        registry.register(TestModel);
+        parser = new QueryParser(registry);
     });
 
     describe('Empty query', () => {
