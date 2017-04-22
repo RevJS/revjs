@@ -30,7 +30,7 @@ export class ModelRegistry {
         }
 
         // Initialise model metadata
-        let modelMeta = initialiseMeta(model, meta);
+        let modelMeta = initialiseMeta(this, model, meta);
 
         // Add prototype and metadata to the registry
         this._models[modelName] = modelMeta;
@@ -47,7 +47,11 @@ export class ModelRegistry {
         return this._models[modelName];
     }
 
-    setBackend(backendName: string, backend: IBackend) {
+    isBackendRegistered(backendName: string): boolean {
+        return (backendName in this._backends);
+    }
+
+    registerBackend(backendName: string, backend: IBackend) {
         if (!backendName) {
             throw new Error('RegistryError: you must specify a name for the backend.');
         }

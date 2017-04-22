@@ -149,39 +149,60 @@ describe('ModelRegistry', () => {
 
     });
 
-    describe('setBackend()', () => {
+    describe('isBackendRegistered()', () => {
+
+        it('returns false when a backend is not registered', () => {
+            expect(testReg.isBackendRegistered('default')).to.equal(false);
+        });
+
+        it('returns true when a backend is registered', () => {
+            testReg.registerBackend('default', testBackend);
+            expect(testReg.isBackendRegistered('default')).to.equal(true);
+        });
+
+        it('returns false when a non-string is passed', () => {
+            expect(testReg.isBackendRegistered(22 as any)).to.equal(false);
+        });
+
+        it('returns false when an object is passed', () => {
+            expect(testReg.isBackendRegistered({test: 1} as any)).to.equal(false);
+        });
+
+    });
+
+    describe('registerBackend()', () => {
 
         it('successfully configures the default backend', () => {
-            testReg.setBackend('default', testBackend);
+            testReg.registerBackend('default', testBackend);
             expect(testReg.getBackend('default')).to.equal(testBackend);
         });
 
         it('successfully configures a new valid backend', () => {
-            testReg.setBackend('my_db', testBackend);
+            testReg.registerBackend('my_db', testBackend);
             expect(testReg.getBackend('my_db')).to.equal(testBackend);
         });
 
         it('successfully configured an InMemory backend', () => {
             let backend = new InMemoryBackend();
-            testReg.setBackend('default', backend);
+            testReg.registerBackend('default', backend);
             expect(testReg.getBackend('default')).to.equal(backend);
         });
 
         it('throws an error when backendName is not specified', () => {
             expect(() => {
-                testReg.setBackend(undefined, undefined);
+                testReg.registerBackend(undefined, undefined);
             }).to.throw('you must specify a name');
         });
 
         it('throws an error when backend is not an object', () => {
             expect(() => {
-                testReg.setBackend('my_backend', (() => {}) as any);
+                testReg.registerBackend('my_backend', (() => {}) as any);
             }).to.throw('you must pass an instance of a backend class');
         });
 
         it('throws an error when backend is missing one or more methods', () => {
             expect(() => {
-                testReg.setBackend('my_backend', {} as any);
+                testReg.registerBackend('my_backend', {} as any);
             }).to.throw('the specified backend does not fully implement the IBackend interface');
         });
 
@@ -190,7 +211,7 @@ describe('ModelRegistry', () => {
     describe('getBackend()', () => {
 
         it('gets a backend', () => {
-            testReg.setBackend('my_db', testBackend);
+            testReg.registerBackend('my_db', testBackend);
             expect(testReg.getBackend('my_db')).to.equal(testBackend);
         });
 
