@@ -5,6 +5,6 @@ export { fields };
 
 export { Model } from './models/model';
 export { ModelRegistry } from './registry/registry';
-export { InMemoryBackend } from './backends/inmemory';
+export { InMemoryBackend } from './backends/inmemory/backend';
 
 export * from './operations';

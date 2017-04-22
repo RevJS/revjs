@@ -43,7 +43,7 @@ export function update<T extends Model>(registry: ModelRegistry, model: T, optio
                     operationResult.validation = validationResult;
                 }
 
-                return backend.update<typeof model>(model, opts.where, operationResult, opts);
+                return backend.update<typeof model>(registry, model, opts.where, operationResult, opts);
 
             })
             .then((res) => {

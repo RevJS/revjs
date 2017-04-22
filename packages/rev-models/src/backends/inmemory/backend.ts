@@ -10,6 +10,7 @@ import { IRemoveOptions, IRemoveMeta } from '../../operations/remove';
 import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
 import { sortRecords } from './sort';
+import { ModelRegistry } from '../../registry/registry';
 
 export class InMemoryBackend implements IBackend {
     _storage: {
@@ -20,10 +21,10 @@ export class InMemoryBackend implements IBackend {
         this._storage = {};
     }
 
-    load<T extends Model>(model: new(...args: any[]) => T, data: Array<Partial<T>>, result: ModelOperationResult<T, null>): Promise<ModelOperationResult<T, null>> {
+    load<T extends Model>(registry: ModelRegistry, model: new(...args: any[]) => T, data: Array<Partial<T>>, result: ModelOperationResult<T, null>): Promise<ModelOperationResult<T, null>> {
         return new Promise<ModelOperationResult<T, null>>((resolve) => {
 
-            let meta = model.meta;
+            let meta = registry.getModelMeta(model);
 
             if (typeof data != 'object' || !(data instanceof Array)
                     || (data.length > 0 && typeof data[0] != 'object')) {
@@ -36,10 +37,10 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    create<T extends Model>(model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
+    create<T extends Model>(registry: ModelRegistry, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
         return new Promise<ModelOperationResult<T, ICreateMeta>>((resolve) => {
 
-            let meta = model.getMeta();
+            let meta = registry.getModelMeta(model);
             let modelStorage = this._getModelStorage(meta);
 
             let record = {};
@@ -52,7 +53,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    update<T extends Model>(model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+    update<T extends Model>(registry: ModelRegistry, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
         return new Promise<ModelOperationResult<T, IUpdateMeta>>((resolve) => {
 
             if (!where) {
@@ -67,10 +68,10 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    read<T extends Model>(model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+    read<T extends Model>(registry: ModelRegistry, model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
         return new Promise<ModelOperationResult<T, IReadMeta>>((resolve) => {
 
-            let meta = model.meta;
+            let meta = registry.getModelMeta(model);
             if (!where) {
                 throw new Error('read() requires the \'where\' parameter');
             }
@@ -107,18 +108,18 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    remove<T extends Model>(model: new() => T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+    remove<T extends Model>(registry: ModelRegistry, model: new() => T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
         throw new Error('remove() not yet implemented');
     }
 
-    _getModelStorage(meta: IModelMeta): any {
+    _getModelStorage(meta: IModelMeta<any>): any {
         if (!this._storage[meta.name]) {
             this._storage[meta.name] = [];
         }
         return this._storage[meta.name];
     }
 
-    _writeFields<T extends Model>(model: T, meta: IModelMeta, target: any): void {
+    _writeFields<T extends Model>(model: T, meta: IModelMeta<any>, target: any): void {
         for (let field of meta.fields) {
             if (typeof model[field.name] != 'undefined') {
                 target[field.name] = model[field.name];

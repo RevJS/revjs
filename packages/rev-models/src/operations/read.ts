@@ -3,6 +3,7 @@ import { Model } from '../models/model';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { IModelOperation } from './operation';
 import { ModelRegistry } from '../registry/registry';
+import { IModelMeta } from '../../lib/models/meta';
 
 export interface IReadOptions {
     order_by?: string[];
@@ -25,7 +26,7 @@ export const DEFAULT_READ_OPTIONS: IReadOptions = {
 export function read<T extends Model>(registry: ModelRegistry, model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
     return new Promise((resolve, reject) => {
 
-        let meta = registry.getModelMeta(model);
+        let meta = registry.getModelMeta(model) as IModelMeta<T>;
         let backend = registry.getBackend(meta.backend);
         let operation: IModelOperation = {
             operation: 'read',
@@ -33,10 +34,10 @@ export function read<T extends Model>(registry: ModelRegistry, model: new() => T
         };
         let operationResult = new ModelOperationResult<T, IReadMeta>(operation);
         if (options && options.order_by) {
-            validateOrderBy(model, options.order_by);
+            validateOrderBy(model, meta, options.order_by);
         }
         let opts = Object.assign({}, DEFAULT_READ_OPTIONS, options);
-        backend.read(model, where || {}, operationResult, opts)
+        backend.read(registry, model, where || {}, operationResult, opts)
             .then((res) => {
                 resolve(res);
             })
@@ -46,7 +47,7 @@ export function read<T extends Model>(registry: ModelRegistry, model: new() => T
     });
 }
 
-export function validateOrderBy<T extends Model>(model: new() => T, order_by: any) {
+export function validateOrderBy<T extends Model>(model: new() => T, meta: IModelMeta<T>, order_by: any) {
 
     if (typeof order_by != 'object'
             || !(order_by instanceof Array)
@@ -63,7 +64,7 @@ export function validateOrderBy<T extends Model>(model: new() => T, order_by: an
             || (ob_tokens.length == 2 && ['asc', 'desc'].indexOf(ob_tokens[1]) == -1)) {
             throw new Error(`read(): order_by: invalid entry '${ob_entry}'`);
         }
-        if (!(ob_tokens[0] in model.meta.fieldsByName)) {
+        if (!(ob_tokens[0] in meta.fieldsByName)) {
             throw new Error(`read(): order_by: field '${ob_tokens[0]}' does not exist in model`);
         }
     }

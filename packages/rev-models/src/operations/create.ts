@@ -36,7 +36,7 @@ export function create<T extends Model>(registry: ModelRegistry, model: T, optio
                     operationResult.validation = validationResult;
                 }
 
-                return backend.create(model, operationResult, opts);
+                return backend.create(registry, model, operationResult, opts);
 
             })
             .then((res) => {

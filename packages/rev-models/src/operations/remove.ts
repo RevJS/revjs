@@ -31,7 +31,7 @@ export function remove<T extends Model>(registry: ModelRegistry, model: new() =>
             where: opts.where
         };
         let operationResult = new ModelOperationResult<T, IRemoveMeta>(operation);
-        backend.remove<T>(model, opts.where, operationResult, opts)
+        backend.remove<T>(registry, model, opts.where, operationResult, opts)
             .then((res) => {
                 resolve(res);
             })
