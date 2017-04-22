@@ -1,5 +1,7 @@
+
 import { Field } from '../fields/field';
 import { Model } from './model';
+import { ModelRegistry } from '../registry/registry';
 
 export interface IModelMeta<T> {
     ctor?: new(...args: any[]) => T;
@@ -13,7 +15,7 @@ export interface IModelMeta<T> {
     backend?: string;
 }
 
-export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T, meta?: IModelMeta<T>): IModelMeta<T> {
+export function initialiseMeta<T extends Model>(registry: ModelRegistry, model: new(...args: any[]) => T, meta?: IModelMeta<T>): IModelMeta<T> {
 
     let modelName = model.name;
 
@@ -48,7 +50,6 @@ export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T,
     }
 
     // Populate default metadata
-    meta.ctor = model;
     if (meta.name) {
         if (modelName != meta.name) {
             throw new Error('MetadataError: Model name does not match meta.name. To register the model under a different name you should rename its constructor.');
@@ -57,7 +58,13 @@ export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T,
     else {
         meta.name = modelName;
     }
+    meta.label = meta.label ? meta.label : meta.name;
+    meta.backend = meta.backend ? meta.backend : 'default';
+    meta.ctor = model;
     meta.fieldsByName = {};
+    if (!registry.isBackendRegistered(meta.backend)) {
+        throw new Error(`MetadataError: Backend "${meta.backend}" is not registered.`);
+    }
     if (!meta.primaryKey) {
         meta.primaryKey = [];
     }
@@ -75,8 +82,6 @@ export function initialiseMeta<T extends Model>(model: new(...args: any[]) => T,
             throw new Error(`MetadataError: Primary key field "${field}" is not defined.`);
         }
     }
-    meta.backend = meta.backend ? meta.backend : 'default';
-    meta.label = meta.label ? meta.label : meta.name;
 
     return meta;
 }

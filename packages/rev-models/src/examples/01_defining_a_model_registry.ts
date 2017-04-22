@@ -5,4 +5,4 @@ import { ModelRegistry, InMemoryBackend } from '../index';
 // import { ModelRegistry, InMemoryBackend } from 'rev-models'
 
 export const models = new ModelRegistry();
-models.setBackend('default', new InMemoryBackend());
+models.registerBackend('default', new InMemoryBackend());
