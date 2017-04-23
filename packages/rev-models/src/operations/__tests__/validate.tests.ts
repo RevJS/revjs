@@ -1,10 +1,12 @@
 import { expect } from 'chai';
 import * as d from '../../decorators';
-import { initialiseMeta } from '../../models/meta';
+import { IModelMeta } from '../../models/meta';
 import { Model } from '../../models/model';
 import { TextField } from '../../fields/';
 import { validate } from '../validate';
 import { VALIDATION_MESSAGES as msg } from '../../validation/validationmsg';
+import { ModelRegistry } from '../../registry/registry';
+import { InMemoryBackend } from '../../backends/inmemory/backend';
 
 describe('validate()', () => {
 
@@ -17,7 +19,9 @@ describe('validate()', () => {
             date: Date;
     }
 
-    initialiseMeta(TestModel);
+    let registry = new ModelRegistry();
+    registry.registerBackend('default', new InMemoryBackend());
+    registry.register(TestModel);
 
     it('should return a valid result if valid object is passed', () => {
 
@@ -27,26 +31,17 @@ describe('validate()', () => {
             date: new Date()
         });
 
-        return validate(test, {operation: 'create'})
+        return validate(registry, test, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(true);
             });
     });
 
-    it('should reject if un-initialised metadata is passed', () => {
-        class UninitedModel extends Model {}
-        UninitedModel.meta = {
-            fields: []
-        };
-        let test = new UninitedModel();
-
-        return validate(test, {operation: 'create'})
-            .then((res) => {
-                expect(false, 'Did not reject').to.be.true;
-            })
-            .catch((err) => {
-                expect(err.message).to.contain('metadata has not been initialised');
-            });
+    it('should reject if model not registered', () => {
+        class UnregisteredModel extends Model {}
+        let test = new UnregisteredModel();
+        return expect(validate(registry, test, {operation: 'create'}))
+            .to.be.rejectedWith('is not registered');
     });
 
     it('should return an invalid result if extra fields are present', () => {
@@ -58,7 +53,7 @@ describe('validate()', () => {
             extra: 'stuff'
         });
 
-        return validate(test, {operation: 'create'})
+        return validate(registry, test, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.modelErrors.length).to.equal(1);
@@ -75,7 +70,7 @@ describe('validate()', () => {
             date: new Date()
         });
 
-        return validate(test, {operation: 'create'})
+        return validate(registry, test, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.fieldErrors['id'].length).to.equal(1);
@@ -90,7 +85,7 @@ describe('validate()', () => {
             id: 11
         });
 
-        return validate(test, {operation: 'create'})
+        return validate(registry, test, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.fieldErrors['name'].length).to.equal(1);
@@ -100,11 +95,9 @@ describe('validate()', () => {
     });
 
     it('should reject if validation timeout expires', () => {
-
-        class DelayModel extends Model {}
-        DelayModel.meta = { fields: [] };
-        initialiseMeta(DelayModel);
-
+        let delayModelMeta: IModelMeta<any> = {
+            fields: []
+        };
         let delayField = new TextField('test');
         delayField.asyncValidators.push((...args: any[]) => {
             return new Promise<void>((resolve, reject) => {
@@ -113,17 +106,14 @@ describe('validate()', () => {
                 }, 10000);
             });
         });
+        delayModelMeta.fields.push(delayField);
 
-        DelayModel.meta.fields.push(delayField);
+        class DelayModel extends Model {}
+        registry.register(DelayModel, delayModelMeta);
         let test = new DelayModel();
 
-        return validate(test, {operation: 'create'}, { timeout: 10})
-            .then((res) => {
-                expect(false, 'Did not reject').to.be.true;
-            })
-            .catch((err) => {
-                expect(err.message).to.contain('timed out');
-            });
+        return expect(validate(registry, test, {operation: 'create'}, { timeout: 10}))
+            .to.be.rejectedWith('timed out');
     });
 
 });

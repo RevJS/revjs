@@ -7,8 +7,8 @@ import * as d from '../../decorators';
 import * as update from '../update';
 import { MockBackend } from './mock-backend';
 import { ModelValidationResult } from '../../validation/validationresult';
-import { initialiseMeta } from '../../models/meta';
 import { DEFAULT_UPDATE_OPTIONS, IUpdateOptions } from '../update';
+import { ModelRegistry } from '../../registry/registry';
 
 let GENDERS = [
     ['male', 'Male'],
@@ -26,11 +26,12 @@ class TestModel extends Model {
         email: string;
 }
 
-initialiseMeta(TestModel);
+class TestModel2 extends Model {}
 
 let rewired = rewire('../update');
 let rwUpdate: typeof update & typeof rewired = rewired as any;
 let mockBackend: MockBackend;
+let registry: ModelRegistry;
 
 describe('rev.operations.update()', () => {
 
@@ -41,20 +42,20 @@ describe('rev.operations.update()', () => {
             where: {}
         };
         mockBackend = new MockBackend();
-        rwUpdate.__set__('backends', {
-            get: () => mockBackend
-        });
+        registry = new ModelRegistry();
+        registry.registerBackend('default', mockBackend);
+        registry.register(TestModel);
     });
 
     it('calls backend.update() and returns successful result if model is valid', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        return rwUpdate.update(model, options)
+        return rwUpdate.update(registry, model, options)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let updateCall = mockBackend.updateStub.getCall(0);
-                expect(updateCall.args[0]).to.equal(model);
+                expect(updateCall.args[1]).to.equal(model);
                 expect(res.success).to.be.true;
                 expect(res.validation).to.be.instanceOf(ModelValidationResult);
                 expect(res.validation.valid).to.be.true;
@@ -66,13 +67,13 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         let testOpts = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
-        return rwUpdate.update(model, options)
+        return rwUpdate.update(registry, model, options)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let readCall = mockBackend.updateStub.getCall(0);
-                expect(readCall.args[0]).to.equal(model);
-                expect(readCall.args[1]).to.equal(options.where);
-                expect(readCall.args[3]).to.deep.equal(testOpts);
+                expect(readCall.args[1]).to.equal(model);
+                expect(readCall.args[2]).to.equal(options.where);
+                expect(readCall.args[4]).to.deep.equal(testOpts);
             });
     });
 
@@ -81,36 +82,25 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         options.validation = {};
-        return rwUpdate.update(model, options)
+        return rwUpdate.update(registry, model, options)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let readCall = mockBackend.updateStub.getCall(0);
-                expect(readCall.args[0]).to.equal(model);
-                expect(readCall.args[1]).to.equal(options.where);
-                expect(readCall.args[3].validation).to.deep.equal({});
+                expect(readCall.args[1]).to.equal(model);
+                expect(readCall.args[2]).to.equal(options.where);
+                expect(readCall.args[4].validation).to.deep.equal({});
             });
     });
 
-    it('rejects if model metadata is not initialised', () => {
-        class UnregisteredModel extends Model {}
-        let model = new UnregisteredModel();
-        return expect(rwUpdate.update(model))
-            .to.be.rejectedWith('MetadataError');
-    });
-
-    it('rejects if backends.get fails (e.g. invalid backend specified)', () => {
-        let model = new TestModel();
-        let expectedError = new Error('epic fail!');
-        rwUpdate.__set__('backends', {
-            get: () => { throw expectedError; }
-        });
-        return expect(rwUpdate.update(model))
-            .to.be.rejectedWith(expectedError);
+    it('rejects if model is not registered', () => {
+        let model = new TestModel2();
+        return expect(rwUpdate.update(registry, model))
+            .to.be.rejectedWith('is not registered');
     });
 
     it('rejects when where clause is not specified', () => {
         let model = new TestModel();
-        return expect(rwUpdate.update(model))
+        return expect(rwUpdate.update(registry, model))
             .to.be.rejectedWith('update() must be called with a where clause');
     });
 
@@ -120,7 +110,7 @@ describe('rev.operations.update()', () => {
         model.gender = 'fish';
         model.age = 9;
         model.email = 'www.google.com';
-        return rwUpdate.update(model, options)
+        return rwUpdate.update(registry, model, options)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -137,7 +127,7 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorsToAdd = ['some_backend_error'];
-        return rwUpdate.update(model, options)
+        return rwUpdate.update(registry, model, options)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -153,7 +143,7 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorsToAdd = ['some_backend_error'];
-        return rwUpdate.update(model, options)
+        return rwUpdate.update(registry, model, options)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -170,7 +160,7 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorToThrow = expectedError;
-        return expect(rwUpdate.update(model, options))
+        return expect(rwUpdate.update(registry, model, options))
             .to.be.rejectedWith(expectedError);
     });
 
