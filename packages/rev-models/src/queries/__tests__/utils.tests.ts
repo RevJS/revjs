@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { isFieldValue, getLikeOperatorRegExp } from '../query';
+import { isFieldValue, getLikeOperatorRegExp } from '../utils';
 
 let validFieldValues = [
     12,

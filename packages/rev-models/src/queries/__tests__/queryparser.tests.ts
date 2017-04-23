@@ -5,7 +5,8 @@ import { QueryParser } from '../queryparser';
 import { ConjunctionNode } from '../nodes/conjunction';
 import { FieldNode } from '../nodes/field';
 import { Model } from '../../models/model';
-import { initialiseMeta } from '../../models/meta';
+import { ModelRegistry } from '../../registry/registry';
+import { InMemoryBackend } from '../../backends/inmemory/backend';
 
 class TestModel extends Model {
     @d.IntegerField()
@@ -16,7 +17,9 @@ class TestModel extends Model {
         active: boolean;
 }
 
-initialiseMeta(TestModel);
+let registry = new ModelRegistry();
+registry.registerBackend('default', new InMemoryBackend());
+registry.register(TestModel);
 
 let invalidQueryObjects = [
     null,
@@ -32,7 +35,7 @@ describe('class QueryParser - constructor', () => {
     let fieldOperators = ['$eq', '$ne', '$gt', '$gte', '$lt', '$lte', '$like', '$in', '$nin'];
 
     before(() => {
-        parser = new QueryParser();
+        parser = new QueryParser(registry);
     });
 
     describe('constructor()', () => {
@@ -69,15 +72,15 @@ describe('class QueryParser - constructor', () => {
             }
         });
 
-        it('throws if a model with uninitialised metadata is passed', () => {
+        it('throws if model is not registered', () => {
             expect(() => {
-                parser.getQueryNodeForQuery({ name: 'bob' }, {} as any);
-            }).to.throw('MetadataError');
+                parser.getQueryNodeForQuery({} as any, { name: 'bob' });
+            }).to.throw('is not registered');
         });
 
         it('does not throw for a valid query', () => {
             expect(() => {
-                parser.getQueryNodeForQuery({ name: 'bob' }, TestModel);
+                parser.getQueryNodeForQuery(TestModel, { name: 'bob' });
             }).to.not.throw();
         });
 
@@ -86,29 +89,29 @@ describe('class QueryParser - constructor', () => {
     describe('getQueryNodeForQuery() - single-key objects', () => {
 
         it('returns a ConjunctionNode($or) if operator is $or', () => {
-            let node = parser.getQueryNodeForQuery({ $or: [] }, TestModel);
+            let node = parser.getQueryNodeForQuery(TestModel, { $or: [] });
             expect(node).to.be.instanceof(ConjunctionNode);
             expect(node.operator).to.equal('$or');
         });
 
         it('returns a ConjunctionNode($and) if operator is $and', () => {
-            let node = parser.getQueryNodeForQuery({ $and: [] }, TestModel);
+            let node = parser.getQueryNodeForQuery(TestModel, { $and: [] });
             expect(node).to.be.instanceof(ConjunctionNode);
             expect(node.operator).to.equal('$and');
         });
 
         it('returns a FieldNode if key is a field name', () => {
-            let node = parser.getQueryNodeForQuery({ active: true }, TestModel) as FieldNode<any>;
+            let node = parser.getQueryNodeForQuery(TestModel, { active: true }) as FieldNode<any>;
             expect(node).to.be.instanceof(FieldNode);
             expect(node.fieldName).to.equal('active');
         });
 
         it('throws if key is not a field or conjunction operator', () => {
             expect(() => {
-                parser.getQueryNodeForQuery({ unknown_field: 12 }, TestModel);
+                parser.getQueryNodeForQuery(TestModel, { unknown_field: 12 });
             }).to.throw('not a recognised field or conjunction operator');
             expect(() => {
-                parser.getQueryNodeForQuery({ $lt: 12 }, TestModel);
+                parser.getQueryNodeForQuery(TestModel, { $lt: 12 });
             }).to.throw('not a recognised field or conjunction operator');
         });
 
@@ -127,7 +130,7 @@ describe('class QueryParser - constructor', () => {
 
         it('returns a ConjunctionNode($and) for all multi-key objects', () => {
             for (let queryObj of multiKeyTestObjects) {
-                let node = parser.getQueryNodeForQuery(queryObj, TestModel);
+                let node = parser.getQueryNodeForQuery(TestModel, queryObj);
                 let keys = Object.keys(queryObj);
                 expect(node).to.be.instanceof(ConjunctionNode);
                 expect(node.operator).to.equal('$and');
