@@ -4,6 +4,7 @@ import { Model } from '../models/model';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { IModelOperation } from './operation';
 import { ModelRegistry } from '../registry/registry';
+import { getModelPrimaryKeyQuery } from './utils';
 
 export interface IUpdateOptions {
     where?: object;
@@ -25,7 +26,12 @@ export function update<T extends Model>(registry: ModelRegistry, model: T, optio
         let opts: IUpdateOptions = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
 
         if (!opts.where || typeof opts.where != 'object') {
-            throw new Error('update() must be called with a where clause');
+            if (!meta.primaryKey || meta.primaryKey.length == 0) {
+                throw new Error('update() must be called with a where clause for models with no primaryKey');
+            }
+            else {
+                opts.where = getModelPrimaryKeyQuery(model, meta);
+            }
         }
 
         let operation: IModelOperation = {

@@ -16,7 +16,7 @@ let GENDERS = [
 ];
 
 class TestModel extends Model {
-    @d.TextField()
+    @d.TextField({ primaryKey: true })
         name: string;
     @d.SelectionField({ selection: GENDERS })
         gender: string;
@@ -26,7 +26,14 @@ class TestModel extends Model {
         email: string;
 }
 
-class TestModel2 extends Model {}
+class UnregisteredModel extends Model {}
+
+class ModelWithNoPK extends Model {
+    @d.TextField()
+        name: string;
+    @d.IntegerField()
+        age: number;
+}
 
 let rewired = rewire('../update');
 let rwUpdate: typeof update & typeof rewired = rewired as any;
@@ -45,6 +52,7 @@ describe('rev.operations.update()', () => {
         registry = new ModelRegistry();
         registry.registerBackend('default', mockBackend);
         registry.register(TestModel);
+        registry.register(ModelWithNoPK);
     });
 
     it('calls backend.update() and returns successful result if model is valid', () => {
@@ -70,10 +78,10 @@ describe('rev.operations.update()', () => {
         return rwUpdate.update(registry, model, options)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
-                let readCall = mockBackend.updateStub.getCall(0);
-                expect(readCall.args[1]).to.equal(model);
-                expect(readCall.args[2]).to.equal(options.where);
-                expect(readCall.args[4]).to.deep.equal(testOpts);
+                let updateCall = mockBackend.updateStub.getCall(0);
+                expect(updateCall.args[1]).to.equal(model);
+                expect(updateCall.args[2]).to.equal(options.where);
+                expect(updateCall.args[4]).to.deep.equal(testOpts);
             });
     });
 
@@ -85,23 +93,44 @@ describe('rev.operations.update()', () => {
         return rwUpdate.update(registry, model, options)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
-                let readCall = mockBackend.updateStub.getCall(0);
-                expect(readCall.args[1]).to.equal(model);
-                expect(readCall.args[2]).to.equal(options.where);
-                expect(readCall.args[4].validation).to.deep.equal({});
+                let updateCall = mockBackend.updateStub.getCall(0);
+                expect(updateCall.args[1]).to.equal(model);
+                expect(updateCall.args[2]).to.equal(options.where);
+                expect(updateCall.args[4].validation).to.deep.equal({});
+            });
+    });
+
+    it('calls backend.update() with primary key where clause when opts.where is not set', () => {
+        let model = new TestModel();
+        model.name = 'Bob';
+        model.gender = 'male';
+        return rwUpdate.update(registry, model)
+            .then((res) => {
+                expect(mockBackend.updateStub.callCount).to.equal(1);
+                let updateCall = mockBackend.updateStub.getCall(0);
+                expect(updateCall.args[1]).to.equal(model);
+                expect(updateCall.args[2]).to.deep.equal({
+                    name: 'Bob'
+                });
             });
     });
 
     it('rejects if model is not registered', () => {
-        let model = new TestModel2();
+        let model = new UnregisteredModel();
         return expect(rwUpdate.update(registry, model))
             .to.be.rejectedWith('is not registered');
     });
 
-    it('rejects when where clause is not specified', () => {
+    it('rejects when where clause is not specified and model has no primary key', () => {
+        let model = new ModelWithNoPK();
+        return expect(rwUpdate.update(registry, model))
+            .to.be.rejectedWith('update() must be called with a where clause for models with no primaryKey');
+    });
+
+    it('rejects when where clause is not specified and model primaryKey is undefined', () => {
         let model = new TestModel();
         return expect(rwUpdate.update(registry, model))
-            .to.be.rejectedWith('update() must be called with a where clause');
+            .to.be.rejectedWith('primary key field \'name\' is undefined');
     });
 
     it('rejects with unsuccessful result when model fields do not pass validation', () => {
