@@ -133,6 +133,24 @@ describe('rev.operations.update()', () => {
             .to.be.rejectedWith('primary key field \'name\' is undefined');
     });
 
+    it('rejects when options.fields set to something other than an array', () => {
+        let model = new TestModel({ name: 'Bob', gender: 'male' });
+        options = {
+            fields: 'name, gender' as any
+        };
+        return expect(rwUpdate.update(registry, model, options))
+            .to.be.rejectedWith('options.fields must be an array of field names');
+    });
+
+    it('rejects when options.fields contains an invalid fiel name', () => {
+        let model = new TestModel({ name: 'Bob', gender: 'male' });
+        options = {
+            fields: ['cc_number']
+        };
+        return expect(rwUpdate.update(registry, model, options))
+            .to.be.rejectedWith('Field \'cc_number\' does not exist in TestModel');
+    });
+
     it('rejects with unsuccessful result when model fields do not pass validation', () => {
         let model = new TestModel();
         model.name = 'Bill';

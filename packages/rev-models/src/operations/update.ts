@@ -34,6 +34,17 @@ export function update<T extends Model>(registry: ModelRegistry, model: T, optio
             }
         }
 
+        if (opts.fields) {
+            if (typeof opts.fields != 'object' || !(opts.fields instanceof Array)) {
+                throw new Error('update() options.fields must be an array of field names');
+            }
+            for (let field of opts.fields) {
+                if (!(field in meta.fieldsByName)) {
+                    throw new Error(`update() options.fields error: Field '${field}' does not exist in ${meta.name}`);
+                }
+            }
+        }
+
         let operation: IModelOperation = {
             operation: 'update',
             where: opts.where
