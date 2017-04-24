@@ -8,7 +8,7 @@ let GENDERS = [
 ];
 
 export class TestModel extends Model {
-    @d.IntegerField()
+    @d.IntegerField({ primaryKey: true })
         id: number;
     @d.TextField()
         name: string;
@@ -28,7 +28,7 @@ export class TestModel extends Model {
 
 export const testData: Array<Partial<TestModel>> = [
     {
-        id: 1,
+        id: 0,
         name: 'John Doe',
         age: 20,
         gender: 'male',
@@ -36,7 +36,7 @@ export const testData: Array<Partial<TestModel>> = [
         date_registered: new Date('2016-05-26')
     },
     {
-        id: 2,
+        id: 1,
         name: 'Jane Doe',
         age: 23,
         gender: 'female',
@@ -44,7 +44,7 @@ export const testData: Array<Partial<TestModel>> = [
         date_registered: new Date('2017-01-01')
     },
     {
-        id: 3,
+        id: 2,
         name: 'Felix The Cat',
         age: 3,
         gender: 'male',
@@ -52,7 +52,7 @@ export const testData: Array<Partial<TestModel>> = [
         date_registered: new Date('2016-12-03')
     },
     {
-        id: 4,
+        id: 3,
         name: 'Rambo',
         age: 45,
         gender: 'male',
@@ -60,7 +60,7 @@ export const testData: Array<Partial<TestModel>> = [
         date_registered: new Date('2015-06-11')
     },
     {
-        id: 5,
+        id: 4,
         name: 'Frostella the Snowlady',
         age: 28,
         gender: 'female',
