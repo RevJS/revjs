@@ -15,18 +15,12 @@ export interface IModelMeta<T> {
     backend?: string;
 }
 
-export function initialiseMeta<T extends Model>(registry: ModelRegistry, model: new(...args: any[]) => T, meta?: IModelMeta<T>): IModelMeta<T> {
-
-    let modelName = model.name;
-
+function populateMetaFromClassFields<T extends Model>(model: new(...args: any[]) => T, meta: IModelMeta<T>) {
     // Load fields from prototype __fields property if present (fields added via decorators)
     let proto = model.prototype;
     if (proto.__fields) {
         if (typeof proto.__fields != 'object' || !(proto.__fields instanceof Array)) {
             throw new Error('MetadataError: Model __fields property must be an array.');
-        }
-        if (!meta) {
-            meta = { fields: [] };
         }
         if (!meta.fields) {
             meta.fields = [];
@@ -38,9 +32,18 @@ export function initialiseMeta<T extends Model>(registry: ModelRegistry, model: 
             meta.fields.push(field);
         }
     }
+}
 
-    // Check metadata
-    if (!meta || !meta.fields || !(meta.fields instanceof Array)) {
+export function initialiseMeta<T extends Model>(registry: ModelRegistry, model: new(...args: any[]) => T, meta?: IModelMeta<T>): IModelMeta<T> {
+
+    if (!meta) {
+        meta = {};
+    }
+
+    populateMetaFromClassFields(model, meta);
+
+    // Check fields data
+    if (!meta.fields || !(meta.fields instanceof Array)) {
         throw new Error('MetadataError: You must define the fields metadata for the model.');
     }
     for (let field of meta.fields) {
@@ -48,26 +51,35 @@ export function initialiseMeta<T extends Model>(registry: ModelRegistry, model: 
             throw new Error(`MetadataError: One or more entries in the fields metadata is not an instance of rev.Field.`);
         }
     }
+    if (meta.primaryKey) {
+        if (typeof meta.primaryKey != 'object' || !(meta.primaryKey instanceof Array)) {
+            throw new Error(`MetadataError: primaryKey must be an array of field names.`);
+        }
+    }
+    else {
+        meta.primaryKey = [];
+    }
 
     // Populate default metadata
     if (meta.name) {
-        if (modelName != meta.name) {
+        if (model.name != meta.name) {
             throw new Error('MetadataError: Model name does not match meta.name. To register the model under a different name you should rename its constructor.');
         }
     }
     else {
-        meta.name = modelName;
+        meta.name = model.name;
     }
     meta.label = meta.label ? meta.label : meta.name;
     meta.backend = meta.backend ? meta.backend : 'default';
     meta.ctor = model;
     meta.fieldsByName = {};
+
+    // Validate specified back end
     if (!registry.isBackendRegistered(meta.backend)) {
         throw new Error(`MetadataError: Backend "${meta.backend}" is not registered.`);
     }
-    if (!meta.primaryKey) {
-        meta.primaryKey = [];
-    }
+
+    // Check field definitions and populate fieldsByName
     for (let field of meta.fields) {
         if (field.name in meta.fieldsByName) {
             throw new Error(`MetadataError: Field "${field.name}" is defined more than once.`);

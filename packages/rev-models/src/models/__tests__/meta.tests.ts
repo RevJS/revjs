@@ -247,6 +247,20 @@ describe('initialiseMeta() - with decorators', () => {
         expect(res.primaryKey).to.deep.equal(['id', 'name']);
     });
 
+    it('throws if meta.primaryKey is not an array', () => {
+        class MyClass extends Model {
+            @d.IntegerField()
+                id: number;
+            @d.TextField()
+                name: string;
+        }
+        expect(() => {
+            initialiseMeta(testRegistry, MyClass, {
+                primaryKey: 'id' as any
+            });
+        }).to.throw('primaryKey must be an array of field names');
+    });
+
     it('throws if an invalid field name is in meta.primaryKey', () => {
         class MyClass extends Model {
             @d.IntegerField()
