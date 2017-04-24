@@ -25,13 +25,19 @@ export class InMemoryBackend implements IBackend {
         return new Promise<ModelOperationResult<T, null>>((resolve) => {
 
             let meta = registry.getModelMeta(model);
+            let modelStorage = this._getModelStorage(meta);
 
             if (typeof data != 'object' || !(data instanceof Array)
                     || (data.length > 0 && typeof data[0] != 'object')) {
                 throw new Error('load() data must be an array of objects');
             }
 
-            this._storage[meta.name] = data;
+            for (let srcRecord of data) {
+                let record = {};
+                this._writeFields(srcRecord, meta, record);
+                modelStorage.push(record);
+            }
+
             resolve(result);
 
         });
@@ -60,10 +66,21 @@ export class InMemoryBackend implements IBackend {
                 throw new Error('update() requires the \'where\' parameter');
             }
 
-            /* Library changes needed:
-             *  - primaryKey info needed for easier updates of single models
-             *  - Need ability to update a subset of fields
-            */
+            let meta = registry.getModelMeta(model);
+            let parser = new QueryParser(registry);
+            let queryNode = parser.getQueryNodeForQuery(meta.ctor, where);
+            let query = new InMemoryQuery(queryNode);
+
+            let modelStorage = this._getModelStorage(meta);
+            let updateCount = 0;
+            for (let record of modelStorage) {
+                if (query.testRecord(record)) {
+                    this._writeFields(model, meta, record, options.fields);
+                    updateCount++;
+                }
+            }
+            result.setMeta({ total_count: updateCount });
+            resolve(result);
 
         });
     }
@@ -119,10 +136,11 @@ export class InMemoryBackend implements IBackend {
         return this._storage[meta.name];
     }
 
-    _writeFields<T extends Model>(model: T, meta: IModelMeta<any>, target: any): void {
-        for (let field of meta.fields) {
-            if (typeof model[field.name] != 'undefined') {
-                target[field.name] = model[field.name];
+    _writeFields<T extends Model>(model: T, meta: IModelMeta<any>, target: any, fields?: string[]): void {
+        let fieldList = fields ? fields : Object.keys(meta.fieldsByName);
+        for (let field of fieldList) {
+            if (typeof model[field] != 'undefined') {
+                target[field] = model[field];
             }
         }
     }

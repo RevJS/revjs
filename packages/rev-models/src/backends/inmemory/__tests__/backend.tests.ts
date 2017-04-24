@@ -116,10 +116,11 @@ describe('rev.backends.inmemory', () => {
 
     describe('load()', () => {
 
-        it('populates InMemoryBackend._storage with data', () => {
+        it('populates InMemoryBackend._storage with a copy of passed data', () => {
             return backend.load(registry, TestModel, testData, loadResult)
                 .then(() => {
-                    expect(backend._storage['TestModel']).to.equal(testData);
+                    expect(backend._storage['TestModel']).to.deep.equal(testData);
+                    expect(backend._storage['TestModel']).not.to.equal(testData);
                 });
         });
 
