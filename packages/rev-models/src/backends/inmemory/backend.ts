@@ -14,7 +14,7 @@ import { ModelRegistry } from '../../registry/registry';
 
 export class InMemoryBackend implements IBackend {
     _storage: {
-        [modelName: string]: any
+        [modelName: string]: any[]
     } = {};
 
     constructor() {
@@ -126,7 +126,33 @@ export class InMemoryBackend implements IBackend {
     }
 
     remove<T extends Model>(registry: ModelRegistry, model: T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
-        throw new Error('remove() not yet implemented');
+        return new Promise<ModelOperationResult<T, IRemoveMeta>>((resolve, reject) => {
+
+            if (!where) {
+                throw new Error('remove() requires the \'where\' parameter');
+            }
+
+            let meta = registry.getModelMeta(model);
+            let parser = new QueryParser(registry);
+            let queryNode = parser.getQueryNodeForQuery(meta.ctor, where);
+            let query = new InMemoryQuery(queryNode);
+
+            let modelStorage = this._getModelStorage(meta);
+            let removeCount = 0;
+            let newStorage = [];
+            for (let record of modelStorage) {
+                if (query.testRecord(record)) {
+                    removeCount++;
+                }
+                else {
+                    newStorage.push(record);
+                }
+            }
+            this._setModelStorage(meta, newStorage);
+            result.setMeta({ total_count: removeCount });
+            resolve(result);
+
+        });
     }
 
     _getModelStorage(meta: IModelMeta<any>): any {
@@ -134,6 +160,10 @@ export class InMemoryBackend implements IBackend {
             this._storage[meta.name] = [];
         }
         return this._storage[meta.name];
+    }
+
+    _setModelStorage(meta: IModelMeta<any>, data: any[]): any {
+        this._storage[meta.name] = data;
     }
 
     _writeFields<T extends Model>(model: T, meta: IModelMeta<any>, target: any, fields?: string[]): void {
