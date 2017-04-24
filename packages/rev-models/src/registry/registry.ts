@@ -133,7 +133,7 @@ export class ModelRegistry {
         return update(this, model, options);
     }
 
-    remove<T extends Model>(model: new() => T, options?: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+    remove<T extends Model>(model: T, options?: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
         return remove(this, model, options);
     }
 
