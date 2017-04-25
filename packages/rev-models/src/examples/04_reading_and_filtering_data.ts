@@ -14,6 +14,13 @@ loadTestData(models)
 })
 
 .then(() => {
+    return models.read(Person, {}, { offset: 2, limit: 3 });
+})
+.then((res) => {
+    console.log('Last 3 records:', res.results);
+})
+
+.then(() => {
     return models.read(Person, { newsletter: true });
 })
 .then((res) => {
