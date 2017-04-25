@@ -1,4 +1,5 @@
 
+import '../polyfills';
 import { ModelRegistry, InMemoryBackend } from '../index';
 
 // EXAMPLE:

@@ -1,5 +1,4 @@
 
-import '../polyfills';
 import * as rev from '../index';
 
 // EXAMPLE:
@@ -15,7 +14,7 @@ let TITLES = [
 
 export class Person extends rev.Model {
 
-    @rev.IntegerField({ primaryKey: true })
+    @rev.AutoNumberField({ primaryKey: true })
         id: number;
     @rev.SelectionField({label: 'Title', selection: TITLES, required: false })
         title: string;
@@ -34,5 +33,6 @@ export class Person extends rev.Model {
 }
 
 models.register(Person, {
-    label: 'Registered Person'
+    label: 'Registered Person',
+    backend: 'default'
 });
