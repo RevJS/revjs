@@ -1,5 +1,5 @@
 
-import { Field, IFieldOptions } from './field';
+import { Field, IFieldOptions, getOptions } from './field';
 import * as validators from '../validation/validators';
 
 export interface INumberFieldOptions extends IFieldOptions {
@@ -27,5 +27,17 @@ export class IntegerField extends NumberField {
         super(name, options);
         let validatorIdx = this.options.required ? 2 : 1;
         this.validators.splice(validatorIdx, 0, validators.integerValidator);
+    }
+}
+
+export class AutoNumberField extends Field {
+    options: IFieldOptions;
+
+    constructor(name: string, options?: IFieldOptions) {
+        let opts = getOptions(options);
+        opts.required = false;
+        super(name, opts);
+        this.validators.push(validators.numberValidator);
+        this.validators.push(validators.integerValidator);
     }
 }

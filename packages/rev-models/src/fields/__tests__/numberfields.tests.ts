@@ -1,6 +1,6 @@
 import { ModelValidationResult } from '../../validation/validationresult';
 import { IFieldOptions, Field, DEFAULT_FIELD_OPTIONS } from '../field';
-import { NumberField, IntegerField } from '../numberfields';
+import { NumberField, IntegerField, AutoNumberField } from '../numberfields';
 import { numberValidator, requiredValidator, minValueValidator, maxValueValidator, integerValidator } from '../../validation/validators';
 import { IModelOperation } from '../../operations/operation';
 
@@ -222,6 +222,66 @@ describe('rev.fields.numberfields', () => {
                 maxValue: 50
             });
             testModel.value = 22;
+            return expect(test.validate(registry, testModel, testOp, result))
+                .to.eventually.have.property('valid', false);
+        });
+
+    });
+
+    describe('AutoNumberField', () => {
+        let defaultOpts = Object.assign({}, DEFAULT_FIELD_OPTIONS, { required: false});
+
+        it('creates a field with properties as expected', () => {
+            let opts: IFieldOptions = {};
+            let test = new AutoNumberField('value', opts);
+            expect(test.name).to.equal('value');
+            expect(test.options).to.deep.equal(defaultOpts);
+            expect(test).is.instanceof(Field);
+        });
+
+        it('sets default field options if they are not specified', () => {
+            let test = new AutoNumberField('value');
+            expect(test.options).to.deep.equal(defaultOpts);
+        });
+
+        it('adds the integerValidator by default', () => {
+            let test = new AutoNumberField('value', { required: false });
+            expect(test.validators.length).to.equal(2);
+            expect(test.validators[0]).to.equal(numberValidator);
+            expect(test.validators[1]).to.equal(integerValidator);
+        });
+
+        it('does NOT add the required validator if options.required is true', () => {
+            let test = new AutoNumberField('value', { required: true });
+            expect(test.validators.length).to.equal(2);
+            expect(test.validators[0]).to.equal(numberValidator);
+            expect(test.validators[1]).to.equal(integerValidator);
+        });
+
+        it('successfully validates an integer value', () => {
+            let test = new AutoNumberField('value');
+            testModel.value = 42;
+            return expect(test.validate(registry, testModel, testOp, result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully validates an integer value in a string', () => {
+            let test = new AutoNumberField('value');
+            testModel.value = '12';
+            return expect(test.validate(registry, testModel, testOp, result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('successfully validates a null value', () => {
+            let test = new AutoNumberField('value', { required: false });
+            testModel.value = null;
+            return expect(test.validate(registry, testModel, testOp, result))
+                .to.eventually.have.property('valid', true);
+        });
+
+        it('does not validate on non-integer value', () => {
+            let test = new AutoNumberField('value');
+            testModel.value = 42.5;
             return expect(test.validate(registry, testModel, testOp, result))
                 .to.eventually.have.property('valid', false);
         });

@@ -61,6 +61,13 @@ export function IntegerField(options?: INumberFieldOptions)
     };
 }
 
+export function AutoNumberField(options?: IFieldOptions)
+{
+    return function(target: any, propName: string) {
+        addFieldMeta(target, propName, new fld.AutoNumberField(propName, options));
+    };
+}
+
 // Selection Fields
 
 export function BooleanField(options?: IFieldOptions)

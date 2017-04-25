@@ -65,6 +65,14 @@ describe('rev.decorators.fields', () => {
             expectFieldMeta(MyClass, 'test', f.IntegerField);
         });
 
+        it('AutoNumberField', () => {
+            class MyClass {
+                @d.AutoNumberField()
+                    test: string;
+            }
+            expectFieldMeta(MyClass, 'test', f.AutoNumberField);
+        });
+
     });
 
     describe('Selection Fields', () => {
