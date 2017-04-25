@@ -11,10 +11,16 @@ import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
 import { sortRecords } from './sort';
 import { ModelRegistry } from '../../registry/registry';
+import { AutoNumberField } from '../../fields';
 
 export class InMemoryBackend implements IBackend {
     _storage: {
         [modelName: string]: any[]
+    } = {};
+    _sequences: {
+        [modelName: string]: {
+            [fieldName: string]: number
+        }
     } = {};
 
     constructor() {
@@ -34,7 +40,7 @@ export class InMemoryBackend implements IBackend {
 
             for (let srcRecord of data) {
                 let record = {};
-                this._writeFields(srcRecord, meta, record);
+                this._writeFields('create', srcRecord, meta, record);
                 modelStorage.push(record);
             }
 
@@ -50,7 +56,7 @@ export class InMemoryBackend implements IBackend {
             let modelStorage = this._getModelStorage(meta);
 
             let record = {};
-            this._writeFields(model, meta, record);
+            this._writeFields('create', model, meta, record);
             modelStorage.push(record);
 
             result.result = new meta.ctor(record);
@@ -75,7 +81,7 @@ export class InMemoryBackend implements IBackend {
             let updateCount = 0;
             for (let record of modelStorage) {
                 if (query.testRecord(record)) {
-                    this._writeFields(model, meta, record, options.fields);
+                    this._writeFields('update', model, meta, record, options.fields);
                     updateCount++;
                 }
             }
@@ -166,11 +172,30 @@ export class InMemoryBackend implements IBackend {
         this._storage[meta.name] = data;
     }
 
-    _writeFields<T extends Model>(model: T, meta: IModelMeta<any>, target: any, fields?: string[]): void {
+    _getNextSequence(meta: IModelMeta<any>, field: string) {
+        if (!this._sequences[meta.name]) {
+            this._sequences[meta.name] = {};
+        }
+        if (!this._sequences[meta.name][field]) {
+            this._sequences[meta.name][field] = 0;
+        }
+        return ++this._sequences[meta.name][field];
+    }
+
+    _writeFields<T extends Model>(operation: string, model: T, meta: IModelMeta<any>, target: any, fields?: string[]): void {
         let fieldList = fields ? fields : Object.keys(meta.fieldsByName);
-        for (let field of fieldList) {
-            if (typeof model[field] != 'undefined') {
-                target[field] = model[field];
+        for (let fieldName of fieldList) {
+
+            let field = meta.fieldsByName[fieldName];
+            if (field instanceof AutoNumberField) {
+                // deal with AutoNumberField special case
+                // TODO: generic field -> backend value mapping
+                if (operation == 'create') {
+                    target[fieldName] = this._getNextSequence(meta, fieldName);
+                }
+            }
+            else if (typeof model[fieldName] != 'undefined') {
+                target[fieldName] = model[fieldName];
             }
         }
     }
