@@ -39,3 +39,6 @@ loadTestData(models)
     console.log('Updated Record:', res.results[0]);
 
 });
+
+// It is also possible to update multiple records using the 'where' option
+// for the update() method. Documentation TODO
