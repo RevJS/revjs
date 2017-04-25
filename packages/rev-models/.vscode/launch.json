@@ -28,11 +28,10 @@
             "name": "Run Current File",
             "type": "node",
             "request": "launch",
-            "program": "${workspaceRoot}/node_modules/.bin/run-bin",
-            "args": ["ts-node", "${relativeFile}"],
+            "program": "${workspaceRoot}/../../tsnode.js",
+            "args": ["${workspaceRoot}/${relativeFile}"],
             "cwd": "${workspaceRoot}",
-            "outFiles": [],
-            "sourceMaps": true
+            "protocol": "inspector"
         }
     ]
 }
