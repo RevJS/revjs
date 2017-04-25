@@ -267,4 +267,28 @@ describe('ModelRegistry', () => {
 
     });
 
+    describe('model CRUD functions', () => {  // TODO
+
+        it('contains create() function', () => {
+            expect(testReg.create).to.be.a('function');
+        });
+
+        it('contains update() function', () => {
+            expect(testReg.update).to.be.a('function');
+        });
+
+        it('contains remove() function', () => {
+            expect(testReg.remove).to.be.a('function');
+        });
+
+        it('contains read() function', () => {
+            expect(testReg.read).to.be.a('function');
+        });
+
+        it('contains validate() function', () => {
+            expect(testReg.validate).to.be.a('function');
+        });
+
+    });
+
 });

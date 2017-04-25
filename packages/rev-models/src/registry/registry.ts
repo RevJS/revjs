@@ -3,11 +3,14 @@ import { initialiseMeta, IModelMeta } from '../models/meta';
 import { Model, ModelCtor } from '../models/model';
 import { checkIsModelConstructor } from '../models/utils';
 import { IBackend } from '../backends/backend';
+import { IModelOperation } from '../operations/operation';
 import { create, ICreateOptions, ICreateMeta } from '../operations/create';
 import { update, IUpdateOptions, IUpdateMeta } from '../operations/update';
 import { remove, IRemoveOptions, IRemoveMeta } from '../operations/remove';
 import { read, IReadOptions, IReadMeta } from '../operations/read';
 import { ModelOperationResult } from '../operations/operationresult';
+import { validate, IValidationOptions } from '../operations/validate';
+import { ModelValidationResult } from '../validation/validationresult';
 
 export class ModelRegistry {
 
@@ -139,6 +142,11 @@ export class ModelRegistry {
 
     read<T extends Model>(model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
         return read(this, model, where, options);
+    }
+
+    validate<T extends Model>(model: T, options?: IValidationOptions): Promise<ModelValidationResult> {
+        let operation: IModelOperation = { operation: 'validate' };
+        return validate(this, model, operation, options);
     }
 
 }
