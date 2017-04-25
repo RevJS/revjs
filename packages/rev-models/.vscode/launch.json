@@ -5,31 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Unit Tests",
+            "name": "Current TS Tests File",
             "type": "node",
             "request": "launch",
-            "program": "${workspaceRoot}/node_modules/.bin/run-bin",
-            "args": ["mocha", "--require", "./tests-setup.js", "--recursive", "src/**/__tests__/*.ts"],
+            "program": "${workspaceRoot}/../../node_modules/.bin/_mocha",
+            "args": ["-r", "ts-node/register", "-r", "./src/__tests__/setup.ts", "${relativeFile}"],
             "cwd": "${workspaceRoot}",
-            "outFiles": [],
-            "sourceMaps": true
+            "protocol": "inspector"
         },
         {
-            "name": "Debug Current Unit Test",
+            "name": "Current TS File",
             "type": "node",
             "request": "launch",
-            "program": "${workspaceRoot}/node_modules/.bin/run-bin",
-            "args": ["mocha", "--require", "./tests-setup.js", "${relativeFile}"],
-            "cwd": "${workspaceRoot}",
-            "outFiles": [],
-            "sourceMaps": true
-        },
-        {
-            "name": "Run Current File",
-            "type": "node",
-            "request": "launch",
-            "program": "${workspaceRoot}/../../tsnode.js",
-            "args": ["${workspaceRoot}/${relativeFile}"],
+            "program": "${workspaceRoot}/../../node_modules/ts-node/dist/_bin.js",
+            "args": ["${relativeFile}"],
             "cwd": "${workspaceRoot}",
             "protocol": "inspector"
         }
