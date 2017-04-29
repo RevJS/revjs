@@ -1,6 +1,6 @@
 
 import * as models from './models.fixture';
-import { ModelApiRegistry } from '../../registry/index';
+import { ModelApiRegistry } from '../../registry/registry';
 import { getGraphQLSchema } from '../schema';
 
 import { expect } from 'chai';

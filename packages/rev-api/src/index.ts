@@ -1,2 +1,2 @@
 
-export { register } from './registry';
+export { ModelApiRegistry } from './registry/registry';

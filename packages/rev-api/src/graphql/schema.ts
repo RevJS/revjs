@@ -1,5 +1,5 @@
-import { ModelApiRegistry } from '../registry/index';
-import { IModelOperationResult } from 'rev-models/lib/models';
+import { ModelApiRegistry } from '../registry/registry';
+import { IModelOperationResult } from 'rev-models/lib/operations/operationresult';
 
 import {
     GraphQLObjectType,
@@ -64,10 +64,10 @@ export function getGraphQLSchema(registry: ModelApiRegistry): GraphQLSchema {
                 args: {
                     id: { type: new GraphQLNonNull(GraphQLInt) }
                 },
-                resolve: (value: any, args: any): IModelOperationResult<any> => {
+                resolve: (value: any, args: any): IModelOperationResult<any, any> => {
                     return {
                         operation: {
-                            name: 'create'
+                            operation: 'create'
                         },
                         success: false
                     };

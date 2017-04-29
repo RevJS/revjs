@@ -1,6 +1,5 @@
 
-import { IModel, IModelMeta } from 'rev-models/lib/models';
-import { checkMetadataInitialised } from 'rev-models/lib/models/utils';
+import { Model, IModelMeta } from 'rev-models';
 import * as fields from 'rev-models/lib/fields';
 
 export interface IApiMethodContext {
@@ -26,11 +25,13 @@ export interface IApiMeta {
 
 let modelOps = ['create', 'read', 'update', 'remove'];
 
-export function initialiseApiMeta<T extends IModel>(
+export function initialiseApiMeta<T extends Model>(
         modelMeta: IModelMeta<T>,
         apiMeta: IApiMetaDefinition): IApiMeta {
-
-    checkMetadataInitialised(modelMeta);
+    
+    if (!modelMeta) {
+        throw new Error(`ApiMetadataError: Model metadata must be supplied.`);
+    }
 
     // Set up API Metadata
     if (!apiMeta || !apiMeta.methods

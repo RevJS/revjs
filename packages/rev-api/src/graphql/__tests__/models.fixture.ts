@@ -1,31 +1,31 @@
-import { ModelRegistry } from 'rev-models/lib/registry';
-import * as f from 'rev-models/lib/decorators';
+import * as rev from 'rev-models';
 
-export const modelRegistry = new ModelRegistry();
+export const modelRegistry = new rev.ModelRegistry();
+modelRegistry.registerBackend('default', new rev.InMemoryBackend());
 
 export class User {
-    @f.IntegerField()
+    @rev.IntegerField()
         id: number = 1;
-    @f.TextField()
+    @rev.TextField()
         name: string = 'A Test Model';
-    @f.DateField()
+    @rev.DateField()
         date_registered: Date = new Date();
 }
 modelRegistry.register(User);
 
 export class Post {
-    @f.IntegerField()
+    @rev.IntegerField()
         id: number = 10;
-    @f.TextField()
+    @rev.TextField()
         title: string;
-    @f.TextField()
+    @rev.TextField()
         body: string;
-    @f.BooleanField()
+    @rev.BooleanField()
         published: boolean;
-    @f.DateTimeField()
+    @rev.DateTimeField()
         post_date: Date;
 }
 modelRegistry.register(Post);
 
-export const UserMeta = modelRegistry.getMeta('User');
-export const PostMeta = modelRegistry.getMeta('Post');
+export const UserMeta = modelRegistry.getModelMeta('User');
+export const PostMeta = modelRegistry.getModelMeta('Post');
