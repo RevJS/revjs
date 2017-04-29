@@ -53,7 +53,7 @@ export class ModelFormComponent extends React.Component<IRevFormProps, void> {
 
 }
 
-export const RevForm = reduxForm({} as any)(ModelFormComponent) as any;
+export const ModelForm = reduxForm({} as any)(ModelFormComponent) as any;
 
 /*
 // import RaisedButton from 'material-ui/RaisedButton';

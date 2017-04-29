@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import { Field } from 'redux-form';
-import { IRevFormMeta } from '../forms/RevForm';
+import { IRevFormMeta } from '../forms/ModelForm';
 import { ModelRegistry } from 'rev-models';
 import * as fields from 'rev-models/lib/fields';
 import { IModelFieldComponentProps } from './types';
@@ -15,11 +15,11 @@ import SelectionField from './SelectionField';
 // TODO: Provide this via a provider...
 const registry = new ModelRegistry();
 
-export interface IRevFieldProps {
+export interface IModelFieldProps {
     name: string;
 }
 
-export default class RevField extends React.Component<IRevFieldProps, void> {
+export class ModelField extends React.Component<IModelFieldProps, void> {
 
     static contextTypes = {
         revFormMeta: React.PropTypes.object
@@ -27,7 +27,7 @@ export default class RevField extends React.Component<IRevFieldProps, void> {
 
     cProps: IModelFieldComponentProps = {} as any;
 
-    constructor(props: IRevFieldProps, context: any) {
+    constructor(props: IModelFieldProps, context: any) {
         super(props);
         let revFormMeta: IRevFormMeta = context.revFormMeta;
         if (!revFormMeta) {
