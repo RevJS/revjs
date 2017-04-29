@@ -11,7 +11,7 @@ export interface IApiMethod {
     handler: (context: IApiMethodContext, ...args: any[]) => Promise<any>;
 }
 
-export interface IApiMetaDefinition {
+export interface IApiDefinition {
     methods: {
         [name: string]: IApiMethod | boolean;
     } | string[];
@@ -27,7 +27,7 @@ let modelOps = ['create', 'read', 'update', 'remove'];
 
 export function initialiseApiMeta<T extends Model>(
         modelMeta: IModelMeta<T>,
-        apiMeta: IApiMetaDefinition): IApiMeta {
+        apiMeta: IApiDefinition): IApiMeta {
     
     if (!modelMeta) {
         throw new Error(`ApiMetadataError: Model metadata must be supplied.`);

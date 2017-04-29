@@ -5,7 +5,7 @@ import * as registry from '../registry';
 import * as rewire from 'rewire';
 import * as sinon from 'sinon';
 
-import { IApiMetaDefinition } from '../../api/meta';
+import { IApiDefinition } from '../../api/meta';
 
 import { expect } from 'chai';
 
@@ -18,7 +18,7 @@ class TestModel extends rev.Model {
         date: Date = new Date();
 }
 
-let apiMeta: IApiMetaDefinition;
+let apiMeta: IApiDefinition;
 
 describe('ModelApiRegistry', () => {
     let modelReg: rev.ModelRegistry;

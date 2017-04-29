@@ -1,6 +1,6 @@
 
 import { Model } from 'rev-models';
-import { IApiMeta, initialiseApiMeta, IApiMetaDefinition } from '../api/meta';
+import { IApiMeta, initialiseApiMeta, IApiDefinition } from '../api/meta';
 import { getGraphQLSchema } from '../graphql/schema';
 import { GraphQLSchema } from 'graphql';
 
@@ -29,7 +29,7 @@ export class ModelApiRegistry {
         return (modelName && (modelName in this._apiMeta));
     }
 
-    register<T extends Model>(model: new(...args: any[]) => T, apiMeta: IApiMetaDefinition) {
+    register<T extends Model>(model: new(...args: any[]) => T, apiMeta: IApiDefinition) {
 
         // Load model metadata
         let modelMeta = this._modelRegistry.getModelMeta(model);

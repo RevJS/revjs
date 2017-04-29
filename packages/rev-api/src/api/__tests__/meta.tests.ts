@@ -1,7 +1,7 @@
 import * as rev from 'rev-models';
 import * as f from 'rev-models/lib/fields';
 
-import { initialiseApiMeta, IApiMethod, IApiMetaDefinition, IApiMeta } from '../meta';
+import { initialiseApiMeta, IApiMethod, IApiDefinition, IApiMeta } from '../meta';
 
 import { expect } from 'chai';
 
@@ -25,7 +25,7 @@ let testMeta: rev.IModelMeta<TestModel> = {
 
 let models: rev.ModelRegistry;
 
-let apiMetaDef: IApiMetaDefinition;
+let apiMetaDef: IApiDefinition;
 let apiMeta: IApiMeta;
 
 describe('initialiseApiMeta() - system methods', () => {
