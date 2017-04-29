@@ -14,7 +14,7 @@ export interface IApiMethod {
 export interface IApiMetaDefinition {
     methods: {
         [name: string]: IApiMethod | boolean;
-    } | string[] | 'all';
+    } | string[];
 }
 
 export interface IApiMeta {
@@ -35,18 +35,11 @@ export function initialiseApiMeta<T extends Model>(
 
     // Set up API Metadata
     if (!apiMeta || !apiMeta.methods
-        || (typeof apiMeta.methods != 'object'
-            && apiMeta.methods != 'all')) {
+        || typeof apiMeta.methods != 'object') {
         throw new Error(`ApiMetadataError: API metadata must include a valid 'methods' key.`);
     }
 
-    if (apiMeta.methods == 'all') {
-        apiMeta.methods = {};
-        for (let methodName of modelOps) {
-            apiMeta.methods[methodName] = true;
-        }
-    }
-    else if (apiMeta.methods instanceof Array) {
+    if (apiMeta.methods instanceof Array) {
         let methods = apiMeta.methods;
         apiMeta.methods = {};
         for (let methodName of methods) {

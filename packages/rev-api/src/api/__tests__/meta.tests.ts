@@ -57,21 +57,6 @@ describe('initialiseApiMeta() - system methods', () => {
             }).to.not.throw();
         });
 
-        it('converts "all" to the full list of system methods', () => {
-            apiMetaDef = {
-                methods: 'all'
-            };
-            apiMeta = initialiseApiMeta(testMeta, apiMetaDef);
-            expect(apiMeta).to.deep.equal({
-                methods: {
-                    read: true,
-                    create: true,
-                    update: true,
-                    remove: true
-                }
-            });
-        });
-
         it('converts method string array as expected', () => {
             apiMetaDef = {
                 methods: [ 'create', 'update' ]
