@@ -3,7 +3,7 @@ import * as rev from 'rev-models';
 export const modelRegistry = new rev.ModelRegistry();
 modelRegistry.registerBackend('default', new rev.InMemoryBackend());
 
-export class User {
+export class User extends rev.Model {
     @rev.IntegerField()
         id: number = 1;
     @rev.TextField()
@@ -13,7 +13,7 @@ export class User {
 }
 modelRegistry.register(User);
 
-export class Post {
+export class Post extends rev.Model {
     @rev.IntegerField()
         id: number = 10;
     @rev.TextField()

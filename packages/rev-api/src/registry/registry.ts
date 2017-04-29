@@ -1,14 +1,14 @@
 
-import { Model } from 'rev-models';
-import { IApiMeta, initialiseApiMeta, IApiDefinition } from '../api/meta';
+import { ModelRegistry, Model } from 'rev-models';
+import { IApiMeta, initialiseApiMeta } from '../api/meta';
 import { getGraphQLSchema } from '../graphql/schema';
 import { GraphQLSchema } from 'graphql';
 
-import { ModelRegistry } from 'rev-models';
+import { IApiDefinition } from '../api/definition';
 
 export class ModelApiRegistry {
 
-    _modelRegistry: ModelRegistry;
+    modelRegistry: ModelRegistry;
     _apiMeta: {
         [modelName: string]: IApiMeta
     };
@@ -17,29 +17,23 @@ export class ModelApiRegistry {
         if (typeof modelRegistry != 'object' || !(modelRegistry instanceof ModelRegistry)) {
             throw new Error(`ApiRegistryError: Invalid ModelRegistry passed in constructor.`);
         }
-        this._modelRegistry = modelRegistry;
+        this.modelRegistry = modelRegistry;
         this._apiMeta = {};
     }
 
     getModelRegistry() {
-        return this._modelRegistry;
+        return this.modelRegistry;
     }
 
     isRegistered(modelName: string) {
         return (modelName && (modelName in this._apiMeta));
     }
 
-    register<T extends Model>(model: new(...args: any[]) => T, apiMeta: IApiDefinition) {
+    register<T extends Model>(apiDefinition: IApiDefinition<T>) {
 
-        // Load model metadata
-        let modelMeta = this._modelRegistry.getModelMeta(model);
-
-        if (this.isRegistered(modelMeta.name)) {
-            throw new Error(`ApiRegistryError: Model '${modelMeta.name}' already has a registered API.`);
-        }
-
-        // Add api meta to the registry
-        this._apiMeta[modelMeta.name] = initialiseApiMeta(modelMeta, apiMeta);
+        // Add api meta to the registry if valid
+        let apiMeta = initialiseApiMeta(this, apiDefinition);
+        this._apiMeta[apiDefinition.model.name] = apiMeta;
     }
 
     getModelNames(): string[] {

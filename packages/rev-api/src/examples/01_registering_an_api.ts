@@ -10,7 +10,8 @@ import { Person, models } from './test_model';
 
 let api = new ModelApiRegistry(models);
 
-api.register(Person, {
+api.register({
+    model: Person,
     methods: {
         read: true,
         create: true,

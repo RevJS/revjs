@@ -1,21 +1,9 @@
 
-import { Model, IModelMeta } from 'rev-models';
-import * as fields from 'rev-models/lib/fields';
-
-export interface IApiMethodContext {
-    TODO_add_useful_context: string;
-}
-
-export interface IApiMethod {
-    args: Array<fields.Field | string>;
-    handler: (context: IApiMethodContext, ...args: any[]) => Promise<any>;
-}
-
-export interface IApiDefinition {
-    methods: {
-        [name: string]: IApiMethod | boolean;
-    } | string[];
-}
+import { Model } from 'rev-models';
+import { fields } from 'rev-models';
+import { IApiMethod } from './method';
+import { IApiDefinition } from './definition';
+import { ModelApiRegistry } from '../registry/registry';
 
 export interface IApiMeta {
     methods: {
@@ -26,19 +14,22 @@ export interface IApiMeta {
 let modelOps = ['create', 'read', 'update', 'remove'];
 
 export function initialiseApiMeta<T extends Model>(
-        modelMeta: IModelMeta<T>,
-        apiMeta: IApiDefinition): IApiMeta {
-    
-    if (!modelMeta) {
-        throw new Error(`ApiMetadataError: Model metadata must be supplied.`);
-    }
+        apiRegistry: ModelApiRegistry,
+        apiMeta: IApiDefinition<T>): IApiMeta {
 
-    // Set up API Metadata
-    if (!apiMeta || !apiMeta.methods
+    // Check API Metadata
+    if (!apiMeta || !apiMeta.model || !apiMeta.methods
         || typeof apiMeta.methods != 'object') {
-        throw new Error(`ApiMetadataError: API metadata must include a valid 'methods' key.`);
+        throw new Error(`ApiMetadataError: API metadata must include 'model' and 'methods' keys.`);
     }
 
+    // Load model metadata
+    let modelMeta = apiRegistry.modelRegistry.getModelMeta(apiMeta.model);
+    if (apiRegistry.isRegistered(modelMeta.name)) {
+        throw new Error(`ApiRegistryError: Model '${modelMeta.name}' already has a registered API.`);
+    }
+
+    // Configure API methods
     if (apiMeta.methods instanceof Array) {
         let methods = apiMeta.methods;
         apiMeta.methods = {};
