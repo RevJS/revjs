@@ -3,9 +3,9 @@ import * as React from 'react';
 
 import MUICheckbox from 'material-ui/Checkbox';
 
-import { IRevFieldTypeProps } from './types';
+import { IModelFieldTypeProps } from './types';
 
-export default function BooleanField(props: IRevFieldTypeProps) {
+export default function BooleanField(props: IModelFieldTypeProps) {
 
     const onCheck = (event: any, isInputChecked: boolean) => {
         props.input.onChange(isInputChecked);

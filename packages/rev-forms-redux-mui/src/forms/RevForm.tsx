@@ -3,8 +3,11 @@ import * as React from 'react';
 
 import { reduxForm } from 'redux-form';  /* tslint:disable-line */
 
-import { registry } from 'rev-models/lib/registry';
+import { ModelRegistry } from 'rev-models';
 // import * as forms from 'rev-forms';
+
+// TODO: Provide this via a provider...
+const registry = new ModelRegistry();
 
 export interface IRevFormProps {
     model: string;
@@ -15,7 +18,7 @@ export interface IRevFormMeta {
     model: string;
 }
 
-export class RevFormComponent extends React.Component<IRevFormProps, void> {
+export class ModelFormComponent extends React.Component<IRevFormProps, void> {
 
     static childContextTypes = {
         revFormMeta: React.PropTypes.object
@@ -50,7 +53,7 @@ export class RevFormComponent extends React.Component<IRevFormProps, void> {
 
 }
 
-export const RevForm = reduxForm({} as any)(RevFormComponent) as any;
+export const RevForm = reduxForm({} as any)(ModelFormComponent) as any;
 
 /*
 // import RaisedButton from 'material-ui/RaisedButton';

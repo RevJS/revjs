@@ -1,5 +1,5 @@
-import { IModelMeta } from 'rev-models/lib/models';
-import * as fields from 'rev-models/lib/fields';
+import { IModelMeta } from 'rev-models';
+import { fields } from 'rev-models';
 
 export interface IReduxFormInputProps {
     name: string;
@@ -26,14 +26,14 @@ export interface IReduxFormMetaProps {
     warning?: string;
 }
 
-export interface IRevFieldTypeProps {
+export interface IModelFieldTypeProps {
     input: IReduxFormInputProps;
     meta: IReduxFormMetaProps;
     modelMeta: IModelMeta<any>;
     field: fields.Field;
 }
 
-export interface IRevFieldComponentProps {
+export interface IModelFieldComponentProps {
     modelMeta: IModelMeta<any>;
     field: fields.Field;
 }

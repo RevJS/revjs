@@ -3,10 +3,10 @@ import * as React from 'react';
 
 import MUITextField from 'material-ui/TextField';
 
-import { IRevFieldTypeProps } from './types';
+import { IModelFieldTypeProps } from './types';
 import * as fields from 'rev-models/lib/fields';
 
-export default function TextField(props: IRevFieldTypeProps) {
+export default function TextField(props: IModelFieldTypeProps) {
 
     let type = 'text';
     if (props.field instanceof fields.PasswordField) {

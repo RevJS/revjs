@@ -43,6 +43,12 @@ describe('ModelApiRegistry', () => {
             expect(testApiReg.getModelRegistry()).to.equal(modelReg);
         });
 
+        it('throws if not passed a ModelRegistry', () => {
+            expect(() => {
+                testApiReg = new registry.ModelApiRegistry(null);
+            }).to.throw('Invalid ModelRegistry passed in constructor');
+        });
+
     });
 
     describe('isRegistered()', () => {

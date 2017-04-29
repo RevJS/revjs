@@ -3,9 +3,9 @@ import * as React from 'react';
 
 import MUITextField from 'material-ui/TextField';
 
-import { IRevFieldTypeProps } from './types';
+import { IModelFieldTypeProps } from './types';
 
-export default function NumberField(props: IRevFieldTypeProps) {
+export default function NumberField(props: IModelFieldTypeProps) {
 
     return (
         <MUITextField

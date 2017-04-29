@@ -1,3 +1,4 @@
 
-export * from './forms';
+export { ModelFormComponent } from './forms/RevForm';
+
 export * from './fields';

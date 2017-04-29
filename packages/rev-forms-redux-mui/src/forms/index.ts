@@ -1,2 +1,0 @@
-
-export { RevForm } from './RevForm';

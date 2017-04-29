@@ -3,9 +3,9 @@ import * as React from 'react';
 
 import MUIDatePicker from 'material-ui/DatePicker';
 
-import { IRevFieldTypeProps } from './types';
+import { IModelFieldTypeProps } from './types';
 
-export default function DateField(props: IRevFieldTypeProps) {
+export default function DateField(props: IModelFieldTypeProps) {
 
     const onChange = (event: null, date: any) => {
         props.input.onChange(date);
