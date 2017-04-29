@@ -1,11 +1,11 @@
-import { IModel, IModelMeta } from 'rev-models/lib/models';
+import { Model, IModelMeta } from 'rev-models';
 
 export interface IFormMeta {
     title?: string;
     fields: string[];
 }
 
-export function checkFormMeta<T extends IModel>(modelMeta: IModelMeta<T>, formMeta: IFormMeta) {
+export function checkFormMeta<T extends Model>(modelMeta: IModelMeta<T>, formMeta: IFormMeta) {
 
     if (!formMeta || !formMeta.fields || !(formMeta.fields instanceof Array)) {
         throw new Error('FormMetadataError: Form metadata must contain a "fields" array.');

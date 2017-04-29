@@ -1,13 +1,15 @@
-import { IModelMeta } from 'rev-models/lib/models';
-import * as f from 'rev-models/lib/fields';
-import * as registry from '../index';
-import { registry as modelRegistry } from 'rev-models/lib/registry';
+
+import {
+    Model, ModelRegistry, IModelMeta,
+    fields as f, InMemoryBackend
+} from 'rev-models';
+import * as reg from '../registry';
 
 import { IFormMeta } from '../../forms/meta';
 
 import { expect } from 'chai';
 
-class TestModel {
+class TestModel extends Model {
     id: number = 1;
     name: string = 'A Test Model';
     date: Date = new Date();
@@ -15,20 +17,22 @@ class TestModel {
 
 let testMeta: IModelMeta<TestModel> = {
     fields: [
-        new f.IntegerField('id', 'Id'),
-        new f.TextField('name', 'Name'),
-        new f.DateField('date', 'Date')
+        new f.IntegerField('id'),
+        new f.TextField('name'),
+        new f.DateField('date')
     ]
 };
 
 let formMeta: IFormMeta;
+let modelReg: ModelRegistry;
 
 describe('ModelRegistry', () => {
-    let testReg: registry.ModelFormRegistry;
+    let testReg: reg.ModelFormRegistry;
 
     beforeEach(() => {
-        modelRegistry.clearRegistry();
-        testReg = new registry.ModelFormRegistry();
+        modelReg = new ModelRegistry();
+        modelReg.registerBackend('default', new InMemoryBackend());
+        testReg = new reg.ModelFormRegistry(modelReg);
         formMeta = {
             title: 'Test Form',
             fields: [ 'name', 'date' ]
@@ -39,8 +43,14 @@ describe('ModelRegistry', () => {
 
         it('successfully creates a registry', () => {
             expect(() => {
-                testReg = new registry.ModelFormRegistry();
+                testReg = new reg.ModelFormRegistry(modelReg);
             }).to.not.throw();
+        });
+
+        it('throws if not passed a ModelRegistry', () => {
+            expect(() => {
+                testReg = new reg.ModelFormRegistry(null);
+            }).to.throw('Invalid ModelRegistry passed in constructor');
         });
 
     });
@@ -52,7 +62,7 @@ describe('ModelRegistry', () => {
         });
 
         it('returns true when a model is registered', () => {
-            modelRegistry.register(TestModel, testMeta);
+            modelReg.register(TestModel, testMeta);
             testReg.register(TestModel, 'default', formMeta);
             expect(testReg.isRegistered('TestModel', 'default')).to.equal(true);
         });
@@ -78,15 +88,15 @@ describe('ModelRegistry', () => {
     describe('register()', () => {
 
         it('adds a valid form to the registry', () => {
-            modelRegistry.register(TestModel, testMeta);
+            modelReg.register(TestModel, testMeta);
             testReg.register(TestModel, 'default', formMeta);
             expect(testReg.getForm('TestModel', 'default')).to.equal(formMeta);
         });
 
-        it('rejects a non-model constructor with a ModelError', () => {
+        it('rejects when model is not defined', () => {
             expect(() => {
-                testReg.register({} as any, 'default', formMeta);
-            }).to.throw('ModelError');
+                testReg.register(null, 'default', formMeta);
+            }).to.throw('Invalid model specified');
         });
 
         it('throws an error if model has not been registered', () => {
@@ -96,21 +106,21 @@ describe('ModelRegistry', () => {
         });
 
         it('throws an error if formName is empty', () => {
-            modelRegistry.register(TestModel, testMeta);
+            modelReg.register(TestModel, testMeta);
             expect(() => {
                 testReg.register(TestModel, '', formMeta);
             }).to.throw(`Invalid formName specified`);
         });
 
         it('throws an error if formName is not a string', () => {
-            modelRegistry.register(TestModel, testMeta);
+            modelReg.register(TestModel, testMeta);
             expect(() => {
                 testReg.register(TestModel, 22 as any, formMeta);
             }).to.throw(`Invalid formName specified`);
         });
 
         it('throws an error if specified form is already registered', () => {
-            modelRegistry.register(TestModel, testMeta);
+            modelReg.register(TestModel, testMeta);
             testReg.register(TestModel, 'default', formMeta);
             expect(() => {
                 testReg.register(TestModel, 'default', formMeta);
@@ -118,7 +128,7 @@ describe('ModelRegistry', () => {
         });
 
         it('throws an error if form metadata is invalid', () => {
-            modelRegistry.register(TestModel, testMeta);
+            modelReg.register(TestModel, testMeta);
             expect(() => {
                 testReg.register(TestModel, 'default', {} as any);
             }).to.throw(`FormMetadataError`);
@@ -129,7 +139,7 @@ describe('ModelRegistry', () => {
     describe('getForms()', () => {
 
         it('returns all registered forms for the specified model', () => {
-            modelRegistry.register(TestModel, testMeta);
+            modelReg.register(TestModel, testMeta);
             testReg.register(TestModel, 'default', formMeta);
             testReg.register(TestModel, 'login_form', formMeta);
             expect(testReg.getForms('TestModel')).to.deep.equal({
@@ -143,7 +153,7 @@ describe('ModelRegistry', () => {
         });
 
         it('returns an empty dict if model has no forms', () => {
-            modelRegistry.register(TestModel, testMeta);
+            modelReg.register(TestModel, testMeta);
             expect(testReg.getForms('TestModel')).to.deep.equal({});
         });
 
@@ -152,50 +162,24 @@ describe('ModelRegistry', () => {
     describe('getForm()', () => {
 
         it('should return requested form meta', () => {
-            modelRegistry.register(TestModel, testMeta);
+            modelReg.register(TestModel, testMeta);
             testReg.register(TestModel, 'default', formMeta);
             expect(testReg.getForm('TestModel', 'default')).to.equal(formMeta);
         });
 
         it('should throw an error if the model does not have any forms', () => {
-            modelRegistry.register(TestModel, testMeta);
+            modelReg.register(TestModel, testMeta);
             expect(() => {
                 testReg.getForm('TestModel', 'default');
             }).to.throw(`Form 'default' is not defined for model 'TestModel'`);
         });
 
         it('should throw an error if the requested form does not exist', () => {
-            modelRegistry.register(TestModel, testMeta);
+            modelReg.register(TestModel, testMeta);
             testReg.register(TestModel, 'default', formMeta);
             expect(() => {
                 testReg.getForm('TestModel', 'create_form');
             }).to.throw(`Form 'create_form' is not defined for model 'TestModel'`);
-        });
-
-    });
-
-    describe('rev-forms.registry', () => {
-
-        it('should be an instance of ModelRegistry', () => {
-            expect(registry.registry)
-                .to.be.an.instanceOf(registry.ModelFormRegistry);
-        });
-
-    });
-
-    describe('rev-forms.register()', () => {
-
-        it('should add models to the shared registry', () => {
-            modelRegistry.register(TestModel, testMeta);
-            registry.registry.register(TestModel, 'default', formMeta);
-            expect(registry.registry.getForm('TestModel', 'default')).to.equal(formMeta);
-        });
-
-        it('should throw an error if something goes wrong', () => {
-            modelRegistry.register(TestModel, testMeta);
-            expect(() => {
-                registry.registry.register(TestModel, 'default', formMeta);
-            }).to.throw(`Form 'default' is already defined for model 'TestModel'`);
         });
 
     });

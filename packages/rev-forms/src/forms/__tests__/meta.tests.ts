@@ -1,29 +1,31 @@
-import { IModelMeta } from 'rev-models/lib/models';
-import { initialiseMeta } from 'rev-models/lib/models/meta';
-import * as f from 'rev-models/lib/fields';
+
+import * as rev from 'rev-models';
 
 import { IFormMeta, checkFormMeta } from '../meta';
 
 import { expect } from 'chai';
 
-class TestModel {
-    id: number = 1;
-    name: string = 'A Test Model';
-    date: Date = new Date();
+class TestModel extends rev.Model {
+    @rev.IntegerField()
+        id: number = 1;
+    @rev.TextField()
+        name: string = 'A Test Model';
+    @rev.DateField()
+        date: Date = new Date();
 }
 
-let testMeta: IModelMeta<TestModel> = {
-    fields: [
-        new f.IntegerField('id', 'Id'),
-        new f.TextField('name', 'Name'),
-        new f.DateField('date', 'Date')
-    ]
-};
-initialiseMeta(TestModel, testMeta);
-
 let formMeta: IFormMeta;
+let models: rev.ModelRegistry;
+let testMeta: rev.IModelMeta<TestModel>;
 
 describe('checkFormMeta()', () => {
+
+    beforeEach(() => {
+        models = new rev.ModelRegistry();
+        models.registerBackend('default', new rev.InMemoryBackend());
+        models.register(TestModel);
+        testMeta = models.getModelMeta(TestModel);
+    });
 
     it('does not throw if form metadata is valid', () => {
         formMeta = {
@@ -50,7 +52,7 @@ describe('checkFormMeta()', () => {
             fields: [
                 'name',
                 'date',
-                new f.IntegerField('a', 'A')
+                new rev.fields.IntegerField('a')
             ]} as any;
         expect(() => {
             checkFormMeta(testMeta, formMeta);

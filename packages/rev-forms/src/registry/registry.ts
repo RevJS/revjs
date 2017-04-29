@@ -1,18 +1,21 @@
 
-import { IModel, checkIsModelConstructor } from 'rev-models/lib/models';
+import { Model, ModelRegistry } from 'rev-models';
 import { IFormMeta, checkFormMeta } from '../forms/meta';
-
-import { registry as modelRegistry } from 'rev-models/lib/registry';
 
 export class ModelFormRegistry {
 
-    private _formMeta: {
+    modelRegistry: ModelRegistry;
+    _formMeta: {
         [modelName: string]: {
             [formName: string]: IFormMeta
         }
     };
 
-    constructor() {
+    constructor(modelRegistry: ModelRegistry) {
+        if (typeof modelRegistry != 'object' || !(modelRegistry instanceof ModelRegistry)) {
+            throw new Error(`ApiRegistryError: Invalid ModelRegistry passed in constructor.`);
+        }
+        this.modelRegistry = modelRegistry;
         this._formMeta = {};
     }
 
@@ -22,12 +25,15 @@ export class ModelFormRegistry {
                 && (formName in this._formMeta[modelName]));
     }
 
-    public register<T extends IModel>(model: new() => T, formName: string, formMeta: IFormMeta) {
+    public register<T extends Model>(model: new() => T, formName: string, formMeta: IFormMeta) {
 
         // Check model constructor
-        checkIsModelConstructor(model);
+        if (!model || !model.name) {
+            throw new Error(`FormRegistryError: Invalid model specified.`);
+        }
+
         let modelName = model.name;
-        if (!modelRegistry.isRegistered(modelName)) {
+        if (!this.modelRegistry.isRegistered(modelName)) {
             throw new Error(`FormRegistryError: Model '${modelName}' has not been registered.`);
         }
 
@@ -40,7 +46,7 @@ export class ModelFormRegistry {
         }
 
         // Check form meta
-        let modelMeta = modelRegistry.getMeta(modelName);
+        let modelMeta = this.modelRegistry.getModelMeta(modelName);
         checkFormMeta(modelMeta, formMeta);
 
         // Add form meta to the registry
@@ -67,10 +73,4 @@ export class ModelFormRegistry {
     public clearRegistry() {
         this._formMeta = {};
     }
-}
-
-export const registry = new ModelFormRegistry();
-
-export function register<T extends IModel>(model: new() => T, formName: string, formMeta: IFormMeta) {
-    registry.register(model, formName, formMeta);
 }
