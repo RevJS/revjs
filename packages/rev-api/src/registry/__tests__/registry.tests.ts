@@ -30,7 +30,7 @@ describe('ModelApiRegistry', () => {
         testApiReg = new registry.ModelApiRegistry(modelReg);
         apiMeta = {
             model: TestModel,
-            methods: [ 'read' ]
+            operations: [ 'read' ]
         };
     });
 
@@ -77,7 +77,7 @@ describe('ModelApiRegistry', () => {
 
         it('rejects if api meta does not include a model constructor', () => {
             expect(() => {
-                testApiReg.register({ model: {} } as any);
+                testApiReg.register({} as any);
             }).to.throw('ApiMetadataError');
         });
 
@@ -118,30 +118,30 @@ describe('ModelApiRegistry', () => {
 
     });
 
-    describe('getModelNamesByMethod()', () => {
+    describe('getModelNamesByOperation()', () => {
 
         it('returns an empty list when no model APIs are registered', () => {
-            expect(testApiReg.getModelNamesByMethod('read')).to.deep.equal([]);
+            expect(testApiReg.getModelNamesByOperation('read')).to.deep.equal([]);
         });
 
         it('returns list of model names that have the specified method registered', () => {
             apiMeta = {
                 model: TestModel,
-                methods: [ 'read' ]
+                operations: [ 'read' ]
             }
             modelReg.register(TestModel);
             testApiReg.register(apiMeta);
-            expect(testApiReg.getModelNamesByMethod('read')).to.deep.equal(['TestModel']);
+            expect(testApiReg.getModelNamesByOperation('read')).to.deep.equal(['TestModel']);
         });
 
         it('does not return models that do not have the specified method registered', () => {
             apiMeta = {
                 model: TestModel,
-                methods: [ 'create' ]
+                operations: [ 'create' ]
             }
             modelReg.register(TestModel);
             testApiReg.register(apiMeta);
-            expect(testApiReg.getModelNamesByMethod('read')).to.deep.equal([]);
+            expect(testApiReg.getModelNamesByOperation('read')).to.deep.equal([]);
         });
 
     });

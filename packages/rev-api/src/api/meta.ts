@@ -6,21 +6,44 @@ import { IApiDefinition } from './definition';
 import { ModelApiRegistry } from '../registry/registry';
 
 export interface IApiMeta {
+    operations: string[];
     methods: {
-        [name: string]: IApiMethod | boolean;
+        [name: string]: IApiMethod;
     };
 }
 
-let modelOps = ['create', 'read', 'update', 'remove'];
+export const MODEL_OPERATIONS = ['create', 'read', 'update', 'remove'];
 
 export function initialiseApiMeta<T extends Model>(
         apiRegistry: ModelApiRegistry,
         apiMeta: IApiDefinition<T>): IApiMeta {
 
     // Check API Metadata
-    if (!apiMeta || !apiMeta.model || !apiMeta.methods
-        || typeof apiMeta.methods != 'object') {
-        throw new Error(`ApiMetadataError: API metadata must include 'model' and 'methods' keys.`);
+    if (!apiMeta || !apiMeta.model) {
+        throw new Error(`ApiMetadataError: API metadata must include the 'model' key.`);
+    }
+
+    if (apiMeta.operations) {
+        if (!(apiMeta.operations instanceof Array)) {
+            throw new Error(`ApiMetadataError: API metadata 'operations' must be an array.`);
+        }
+        for (let opName of apiMeta.operations) {
+            if (MODEL_OPERATIONS.indexOf(opName) == -1) {
+                throw new Error(`ApiMetadataError: Invalid operation name '${opName}'.`);
+            }
+        }
+    }
+    else {
+        apiMeta.operations = [];
+    }
+
+    if (apiMeta.methods) {
+        if (typeof apiMeta.methods != 'object') {
+            throw new Error(`ApiMetadataError: API metadata 'methods' must be an object.`);
+        }
+    }
+    else {
+        apiMeta.methods = {};
     }
 
     // Load model metadata
@@ -30,46 +53,29 @@ export function initialiseApiMeta<T extends Model>(
     }
 
     // Configure API methods
-    if (apiMeta.methods instanceof Array) {
-        let methods = apiMeta.methods;
-        apiMeta.methods = {};
-        for (let methodName of methods) {
-            apiMeta.methods[methodName] = true;
-        }
-    }
-
     for (const methodName in apiMeta.methods) {
         const method = apiMeta.methods[methodName];
-
-        if (!method || (typeof method != 'boolean' && typeof method != 'object')) {
+        if (!method || typeof method != 'object') {
             throw new Error(`ApiMetadataError: Invalid method definition for '${methodName}'.`);
         }
-
-        if (typeof method == 'boolean') {  // System method
-            if (modelOps.indexOf(methodName) < 0) {
-                throw new Error(`ApiMetadataError: Method '${methodName}' is not recognised.`);
-            }
+        if (!method.args || !method.handler
+                || typeof method.args != 'object' || !(method.args instanceof Array)
+                || typeof method.handler != 'function') {
+            throw new Error('ApiMetadataError: Custom API methods must define an args array and a handler function');
         }
-        else {  // Custom method
-            if (!method.args || !method.handler
-                    || typeof method.args != 'object' || !(method.args instanceof Array)
-                    || typeof method.handler != 'function') {
-                throw new Error('ApiMetadataError: Custom API methods must define an args array and a handler function');
+        // Check and convert method args to an array of Fields
+        for (let i = 0; i < method.args.length; i++) {
+            let arg = method.args[i];
+            if (typeof arg == 'string') {
+                if (!(arg in modelMeta.fieldsByName)) {
+                    throw new Error(`ApiMetadataError: Field '${arg}' does not exist in model '${modelMeta.name}'.`);
+                }
+                else {
+                    method.args[i] = modelMeta.fieldsByName[arg];
+                }
             }
-            // Check and convert method args to an array of Fields
-            for (let i = 0; i < method.args.length; i++) {
-                let arg = method.args[i];
-                if (typeof arg == 'string') {
-                    if (!(arg in modelMeta.fieldsByName)) {
-                        throw new Error(`ApiMetadataError: Field '${arg}' does not exist in model '${modelMeta.name}'.`);
-                    }
-                    else {
-                        method.args[i] = modelMeta.fieldsByName[arg];
-                    }
-                }
-                else if (!(arg instanceof fields.Field)) {
-                    throw new Error('ApiMetadataError: API method args must either be an instance of a Field or a string matching a field on the corresponding model.');
-                }
+            else if (!(arg instanceof fields.Field)) {
+                throw new Error('ApiMetadataError: API method args must either be an instance of a Field or a string matching a field on the corresponding model.');
             }
         }
     }

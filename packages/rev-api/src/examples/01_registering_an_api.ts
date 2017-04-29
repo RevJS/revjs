@@ -12,11 +12,8 @@ let api = new ModelApiRegistry(models);
 
 api.register({
     model: Person,
+    operations: ['create', 'read', 'update', 'remove'],
     methods: {
-        read: true,
-        create: true,
-        update: true,
-        remove: true,
         unsubscribe: {
            args: ['email'],
            handler: async (context, email) => {

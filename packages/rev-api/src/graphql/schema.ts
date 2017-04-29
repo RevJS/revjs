@@ -21,7 +21,7 @@ export function getGraphQLSchema(registry: ModelApiRegistry): GraphQLSchema {
 
     const schema: any = {};
 
-    let readModels = registry.getModelNamesByMethod('read');
+    let readModels = registry.getModelNamesByOperation('read');
 
     let queries = {
         name: 'query',

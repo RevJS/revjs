@@ -30,7 +30,6 @@ export class ModelApiRegistry {
     }
 
     register<T extends Model>(apiDefinition: IApiDefinition<T>) {
-
         // Add api meta to the registry if valid
         let apiMeta = initialiseApiMeta(this, apiDefinition);
         this._apiMeta[apiDefinition.model.name] = apiMeta;
@@ -40,10 +39,10 @@ export class ModelApiRegistry {
         return Object.keys(this._apiMeta);
     }
 
-    getModelNamesByMethod(methodName: string): string[] {
+    getModelNamesByOperation(operationName: string): string[] {
         let matches: string[] = [];
         for (let modelName in this._apiMeta) {
-            if (this._apiMeta[modelName].methods[methodName]) {
+            if (this._apiMeta[modelName].operations.indexOf(operationName) > -1) {
                 matches.push(modelName);
             }
 

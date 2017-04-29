@@ -15,7 +15,7 @@ describe('getGraphQLSchema()', () => {
         });
 
         it('should not have any models available for read', () => {
-            let readModels = api.getModelNamesByMethod('read');
+            let readModels = api.getModelNamesByOperation('read');
             expect(readModels.length).to.equal(0);
         });
 
