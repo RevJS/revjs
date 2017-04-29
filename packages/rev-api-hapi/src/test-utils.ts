@@ -1,8 +1,8 @@
 
 import * as Hapi from 'hapi';
 import * as rev from 'rev-models';
-import { ModelRegistry } from 'rev-models/lib/registry';
-import { ModelApiRegistry } from 'rev-api/lib/registry';
+import { ModelRegistry, InMemoryBackend } from 'rev-models';
+import { ModelApiRegistry } from 'rev-api';
 
 export interface IServerOptions {
     addPlugins?: any;
@@ -40,9 +40,10 @@ export function createApiRegistry() {
     }
 
     let modelRegistry = new ModelRegistry();
+    modelRegistry.registerBackend('default', new InMemoryBackend());
     modelRegistry.register(TestModel);
 
     let apiRegistry = new ModelApiRegistry(modelRegistry);
-    apiRegistry.register(TestModel, { methods: 'all' });
+    apiRegistry.register({ model: TestModel, operations: ['create', 'update', 'remove', 'read'] });
     return apiRegistry;
 }

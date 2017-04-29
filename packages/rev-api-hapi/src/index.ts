@@ -1,2 +1,2 @@
 
-export { RevApiPlugin } from './plugin';
+export { ModelApiPlugin, IModelApiPluginOptions } from './plugin/plugin';

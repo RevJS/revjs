@@ -1,30 +1,29 @@
 
 import * as Hapi from 'hapi';
 import { graphqlHapi, graphiqlHapi } from 'graphql-server-hapi';
-import { ModelApiRegistry, registry as revApiRegistry } from 'rev-api/lib/registry';
+import { ModelApiRegistry } from 'rev-api';
 import { getVersion } from './utils';
 
 const pluginVersion = getVersion();
 
-export interface IRevApiOptions {
+export interface IModelApiPluginOptions {
+    registry: ModelApiRegistry;
     url?: string;
-    registry?: ModelApiRegistry;
     graphiqlEnabled?: boolean;
     graphiqlUrl?: string;
 }
 
-export const DEFAULT_REVAPI_OPTIONS: IRevApiOptions = {
+export const DEFAULT_API_OPTIONS: Partial<IModelApiPluginOptions> = {
     url: '/api',
-    registry: revApiRegistry,
     graphiqlEnabled: true,
     graphiqlUrl: '/graphiql'
 };
 
-export function RevApiPlugin(server: Hapi.Server, options: IRevApiOptions, next: any) {
+export function ModelApiPlugin(server: Hapi.Server, options: IModelApiPluginOptions, next: any) {
     try {
         server.expose('version', pluginVersion);
 
-        let opts: IRevApiOptions = Object.assign({}, DEFAULT_REVAPI_OPTIONS);
+        let opts: IModelApiPluginOptions = Object.assign({}, DEFAULT_API_OPTIONS);
         if (options && typeof options == 'object') {
             Object.assign(opts, options);
         }
@@ -79,7 +78,7 @@ export function RevApiPlugin(server: Hapi.Server, options: IRevApiOptions, next:
     }
 }
 
-(RevApiPlugin as any).attributes = {
+(ModelApiPlugin as any).attributes = {
     name: 'revApi',
     version: pluginVersion
 };
