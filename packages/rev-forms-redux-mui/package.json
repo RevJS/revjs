@@ -22,7 +22,7 @@
     "@types/material-ui": "0.16.47",
     "@types/react": "15.0.1",
     "@types/redux-form": "6.3.2",
-    "run-bin": "1.0.0"
+    "run-bin": "^1.0.0"
   },
   "peerDependencies": {
     "material-ui": "^0.16.0",

@@ -6,6 +6,10 @@
         "suppressImplicitAnyIndexErrors": true,
         "noUnusedLocals": true,
         "module": "commonjs",
-        "target": "es5"
+        "target": "es5",
+        "lib": [
+            "dom",
+            "es2016"
+        ]
     }
 }

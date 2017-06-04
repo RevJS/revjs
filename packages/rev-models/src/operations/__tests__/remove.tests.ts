@@ -1,6 +1,6 @@
 
 import { expect } from 'chai';
-import * as rewire from 'rewire';
+import rewire = require('rewire');
 
 import { Model } from '../../models/model';
 import * as d from '../../decorators';

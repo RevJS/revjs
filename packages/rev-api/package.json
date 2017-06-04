@@ -21,6 +21,6 @@
   },
   "devDependencies": {
     "@types/graphql": "0.8.6",
-    "run-bin": "1.0.0"
+    "run-bin": "^1.0.0"
   }
 }

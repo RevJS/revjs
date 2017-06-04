@@ -3,9 +3,8 @@ import { expect } from 'chai';
 
 import * as Hapi from 'hapi';
 import { createServer, createApiRegistry } from '../test-utils';
-import RevApiPlugin from '../index';
-import { IRevApiOptions, RevApi } from '../api/revapi';
-import { ModelApiRegistry } from 'rev-api/lib/registry';
+import { ModelApiRegistry } from 'rev-api';
+import { IModelApiPluginOptions, ModelApiPlugin, pluginVersion } from '../plugin/plugin';
 
 let pkgJson = require('../../package.json');
 
@@ -13,16 +12,16 @@ describe('RevApiPlugin - registration', () => {
 
     let server: Hapi.Server;
     let apiRegistry: ModelApiRegistry;
-    let testOptions: IRevApiOptions;
+    let testOptions: IModelApiPluginOptions;
 
     before(() => {
         apiRegistry = createApiRegistry();
         testOptions = {
-            apiRegistry: apiRegistry
+            registry: apiRegistry
         };
         return createServer({
             addPlugins: {
-                register: RevApiPlugin,
+                register: ModelApiPlugin,
                 options: testOptions
             }
         }).then((res) => {
@@ -41,8 +40,8 @@ describe('RevApiPlugin - registration', () => {
     });
 
     it('exposes an instance of the RevApi object', () => {
-        expect(server.plugins['revApi']).to.have.property('api');
-        expect(server.plugins['revApi'].api).to.be.instanceof(RevApi);
+        expect(server.plugins['revApi']).to.have.property('version');
+        expect(server.plugins['revApi'].version).to.equal(pluginVersion);
     });
 
 });

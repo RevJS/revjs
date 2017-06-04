@@ -3,8 +3,8 @@ import { expect } from 'chai';
 
 // import * as Hapi from 'hapi';
 import * as sinon from 'sinon';
-import { ModelApiRegistry, registry as revApiRegistry } from 'rev-api/lib/registry';
-import { IRevApiOptions, RevApi, URL_MATCH_PATTERN } from '../revapi';
+import { ModelApiRegistry } from 'rev-api';
+import { IModelApiOptions, RevApi, URL_MATCH_PATTERN } from '../plugin';
 
 describe('RevApi', () => {
 
@@ -13,7 +13,7 @@ describe('RevApi', () => {
         route: routeSpy
     };
     let apiRegistry = new ModelApiRegistry();
-    let testOptions: IRevApiOptions;
+    let testOptions: IModelApiOptions;
 
     beforeEach(() => {
         routeSpy.reset();

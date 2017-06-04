@@ -4,7 +4,7 @@ import { graphqlHapi, graphiqlHapi } from 'graphql-server-hapi';
 import { ModelApiRegistry } from 'rev-api';
 import { getVersion } from './utils';
 
-const pluginVersion = getVersion();
+export const pluginVersion = getVersion();
 
 export interface IModelApiPluginOptions {
     registry: ModelApiRegistry;

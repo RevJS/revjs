@@ -18,6 +18,6 @@
     "rev-models": "0.0.1"
   },
   "devDependencies": {
-    "run-bin": "1.0.0"
+    "run-bin": "^1.0.0"
   }
 }

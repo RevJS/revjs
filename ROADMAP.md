@@ -35,6 +35,7 @@ View modules
  * Support for Size option
 
 General
+ * Don't use rewire
  * Make sure some checks are in place to ensure API functions aren't leaked to the client
  * Strategy to support timezones?
  * Add support for NODE_ENV=production for removing developer-error checks (minimises code size)

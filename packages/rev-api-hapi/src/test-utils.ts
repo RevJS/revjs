@@ -30,12 +30,12 @@ export function createServer(options: IServerOptions): Promise<Hapi.Server> {
 
 export function createApiRegistry() {
 
-    class TestModel {
-        @rev.IntegerField('Id')
+    class TestModel extends rev.Model {
+        @rev.IntegerField()
             id: number = 1;
-        @rev.TextField('Name')
+        @rev.TextField()
             name: string = 'A Test Model';
-        @rev.DateField('Date')
+        @rev.DateField()
             date: Date = new Date();
     }
 

@@ -2,7 +2,7 @@
 import * as rev from 'rev-models';
 import * as registry from '../registry';
 
-import * as rewire from 'rewire';
+import rewire = require('rewire');
 import * as sinon from 'sinon';
 
 import { IApiDefinition } from '../../api/definition';
