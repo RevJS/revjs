@@ -15,7 +15,7 @@
   "license": "MIT",
   "typings": "lib/index.d.ts",
   "dependencies": {
-    "rev-models": "0.0.1"
+    "rev-models": "^0.0.1"
   },
   "devDependencies": {
     "run-bin": "^1.0.0"

@@ -15,11 +15,11 @@
   "license": "MIT",
   "typings": "lib/index.d.ts",
   "dependencies": {
-    "graphql": "^0.9.1",
-    "graphql-server-hapi": "^0.6.0",
+    "graphql": "^0.10.1",
+    "graphql-server-hapi": "^0.8.0",
     "hapi": "^16.0.0",
-    "rev-api": "0.0.1",
-    "rev-models": "0.0.1"
+    "rev-api": "^0.0.1",
+    "rev-models": "^0.0.1"
   },
   "devDependencies": {
     "@types/hapi": "^16.0.0",
