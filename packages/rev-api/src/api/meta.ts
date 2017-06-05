@@ -4,6 +4,7 @@ import { fields } from 'rev-models';
 import { IApiMethod } from './method';
 import { IApiDefinition } from './definition';
 import { ModelApiRegistry } from '../registry/registry';
+import { STANDARD_OPERATIONS } from 'rev-models/lib/operations';
 
 export interface IApiMeta {
     operations: string[];
@@ -11,8 +12,6 @@ export interface IApiMeta {
         [name: string]: IApiMethod;
     };
 }
-
-export const MODEL_OPERATIONS = ['create', 'read', 'update', 'remove'];
 
 export function initialiseApiMeta<T extends Model>(
         apiRegistry: ModelApiRegistry,
@@ -28,7 +27,7 @@ export function initialiseApiMeta<T extends Model>(
             throw new Error(`ApiMetadataError: API metadata 'operations' must be an array.`);
         }
         for (let opName of apiMeta.operations) {
-            if (MODEL_OPERATIONS.indexOf(opName) == -1) {
+            if (STANDARD_OPERATIONS.indexOf(opName) == -1) {
                 throw new Error(`ApiMetadataError: Invalid operation name '${opName}'.`);
             }
         }
