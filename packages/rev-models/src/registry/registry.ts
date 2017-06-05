@@ -149,4 +149,11 @@ export class ModelRegistry {
         return validate(this, model, operation, options);
     }
 
+    exec<T extends Model>(method: string, args: any[], options?: any): Promise<ModelOperationResult<T, any>> {
+        // if it is a STANDARD_OPERATION (e.g. create, update), do it
+        // otherwise if matching custom method registered, run it
+        // otherwise pass off to backend
+        return null;
+    }
+
 }

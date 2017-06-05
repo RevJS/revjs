@@ -28,18 +28,20 @@ export class ModelFormC extends React.Component<IModelFormProps, void> {
     getChildContext() {
         return {
             modelFormMeta: {
-                model: this.props.model
+                model: this.props.model,
+                onModelAction: this.onModelAction
             }
         };
     }
 
-    handleSubmit(event: any) {
-        console.log('submit', event);
+    onModelAction(event: any) {
+        // pass action name and model data to registry for execution
+        console.log('onModelAction', event);
     }
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit}>
+            <form>
                 {this.props.children}
             </form>
         );
