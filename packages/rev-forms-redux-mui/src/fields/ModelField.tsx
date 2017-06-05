@@ -29,11 +29,11 @@ export class ModelField extends React.Component<IModelFieldProps, void> {
         let registry: ModelRegistry = context.modelRegistry;
         let modelFormMeta = context.modelFormMeta;
         if (!modelFormMeta) {
-            throw new Error('RevField Error: must be nested inside a RevForm.');
+            throw new Error('ModelField Error: must be nested inside a ModelForm.');
         }
         this.fieldComponentProps.modelMeta = registry.getModelMeta(modelFormMeta.model);
         if (!(props.name in this.fieldComponentProps.modelMeta.fieldsByName)) {
-            throw new Error(`RevField Error: Model '${modelFormMeta.model}' does not have a field called '${props.name}'.`);
+            throw new Error(`ModelField Error: Model '${modelFormMeta.model}' does not have a field called '${props.name}'.`);
         }
         this.fieldComponentProps.field = this.fieldComponentProps.modelMeta.fieldsByName[props.name];
     }

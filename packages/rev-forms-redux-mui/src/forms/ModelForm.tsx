@@ -20,7 +20,7 @@ export class ModelFormC extends React.Component<IModelFormProps, void> {
 
     constructor(props: IModelFormProps, context: any) {
         if (!props.model || !context.modelRegistry.isRegistered(props.model)) {
-            throw new Error(`RevForm Error: Model '${props.model}' is not registered.`);
+            throw new Error(`ModelForm Error: Model '${props.model}' is not registered.`);
         }
         super(props);
     }
