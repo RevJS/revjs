@@ -24,11 +24,19 @@ export function validate<T extends Model>(registry: ModelRegistry, model: T, ope
         }
 
         // Trigger field validation
-        let promises: Array<Promise<ModelValidationResult>> = [];
+        let promises: Array<Promise<any>> = [];
         for (let field of meta.fields) {
             promises.push(field.validate(registry, model, operation, result, options));
         }
+        if (meta.validateAsync) {
+            promises.push(meta.validateAsync(model, operation, result, options));
+        }
         Promise.all(promises)
+            .then(() => {
+                if (meta.validate) {
+                    meta.validate(model, operation, result, options);
+                }
+            })
             .then(() => {
                 resolve(result);
             })

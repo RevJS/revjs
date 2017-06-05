@@ -23,6 +23,10 @@ describe('validate()', () => {
     registry.registerBackend('default', new InMemoryBackend());
     registry.register(TestModel);
 
+    let validModel = new TestModel({
+        id: 11, name: 'Fred'
+    });
+
     it('should return a valid result if valid object is passed', () => {
 
         let test = new TestModel({
@@ -113,6 +117,130 @@ describe('validate()', () => {
         let test = new DelayModel();
 
         return expect(validate(registry, test, {operation: 'create'}, { timeout: 10}))
+            .to.be.rejectedWith('timed out');
+    });
+
+    it('should return a valid result if meta.validate does not set an error', () => {
+
+        let reg = new ModelRegistry();
+        reg.registerBackend('default', new InMemoryBackend());
+        reg.register(TestModel, {
+            validate: (model, operation, result) => {
+                // s'all good bro!
+            }
+        });
+
+        return validate(reg, validModel, {operation: 'create'})
+            .then((res) => {
+                expect(res.valid).to.equal(true);
+                expect(res.fieldErrors).to.deep.equal({});
+            });
+    });
+
+    it('should return an invalid result if meta.validate sets an error', () => {
+
+        let reg = new ModelRegistry();
+        reg.registerBackend('default', new InMemoryBackend());
+        reg.register(TestModel, {
+            validate: (model, operation, result) => {
+                result.addFieldError('name', 'That name is too stupid!', 'daftness', { stupidityLevel: 10 });
+            }
+        });
+
+        return validate(reg, validModel, {operation: 'create'})
+            .then((res) => {
+                expect(res.valid).to.equal(false);
+                expect(res.fieldErrors['name'].length).to.equal(1);
+                expect(res.fieldErrors['name'][0]).to.deep.equal({
+                    message: 'That name is too stupid!',
+                    code: 'daftness',
+                    stupidityLevel: 10
+                });
+            });
+    });
+
+    it('should reject if meta validate() throws an error', () => {
+
+        let reg = new ModelRegistry();
+        reg.registerBackend('default', new InMemoryBackend());
+        reg.register(TestModel, {
+            validate: (model, operation, result) => {
+                throw new Error('Validator epic fail...');
+            }
+        });
+
+        return expect(validate(reg, validModel, {operation: 'create'}))
+            .to.be.rejectedWith('Validator epic fail...');
+    });
+
+    it('should return an invalid result if meta validateAsync() fails', () => {
+
+        let reg = new ModelRegistry();
+        reg.registerBackend('default', new InMemoryBackend());
+        reg.register(TestModel, {
+            validateAsync: (model, operation, result) => {
+                return new Promise<void>((resolve, reject) => {
+                    result.addFieldError('name', 'Google says that name is stupid', 'daftness', { stupidRank: 99 });
+                    resolve();
+                });
+            }
+        });
+
+        return validate(reg, validModel, {operation: 'create'})
+            .then((res) => {
+                expect(res.valid).to.equal(false);
+                expect(res.fieldErrors['name'].length).to.equal(1);
+                expect(res.fieldErrors['name'][0]).to.deep.equal({
+                    message: 'Google says that name is stupid',
+                    code: 'daftness',
+                    stupidRank: 99
+                });
+            });
+    });
+
+    it('should reject if meta validateAsync() throws an error', () => {
+
+        let reg = new ModelRegistry();
+        reg.registerBackend('default', new InMemoryBackend());
+        reg.register(TestModel, {
+            validateAsync: (model, operation, result) => {
+                throw new Error('Async Validator epic fail...');
+            }
+        });
+
+        return expect(validate(reg, validModel, {operation: 'create'}))
+            .to.be.rejectedWith('Async Validator epic fail...');
+    });
+
+    it('should reject if meta validateAsync() rejects', () => {
+
+        let reg = new ModelRegistry();
+        reg.registerBackend('default', new InMemoryBackend());
+        reg.register(TestModel, {
+            validateAsync: (model, operation, result) => {
+                return Promise.reject(new Error('Can handle rejection...'));
+            }
+        });
+
+        return expect(validate(reg, validModel, {operation: 'create'}))
+            .to.be.rejectedWith('Can handle rejection...');
+    });
+
+    it('should reject if meta validateAsync times out', () => {
+
+        let reg = new ModelRegistry();
+        reg.registerBackend('default', new InMemoryBackend());
+        reg.register(TestModel, {
+            validateAsync: (model, operation, result) => {
+                return new Promise<void>((resolve, reject) => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 1000);
+                });
+            }
+        });
+
+        return expect(validate(reg, validModel, {operation: 'create'}, { timeout: 10 }))
             .to.be.rejectedWith('timed out');
     });
 

@@ -2,6 +2,9 @@
 import { Field } from '../fields/field';
 import { Model } from './model';
 import { ModelRegistry } from '../registry/registry';
+import { IModelOperation } from '../operations/operation';
+import { ModelValidationResult } from '../validation/validationresult';
+import { IValidationOptions } from '../operations/validate';
 
 export interface IModelMeta<T> {
     ctor?: new(...args: any[]) => T;
@@ -13,6 +16,8 @@ export interface IModelMeta<T> {
     };
     primaryKey?: string[];
     backend?: string;
+    validate?: (model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => void;
+    validateAsync?: (model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions) => Promise<void>;
 }
 
 function populateMetaFromClassFields<T extends Model>(model: new(...args: any[]) => T, meta: IModelMeta<T>) {
