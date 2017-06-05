@@ -5,6 +5,7 @@
 * Knowledge of Primary Key (e.g. for update / remove without 'where')
 * Full In-memory CRUD for `rev-models`
 * GraphQL API backend (server + client)
+* tests for rev-forms-redux-mui
 
 ## v0.2.0
 

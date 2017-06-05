@@ -1,31 +1,25 @@
 
 import * as React from 'react';
 
-import { reduxForm } from 'redux-form';  /* tslint:disable-line */
+import { reduxForm } from 'redux-form';
 
-import { ModelRegistry } from 'rev-models';
-// import * as forms from 'rev-forms';
-
-// TODO: Provide this via a provider...
-const registry = new ModelRegistry();
-
-export interface IRevFormProps {
+export interface IModelFormProps {
     model: string;
     form: string;
 }
 
-export interface IRevFormMeta {
-    model: string;
-}
+export class ModelFormC extends React.Component<IModelFormProps, void> {
 
-export class ModelFormComponent extends React.Component<IRevFormProps, void> {
-
-    static childContextTypes = {
-        revFormMeta: React.PropTypes.object
+    static contextTypes = {
+        modelRegistry: React.PropTypes.object
     };
 
-    constructor(props: IRevFormProps) {
-        if (!props.model || !registry.isRegistered(props.model)) {
+    static childContextTypes = {
+        modelFormMeta: React.PropTypes.object
+    };
+
+    constructor(props: IModelFormProps, context: any) {
+        if (!props.model || !context.modelRegistry.isRegistered(props.model)) {
             throw new Error(`RevForm Error: Model '${props.model}' is not registered.`);
         }
         super(props);
@@ -33,9 +27,9 @@ export class ModelFormComponent extends React.Component<IRevFormProps, void> {
 
     getChildContext() {
         return {
-            revFormMeta: {
+            modelFormMeta: {
                 model: this.props.model
-            } as IRevFormMeta
+            }
         };
     }
 
@@ -53,7 +47,7 @@ export class ModelFormComponent extends React.Component<IRevFormProps, void> {
 
 }
 
-export const ModelForm = reduxForm({} as any)(ModelFormComponent) as any;
+export const ModelForm = reduxForm({} as any)(ModelFormC) as any;
 
 /*
 // import RaisedButton from 'material-ui/RaisedButton';

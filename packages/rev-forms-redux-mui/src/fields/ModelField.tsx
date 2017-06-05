@@ -1,7 +1,6 @@
 
 import * as React from 'react';
 import { Field } from 'redux-form';
-import { IRevFormMeta } from '../forms/ModelForm';
 import { ModelRegistry } from 'rev-models';
 import * as fields from 'rev-models/lib/fields';
 import { IModelFieldComponentProps } from './types';
@@ -12,9 +11,6 @@ import DateField from './DateField';
 import NumberField from './NumberField';
 import SelectionField from './SelectionField';
 
-// TODO: Provide this via a provider...
-const registry = new ModelRegistry();
-
 export interface IModelFieldProps {
     name: string;
 }
@@ -22,50 +18,52 @@ export interface IModelFieldProps {
 export class ModelField extends React.Component<IModelFieldProps, void> {
 
     static contextTypes = {
-        revFormMeta: React.PropTypes.object
+        modelRegistry: React.PropTypes.object,
+        modelFormMeta: React.PropTypes.object
     };
 
-    cProps: IModelFieldComponentProps = {} as any;
+    fieldComponentProps: IModelFieldComponentProps = {} as any;
 
     constructor(props: IModelFieldProps, context: any) {
         super(props);
-        let revFormMeta: IRevFormMeta = context.revFormMeta;
-        if (!revFormMeta) {
+        let registry: ModelRegistry = context.modelRegistry;
+        let modelFormMeta = context.modelFormMeta;
+        if (!modelFormMeta) {
             throw new Error('RevField Error: must be nested inside a RevForm.');
         }
-        this.cProps.modelMeta = registry.getModelMeta(revFormMeta.model);
-        if (!(props.name in this.cProps.modelMeta.fieldsByName)) {
-            throw new Error(`RevField Error: Model '${revFormMeta.model}' does not have a field called '${props.name}'.`);
+        this.fieldComponentProps.modelMeta = registry.getModelMeta(modelFormMeta.model);
+        if (!(props.name in this.fieldComponentProps.modelMeta.fieldsByName)) {
+            throw new Error(`RevField Error: Model '${modelFormMeta.model}' does not have a field called '${props.name}'.`);
         }
-        this.cProps.field = this.cProps.modelMeta.fieldsByName[props.name];
+        this.fieldComponentProps.field = this.fieldComponentProps.modelMeta.fieldsByName[props.name];
     }
 
     render() {
         // TODO: Put these in an object so they can be replaced
 
-        if (this.cProps.field instanceof fields.TextField) {
+        if (this.fieldComponentProps.field instanceof fields.TextField) {
             return (
-                <Field name={this.props.name} component={TextField} props={this.cProps} />
+                <Field name={this.props.name} component={TextField} props={this.fieldComponentProps} />
             );
         }
-        else if (this.cProps.field instanceof fields.NumberField) {
+        else if (this.fieldComponentProps.field instanceof fields.NumberField) {
             return (
-                <Field name={this.props.name} component={NumberField} props={this.cProps} />
+                <Field name={this.props.name} component={NumberField} props={this.fieldComponentProps} />
             );
         }
-        else if (this.cProps.field instanceof fields.BooleanField) {
+        else if (this.fieldComponentProps.field instanceof fields.BooleanField) {
             return (
-                <Field name={this.props.name} component={BooleanField} props={this.cProps} />
+                <Field name={this.props.name} component={BooleanField} props={this.fieldComponentProps} />
             );
         }
-        else if (this.cProps.field instanceof fields.SelectionField) {
+        else if (this.fieldComponentProps.field instanceof fields.SelectionField) {
             return (
-                <Field name={this.props.name} component={SelectionField} props={this.cProps} />
+                <Field name={this.props.name} component={SelectionField} props={this.fieldComponentProps} />
             );
         }
-        else if (this.cProps.field instanceof fields.DateField) {
+        else if (this.fieldComponentProps.field instanceof fields.DateField) {
             return (
-                <Field name={this.props.name} component={DateField} props={this.cProps} />
+                <Field name={this.props.name} component={DateField} props={this.fieldComponentProps} />
             );
         }
     }
