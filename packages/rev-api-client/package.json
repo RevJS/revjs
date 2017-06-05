@@ -1,0 +1,26 @@
+{
+  "name": "rev-api-client",
+  "version": "0.0.1",
+  "description": "RevJS Isomorphic Data Library - API Client Library",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "run-bin tsc",
+    "build-watch": "run-bin tsc --watch",
+    "lint": "run-bin tslint ./src/**/*.ts",
+    "test": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\"",
+    "test-watch": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\" --watch",
+    "mocha": "run-bin mocha -r ts-node/register"
+  },
+  "author": "Russell Briggs <russ@paraflyer.net>",
+  "license": "MIT",
+  "typings": "lib/index.d.ts",
+  "dependencies": {
+    "graphql": "^0.10.1",
+    "graphql-type-json": "^0.1.4",
+    "rev-models": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/graphql": "^0.9.1",
+    "run-bin": "^1.0.0"
+  }
+}
