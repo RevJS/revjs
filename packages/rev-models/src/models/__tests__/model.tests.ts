@@ -54,6 +54,15 @@ describe('Model class - constructor', () => {
 
     });
 
+    describe('_registry property', () => {
+
+        it('has a _registry property that is undefined by default', () => {
+            let test = new TestModel();
+            expect(test._registry).to.be.undefined;
+        });
+
+    });
+
     describe('validate()', () => {
         let validationContext: IValidationContext;
 

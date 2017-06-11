@@ -1,10 +1,13 @@
 import { IValidationContext } from '../operations/validate';
+import { ModelRegistry } from '../registry/registry';
 
 export interface IModelData {
     [fieldName: string]: any;
 }
 
 export class Model {
+    _registry?: ModelRegistry;
+
     constructor(data?: IModelData) {
         if (this.constructor == Model) {
             throw new Error('ModelError: You should not instantiate the Model class directly');

@@ -63,6 +63,18 @@ describe('initialiseMeta()', () => {
         }).to.throw('is not an instance of rev.Field');
     });
 
+    it('throws an error if field name is not allowed', () => {
+        expect(() => {
+            testModelMeta = {
+                fields: [
+                    new TextField('_registry'),
+                    new TextField('validate'),
+                ]
+            };
+            initialiseMeta(testRegistry, TestModel, testModelMeta);
+        }).to.throw('Field name is not allowed');
+    });
+
     it('if meta.name is passed, it must match the model name', () => {
         expect(() => {
             testModelMeta = {

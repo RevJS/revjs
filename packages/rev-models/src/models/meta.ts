@@ -15,6 +15,12 @@ export interface IModelMeta<T> {
     backend?: string;
 }
 
+export const DISALLOWED_FIELD_NAMES = [
+    '_registry',
+    'validate',
+    'validateAsync'
+];
+
 function populateMetaFromClassFields<T extends Model>(model: new(...args: any[]) => T, meta: IModelMeta<T>) {
     // Load fields from prototype __fields property if present (fields added via decorators)
     let proto = model.prototype;
@@ -49,6 +55,9 @@ export function initialiseMeta<T extends Model>(registry: ModelRegistry, model: 
     for (let field of meta.fields) {
         if (!field || typeof field != 'object' || !(field instanceof Field)) {
             throw new Error(`MetadataError: One or more entries in the fields metadata is not an instance of rev.Field.`);
+        }
+        if (DISALLOWED_FIELD_NAMES.indexOf(field.name) > -1) {
+            throw new Error(`MetadataError: Field name is not allowed: ${field.name}`);
         }
     }
     if (meta.primaryKey) {
