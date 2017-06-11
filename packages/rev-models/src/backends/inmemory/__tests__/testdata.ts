@@ -26,7 +26,7 @@ export class TestModel extends Model {
     }
 }
 
-export const testData: Array<Partial<TestModel>> = [
+export const testData = [
     {
         id: 0,
         name: 'John Doe',

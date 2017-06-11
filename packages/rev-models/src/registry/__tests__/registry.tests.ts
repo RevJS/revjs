@@ -52,7 +52,7 @@ describe('ModelRegistry', () => {
     });
 
     describe('isRegistered()', () => {
-        
+
         beforeEach(() => {
             testReg.registerBackend('default', testBackend);
         });
@@ -181,7 +181,7 @@ describe('ModelRegistry', () => {
 
         it('should throw an error if invalid argument passed', () => {
             expect(() => {
-                testReg.getModelMeta(22);
+                testReg.getModelMeta(22 as any);
             }).to.throw('Invalid argument');
         });
 

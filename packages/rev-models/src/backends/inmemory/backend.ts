@@ -27,7 +27,7 @@ export class InMemoryBackend implements IBackend {
         this._storage = {};
     }
 
-    load<T extends Model>(registry: ModelRegistry, model: new(...args: any[]) => T, data: Array<Partial<T>>, result: ModelOperationResult<T, null>): Promise<ModelOperationResult<T, null>> {
+    load<T extends Model>(registry: ModelRegistry, model: new(...args: any[]) => T, data: any[], result: ModelOperationResult<T, null>): Promise<ModelOperationResult<T, null>> {
         return new Promise<ModelOperationResult<T, null>>((resolve) => {
 
             let meta = registry.getModelMeta(model);
@@ -38,9 +38,10 @@ export class InMemoryBackend implements IBackend {
                 throw new Error('load() data must be an array of objects');
             }
 
-            for (let srcRecord of data) {
+            for (let srcData of data) {
+                // TODO: validate?
                 let record = {};
-                this._writeFields('create', srcRecord, meta, record);
+                this._writeFields('create', srcData, meta, record);
                 modelStorage.push(record);
             }
 

@@ -3,12 +3,13 @@ import * as d from '../../decorators';
 import { IModelMeta } from '../../models/meta';
 import { Model } from '../../models/model';
 import { TextField } from '../../fields/';
-import { validate } from '../validate';
+import { validate, IValidationContext } from '../validate';
 import { VALIDATION_MESSAGES as msg } from '../../validation/validationmsg';
 import { ModelRegistry } from '../../registry/registry';
 import { InMemoryBackend } from '../../backends/inmemory/backend';
 
 describe('validate()', () => {
+    let registry: ModelRegistry;
 
     class TestModel extends Model {
         @d.IntegerField({ minValue: 10 })
@@ -19,13 +20,19 @@ describe('validate()', () => {
             date: Date;
     }
 
-    let registry = new ModelRegistry();
-    registry.registerBackend('default', new InMemoryBackend());
-    registry.register(TestModel);
-
     let validModel = new TestModel({
         id: 11, name: 'Fred'
     });
+
+    beforeEach(() => {
+        registry = new ModelRegistry();
+        registry.registerBackend('default', new InMemoryBackend());
+        registry.register(TestModel);
+
+        TestModel.prototype.validate = () => undefined;
+        TestModel.prototype.validateAsync = () => Promise.resolve();
+    });
+
 
     it('should return a valid result if valid object is passed', () => {
 
@@ -120,34 +127,24 @@ describe('validate()', () => {
             .to.be.rejectedWith('timed out');
     });
 
-    it('should return a valid result if meta.validate does not set an error', () => {
+    it('should return a valid result if model.validate does not set an error', () => {
 
-        let reg = new ModelRegistry();
-        reg.registerBackend('default', new InMemoryBackend());
-        reg.register(TestModel, {
-            validate: (model, operation, result) => {
-                // s'all good bro!
-            }
-        });
+        TestModel.prototype.validate = () => undefined;
 
-        return validate(reg, validModel, {operation: 'create'})
+        return validate(registry, validModel, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(true);
                 expect(res.fieldErrors).to.deep.equal({});
             });
     });
 
-    it('should return an invalid result if meta.validate sets an error', () => {
+    it('should return an invalid result if model.validate sets an error', () => {
 
-        let reg = new ModelRegistry();
-        reg.registerBackend('default', new InMemoryBackend());
-        reg.register(TestModel, {
-            validate: (model, operation, result) => {
-                result.addFieldError('name', 'That name is too stupid!', 'daftness', { stupidityLevel: 10 });
-            }
-        });
+        TestModel.prototype.validate = (vc: IValidationContext) => {
+            vc.result.addFieldError('name', 'That name is too stupid!', 'daftness', { stupidityLevel: 10 });
+        };
 
-        return validate(reg, validModel, {operation: 'create'})
+        return validate(registry, validModel, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.fieldErrors['name'].length).to.equal(1);
@@ -159,34 +156,26 @@ describe('validate()', () => {
             });
     });
 
-    it('should reject if meta validate() throws an error', () => {
+    it('should reject if model validate() throws an error', () => {
 
-        let reg = new ModelRegistry();
-        reg.registerBackend('default', new InMemoryBackend());
-        reg.register(TestModel, {
-            validate: (model, operation, result) => {
-                throw new Error('Validator epic fail...');
-            }
-        });
+        TestModel.prototype.validate = (vc: IValidationContext) => {
+            throw new Error('Validator epic fail...');
+        };
 
-        return expect(validate(reg, validModel, {operation: 'create'}))
+        return expect(validate(registry, validModel, {operation: 'create'}))
             .to.be.rejectedWith('Validator epic fail...');
     });
 
-    it('should return an invalid result if meta validateAsync() fails', () => {
+    it('should return an invalid result if model validateAsync() fails', () => {
 
-        let reg = new ModelRegistry();
-        reg.registerBackend('default', new InMemoryBackend());
-        reg.register(TestModel, {
-            validateAsync: (model, operation, result) => {
-                return new Promise<void>((resolve, reject) => {
-                    result.addFieldError('name', 'Google says that name is stupid', 'daftness', { stupidRank: 99 });
-                    resolve();
-                });
-            }
-        });
+        TestModel.prototype.validateAsync = (vc: IValidationContext) => {
+            return new Promise<void>((resolve, reject) => {
+                vc.result.addFieldError('name', 'Google says that name is stupid', 'daftness', { stupidRank: 99 });
+                resolve();
+            });
+        };
 
-        return validate(reg, validModel, {operation: 'create'})
+        return validate(registry, validModel, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.fieldErrors['name'].length).to.equal(1);
@@ -198,49 +187,37 @@ describe('validate()', () => {
             });
     });
 
-    it('should reject if meta validateAsync() throws an error', () => {
+    it('should reject if model validateAsync() throws an error', () => {
 
-        let reg = new ModelRegistry();
-        reg.registerBackend('default', new InMemoryBackend());
-        reg.register(TestModel, {
-            validateAsync: (model, operation, result) => {
-                throw new Error('Async Validator epic fail...');
-            }
-        });
+        TestModel.prototype.validateAsync = (vc: IValidationContext) => {
+            throw new Error('Async Validator epic fail...');
+        };
 
-        return expect(validate(reg, validModel, {operation: 'create'}))
+        return expect(validate(registry, validModel, {operation: 'create'}))
             .to.be.rejectedWith('Async Validator epic fail...');
     });
 
-    it('should reject if meta validateAsync() rejects', () => {
+    it('should reject if model validateAsync() rejects', () => {
 
-        let reg = new ModelRegistry();
-        reg.registerBackend('default', new InMemoryBackend());
-        reg.register(TestModel, {
-            validateAsync: (model, operation, result) => {
-                return Promise.reject(new Error('Can handle rejection...'));
-            }
-        });
+        TestModel.prototype.validateAsync = (vc: IValidationContext) => {
+            return Promise.reject(new Error('Can handle rejection...'));
+        };
 
-        return expect(validate(reg, validModel, {operation: 'create'}))
+        return expect(validate(registry, validModel, {operation: 'create'}))
             .to.be.rejectedWith('Can handle rejection...');
     });
 
-    it('should reject if meta validateAsync times out', () => {
+    it('should reject if model validateAsync times out', () => {
 
-        let reg = new ModelRegistry();
-        reg.registerBackend('default', new InMemoryBackend());
-        reg.register(TestModel, {
-            validateAsync: (model, operation, result) => {
-                return new Promise<void>((resolve, reject) => {
-                    setTimeout(() => {
-                        resolve();
-                    }, 1000);
-                });
-            }
-        });
+        TestModel.prototype.validateAsync = (vc: IValidationContext) => {
+            return new Promise<void>((resolve, reject) => {
+                setTimeout(() => {
+                    resolve();
+                }, 1000);
+            });
+        };
 
-        return expect(validate(reg, validModel, {operation: 'create'}, { timeout: 10 }))
+        return expect(validate(registry, validModel, {operation: 'create'}, { timeout: 10 }))
             .to.be.rejectedWith('timed out');
     });
 

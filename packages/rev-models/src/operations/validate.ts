@@ -34,14 +34,11 @@ export function validate<T extends Model>(registry: ModelRegistry, model: T, ope
         for (let field of meta.fields) {
             promises.push(field.validate(registry, model, operation, result, options));
         }
-        if (meta.validateAsync) {
-            promises.push(meta.validateAsync(model, operation, result, options));
-        }
         Promise.all(promises)
             .then(() => {
-                if (meta.validate) {
-                    meta.validate(model, operation, result, options);
-                }
+                // Trigger model validation
+                model.validate({ operation, result, options });
+                return model.validateAsync({ operation, result, options });
             })
             .then(() => {
                 resolve(result);
@@ -51,7 +48,7 @@ export function validate<T extends Model>(registry: ModelRegistry, model: T, ope
             });
 
         setTimeout(() => {
-            reject(new Error(`modelValidate() - timed out after ${timeout} milliseconds`));
+            reject(new Error(`validate() - timed out after ${timeout} milliseconds`));
         }, timeout);
     });
 }

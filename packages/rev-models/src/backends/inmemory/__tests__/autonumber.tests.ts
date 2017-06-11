@@ -77,7 +77,6 @@ describe('rev.backends.inmemory', () => {
                 });
         });
 
-
         it('update() - values provided for AutoNumberField are ignored', () => {
             let testData = [
                 {
