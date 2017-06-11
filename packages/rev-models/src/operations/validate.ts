@@ -8,6 +8,12 @@ export interface IValidationOptions {
     timeout?: number;
 }
 
+export interface IValidationContext {
+    operation: IModelOperation;
+    result: ModelValidationResult;
+    options?: IValidationOptions;
+}
+
 export function validate<T extends Model>(registry: ModelRegistry, model: T, operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
     return new Promise((resolve, reject) => {
 

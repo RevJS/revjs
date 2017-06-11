@@ -1,3 +1,4 @@
+import { IValidationContext } from '../operations/validate';
 
 export interface IModelData {
     [fieldName: string]: any;
@@ -14,6 +15,14 @@ export class Model {
             }
             Object.assign(this, data);
         }
+    }
+
+    validate(vc: IValidationContext): void {
+        return;
+    }
+
+    validateAsync(vc: IValidationContext): Promise<void> {
+        return Promise.resolve();
     }
 }
 
