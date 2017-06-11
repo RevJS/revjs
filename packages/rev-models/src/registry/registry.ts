@@ -11,6 +11,7 @@ import { read, IReadOptions, IReadMeta } from '../operations/read';
 import { ModelOperationResult } from '../operations/operationresult';
 import { validate, IValidationOptions } from '../operations/validate';
 import { ModelValidationResult } from '../validation/validationresult';
+import { IExecOptions, exec } from '../operations/exec';
 
 export class ModelRegistry {
 
@@ -149,11 +150,8 @@ export class ModelRegistry {
         return validate(this, model, operation, options);
     }
 
-    exec<T extends Model>(method: string, args: any[], options?: any): Promise<ModelOperationResult<T, any>> {
-        // if it is a STANDARD_OPERATION (e.g. create, update), do it
-        // otherwise if matching custom method registered, run it
-        // otherwise pass off to backend
-        return null;
+    exec<T extends Model>(model: T, method: string, args: any[], options?: IExecOptions): Promise<ModelOperationResult<T, any>> {
+        return exec(this, model, method, args, options);
     }
 
 }
