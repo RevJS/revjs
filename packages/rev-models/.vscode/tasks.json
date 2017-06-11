@@ -9,11 +9,13 @@
     "tasks": [
         {
             "taskName": "build",
-            "args": ["run", "build"]
+            "args": ["run", "build"],
+            "isBuildCommand": true
         },
         {
             "taskName": "test",
-            "args": ["run", "mocha", "${relativeFile}"]
+            "args": ["run", "mocha", "${relativeFile}"],
+            "isTestCommand": true
         }
     ]
 }
