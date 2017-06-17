@@ -7,13 +7,17 @@ export interface IModelProviderProps {
     registry: ModelRegistry;
 }
 
+export interface IModelProviderContext {
+    modelRegistry: ModelRegistry;
+}
+
 export class ModelProvider extends React.Component<IModelProviderProps, void> {
 
     static childContextTypes = {
         modelRegistry: React.PropTypes.object
     };
 
-    getChildContext() {
+    getChildContext(): IModelProviderContext {
         return {
             modelRegistry: this.props.registry
         };

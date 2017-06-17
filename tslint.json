@@ -31,6 +31,7 @@
      "member-access": [false],
      "prefer-const": [false],
      "prefer-for-of": false,
-     "no-unused-expression": [false]
+     "no-unused-expression": [false],
+     "member-ordering": [false]
   }
 }

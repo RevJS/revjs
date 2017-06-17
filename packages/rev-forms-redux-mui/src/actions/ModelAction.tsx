@@ -2,33 +2,34 @@
 import * as React from 'react';
 
 import RaisedButton from 'material-ui/RaisedButton';
+import { IModelFormContext, IModelFormMeta } from '../forms/ModelForm';
+import { IExecOptions } from 'rev-models/lib/operations/exec';
 
 export interface IModelActionProps {
-    operation: string;
-    method: string;
     label: string;
+    method: string;
+    args?: any[];
+    options?: IExecOptions;
 }
 
 export class ModelAction extends React.Component<IModelActionProps, void> {
 
+    _modelForm: IModelFormMeta;
+
     static contextTypes = {
-        modelFormMeta: React.PropTypes.object
+        modelForm: React.PropTypes.object
     };
 
-    modelFormMeta: any;
-
-    constructor(props: IModelActionProps, context: any) {
+    constructor(props: IModelActionProps, context: IModelFormContext) {
         super(props);
-        this.modelFormMeta = context.modelFormMeta;
-        if (!this.modelFormMeta) {
+        this._modelForm = context.modelForm;
+        if (!this._modelForm) {
             throw new Error('ModelAction Error: must be nested inside a ModelForm.');
         }
     }
 
     onAction() {
-        this.modelFormMeta.onModelAction({
-            method: this.props.method
-        });
+        this._modelForm.execAction(this.props.method, this.props.args, this.props.options);
     }
 
     render() {

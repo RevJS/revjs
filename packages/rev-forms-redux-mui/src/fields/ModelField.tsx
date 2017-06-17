@@ -10,6 +10,8 @@ import BooleanField from './BooleanField';
 import DateField from './DateField';
 import NumberField from './NumberField';
 import SelectionField from './SelectionField';
+import { IModelProviderContext } from '../provider/ModelProvider';
+import { IModelFormContext } from '../forms/ModelForm';
 
 export interface IModelFieldProps {
     name: string;
@@ -19,15 +21,15 @@ export class ModelField extends React.Component<IModelFieldProps, void> {
 
     static contextTypes = {
         modelRegistry: React.PropTypes.object,
-        modelFormMeta: React.PropTypes.object
+        modelForm: React.PropTypes.object
     };
 
     fieldComponentProps: IModelFieldComponentProps = {} as any;
 
-    constructor(props: IModelFieldProps, context: any) {
+    constructor(props: IModelFieldProps, context: IModelProviderContext & IModelFormContext) {
         super(props);
         let registry: ModelRegistry = context.modelRegistry;
-        let modelFormMeta = context.modelFormMeta;
+        let modelFormMeta = context.modelForm;
         if (!modelFormMeta) {
             throw new Error('ModelField Error: must be nested inside a ModelForm.');
         }
