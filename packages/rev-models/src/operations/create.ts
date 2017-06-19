@@ -18,6 +18,10 @@ export const DEFAULT_CREATE_OPTIONS: ICreateOptions = {};
 export function create<T extends Model>(registry: ModelRegistry, model: T, options?: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
     return new Promise((resolve, reject) => {
 
+        if (typeof model != 'object' || !(model instanceof Model)) {
+            throw new Error('Specified model is not a Model instance');
+        }
+
         let meta = registry.getModelMeta(model);
         let backend = registry.getBackend(meta.backend);
 

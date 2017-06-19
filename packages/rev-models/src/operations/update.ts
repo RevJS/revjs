@@ -21,6 +21,10 @@ export const DEFAULT_UPDATE_OPTIONS: IUpdateOptions = {};
 export function update<T extends Model>(registry: ModelRegistry, model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
     return new Promise((resolve, reject) => {
 
+        if (typeof model != 'object' || !(model instanceof Model)) {
+            throw new Error('Specified model is not a Model instance');
+        }
+
         let meta = registry.getModelMeta(model);
         let backend = registry.getBackend(meta.backend);
         let opts: IUpdateOptions = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);

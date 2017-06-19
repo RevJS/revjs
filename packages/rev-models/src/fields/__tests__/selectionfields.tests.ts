@@ -57,29 +57,29 @@ describe('rev.fields.selectionfields', () => {
         it('successfully validates a boolean value', () => {
             let test = new BooleanField('value', { required: true });
             testModel.value = false;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new BooleanField('value', { required: false });
             testModel.value = null;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('does not validate on null value if field is required', () => {
             let test = new BooleanField('value', { required: true });
             testModel.value = null;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate on non-boolean value', () => {
             let test = new BooleanField('value', { required: true });
             testModel.value = 'evidently!';
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
     });
@@ -160,43 +160,43 @@ describe('rev.fields.selectionfields', () => {
         it('successfully validates a single value', () => {
             let test = new SelectionField('value', {selection: selection});
             testModel.value = 'option2';
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates multiple values', () => {
             let test = new SelectionField('value', {selection: selection, multiple: true });
             testModel.value = ['option1', 'option3'];
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new SelectionField('value', {selection: selection, required: false });
             testModel.value = null;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('does not validate on null value if field is required', () => {
             let test = new SelectionField('value', {selection: selection, required: true });
             testModel.value = null;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate an invalid single value', () => {
             let test = new SelectionField('value', {selection: selection});
             testModel.value = 'I am not an option';
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate an invalid multi-value', () => {
             let test = new SelectionField('value', {selection: selection});
             testModel.value = ['option1', 'nope', 'option3'];
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
     });

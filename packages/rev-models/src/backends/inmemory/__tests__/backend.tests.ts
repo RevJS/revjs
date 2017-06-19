@@ -52,8 +52,11 @@ describe('rev.backends.inmemory', () => {
 
         it('rejects if passed data is not an array of objects', () => {
             let badData = ['a', 'b', 'b', 1, 2, 3];
-            return expect(backend.load(registry, TestModel, badData as any, loadResult))
-                .to.be.rejectedWith('data must be an array of objects');
+            return backend.load(registry, TestModel, badData as any, loadResult)
+                .then(() => { throw new Error('expected to reject'); })
+                .catch((err) => {
+                    expect(err.message).to.contain('data must be an array of objects');
+                });
         });
 
     });

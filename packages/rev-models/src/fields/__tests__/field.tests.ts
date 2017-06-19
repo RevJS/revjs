@@ -101,59 +101,55 @@ describe('rev.fields.field', () => {
 
         it('returns a resolved promise when validation completes - no validators', () => {
             let test = new Field('name', { required: false });
-            return expect(
-                test.validate(registry, testModel, testOp, result)
-            ).to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+            .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('returns a resolved promise when validation completes - required validator', () => {
             let test = new Field('name', { required: true });
             testModel.name = 'Frank';
-            return expect(
-                test.validate(registry, testModel, testOp, result)
-            ).to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+            .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('validation fails as expected when required field not set', () => {
             let test = new Field('name', { required: true });
-            return expect(
-                test.validate(registry, testModel, testOp, result)
-            ).to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+            .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('returns valid = true when validation completes with a valid async validator', () => {
             let test = new Field('name', { required: false });
             test.asyncValidators.push(quickValidAsyncValidator);
-            return expect(
-                test.validate(registry, testModel, testOp, result)
-            ).to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+            .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('returns valid = false when validation completes with an invalid async validator', () => {
             let test = new Field('name', { required: false });
             test.asyncValidators.push(quickInvalidAsyncValidator);
-            return expect(
-                test.validate(registry, testModel, testOp, result)
-            ).to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+            .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('returns valid = false when validation completes with a valid and an invalid async validator', () => {
             let test = new Field('name', { required: false });
             test.asyncValidators.push(quickValidAsyncValidator);
             test.asyncValidators.push(quickInvalidAsyncValidator);
-            return expect(
-                test.validate(registry, testModel, testOp, result)
-            ).to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+            .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('returns a rejected promise when async validation times out', () => {
             let test = new Field('name', { required: false });
             test.asyncValidators.push(slowInvalidAsyncValidator);
-            return expect(
-                test.validate(registry, testModel, testOp, result, {
+            return test.validate(registry, testModel, testOp, result, {
                     timeout: 100
                 })
-            ).to.be.rejectedWith('timed out');
+                .then(() => { throw new Error('expected to reject'); })
+                .catch((err) => {
+                    expect(err.message).to.contain('timed out');
+                });
         });
 
     });

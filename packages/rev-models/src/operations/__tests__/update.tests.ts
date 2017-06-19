@@ -115,22 +115,48 @@ describe('rev.operations.update()', () => {
             });
     });
 
+    it('rejects when model is not an object', () => {
+        return rwUpdate.update(registry, 'test' as any)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('Specified model is not a Model instance');
+            });
+    });
+
+    it('rejects when model is not an instance of Model', () => {
+        let model = {test: 1};
+        return rwUpdate.update(registry, model as any)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('Specified model is not a Model instance');
+            });
+    });
+
     it('rejects if model is not registered', () => {
         let model = new UnregisteredModel();
-        return expect(rwUpdate.update(registry, model))
-            .to.be.rejectedWith('is not registered');
+        return rwUpdate.update(registry, model)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('is not registered');
+            });
     });
 
     it('rejects when where clause is not specified and model has no primary key', () => {
         let model = new ModelWithNoPK();
-        return expect(rwUpdate.update(registry, model))
-            .to.be.rejectedWith('update() must be called with a where clause for models with no primaryKey');
+        return rwUpdate.update(registry, model)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('update() must be called with a where clause for models with no primaryKey');
+            });
     });
 
     it('rejects when where clause is not specified and model primaryKey is undefined', () => {
         let model = new TestModel();
-        return expect(rwUpdate.update(registry, model))
-            .to.be.rejectedWith('primary key field \'name\' is undefined');
+        return rwUpdate.update(registry, model)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('primary key field \'name\' is undefined');
+            });
     });
 
     it('rejects when options.fields set to something other than an array', () => {
@@ -138,8 +164,11 @@ describe('rev.operations.update()', () => {
         options = {
             fields: 'name, gender' as any
         };
-        return expect(rwUpdate.update(registry, model, options))
-            .to.be.rejectedWith('options.fields must be an array of field names');
+        return rwUpdate.update(registry, model, options)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('options.fields must be an array of field names');
+            });
     });
 
     it('rejects when options.fields contains an invalid fiel name', () => {
@@ -147,8 +176,11 @@ describe('rev.operations.update()', () => {
         options = {
             fields: ['cc_number']
         };
-        return expect(rwUpdate.update(registry, model, options))
-            .to.be.rejectedWith('Field \'cc_number\' does not exist in TestModel');
+        return rwUpdate.update(registry, model, options)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('Field \'cc_number\' does not exist in TestModel');
+            });
     });
 
     it('rejects with unsuccessful result when model fields do not pass validation', () => {
@@ -207,8 +239,11 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorToThrow = expectedError;
-        return expect(rwUpdate.update(registry, model, options))
-            .to.be.rejectedWith(expectedError);
+        return rwUpdate.update(registry, model, options)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err).to.equal(expectedError);
+            });
     });
 
 });

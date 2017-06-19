@@ -100,14 +100,21 @@ describe('rev.operations.read()', () => {
 
 
     it('rejects if model is not registered', () => {
-        return expect(rwRead.read(registry, TestModel2))
-            .to.be.rejectedWith('is not registered');
+        return rwRead.read(registry, TestModel2)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('is not registered');
+            });
     });
 
     it('rejects if order_by option is invalid', () => {
-        return expect(rwRead.read(registry, TestModel, whereClause, {
+        return rwRead.read(registry, TestModel, whereClause, {
             order_by: ['star_sign']
-        })).to.be.rejectedWith(`field 'star_sign' does not exist in model`);
+        })
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain(`field 'star_sign' does not exist in model`);
+            });
     });
 
     it('rejects with any operation errors added by the backend', () => {
@@ -126,8 +133,11 @@ describe('rev.operations.read()', () => {
     it('rejects with expected error when backend.read rejects', () => {
         let expectedError = new Error('epic fail!');
         mockBackend.errorToThrow = expectedError;
-        return expect(rwRead.read(registry, TestModel, whereClause))
-            .to.be.rejectedWith(expectedError);
+        return rwRead.read(registry, TestModel, whereClause)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err).to.equal(expectedError);
+            });
     });
 
 });

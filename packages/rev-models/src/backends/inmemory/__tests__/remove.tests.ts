@@ -99,18 +99,22 @@ describe('rev.backends.inmemory', () => {
 
         it('throws an error if where clause is not provided', () => {
             let model = new TestModel();
-            return expect(
-                backend.remove(registry, model, null, removeResult, {})
-            ).to.be.rejectedWith('remove() requires the \'where\' parameter');
+            return backend.remove(registry, model, null, removeResult, {})
+                .then(() => { throw new Error('expected to reject'); })
+                .catch((err) => {
+                    expect(err.message).to.contain('remove() requires the \'where\' parameter');
+                });
         });
 
         it('throws when an invalid query is specified', () => {
             let model = new TestModel();
-            return expect(
-                backend.remove(registry, model, {
+            return backend.remove(registry, model, {
                     non_existent_field: 42
                 }, removeResult, {})
-            ).to.be.rejectedWith('not a recognised field');
+                .then(() => { throw new Error('expected to reject'); })
+                .catch((err) => {
+                    expect(err.message).to.contain('not a recognised field');
+                });
         });
 
     });

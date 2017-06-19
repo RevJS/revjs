@@ -113,7 +113,10 @@ describe('Model class - constructor', () => {
 
         it('validateAsync() should not resolve to a value', () => {
             let test = new TestModel();
-            expect(test.validateAsync(validationContext)).to.eventually.equal(undefined);
+            return test.validateAsync(validationContext)
+                .then((res) => {
+                    expect(res).to.be.undefined;
+                });
         });
 
         it('validation context result should be true', () => {

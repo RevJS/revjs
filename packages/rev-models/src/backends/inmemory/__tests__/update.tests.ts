@@ -134,18 +134,22 @@ describe('rev.backends.inmemory', () => {
 
         it('throws an error if where clause is not provided', () => {
             let model = new TestModel();
-            return expect(
-                backend.update(registry, model, null, updateResult, {})
-            ).to.be.rejectedWith('update() requires the \'where\' parameter');
+            return backend.update(registry, model, null, updateResult, {})
+                .then(() => { throw new Error('expected to reject'); })
+                .catch((err) => {
+                    expect(err.message).to.contain('update() requires the \'where\' parameter');
+                });
         });
 
         it('throws when an invalid query is specified', () => {
             let model = new TestModel();
-            return expect(
-                backend.update(registry, model, {
+            return backend.update(registry, model, {
                     non_existent_field: 42
                 }, updateResult, {})
-            ).to.be.rejectedWith('not a recognised field');
+                .then(() => { throw new Error('expected to reject'); })
+                .catch((err) => {
+                    expect(err.message).to.contain('not a recognised field');
+                });
         });
 
     });

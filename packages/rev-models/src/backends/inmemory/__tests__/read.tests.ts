@@ -195,44 +195,54 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('throws an error if where clause is not provided', () => {
-            return expect(
-                backend.read(registry, TestModel, null, readResult, getReadOpts())
-            ).to.be.rejectedWith('read() requires the \'where\' parameter');
+            return backend.read(registry, TestModel, null, readResult, getReadOpts())
+                .then(() => { throw new Error('expected to reject'); })
+                .catch((err) => {
+                    expect(err.message).to.contain('read() requires the \'where\' parameter');
+                });
         });
 
         it('throws an error if options.limit == 0', () => {
-            return expect(
-                backend.read(registry, TestModel, {}, readResult, getReadOpts({
+            return backend.read(registry, TestModel, {}, readResult, getReadOpts({
                     offset: 2,
                     limit: 0
                 }))
-            ).to.be.rejectedWith('options.limit cannot be less than 1');
+                .then(() => { throw new Error('expected to reject'); })
+                .catch((err) => {
+                    expect(err.message).to.contain('options.limit cannot be less than 1');
+                });
         });
 
         it('throws an error if options.limit is negative', () => {
-            return expect(
-                backend.read(registry, TestModel, {}, readResult, getReadOpts({
+            return backend.read(registry, TestModel, {}, readResult, getReadOpts({
                     offset: 2,
                     limit: -12
                 }))
-            ).to.be.rejectedWith('options.limit cannot be less than 1');
+                .then(() => { throw new Error('expected to reject'); })
+                .catch((err) => {
+                    expect(err.message).to.contain('options.limit cannot be less than 1');
+                });
         });
 
         it('throws an error if options.offset is negative', () => {
-            return expect(
-                backend.read(registry, TestModel, {}, readResult, getReadOpts({
+            return backend.read(registry, TestModel, {}, readResult, getReadOpts({
                     offset: -10,
                     limit: 10
                 }))
-            ).to.be.rejectedWith('options.offset cannot be less than zero');
+                .then(() => { throw new Error('expected to reject'); })
+                .catch((err) => {
+                    expect(err.message).to.contain('options.offset cannot be less than zero');
+                });
         });
 
         it('throws when an invalid query is specified', () => {
-            return expect(
-                backend.read(registry, TestModel, {
+            return backend.read(registry, TestModel, {
                     non_existent_field: 42
                 }, readResult, getReadOpts())
-            ).to.be.rejectedWith('not a recognised field');
+                .then(() => { throw new Error('expected to reject'); })
+                .catch((err) => {
+                    expect(err.message).to.contain('not a recognised field');
+                });
         });
 
     });

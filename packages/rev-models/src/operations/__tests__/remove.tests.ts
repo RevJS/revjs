@@ -98,20 +98,29 @@ describe('rev.operations.remove()', () => {
 
     it('rejects if model is not registered', () => {
         let model = new UnregisteredModel();
-        return expect(rwRemove.remove(registry, model, options))
-            .to.be.rejectedWith('is not registered');
+        return rwRemove.remove(registry, model, options)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('is not registered');
+            });
     });
 
     it('rejects when where clause is not specified and model has no primary key', () => {
         let model = new ModelWithNoPK();
-        return expect(rwRemove.remove(registry, model))
-            .to.be.rejectedWith('remove() must be called with a where clause for models with no primaryKey');
+        return rwRemove.remove(registry, model)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('remove() must be called with a where clause for models with no primaryKey');
+            });
     });
 
     it('rejects when where clause is not specified and model primaryKey is undefined', () => {
         let model = new TestModel();
-        return expect(rwRemove.remove(registry, model))
-            .to.be.rejectedWith('primary key field \'name\' is undefined');
+        return rwRemove.remove(registry, model)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('primary key field \'name\' is undefined');
+            });
     });
 
     it('rejects with any operation errors added by the backend', () => {
@@ -132,8 +141,11 @@ describe('rev.operations.remove()', () => {
         let model = new TestModel({ name: 'bob', age: 21 });
         let expectedError = new Error('epic fail!');
         mockBackend.errorToThrow = expectedError;
-        return expect(rwRemove.remove(registry, model, options))
-            .to.be.rejectedWith(expectedError);
+        return rwRemove.remove(registry, model, options)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err).to.equal(expectedError);
+            });
     });
 
 });

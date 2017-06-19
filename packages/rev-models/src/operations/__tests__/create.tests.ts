@@ -83,10 +83,30 @@ describe('rev.operations.create()', () => {
             });
     });
 
+    it('rejects when model is not an object', () => {
+        return rwCreate.create(registry, 'test' as any)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('Specified model is not a Model instance');
+            });
+    });
+
+    it('rejects when model is not an instance of Model', () => {
+        let model = {test: 1};
+        return rwCreate.create(registry, model as any)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('Specified model is not a Model instance');
+            });
+    });
+
     it('rejects if model is not registered', () => {
         let model = new TestModel2();
-        return expect(rwCreate.create(registry, model))
-            .to.be.rejectedWith('is not registered');
+        return rwCreate.create(registry, model)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('is not registered');
+            });
     });
 
     it('rejects with unsuccessful result when model required fields not set', () => {
@@ -143,8 +163,11 @@ describe('rev.operations.create()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorToThrow = expectedError;
-        return expect(rwCreate.create(registry, model))
-            .to.be.rejectedWith(expectedError);
+        return rwCreate.create(registry, model)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err).to.equal(expectedError);
+            });
     });
 
 });

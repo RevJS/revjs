@@ -51,8 +51,11 @@ describe('validate()', () => {
     it('should reject if model not registered', () => {
         class UnregisteredModel extends Model {}
         let test = new UnregisteredModel();
-        return expect(validate(registry, test, {operation: 'create'}))
-            .to.be.rejectedWith('is not registered');
+        return validate(registry, test, {operation: 'create'})
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('is not registered');
+            });
     });
 
     it('should return an invalid result if extra fields are present', () => {
@@ -123,8 +126,11 @@ describe('validate()', () => {
         registry.register(DelayModel, delayModelMeta);
         let test = new DelayModel();
 
-        return expect(validate(registry, test, {operation: 'create'}, { timeout: 10}))
-            .to.be.rejectedWith('timed out');
+        return validate(registry, test, {operation: 'create'}, { timeout: 10})
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('timed out');
+            });
     });
 
     it('should return a valid result if model.validate does not set an error', () => {
@@ -162,8 +168,11 @@ describe('validate()', () => {
             throw new Error('Validator epic fail...');
         };
 
-        return expect(validate(registry, validModel, {operation: 'create'}))
-            .to.be.rejectedWith('Validator epic fail...');
+        return validate(registry, validModel, {operation: 'create'})
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('Validator epic fail...');
+            });
     });
 
     it('should return an invalid result if model validateAsync() fails', () => {
@@ -193,8 +202,11 @@ describe('validate()', () => {
             throw new Error('Async Validator epic fail...');
         };
 
-        return expect(validate(registry, validModel, {operation: 'create'}))
-            .to.be.rejectedWith('Async Validator epic fail...');
+        return validate(registry, validModel, {operation: 'create'})
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('Async Validator epic fail...');
+            });
     });
 
     it('should reject if model validateAsync() rejects', () => {
@@ -203,8 +215,11 @@ describe('validate()', () => {
             return Promise.reject(new Error('Can handle rejection...'));
         };
 
-        return expect(validate(registry, validModel, {operation: 'create'}))
-            .to.be.rejectedWith('Can handle rejection...');
+        return validate(registry, validModel, {operation: 'create'})
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('Can handle rejection...');
+            });
     });
 
     it('should reject if model validateAsync times out', () => {
@@ -217,8 +232,11 @@ describe('validate()', () => {
             });
         };
 
-        return expect(validate(registry, validModel, {operation: 'create'}, { timeout: 10 }))
-            .to.be.rejectedWith('timed out');
+        return validate(registry, validModel, {operation: 'create'}, { timeout: 10 })
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('timed out');
+            });
     });
 
 });

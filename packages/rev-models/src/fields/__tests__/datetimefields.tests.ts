@@ -59,36 +59,38 @@ describe('rev.fields.datetimefields', () => {
         it('successfully validates a date value', () => {
             let test = new DateField('value', { required: true });
             testModel.value = new Date(2016, 12, 23);
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => {
+                    expect(res.valid).to.be.true;
+                });
         });
 
         it('successfully validates a date value in a string', () => {
             let test = new DateField('value', { required: true });
             testModel.value = '2016-12-23';
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new DateField('value', { required: false });
             testModel.value = null;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('does not validate on null value if field is required', () => {
             let test = new DateField('value', { required: true });
             testModel.value = null;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate a non-date value', () => {
             let test = new DateField('value', { required: true });
             testModel.value = 'I am a date, honest guv!...';
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
     });
@@ -124,36 +126,36 @@ describe('rev.fields.datetimefields', () => {
         it('successfully validates a date object value', () => {
             let test = new TimeField('value', { required: true });
             testModel.value = new Date(2016, 12, 23, 15, 27, 32);
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a time value in a string', () => {
             let test = new TimeField('value', { required: true });
             testModel.value = '15:27:32';
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new TimeField('value', { required: false });
             testModel.value = null;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('does not validate on null value if field is required', () => {
             let test = new TimeField('value', { required: true });
             testModel.value = null;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate a non-time value', () => {
             let test = new TimeField('value', { required: true });
             testModel.value = 'Time you got a watch!...';
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
     });
@@ -189,36 +191,36 @@ describe('rev.fields.datetimefields', () => {
         it('successfully validates a date and time value', () => {
             let test = new DateTimeField('value', { required: true });
             testModel.value = new Date(2016, 12, 23, 11, 22, 33);
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a date time value in a string', () => {
             let test = new DateTimeField('value', { required: true });
             testModel.value = '2016-12-23T21:32:43';
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new DateTimeField('value', { required: false });
             testModel.value = null;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('does not validate on null value if field is required', () => {
             let test = new DateTimeField('value', { required: true });
             testModel.value = null;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate a non-datetime value', () => {
             let test = new DateTimeField('value', { required: true });
             testModel.value = 'I am a non-datetime value';
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
     });

@@ -71,15 +71,15 @@ describe('rev.fields.numberfields', () => {
         it('successfully validates a number value', () => {
             let test = new NumberField('value', { required: true });
             testModel.value = 42.5;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a number value in a string', () => {
             let test = new NumberField('value', { required: true });
             testModel.value = '12.345';
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a numeric value that passes validation', () => {
@@ -89,29 +89,29 @@ describe('rev.fields.numberfields', () => {
                 maxValue: 50
             });
             testModel.value = 42.123;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new NumberField('value', { required: false });
             testModel.value = null;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('does not validate on null value if field is required', () => {
             let test = new NumberField('value', { required: true });
             testModel.value = null;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate on non-numeric value', () => {
             let test = new NumberField('value', { required: true });
             testModel.value = 'I am a number, honest guv!...';
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate a number if it does not match rules', () => {
@@ -121,8 +121,8 @@ describe('rev.fields.numberfields', () => {
                 maxValue: 50.2
             });
             testModel.value = 22.72;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
     });
@@ -172,15 +172,15 @@ describe('rev.fields.numberfields', () => {
         it('successfully validates an integer value', () => {
             let test = new IntegerField('value', { required: true });
             testModel.value = 42;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates an integer value in a string', () => {
             let test = new IntegerField('value', { required: true });
             testModel.value = '12';
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates an integer value that passes validation', () => {
@@ -190,29 +190,29 @@ describe('rev.fields.numberfields', () => {
                 maxValue: 50
             });
             testModel.value = 42;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new IntegerField('value', { required: false });
             testModel.value = null;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('does not validate on null value if field is required', () => {
             let test = new IntegerField('value', { required: true });
             testModel.value = null;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate on non-integer value', () => {
             let test = new IntegerField('value', { required: true });
             testModel.value = 42.5;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate an integer if it does not match rules', () => {
@@ -222,8 +222,8 @@ describe('rev.fields.numberfields', () => {
                 maxValue: 50
             });
             testModel.value = 22;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
     });
@@ -261,29 +261,29 @@ describe('rev.fields.numberfields', () => {
         it('successfully validates an integer value', () => {
             let test = new AutoNumberField('value');
             testModel.value = 42;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates an integer value in a string', () => {
             let test = new AutoNumberField('value');
             testModel.value = '12';
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a null value', () => {
             let test = new AutoNumberField('value', { required: false });
             testModel.value = null;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', true);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('does not validate on non-integer value', () => {
             let test = new AutoNumberField('value');
             testModel.value = 42.5;
-            return expect(test.validate(registry, testModel, testOp, result))
-                .to.eventually.have.property('valid', false);
+            return test.validate(registry, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.false; });
         });
 
     });
