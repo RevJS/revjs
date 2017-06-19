@@ -32,6 +32,7 @@
      "prefer-const": [false],
      "prefer-for-of": false,
      "no-unused-expression": [false],
-     "member-ordering": [false]
+     "member-ordering": [false],
+     "prefer-object-spread": [false]
   }
 }
