@@ -1,53 +1,77 @@
 
 import { Model } from '../models/model';
-import { IValidationOptions } from './validate';
+import { IValidationOptions, validate } from './validate';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { ModelRegistry } from '../registry/registry';
+import { IModelOperation } from './operation';
 
 export interface IExecOptions {
     validation?: IValidationOptions;
+    validate?: boolean;
 }
 
 export interface IExecMeta extends IOperationMeta {
     // For future use
 }
 
-export const DEFAULT_EXEC_OPTIONS: IExecOptions = {};
+export interface IExecArgs {
+    [key: string]: any;
+}
 
-export function exec<T extends Model>(registry: ModelRegistry, model: T, method: string, args: any[], options?: IExecOptions): Promise<ModelOperationResult<T, IExecMeta>> {
+export const DEFAULT_EXEC_OPTIONS: IExecOptions = {
+    validate: true
+};
+
+export function exec<T extends Model>(registry: ModelRegistry, model: T, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<T, IExecMeta>> {
     return new Promise((resolve, reject) => {
 
         if (typeof model != 'object' || !(model instanceof Model)) {
-            throw new Error('Specified model is not an instance of Model');
+            throw new Error('Specified model is not a Model instance');
         }
         if (!method || typeof method != 'string') {
             throw new Error('Specified method name is not valid');
         }
 
-        let callArgs = [];
-        if (args) {
-            if (!(args instanceof Array)) {
-                throw new Error('Specified args must be an array of values');
-            }
-            callArgs = args;
+        let meta = registry.getModelMeta(model);
+        let opts: IExecOptions = Object.assign({}, DEFAULT_EXEC_OPTIONS, options);
+
+        let operation: IModelOperation = {
+            operation: method
+        };
+        let operationResult = new ModelOperationResult<T, IExecMeta>(operation);
+
+        let promise = Promise.resolve();
+        if (opts.validate) {
+            promise = validate(registry, model, operation, opts.validation ? opts.validation : null)
+                .then((validationResult) => {
+                    if (!validationResult.valid) {
+                        throw operationResult.createValidationError(validationResult);
+                    }
+                    else {
+                        operationResult.validation = validationResult;
+                    }
+                });
         }
 
-        if (model[method]) {
-            if (typeof model[method] != 'function') {
-                throw new Error(`${model.constructor.name}.${method} is not a function`);
-            }
-            model[method].apply(model, callArgs);
-            /* TODO: Validation
-            validate(registry, model, operation, opts.validation ? opts.validation : null)
-                .then((validationResult) => {
-            */
-        }
-        else {
-            /* TODO: Pass off to backend
-            let backend = registry.getBackend(meta.backend);
-            backend.exec(registry, model, operationResult, opts);
-            */
-        }
+        promise
+            .then(() => {
+                if (model[method]) {
+                    if (typeof model[method] != 'function') {
+                        throw new Error(`${model.constructor.name}.${method} is not a function`);
+                    }
+                    return model[method].call(model, argObj);
+                }
+                else {
+                    let backend = registry.getBackend(meta.backend);
+                    return backend.exec(registry, model, method, argObj, operationResult, opts);
+                }
+            })
+            .then((res) => {
+                resolve(res);
+            })
+            .catch((err) => {
+                reject(err);
+            });
 
     });
 

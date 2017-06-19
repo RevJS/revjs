@@ -11,7 +11,7 @@ import { read, IReadOptions, IReadMeta } from '../operations/read';
 import { ModelOperationResult } from '../operations/operationresult';
 import { validate, IValidationOptions } from '../operations/validate';
 import { ModelValidationResult } from '../validation/validationresult';
-import { IExecOptions, exec } from '../operations/exec';
+import { IExecOptions, exec, IExecArgs } from '../operations/exec';
 
 export class ModelRegistry {
 
@@ -150,8 +150,8 @@ export class ModelRegistry {
         return validate(this, model, operation, options);
     }
 
-    exec<T extends Model>(model: T, method: string, args: any[], options?: IExecOptions): Promise<ModelOperationResult<T, any>> {
-        return exec(this, model, method, args, options);
+    exec<T extends Model>(model: T, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<T, any>> {
+        return exec(this, model, method, argObj, options);
     }
 
 }

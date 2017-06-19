@@ -285,6 +285,10 @@ describe('ModelRegistry', () => {
             expect(testReg.read).to.be.a('function');
         });
 
+        it('contains exec() function', () => {
+            expect(testReg.exec).to.be.a('function');
+        });
+
         it('contains validate() function', () => {
             expect(testReg.validate).to.be.a('function');
         });

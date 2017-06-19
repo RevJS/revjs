@@ -12,6 +12,7 @@ import { InMemoryQuery } from './query';
 import { sortRecords } from './sort';
 import { ModelRegistry } from '../../registry/registry';
 import { AutoNumberField } from '../../fields';
+import { IExecArgs, IExecOptions, IExecMeta } from '../../operations/exec';
 
 export class InMemoryBackend implements IBackend {
     _storage: {
@@ -160,6 +161,10 @@ export class InMemoryBackend implements IBackend {
             resolve(result);
 
         });
+    }
+
+    exec<T extends Model>(registry: ModelRegistry, model: T, method: string, argObj: IExecArgs, result: ModelOperationResult<T, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<T, IExecMeta>> {
+        return Promise.reject(new Error('InMemoryBackend.exec() not supported'));
     }
 
     _getModelStorage(meta: IModelMeta<any>): any {

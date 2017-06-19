@@ -8,12 +8,14 @@ import { ICreateOptions, ICreateMeta } from '../create';
 import { IUpdateOptions, IUpdateMeta } from '../update';
 import { IRemoveOptions, IRemoveMeta } from '../remove';
 import { IReadOptions, IReadMeta } from '../read';
+import { IExecArgs, IExecMeta, IExecOptions } from '../exec';
 
 export class MockBackend implements IBackend {
     createStub = sinon.stub();
     updateStub = sinon.stub();
     removeStub = sinon.stub();
     readStub = sinon.stub();
+    execStub = sinon.stub();
 
     errorsToAdd: string[] = [];
     errorToThrow: Error = null;
@@ -41,6 +43,12 @@ export class MockBackend implements IBackend {
         result.results = this.results;
         this.addErrors(result);
         this.readStub.apply(null, arguments);
+        return this.getReturnValue(result);
+    }
+
+    exec<T extends Model>(registry: ModelRegistry, model: T, method: string, argObj: IExecArgs, result: ModelOperationResult<T, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<T, IExecMeta>> {
+        this.addErrors(result);
+        this.execStub.apply(null, arguments);
         return this.getReturnValue(result);
     }
 
