@@ -17,6 +17,7 @@ describe('ModelOperationResult - constructor()', () => {
         expect(res.result).to.be.undefined;
         expect(res.results).to.be.undefined;
         expect(res.meta).to.be.undefined;
+        expect(res.data).to.be.undefined;
     });
 
 });

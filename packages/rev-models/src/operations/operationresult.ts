@@ -21,6 +21,7 @@ export interface IModelOperationResult<T extends Model, M extends IOperationMeta
     results?: T[];
     errors?: IOperationError[];
     meta?: M;
+    data?: any;
 }
 
 export class ModelOperationResult<T extends Model, M extends IOperationMeta> implements IModelOperationResult<T, M> {
@@ -31,6 +32,7 @@ export class ModelOperationResult<T extends Model, M extends IOperationMeta> imp
     results?: T[];
     errors?: IOperationError[];
     meta?: M;
+    data?: any;
 
     constructor(operation: IModelOperation) {
         this.operation = operation;
@@ -74,4 +76,5 @@ export class ModelOperationResult<T extends Model, M extends IOperationMeta> imp
         err.result = this;
         return err;
     }
+
 }
