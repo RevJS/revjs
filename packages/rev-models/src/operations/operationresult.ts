@@ -1,6 +1,5 @@
 import { IModelOperation } from './operation';
 import { ModelValidationResult } from '../validation/validationresult';
-import { Model } from '../models/model';
 
 export interface IOperationError {
     message: string;
@@ -13,7 +12,7 @@ export interface IOperationMeta {
     // In future we might have common meta, e.g. exec_time
 }
 
-export interface IModelOperationResult<T extends Model, M extends IOperationMeta> {
+export interface IModelOperationResult<T, M extends IOperationMeta> {
     operation: IModelOperation;
     success: boolean;
     validation?: ModelValidationResult;
@@ -21,10 +20,9 @@ export interface IModelOperationResult<T extends Model, M extends IOperationMeta
     results?: T[];
     errors?: IOperationError[];
     meta?: M;
-    data?: any;
 }
 
-export class ModelOperationResult<T extends Model, M extends IOperationMeta> implements IModelOperationResult<T, M> {
+export class ModelOperationResult<T, M extends IOperationMeta> implements IModelOperationResult<T, M> {
     operation: IModelOperation;
     success: boolean;
     validation?: ModelValidationResult;
@@ -32,7 +30,6 @@ export class ModelOperationResult<T extends Model, M extends IOperationMeta> imp
     results?: T[];
     errors?: IOperationError[];
     meta?: M;
-    data?: any;
 
     constructor(operation: IModelOperation) {
         this.operation = operation;
@@ -63,6 +60,9 @@ export class ModelOperationResult<T extends Model, M extends IOperationMeta> imp
     }
 
     setMeta(meta: Partial<M>) {
+        if (typeof meta != 'object') {
+            throw new Error('metadata must be an object');
+        }
         if (!this.meta) {
             this.meta = {} as any;
         }

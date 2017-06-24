@@ -17,7 +17,6 @@ describe('ModelOperationResult - constructor()', () => {
         expect(res.result).to.be.undefined;
         expect(res.results).to.be.undefined;
         expect(res.meta).to.be.undefined;
-        expect(res.data).to.be.undefined;
     });
 
 });
@@ -139,6 +138,13 @@ describe('ModelOperationResult - setMeta()', () => {
         expect(res.meta).to.deep.equal({ limit: 10, offset: 20 });
         res.setMeta({ offset: 0, total_count: 30 });
         expect(res.meta).to.deep.equal({ limit: 10, offset: 0, total_count: 30 });
+    });
+
+    it('throws if metadata is not an object', () => {
+        expect(res.meta).to.be.undefined;
+        expect(() => {
+            res.setMeta('limit: 10' as any);
+        }).to.throw('metadata must be an object');
     });
 
 });
