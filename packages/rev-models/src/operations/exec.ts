@@ -4,6 +4,7 @@ import { IValidationOptions, validate } from './validate';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { ModelRegistry } from '../registry/registry';
 import { IModelOperation } from './operation';
+import { isSet } from '../utils/index';
 
 export interface IExecOptions {
     validation?: IValidationOptions;
@@ -22,7 +23,7 @@ export const DEFAULT_EXEC_OPTIONS: IExecOptions = {
     validate: true
 };
 
-export function exec<T extends Model>(registry: ModelRegistry, model: T, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<T, IExecMeta>> {
+export function exec<R>(registry: ModelRegistry, model: Model, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
     return new Promise((resolve, reject) => {
 
         if (typeof model != 'object' || !(model instanceof Model)) {
@@ -38,7 +39,7 @@ export function exec<T extends Model>(registry: ModelRegistry, model: T, method:
         let operation: IModelOperation = {
             operation: method
         };
-        let operationResult = new ModelOperationResult<T, IExecMeta>(operation);
+        let operationResult = new ModelOperationResult<R, IExecMeta>(operation);
 
         let promise = Promise.resolve();
         if (opts.validate) {
@@ -59,7 +60,7 @@ export function exec<T extends Model>(registry: ModelRegistry, model: T, method:
                     if (typeof model[method] != 'function') {
                         throw new Error(`${model.constructor.name}.${method} is not a function`);
                     }
-                    return model[method].call(model, argObj);
+                    return model[method].call(model, argObj, operationResult);
                 }
                 else {
                     let backend = registry.getBackend(meta.backend);
@@ -67,7 +68,16 @@ export function exec<T extends Model>(registry: ModelRegistry, model: T, method:
                 }
             })
             .then((res) => {
-                resolve(res);
+                if (!isSet(res)) {
+                    resolve(operationResult);
+                }
+                else if (!(res instanceof ModelOperationResult)) {
+                    operationResult.result = res;
+                    resolve(operationResult);
+                }
+                else {
+                    resolve(res);
+                }
             })
             .catch((err) => {
                 reject(err);
