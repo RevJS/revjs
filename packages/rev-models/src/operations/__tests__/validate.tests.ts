@@ -18,6 +18,10 @@ describe('validate()', () => {
             name: string;
         @d.DateField({ required: false })
             date: Date;
+        
+        testMethod() {
+            return true;
+        }
     }
 
     let validModel = new TestModel({
