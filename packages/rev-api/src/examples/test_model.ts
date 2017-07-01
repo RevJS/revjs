@@ -1,7 +1,7 @@
 
 import * as rev from 'rev-models';
 
-export class Person {
+export class Person extends rev.Model {
 
     @rev.TextField({label: 'First Name'})
         first_name: string;

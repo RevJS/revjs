@@ -7,6 +7,7 @@ import { ICreateMeta, ICreateOptions } from 'rev-models/lib/operations/create';
 import { IUpdateMeta, IUpdateOptions } from 'rev-models/lib/operations/update';
 import { IRemoveMeta, IRemoveOptions } from 'rev-models/lib/operations/remove';
 import { IReadMeta, IReadOptions } from 'rev-models/lib/operations/read';
+import { IExecArgs, IExecMeta, IExecOptions } from 'rev-models/lib/operations/exec';
 
 export class ModelApiBackend implements IBackend {
 
@@ -23,6 +24,10 @@ export class ModelApiBackend implements IBackend {
     }
 
     read<T extends Model>(registry: ModelRegistry, model: new() => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+        return Promise.reject(new Error('Not yet implemented'));
+    }
+
+    exec<R>(registry: ModelRegistry, model: Model, method: string, argObj: IExecArgs, result: ModelOperationResult<R, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
         return Promise.reject(new Error('Not yet implemented'));
     }
 
