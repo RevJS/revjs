@@ -13,5 +13,5 @@ export interface IBackend {
     update<T extends Model>(registry: ModelRegistry, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>>;
     remove<T extends Model>(registry: ModelRegistry, model: T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>>;
     read<T extends Model>(registry: ModelRegistry, model: new() => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>>;
-    exec<T extends Model>(registry: ModelRegistry, model: T, method: string, argObj: IExecArgs, result: ModelOperationResult<T, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<T, IExecMeta>>;
+    exec<R>(registry: ModelRegistry, model: Model, method: string, argObj: IExecArgs, result: ModelOperationResult<R, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>>;
 }

@@ -150,7 +150,7 @@ export class ModelRegistry {
         return validate(this, model, operation, options);
     }
 
-    exec<T extends Model>(model: T, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<T, any>> {
+    exec<R>(model: Model, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, any>> {
         return exec(this, model, method, argObj, options);
     }
 
