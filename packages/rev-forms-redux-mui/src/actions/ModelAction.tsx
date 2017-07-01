@@ -3,12 +3,12 @@ import * as React from 'react';
 
 import RaisedButton from 'material-ui/RaisedButton';
 import { IModelFormContext, IModelFormMeta } from '../forms/ModelForm';
-import { IExecOptions } from 'rev-models/lib/operations/exec';
+import { IExecArgs, IExecOptions } from 'rev-models/lib/operations/exec';
 
 export interface IModelActionProps {
     label: string;
     method: string;
-    args?: any[];
+    args?: IExecArgs;
     options?: IExecOptions;
 }
 

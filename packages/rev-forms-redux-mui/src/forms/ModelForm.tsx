@@ -4,16 +4,16 @@ import * as React from 'react';
 import { ModelRegistry } from 'rev-models';
 import { IModelProviderContext } from '../provider/ModelProvider';
 import { reduxForm } from 'redux-form';
-import { IExecOptions } from 'rev-models/lib/operations/exec';
+import { IExecArgs, IExecOptions } from 'rev-models/lib/operations/exec';
 
 export interface IModelFormProps {
     model: string;
-    form: string;
+    form: string;  // picked up by redux-form and used as form name in state
 }
 
 export interface IModelFormMeta {
     model: string;
-    execAction: (method: string, args: any[], options?: IExecOptions) => void;
+    execAction: (method: string, args: IExecArgs, options?: IExecOptions) => void;
 }
 
 export interface IModelFormContext {
@@ -51,7 +51,7 @@ export class ModelFormC extends React.Component<IModelFormProps, void> {
 
     execAction(method: string, args: any[], options?: IExecOptions) {
         // pass action name and model data to registry for execution
-        console.log('onModelAction', event);
+        console.log('execAction', method, args, options);
         console.log('this', this);
         const modelCls = this._registry.getModelMeta(this._model).ctor;
         const model = new modelCls();
