@@ -14,7 +14,13 @@ import { ModelValidationResult } from '../validation/validationresult';
 import { IExecOptions, exec, IExecArgs } from '../operations/exec';
 
 /**
- * Creates a model registry
+ * A **Model Registry** has the following responsibilities:
+ * 
+ * * Keep track of the current set of registered [[Model]]s and their metadata
+ * * Keep track of the current set of registered [[IBackend]]s
+ * * Provide an easy way to perform actions on models (Create, Update, etc.)
+ * 
+ * The example below shows how to create a new model registry:
  *
  * ```ts
  * [[include:examples/01_defining_a_model_registry.ts]]
@@ -32,27 +38,50 @@ export class ModelRegistry {
 
     /* Model Registration Functions */
 
+    /**
+     * Returns `true` if the specified model has been registered
+     */
     isRegistered(modelName: string): boolean {
         return (modelName in this._models);
     }
 
-    assertModelNameIsRegistered(modelName: string) {
+    private assertModelNameIsRegistered(modelName: string) {
         if (!this.isRegistered(modelName)) {
             throw new Error(`RegistryError: Model '${modelName}' is not registered`);
         }
     }
 
-    assertModelClassIsRegistered<T extends Model>(modelCtor: new(...args: any[]) => T) {
+    private assertModelClassIsRegistered<T extends Model>(modelCtor: new(...args: any[]) => T) {
         if (!modelCtor || !modelCtor.name) {
             throw new Error('RegistryError: Supplied object is not a model');
         }
         this.assertModelNameIsRegistered(modelCtor.name);
     }
 
-    assertModelIsRegistered<T extends Model>(model: T) {
+    private assertModelIsRegistered<T extends Model>(model: T) {
         this.assertModelClassIsRegistered(model.constructor as any);
     }
 
+    /**
+     * Registers a [[Model]] class with the registry. See the [[Model]]
+     * documentation for more information on creating RevJS Models.
+     *
+     * You can optionally provide a `meta` object along with the model class
+     * to specify additional properties, such as which backend it should use, or
+     * a more user-friendly label. See [[IModelMeta]] for more information about
+     * the metadata that can be provided.
+     *
+     * The below example shows the creation of a model, and registering it with
+     * a ModelRegistry:
+     *
+     * ```ts
+     * [[include:examples/02_defining_a_model.ts]]
+     * ```
+     *
+     * @param model The class to register. Must be a class *constructor* **NOT an
+     * instance**
+     * @param meta Optional additional metadata about the model being registered
+     */
     register<T extends Model>(model: new(...args: any[]) => T, meta?: IModelMeta<T>) {
 
         // Check model constructor
@@ -69,10 +98,24 @@ export class ModelRegistry {
         this._models[modelName] = modelMeta;
     }
 
+    /**
+     * Returns the list of model namess currently registered
+     */
     getModelNames(): string[] {
         return Object.keys(this._models);
     }
 
+    /**
+     * Returns the [[IModelMeta]] for the specified Model Name (string),
+     * Class (constructor) or Model Instance.
+     *
+     * This is primarily for internal use, but may be useful if you wish to
+     * inspect model metadata yourself.
+     *
+     * Throws an error if the specified model is not registered.
+     *
+     * @param model The model Name, Class or Instance to retrieve the metadata for
+     */
     getModelMeta(model: string | ModelCtor | Model) {
         let modelName: string;
         if (typeof model == 'string') {
@@ -94,10 +137,6 @@ export class ModelRegistry {
     }
 
     /* Backend Registration Functions */
-
-    isBackendRegistered(backendName: string): boolean {
-        return (backendName in this._backends);
-    }
 
     registerBackend(backendName: string, backend: IBackend) {
         if (!backendName) {
@@ -123,6 +162,9 @@ export class ModelRegistry {
         return this._backends[backendName];
     }
 
+    /**
+     * Returns the list of backend names currently registered
+     */
     getBackendNames(): string[] {
         return Object.keys(this._backends);
     }

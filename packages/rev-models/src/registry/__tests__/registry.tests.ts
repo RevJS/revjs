@@ -187,23 +187,21 @@ describe('ModelRegistry', () => {
 
     });
 
-    describe('isBackendRegistered()', () => {
+    describe('getBackendNames()', () => {
 
-        it('returns false when a backend is not registered', () => {
-            expect(testReg.isBackendRegistered('default')).to.equal(false);
+        it('returns empty list when no backends are registered', () => {
+            expect(testReg.getBackendNames()).to.deep.equal([]);
         });
 
-        it('returns true when a backend is registered', () => {
+        it('returns list when a backend is registered', () => {
             testReg.registerBackend('default', testBackend);
-            expect(testReg.isBackendRegistered('default')).to.equal(true);
+            expect(testReg.getBackendNames()).to.deep.equal(['default']);
         });
 
-        it('returns false when a non-string is passed', () => {
-            expect(testReg.isBackendRegistered(22 as any)).to.equal(false);
-        });
-
-        it('returns false when an object is passed', () => {
-            expect(testReg.isBackendRegistered({test: 1} as any)).to.equal(false);
+        it('returns list when multiple backends are registered', () => {
+            testReg.registerBackend('default', testBackend);
+            testReg.registerBackend('fancy_db', testBackend);
+            expect(testReg.getBackendNames()).to.deep.equal(['default', 'fancy_db']);
         });
 
     });

@@ -84,7 +84,8 @@ export function initialiseMeta<T extends Model>(registry: ModelRegistry, model: 
     meta.fieldsByName = {};
 
     // Validate specified back end
-    if (!registry.isBackendRegistered(meta.backend)) {
+    let backends = registry.getBackendNames();
+    if (backends.indexOf(meta.backend) < 0) {
         throw new Error(`MetadataError: Backend "${meta.backend}" is not registered.`);
     }
 

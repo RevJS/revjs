@@ -28,7 +28,7 @@ describe('initialiseMeta()', () => {
 
     beforeEach(() => {
         testRegistry = {
-            isBackendRegistered: () => true
+            getBackendNames: () => ['default', 'main_db']
         } as any;
         testModelMeta = {
             fields: [
@@ -116,7 +116,7 @@ describe('initialiseMeta()', () => {
     });
 
     it('throws an error if the specified backend is not registered', () => {
-        testRegistry.isBackendRegistered = () => false;
+        testRegistry.getBackendNames = () => [] as any;
         expect(() => {
             initialiseMeta(testRegistry, TestModel, testModelMeta);
         }).to.throw('Backend "default" is not registered');
@@ -148,7 +148,7 @@ describe('initialiseMeta() - with decorators', () => {
 
     beforeEach(() => {
         testRegistry = {
-            isBackendRegistered: () => true
+            getBackendNames: () => ['default', 'main_db']
         } as any;
     });
 
