@@ -1,8 +1,6 @@
 
-import * as rev from '../index';
+import * as rev from 'rev-models';
 
-// EXAMPLE:
-// import * as rev from 'rev-models'
 import { models } from './01_defining_a_model_registry';
 
 let TITLES = [

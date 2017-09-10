@@ -2,7 +2,11 @@
     "extends": "../../tsconfig",
     "compilerOptions": {
         "outDir": "./lib",
-        "rootDir": "./src"
+        "rootDir": "./src",
+        "baseUrl": "./",
+        "paths": {
+            "rev-models": ["src"]
+        }
     },
     "include": [
         "./src/**/*"
