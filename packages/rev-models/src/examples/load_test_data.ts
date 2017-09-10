@@ -1,4 +1,3 @@
-
 import { ModelRegistry } from '../registry/registry';
 import { Person } from './02_defining_a_model';
 
