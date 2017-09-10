@@ -15,7 +15,7 @@
      "no-var-requires": false,
      "trailing-comma": [false],
      "object-literal-sort-keys": false,
-     "ordered-imports": [false],
+     "ordered-imports": false,
      "no-console": [false],
      "no-unused-new": false,
      "triple-equals": false,
@@ -29,10 +29,11 @@
      "no-string-literal": false,
      "object-literal-shorthand": false,
      "member-access": [false],
-     "prefer-const": [false],
+     "prefer-const": false,
      "prefer-for-of": false,
      "no-unused-expression": [false],
      "member-ordering": [false],
-     "prefer-object-spread": [false]
+     "prefer-object-spread": false,
+     "eofline": false
   }
 }

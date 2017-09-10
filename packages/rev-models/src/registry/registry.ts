@@ -13,17 +13,22 @@ import { validate, IValidationOptions } from '../operations/validate';
 import { ModelValidationResult } from '../validation/validationresult';
 import { IExecOptions, exec, IExecArgs } from '../operations/exec';
 
+/**
+ * Creates a model registry
+ *
+ * ```ts
+ * [[include:examples/01_defining_a_model_registry.ts]]
+ * ```
+ */
 export class ModelRegistry {
 
-    _models: { [modelName: string]: IModelMeta<any> };
-    _backends: { [backendName: string]: IBackend };
+    private _models: { [modelName: string]: IModelMeta<any> };
+    private _backends: { [backendName: string]: IBackend };
 
     constructor() {
         this._models = {};
         this._backends = {};
     }
-
-    // TODO: Support extending existing models
 
     /* Model Registration Functions */
 
