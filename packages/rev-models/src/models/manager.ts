@@ -18,7 +18,7 @@ import { IExecOptions, exec, IExecArgs } from '../operations/exec';
  *
  * * Keep track of the current set of registered [[Model]]s and their metadata
  * * Keep track of the current set of registered [[IBackend]]s
- * * Provide an easy way to perform actions on models (Create, Update, etc.)
+ * * Provide Create, Read, Update, Delete and Validation functions for models
  *
  * The example below shows how to create a new model manager:
  *
@@ -168,6 +168,14 @@ export class ModelManager {
         this._backends[backendName] = backend;
     }
 
+    /**
+     * Returns a reference to a registered backend instance. Primarily for
+     * internal use.
+     *
+     * Throws an error if the specified backend is not registered.
+     *
+     * @param backendName The backend string identifier
+     */
     getBackend(backendName: string): IBackend {
         if (!backendName) {
             throw new Error('ModelManagerError: you must specify the name of the backend to get.');
@@ -185,17 +193,40 @@ export class ModelManager {
         return Object.keys(this._backends);
     }
 
-    clearRegistry() {
-        this._models = {};
-        this._backends = {};
-    }
-
     /* Model CRUD Functions */
 
+    /**
+     * Creates a model record in the backend using the data from the passed
+     * model instance.
+     *
+     * Below is an example of how to use the create method:
+     *
+     * ```ts
+     * [[include:examples/03_creating_and validating_data.ts]]
+     * ```
+     *
+     * @param model An instance of a registered model to be created in the
+     * backend
+     * @param options An optional set of options
+     */
     create<T extends Model>(model: T, options?: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
         return create(this, model, options);
     }
 
+    /**
+     * Updates a model record in the backend using the data from the passed
+     * model instance.
+     *
+     * If the model has a primary key defined (see [[IModelMeta.primaryKey]])
+     * then you only need to pass the model into this method.
+     *
+     * If the model does not have a primary key defined, then you'll need to
+     * set the `where` option (see [[IUpdateOptions.where]])
+     *
+     * @param model An instance of a registered model containing the data to
+     * be updated
+     * @param options Options for the update
+     */
     update<T extends Model>(model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
         return update(this, model, options);
     }

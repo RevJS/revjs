@@ -9,7 +9,7 @@ storage.
 
 ## API Documentation Overview
 
-This documentation includes the full public API of the `rev-models` library.
+This documentation includes the full public API of the **rev-models** library.
 
 If you are new to RevJS, we recommend checking out a RevJS Tutorial first!
 

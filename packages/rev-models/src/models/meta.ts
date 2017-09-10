@@ -1,7 +1,7 @@
 
 import { Field } from '../fields/field';
 import { Model } from './model';
-import { ModelManager } from '../models/manager';
+import { ModelManager } from './manager';
 
 export interface IModelMeta<T> {
     ctor?: new(...args: any[]) => T;
