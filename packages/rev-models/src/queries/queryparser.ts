@@ -36,11 +36,11 @@ export class QueryParser implements IQueryParser {
 
     registerConjunctionOperators(operators: IOperatorRegister) {
         Object.assign(this.CONJUNCTION_OPERATORS, operators);
-    };
+    }
 
     registerFieldOperators(operators: IOperatorRegister) {
         Object.assign(this.FIELD_OPERATORS, operators);
-    };
+    }
 
     getQueryNodeForQuery<T extends Model>(
             model: new() => T,
