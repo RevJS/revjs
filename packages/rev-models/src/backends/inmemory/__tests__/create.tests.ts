@@ -1,7 +1,7 @@
 
 import { expect } from 'chai';
 
-import { ModelRegistry } from '../../../registry/registry';
+import { ModelManager } from '../../../registry/registry';
 import { InMemoryBackend } from '../backend';
 import { ModelOperationResult } from '../../../operations/operationresult';
 import { TestModel } from './testdata';
@@ -9,16 +9,16 @@ import { DEFAULT_CREATE_OPTIONS, ICreateMeta } from '../../../operations/create'
 
 describe('rev.backends.inmemory', () => {
 
-    let registry: ModelRegistry;
+    let manager: ModelManager;
     let backend: InMemoryBackend;
     let createResult: ModelOperationResult<TestModel, ICreateMeta>;
     let createResult2: ModelOperationResult<TestModel, ICreateMeta>;
 
     beforeEach(() => {
-        registry = new ModelRegistry();
+        manager = new ModelManager();
         backend = new InMemoryBackend();
-        registry.registerBackend('default', backend);
-        registry.register(TestModel);
+        manager.registerBackend('default', backend);
+        manager.register(TestModel);
         createResult = new ModelOperationResult<TestModel, ICreateMeta>({operation: 'create'});
         createResult2 = new ModelOperationResult<TestModel, ICreateMeta>({operation: 'create'});
     });
@@ -30,7 +30,7 @@ describe('rev.backends.inmemory', () => {
                 name: 'test model',
                 age: 20
             });
-            return backend.create(registry, model, createResult, DEFAULT_CREATE_OPTIONS)
+            return backend.create(manager, model, createResult, DEFAULT_CREATE_OPTIONS)
                 .then((res) => {
                     expect(backend._storage['TestModel']).to.deep.equal([
                         {
@@ -57,8 +57,8 @@ describe('rev.backends.inmemory', () => {
                 age: 22
             });
             return Promise.all([
-                backend.create(registry, model1, createResult, DEFAULT_CREATE_OPTIONS),
-                backend.create(registry, model2, createResult2, DEFAULT_CREATE_OPTIONS)
+                backend.create(manager, model1, createResult, DEFAULT_CREATE_OPTIONS),
+                backend.create(manager, model2, createResult2, DEFAULT_CREATE_OPTIONS)
             ])
                 .then((res) => {
                     expect(backend._storage['TestModel']).to.deep.equal([

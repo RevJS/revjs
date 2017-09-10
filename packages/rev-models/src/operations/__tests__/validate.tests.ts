@@ -5,11 +5,11 @@ import { Model } from '../../models/model';
 import { TextField } from '../../fields/';
 import { validate, IValidationContext } from '../validate';
 import { VALIDATION_MESSAGES as msg } from '../../validation/validationmsg';
-import { ModelRegistry } from '../../registry/registry';
+import { ModelManager } from '../../registry/registry';
 import { InMemoryBackend } from '../../backends/inmemory/backend';
 
 describe('validate()', () => {
-    let registry: ModelRegistry;
+    let manager: ModelManager;
 
     class TestModel extends Model {
         @d.IntegerField({ minValue: 10 })
@@ -29,9 +29,9 @@ describe('validate()', () => {
     });
 
     beforeEach(() => {
-        registry = new ModelRegistry();
-        registry.registerBackend('default', new InMemoryBackend());
-        registry.register(TestModel);
+        manager = new ModelManager();
+        manager.registerBackend('default', new InMemoryBackend());
+        manager.register(TestModel);
 
         TestModel.prototype.validate = () => undefined;
         TestModel.prototype.validateAsync = () => Promise.resolve();
@@ -46,7 +46,7 @@ describe('validate()', () => {
             date: new Date()
         });
 
-        return validate(registry, test, {operation: 'create'})
+        return validate(manager, test, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(true);
             });
@@ -55,7 +55,7 @@ describe('validate()', () => {
     it('should reject if model not registered', () => {
         class UnregisteredModel extends Model {}
         let test = new UnregisteredModel();
-        return validate(registry, test, {operation: 'create'})
+        return validate(manager, test, {operation: 'create'})
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('is not registered');
@@ -71,7 +71,7 @@ describe('validate()', () => {
             extra: 'stuff'
         });
 
-        return validate(registry, test, {operation: 'create'})
+        return validate(manager, test, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.modelErrors.length).to.equal(1);
@@ -88,7 +88,7 @@ describe('validate()', () => {
             date: new Date()
         });
 
-        return validate(registry, test, {operation: 'create'})
+        return validate(manager, test, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.fieldErrors['id'].length).to.equal(1);
@@ -103,7 +103,7 @@ describe('validate()', () => {
             id: 11
         });
 
-        return validate(registry, test, {operation: 'create'})
+        return validate(manager, test, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.fieldErrors['name'].length).to.equal(1);
@@ -127,10 +127,10 @@ describe('validate()', () => {
         delayModelMeta.fields.push(delayField);
 
         class DelayModel extends Model {}
-        registry.register(DelayModel, delayModelMeta);
+        manager.register(DelayModel, delayModelMeta);
         let test = new DelayModel();
 
-        return validate(registry, test, {operation: 'create'}, { timeout: 10})
+        return validate(manager, test, {operation: 'create'}, { timeout: 10})
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('timed out');
@@ -141,7 +141,7 @@ describe('validate()', () => {
 
         TestModel.prototype.validate = () => undefined;
 
-        return validate(registry, validModel, {operation: 'create'})
+        return validate(manager, validModel, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(true);
                 expect(res.fieldErrors).to.deep.equal({});
@@ -154,7 +154,7 @@ describe('validate()', () => {
             vc.result.addFieldError('name', 'That name is too stupid!', 'daftness', { stupidityLevel: 10 });
         };
 
-        return validate(registry, validModel, {operation: 'create'})
+        return validate(manager, validModel, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.fieldErrors['name'].length).to.equal(1);
@@ -172,7 +172,7 @@ describe('validate()', () => {
             throw new Error('Validator epic fail...');
         };
 
-        return validate(registry, validModel, {operation: 'create'})
+        return validate(manager, validModel, {operation: 'create'})
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('Validator epic fail...');
@@ -188,7 +188,7 @@ describe('validate()', () => {
             });
         };
 
-        return validate(registry, validModel, {operation: 'create'})
+        return validate(manager, validModel, {operation: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.fieldErrors['name'].length).to.equal(1);
@@ -206,7 +206,7 @@ describe('validate()', () => {
             throw new Error('Async Validator epic fail...');
         };
 
-        return validate(registry, validModel, {operation: 'create'})
+        return validate(manager, validModel, {operation: 'create'})
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('Async Validator epic fail...');
@@ -219,7 +219,7 @@ describe('validate()', () => {
             return Promise.reject(new Error('Can handle rejection...'));
         };
 
-        return validate(registry, validModel, {operation: 'create'})
+        return validate(manager, validModel, {operation: 'create'})
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('Can handle rejection...');
@@ -236,7 +236,7 @@ describe('validate()', () => {
             });
         };
 
-        return validate(registry, validModel, {operation: 'create'}, { timeout: 10 })
+        return validate(manager, validModel, {operation: 'create'}, { timeout: 10 })
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('timed out');

@@ -5,7 +5,7 @@ import { QueryParser } from '../queryparser';
 import { ConjunctionNode } from '../nodes/conjunction';
 import { FieldNode } from '../nodes/field';
 import { Model } from '../../models/model';
-import { ModelRegistry } from '../../registry/registry';
+import { ModelManager } from '../../registry/registry';
 import { InMemoryBackend } from '../../backends/inmemory/backend';
 
 class TestModel extends Model {
@@ -17,9 +17,9 @@ class TestModel extends Model {
         active: boolean;
 }
 
-let registry = new ModelRegistry();
-registry.registerBackend('default', new InMemoryBackend());
-registry.register(TestModel);
+let manager = new ModelManager();
+manager.registerBackend('default', new InMemoryBackend());
+manager.register(TestModel);
 
 let invalidQueryObjects = [
     null,
@@ -35,7 +35,7 @@ describe('class QueryParser - constructor', () => {
     let fieldOperators = ['$eq', '$ne', '$gt', '$gte', '$lt', '$lte', '$like', '$in', '$nin'];
 
     before(() => {
-        parser = new QueryParser(registry);
+        parser = new QueryParser(manager);
     });
 
     describe('constructor()', () => {

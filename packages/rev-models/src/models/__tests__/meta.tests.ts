@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
 import * as d from '../../decorators';
 import { Model } from '../model';
-import { ModelRegistry } from '../../registry/registry';
+import { ModelManager } from '../../registry/registry';
 
 class TestModel extends Model {
     id: number = 1;
@@ -18,7 +18,7 @@ function getAnyObject() {
     return Object.assign({});
 }
 
-let testRegistry: ModelRegistry;
+let testManager: ModelManager;
 let testModelMeta: IModelMeta<TestModel>;
 let testModelMetaRes: IModelMeta<TestModel>;
 let testModel2Meta: IModelMeta<TestModel2>;
@@ -27,7 +27,7 @@ let testModel2MetaRes: IModelMeta<TestModel2>;
 describe('initialiseMeta()', () => {
 
     beforeEach(() => {
-        testRegistry = {
+        testManager = {
             getBackendNames: () => ['default', 'main_db']
         } as any;
         testModelMeta = {
@@ -43,11 +43,11 @@ describe('initialiseMeta()', () => {
     it('throws an error if fields metadata is missing', () => {
         expect(() => {
             testModelMeta = null;
-            initialiseMeta(testRegistry, TestModel, testModelMeta);
+            initialiseMeta(testManager, TestModel, testModelMeta);
         }).to.throw('You must define the fields metadata for the model');
         expect(() => {
             testModelMeta = {};
-            initialiseMeta(testRegistry, TestModel, testModelMeta);
+            initialiseMeta(testManager, TestModel, testModelMeta);
         }).to.throw('You must define the fields metadata for the model');
     });
 
@@ -59,7 +59,7 @@ describe('initialiseMeta()', () => {
                     getAnyObject() as IntegerField
                 ]
             };
-            initialiseMeta(testRegistry, TestModel, testModelMeta);
+            initialiseMeta(testManager, TestModel, testModelMeta);
         }).to.throw('is not an instance of rev.Field');
     });
 
@@ -67,11 +67,11 @@ describe('initialiseMeta()', () => {
         expect(() => {
             testModelMeta = {
                 fields: [
-                    new TextField('_registry'),
                     new TextField('validate'),
+                    new TextField('validateAsync')
                 ]
             };
-            initialiseMeta(testRegistry, TestModel, testModelMeta);
+            initialiseMeta(testManager, TestModel, testModelMeta);
         }).to.throw('Field name is not allowed');
     });
 
@@ -81,44 +81,44 @@ describe('initialiseMeta()', () => {
                 name: 'Flibble',
                 fields: []
             };
-            initialiseMeta(testRegistry, TestModel, testModelMeta);
+            initialiseMeta(testManager, TestModel, testModelMeta);
         }).to.throw('Model name does not match meta.name');
         expect(() => {
             testModelMeta = {
                 name: 'TestModel',
                 fields: []
             };
-            initialiseMeta(testRegistry, TestModel, testModelMeta);
+            initialiseMeta(testManager, TestModel, testModelMeta);
         }).to.not.throw();
     });
 
     it('should set up meta.backend ("default" if not defined)', () => {
         testModelMeta.backend = undefined;
-        testModelMetaRes = initialiseMeta(testRegistry, TestModel, testModelMeta);
+        testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
         testModel2Meta.backend = 'main_db';
-        testModel2MetaRes = initialiseMeta(testRegistry, TestModel2, testModel2Meta);
+        testModel2MetaRes = initialiseMeta(testManager, TestModel2, testModel2Meta);
         expect(testModelMetaRes.backend).to.equal('default');
         expect(testModel2MetaRes.backend).to.equal('main_db');
     });
 
     it('should set up meta.label (if not set, should equal model name)', () => {
         testModelMeta.label = undefined;
-        testModelMetaRes = initialiseMeta(testRegistry, TestModel, testModelMeta);
+        testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
         testModel2Meta.label = 'Awesome Entity';
-        testModel2MetaRes = initialiseMeta(testRegistry, TestModel2, testModel2Meta);
+        testModel2MetaRes = initialiseMeta(testManager, TestModel2, testModel2Meta);
         expect(testModelMetaRes.label).to.equal('TestModel');
         expect(testModel2MetaRes.label).to.equal('Awesome Entity');
     });
 
     it('assigns meta.ctor to the class constructor', () => {
-        testModelMetaRes = initialiseMeta(testRegistry, TestModel, testModelMeta);
+        testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
         expect(testModelMetaRes.ctor).to.equal(TestModel);
     });
 
     it('throws an error if the specified backend is not registered', () => {
-        testRegistry.getBackendNames = () => [] as any;
+        testManager.getBackendNames = () => [] as any;
         expect(() => {
-            initialiseMeta(testRegistry, TestModel, testModelMeta);
+            initialiseMeta(testManager, TestModel, testModelMeta);
         }).to.throw('Backend "default" is not registered');
     });
 
@@ -131,12 +131,12 @@ describe('initialiseMeta()', () => {
                     new IntegerField('flibble')
                 ]
             };
-            initialiseMeta(testRegistry, TestModel, testModelMeta);
+            initialiseMeta(testManager, TestModel, testModelMeta);
         }).to.throw('Field "flibble" is defined more than once');
     });
 
     it('creates the fieldsByName property as expected', () => {
-        testModelMetaRes = initialiseMeta(testRegistry, TestModel, testModelMeta);
+        testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
         let fieldNames = testModelMeta.fields.map((f) => f.name);
         expect(Object.keys(testModelMetaRes.fieldsByName)).to.deep.equal(fieldNames);
         expect(testModelMetaRes.fieldsByName[fieldNames[0]]).to.be.instanceOf(Field);
@@ -147,7 +147,7 @@ describe('initialiseMeta()', () => {
 describe('initialiseMeta() - with decorators', () => {
 
     beforeEach(() => {
-        testRegistry = {
+        testManager = {
             getBackendNames: () => ['default', 'main_db']
         } as any;
     });
@@ -161,7 +161,7 @@ describe('initialiseMeta() - with decorators', () => {
             @d.BooleanField()
                 active: boolean;
         }
-        let res = initialiseMeta(testRegistry, MyClass);
+        let res = initialiseMeta(testManager, MyClass);
         expect(res.fields).to.have.length(3);
         expect(res.fieldsByName).to.have.keys('id', 'name', 'active');
     });
@@ -175,7 +175,7 @@ describe('initialiseMeta() - with decorators', () => {
             @d.BooleanField()
                 active: boolean;
         }
-        let res = initialiseMeta(testRegistry, MyClass, {});
+        let res = initialiseMeta(testManager, MyClass, {});
         expect(res.fields).to.have.length(3);
         expect(res.fieldsByName).to.have.keys('id', 'name', 'active');
     });
@@ -194,7 +194,7 @@ describe('initialiseMeta() - with decorators', () => {
                 new TextField('flibble')
             ]
         };
-        let res = initialiseMeta(testRegistry, MyClass, myClassMeta);
+        let res = initialiseMeta(testManager, MyClass, myClassMeta);
         expect(res.fields).to.have.length(4);
         expect(res.fieldsByName).to.have.keys('flibble', 'id', 'name', 'active');
     });
@@ -205,7 +205,7 @@ describe('initialiseMeta() - with decorators', () => {
                 name: string;
         }
         expect((MyClass.prototype as any).__fields).to.be.an('Array');
-        initialiseMeta(testRegistry, MyClass);
+        initialiseMeta(testManager, MyClass);
         expect((MyClass.prototype as any).__fields).to.be.an('Array');
     });
 
@@ -216,7 +216,7 @@ describe('initialiseMeta() - with decorators', () => {
             @d.TextField()
                 name: string;
         }
-        let res = initialiseMeta(testRegistry, MyClass);
+        let res = initialiseMeta(testManager, MyClass);
         expect(res.primaryKey).to.deep.equal([]);
     });
 
@@ -227,7 +227,7 @@ describe('initialiseMeta() - with decorators', () => {
             @d.TextField({primaryKey: true})
                 name: string;
         }
-        let res = initialiseMeta(testRegistry, MyClass);
+        let res = initialiseMeta(testManager, MyClass);
         expect(res.primaryKey).to.deep.equal(['id', 'name']);
     });
 
@@ -241,7 +241,7 @@ describe('initialiseMeta() - with decorators', () => {
         let meta = {
             primaryKey: ['name']
         };
-        let res = initialiseMeta(testRegistry, MyClass, meta);
+        let res = initialiseMeta(testManager, MyClass, meta);
         expect(res.primaryKey).to.deep.equal(['name', 'id']);
     });
 
@@ -255,7 +255,7 @@ describe('initialiseMeta() - with decorators', () => {
         let meta = {
             primaryKey: ['id', 'name']
         };
-        let res = initialiseMeta(testRegistry, MyClass, meta);
+        let res = initialiseMeta(testManager, MyClass, meta);
         expect(res.primaryKey).to.deep.equal(['id', 'name']);
     });
 
@@ -267,7 +267,7 @@ describe('initialiseMeta() - with decorators', () => {
                 name: string;
         }
         expect(() => {
-            initialiseMeta(testRegistry, MyClass, {
+            initialiseMeta(testManager, MyClass, {
                 primaryKey: 'id' as any
             });
         }).to.throw('primaryKey must be an array of field names');
@@ -284,7 +284,7 @@ describe('initialiseMeta() - with decorators', () => {
             primaryKey: ['id', 'woooo']
         };
         expect(() => {
-            initialiseMeta(testRegistry, MyClass, meta);
+            initialiseMeta(testManager, MyClass, meta);
         }).to.throw('Primary key field "woooo" is not defined');
     });
 
@@ -292,7 +292,7 @@ describe('initialiseMeta() - with decorators', () => {
         class MyClass extends Model {}
         (MyClass.prototype as any).__fields = 'flibble';
         expect(() => {
-            initialiseMeta(testRegistry, MyClass);
+            initialiseMeta(testManager, MyClass);
         }).to.throw('Model __fields property must be an array');
     });
 
@@ -305,7 +305,7 @@ describe('initialiseMeta() - with decorators', () => {
             fields: {}
         } as any;
         expect(() => {
-            initialiseMeta(testRegistry, MyClass, meta);
+            initialiseMeta(testManager, MyClass, meta);
         }).to.throw('fields entry must be an array');
     });
 
@@ -327,7 +327,7 @@ describe('checkMetadataInitialised()', () => {
 
     it('should not throw if model has initialised metadata', () => {
         expect(() => {
-            let res = initialiseMeta(testRegistry, TestModel, testModelMeta);
+            let res = initialiseMeta(testManager, TestModel, testModelMeta);
             checkMetadataInitialised(res);
         }).to.not.throw();
     });

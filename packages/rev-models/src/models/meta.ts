@@ -1,7 +1,7 @@
 
 import { Field } from '../fields/field';
 import { Model } from './model';
-import { ModelRegistry } from '../registry/registry';
+import { ModelManager } from '../registry/registry';
 
 export interface IModelMeta<T> {
     ctor?: new(...args: any[]) => T;
@@ -16,7 +16,6 @@ export interface IModelMeta<T> {
 }
 
 export const DISALLOWED_FIELD_NAMES = [
-    '_registry',
     'validate',
     'validateAsync'
 ];
@@ -40,7 +39,7 @@ function populateMetaFromClassFields<T extends Model>(model: new(...args: any[])
     }
 }
 
-export function initialiseMeta<T extends Model>(registry: ModelRegistry, model: new(...args: any[]) => T, meta?: IModelMeta<T>): IModelMeta<T> {
+export function initialiseMeta<T extends Model>(manager: ModelManager, model: new(...args: any[]) => T, meta?: IModelMeta<T>): IModelMeta<T> {
 
     if (!meta) {
         meta = {};
@@ -84,7 +83,7 @@ export function initialiseMeta<T extends Model>(registry: ModelRegistry, model: 
     meta.fieldsByName = {};
 
     // Validate specified back end
-    let backends = registry.getBackendNames();
+    let backends = manager.getBackendNames();
     if (backends.indexOf(meta.backend) < 0) {
         throw new Error(`MetadataError: Backend "${meta.backend}" is not registered.`);
     }

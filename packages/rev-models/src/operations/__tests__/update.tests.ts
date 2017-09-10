@@ -8,7 +8,7 @@ import * as update from '../update';
 import { MockBackend } from './mock-backend';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { DEFAULT_UPDATE_OPTIONS, IUpdateOptions } from '../update';
-import { ModelRegistry } from '../../registry/registry';
+import { ModelManager } from '../../registry/registry';
 
 let GENDERS = [
     ['male', 'Male'],
@@ -38,7 +38,7 @@ class ModelWithNoPK extends Model {
 let rewired = rewire('../update');
 let rwUpdate: typeof update & typeof rewired = rewired as any;
 let mockBackend: MockBackend;
-let registry: ModelRegistry;
+let manager: ModelManager;
 
 describe('rev.operations.update()', () => {
 
@@ -49,17 +49,17 @@ describe('rev.operations.update()', () => {
             where: {}
         };
         mockBackend = new MockBackend();
-        registry = new ModelRegistry();
-        registry.registerBackend('default', mockBackend);
-        registry.register(TestModel);
-        registry.register(ModelWithNoPK);
+        manager = new ModelManager();
+        manager.registerBackend('default', mockBackend);
+        manager.register(TestModel);
+        manager.register(ModelWithNoPK);
     });
 
     it('calls backend.update() and returns successful result if model is valid', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        return rwUpdate.update(registry, model, options)
+        return rwUpdate.update(manager, model, options)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let updateCall = mockBackend.updateStub.getCall(0);
@@ -75,7 +75,7 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         let testOpts = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
-        return rwUpdate.update(registry, model, options)
+        return rwUpdate.update(manager, model, options)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let updateCall = mockBackend.updateStub.getCall(0);
@@ -90,7 +90,7 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         options.validation = {};
-        return rwUpdate.update(registry, model, options)
+        return rwUpdate.update(manager, model, options)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let updateCall = mockBackend.updateStub.getCall(0);
@@ -104,7 +104,7 @@ describe('rev.operations.update()', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        return rwUpdate.update(registry, model)
+        return rwUpdate.update(manager, model)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let updateCall = mockBackend.updateStub.getCall(0);
@@ -116,7 +116,7 @@ describe('rev.operations.update()', () => {
     });
 
     it('rejects when model is not an object', () => {
-        return rwUpdate.update(registry, 'test' as any)
+        return rwUpdate.update(manager, 'test' as any)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('Specified model is not a Model instance');
@@ -125,7 +125,7 @@ describe('rev.operations.update()', () => {
 
     it('rejects when model is not an instance of Model', () => {
         let model = {test: 1};
-        return rwUpdate.update(registry, model as any)
+        return rwUpdate.update(manager, model as any)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('Specified model is not a Model instance');
@@ -134,7 +134,7 @@ describe('rev.operations.update()', () => {
 
     it('rejects if model is not registered', () => {
         let model = new UnregisteredModel();
-        return rwUpdate.update(registry, model)
+        return rwUpdate.update(manager, model)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('is not registered');
@@ -143,7 +143,7 @@ describe('rev.operations.update()', () => {
 
     it('rejects when where clause is not specified and model has no primary key', () => {
         let model = new ModelWithNoPK();
-        return rwUpdate.update(registry, model)
+        return rwUpdate.update(manager, model)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('update() must be called with a where clause for models with no primaryKey');
@@ -152,7 +152,7 @@ describe('rev.operations.update()', () => {
 
     it('rejects when where clause is not specified and model primaryKey is undefined', () => {
         let model = new TestModel();
-        return rwUpdate.update(registry, model)
+        return rwUpdate.update(manager, model)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('primary key field \'name\' is undefined');
@@ -164,7 +164,7 @@ describe('rev.operations.update()', () => {
         options = {
             fields: 'name, gender' as any
         };
-        return rwUpdate.update(registry, model, options)
+        return rwUpdate.update(manager, model, options)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('options.fields must be an array of field names');
@@ -176,7 +176,7 @@ describe('rev.operations.update()', () => {
         options = {
             fields: ['cc_number']
         };
-        return rwUpdate.update(registry, model, options)
+        return rwUpdate.update(manager, model, options)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('Field \'cc_number\' does not exist in TestModel');
@@ -189,7 +189,7 @@ describe('rev.operations.update()', () => {
         model.gender = 'fish';
         model.age = 9;
         model.email = 'www.google.com';
-        return rwUpdate.update(registry, model, options)
+        return rwUpdate.update(manager, model, options)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -206,7 +206,7 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorsToAdd = ['some_backend_error'];
-        return rwUpdate.update(registry, model, options)
+        return rwUpdate.update(manager, model, options)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -222,7 +222,7 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorsToAdd = ['some_backend_error'];
-        return rwUpdate.update(registry, model, options)
+        return rwUpdate.update(manager, model, options)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -239,7 +239,7 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorToThrow = expectedError;
-        return rwUpdate.update(registry, model, options)
+        return rwUpdate.update(manager, model, options)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err).to.equal(expectedError);

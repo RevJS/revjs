@@ -1,7 +1,7 @@
 
 import { expect } from 'chai';
 
-import { ModelRegistry } from '../../../registry/registry';
+import { ModelManager } from '../../../registry/registry';
 import { InMemoryBackend } from '../backend';
 import { ModelOperationResult } from '../../../operations/operationresult';
 import { TestModel, testData } from './testdata';
@@ -9,7 +9,7 @@ import { IRemoveOptions, IRemoveMeta } from '../../../operations/remove';
 
 describe('rev.backends.inmemory', () => {
 
-    let registry: ModelRegistry;
+    let manager: ModelManager;
     let options: IRemoveOptions;
     let backend: InMemoryBackend;
     let loadResult: ModelOperationResult<TestModel, null>;
@@ -17,11 +17,11 @@ describe('rev.backends.inmemory', () => {
     let removeResult2: ModelOperationResult<TestModel, IRemoveMeta>;
 
     beforeEach(() => {
-        registry = new ModelRegistry();
+        manager = new ModelManager();
         options = {};
         backend = new InMemoryBackend();
-        registry.registerBackend('default', backend);
-        registry.register(TestModel);
+        manager.registerBackend('default', backend);
+        manager.register(TestModel);
         loadResult = new ModelOperationResult<TestModel, null>({operation: 'load'});
         removeResult = new ModelOperationResult<TestModel, IRemoveMeta>({operation: 'remove'});
         removeResult2 = new ModelOperationResult<TestModel, IRemoveMeta>({operation: 'remove'});
@@ -31,7 +31,7 @@ describe('rev.backends.inmemory', () => {
 
         it('returns with total_count = 0 when there is no data and where clause = {}', () => {
             let model = new TestModel();
-            return backend.remove(registry, model, {}, removeResult, options)
+            return backend.remove(manager, model, {}, removeResult, options)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -42,7 +42,7 @@ describe('rev.backends.inmemory', () => {
 
         it('returns with total_count = 0 when there is no data and where clause sets a filter', () => {
             let model = new TestModel({ id: 1 });
-            return backend.remove(registry, model, { id: 1 }, removeResult, {})
+            return backend.remove(manager, model, { id: 1 }, removeResult, {})
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -56,7 +56,7 @@ describe('rev.backends.inmemory', () => {
     describe('remove() - with data', () => {
 
         beforeEach(() => {
-            return backend.load(registry, TestModel, testData, loadResult)
+            return backend.load(manager, TestModel, testData, loadResult)
             .then(() => {
                 // Assert that stored data matches testData
                 for (let i = 0; i < testData.length; i++) {
@@ -69,7 +69,7 @@ describe('rev.backends.inmemory', () => {
         it('removes all records when where clause = {}', () => {
             let model = new TestModel({ name: 'bob' });
             expect(backend._storage['TestModel']).to.have.length(5);
-            return backend.remove(registry, model, {}, removeResult, options)
+            return backend.remove(manager, model, {}, removeResult, options)
                 .then((res) => {
                     let storage = backend._storage['TestModel'];
                     expect(res.success).to.be.true;
@@ -82,7 +82,7 @@ describe('rev.backends.inmemory', () => {
 
         it('removes filtered records when where clause is set', () => {
             let model = new TestModel();
-            return backend.remove(registry, model, {
+            return backend.remove(manager, model, {
                 id: { $in: [2, 3] }
             }, removeResult, {})
                 .then((res) => {
@@ -99,7 +99,7 @@ describe('rev.backends.inmemory', () => {
 
         it('throws an error if where clause is not provided', () => {
             let model = new TestModel();
-            return backend.remove(registry, model, null, removeResult, {})
+            return backend.remove(manager, model, null, removeResult, {})
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('remove() requires the \'where\' parameter');
@@ -108,7 +108,7 @@ describe('rev.backends.inmemory', () => {
 
         it('throws when an invalid query is specified', () => {
             let model = new TestModel();
-            return backend.remove(registry, model, {
+            return backend.remove(manager, model, {
                     non_existent_field: 42
                 }, removeResult, {})
                 .then(() => { throw new Error('expected to reject'); })

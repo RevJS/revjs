@@ -3,7 +3,7 @@ import { IValidationOptions, validate } from './validate';
 import { Model } from '../models/model';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { IModelOperation } from './operation';
-import { ModelRegistry } from '../registry/registry';
+import { ModelManager } from '../registry/registry';
 import { getModelPrimaryKeyQuery } from './utils';
 
 export interface IUpdateOptions {
@@ -18,15 +18,15 @@ export interface IUpdateMeta extends IOperationMeta {
 
 export const DEFAULT_UPDATE_OPTIONS: IUpdateOptions = {};
 
-export function update<T extends Model>(registry: ModelRegistry, model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+export function update<T extends Model>(manager: ModelManager, model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
     return new Promise((resolve, reject) => {
 
         if (typeof model != 'object' || !(model instanceof Model)) {
             throw new Error('Specified model is not a Model instance');
         }
 
-        let meta = registry.getModelMeta(model);
-        let backend = registry.getBackend(meta.backend);
+        let meta = manager.getModelMeta(model);
+        let backend = manager.getBackend(meta.backend);
         let opts: IUpdateOptions = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
 
         if (!opts.where || typeof opts.where != 'object') {
@@ -54,7 +54,7 @@ export function update<T extends Model>(registry: ModelRegistry, model: T, optio
             where: opts.where
         };
         let operationResult = new ModelOperationResult<T, IUpdateMeta>(operation);
-        validate(registry, model, operation, opts.validation ? opts.validation : null)
+        validate(manager, model, operation, opts.validation ? opts.validation : null)
             .then((validationResult) => {
 
                 if (!validationResult.valid) {
@@ -64,7 +64,7 @@ export function update<T extends Model>(registry: ModelRegistry, model: T, optio
                     operationResult.validation = validationResult;
                 }
 
-                return backend.update<typeof model>(registry, model, opts.where, operationResult, opts);
+                return backend.update<typeof model>(manager, model, opts.where, operationResult, opts);
 
             })
             .then((res) => {

@@ -1,7 +1,7 @@
 
 import * as sinon from 'sinon';
 import { IBackend } from '../../backends/backend';
-import { ModelRegistry } from '../../registry/registry';
+import { ModelManager } from '../../registry/registry';
 import { ModelOperationResult } from '../operationresult';
 import { Model } from '../../models/model';
 import { ICreateOptions, ICreateMeta } from '../create';
@@ -21,32 +21,32 @@ export class MockBackend implements IBackend {
     errorToThrow: Error = null;
     results: any[] = null;
 
-    create<T extends Model>(registry: ModelRegistry, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
+    create<T extends Model>(manager: ModelManager, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
         this.addErrors(result);
         this.createStub.apply(null, arguments);
         return this.getReturnValue(result);
     }
 
-    update<T extends Model>(registry: ModelRegistry, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+    update<T extends Model>(manager: ModelManager, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
         this.addErrors(result);
         this.updateStub.apply(null, arguments);
         return this.getReturnValue(result);
     }
 
-    remove<T extends Model>(registry: ModelRegistry, model: new() => T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+    remove<T extends Model>(manager: ModelManager, model: new() => T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
         this.addErrors(result);
         this.removeStub.apply(null, arguments);
         return this.getReturnValue(result);
     }
 
-    read<T extends Model>(registry: ModelRegistry, model: new() => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+    read<T extends Model>(manager: ModelManager, model: new() => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
         result.results = this.results;
         this.addErrors(result);
         this.readStub.apply(null, arguments);
         return this.getReturnValue(result);
     }
 
-    exec<T extends Model>(registry: ModelRegistry, model: T, method: string, argObj: IExecArgs, result: ModelOperationResult<T, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<T, IExecMeta>> {
+    exec<T extends Model>(manager: ModelManager, model: T, method: string, argObj: IExecArgs, result: ModelOperationResult<T, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<T, IExecMeta>> {
         this.addErrors(result);
         this.execStub.apply(null, arguments);
         return this.getReturnValue(result);

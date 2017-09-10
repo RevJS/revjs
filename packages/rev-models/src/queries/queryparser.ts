@@ -7,13 +7,13 @@ import { ValueListOperator } from './nodes/valuelist';
 import { IQueryParser, IQueryNode, IOperatorRegister } from './types';
 import { printObj } from '../utils/index';
 import { Model } from '../models/model';
-import { ModelRegistry } from '../registry/registry';
+import { ModelManager } from '../registry/registry';
 
 export class QueryParser implements IQueryParser {
     CONJUNCTION_OPERATORS: IOperatorRegister = {};
     FIELD_OPERATORS: IOperatorRegister = {};
 
-    constructor(public registry: ModelRegistry) {
+    constructor(public manager: ModelManager) {
 
         this.registerConjunctionOperators({
             $and: ConjunctionNode,
@@ -51,7 +51,7 @@ export class QueryParser implements IQueryParser {
             throw new Error(`${printObj(value)} is not a query object`);
         }
 
-        const meta = this.registry.getModelMeta(model);
+        const meta = this.manager.getModelMeta(model);
 
         let keys = Object.keys(value);
         if (keys.length == 1) {

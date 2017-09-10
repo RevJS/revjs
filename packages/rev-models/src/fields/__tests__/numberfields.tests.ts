@@ -6,13 +6,13 @@ import { IModelOperation } from '../../operations/operation';
 
 import { expect } from 'chai';
 import { Model } from '../../models/model';
-import { ModelRegistry } from '../../registry/registry';
+import { ModelManager } from '../../registry/registry';
 
 class TestModel extends Model {
     value: any;
 }
 
-let registry = new ModelRegistry();
+let manager = new ModelManager();
 
 describe('rev.fields.numberfields', () => {
     let testOp: IModelOperation = {
@@ -71,14 +71,14 @@ describe('rev.fields.numberfields', () => {
         it('successfully validates a number value', () => {
             let test = new NumberField('value', { required: true });
             testModel.value = 42.5;
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a number value in a string', () => {
             let test = new NumberField('value', { required: true });
             testModel.value = '12.345';
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.true; });
         });
 
@@ -89,28 +89,28 @@ describe('rev.fields.numberfields', () => {
                 maxValue: 50
             });
             testModel.value = 42.123;
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new NumberField('value', { required: false });
             testModel.value = null;
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('does not validate on null value if field is required', () => {
             let test = new NumberField('value', { required: true });
             testModel.value = null;
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate on non-numeric value', () => {
             let test = new NumberField('value', { required: true });
             testModel.value = 'I am a number, honest guv!...';
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });
         });
 
@@ -121,7 +121,7 @@ describe('rev.fields.numberfields', () => {
                 maxValue: 50.2
             });
             testModel.value = 22.72;
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });
         });
 
@@ -172,14 +172,14 @@ describe('rev.fields.numberfields', () => {
         it('successfully validates an integer value', () => {
             let test = new IntegerField('value', { required: true });
             testModel.value = 42;
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates an integer value in a string', () => {
             let test = new IntegerField('value', { required: true });
             testModel.value = '12';
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.true; });
         });
 
@@ -190,28 +190,28 @@ describe('rev.fields.numberfields', () => {
                 maxValue: 50
             });
             testModel.value = 42;
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a null value if field not required', () => {
             let test = new IntegerField('value', { required: false });
             testModel.value = null;
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('does not validate on null value if field is required', () => {
             let test = new IntegerField('value', { required: true });
             testModel.value = null;
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate on non-integer value', () => {
             let test = new IntegerField('value', { required: true });
             testModel.value = 42.5;
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });
         });
 
@@ -222,7 +222,7 @@ describe('rev.fields.numberfields', () => {
                 maxValue: 50
             });
             testModel.value = 22;
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });
         });
 
@@ -261,28 +261,28 @@ describe('rev.fields.numberfields', () => {
         it('successfully validates an integer value', () => {
             let test = new AutoNumberField('value');
             testModel.value = 42;
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates an integer value in a string', () => {
             let test = new AutoNumberField('value');
             testModel.value = '12';
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('successfully validates a null value', () => {
             let test = new AutoNumberField('value', { required: false });
             testModel.value = null;
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('does not validate on non-integer value', () => {
             let test = new AutoNumberField('value');
             testModel.value = 42.5;
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });
         });
 

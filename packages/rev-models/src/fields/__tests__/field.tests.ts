@@ -4,23 +4,23 @@ import { requiredValidator } from '../../validation/validators';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { Model } from '../../models/model';
 import { IModelOperation } from '../../operations/operation';
-import { ModelRegistry } from '../../registry/registry';
+import { ModelManager } from '../../registry/registry';
 import { IModelMeta } from '../../../lib/models/meta';
 
-function quickValidAsyncValidator<T extends Model>(registry: ModelRegistry, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
+function quickValidAsyncValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         resolve();
     });
 }
 
-function quickInvalidAsyncValidator<T extends Model>(registry: ModelRegistry, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
+function quickInvalidAsyncValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         result.addFieldError('name', 'name field is invalid');
         resolve();
     });
 }
 
-function slowInvalidAsyncValidator<T extends Model>(registry: ModelRegistry, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
+function slowInvalidAsyncValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         setTimeout(() => {
             result.addFieldError('name', 'name field is invalid');
@@ -33,7 +33,7 @@ class TestModel extends Model {
     name: string;
 }
 
-let registry = new ModelRegistry();
+let manager = new ModelManager();
 
 describe('rev.fields.field', () => {
     let meta: IModelMeta<TestModel>;
@@ -101,34 +101,34 @@ describe('rev.fields.field', () => {
 
         it('returns a resolved promise when validation completes - no validators', () => {
             let test = new Field('name', { required: false });
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
             .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('returns a resolved promise when validation completes - required validator', () => {
             let test = new Field('name', { required: true });
             testModel.name = 'Frank';
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
             .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('validation fails as expected when required field not set', () => {
             let test = new Field('name', { required: true });
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
             .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('returns valid = true when validation completes with a valid async validator', () => {
             let test = new Field('name', { required: false });
             test.asyncValidators.push(quickValidAsyncValidator);
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
             .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('returns valid = false when validation completes with an invalid async validator', () => {
             let test = new Field('name', { required: false });
             test.asyncValidators.push(quickInvalidAsyncValidator);
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
             .then((res) => { expect(res.valid).to.be.false; });
         });
 
@@ -136,14 +136,14 @@ describe('rev.fields.field', () => {
             let test = new Field('name', { required: false });
             test.asyncValidators.push(quickValidAsyncValidator);
             test.asyncValidators.push(quickInvalidAsyncValidator);
-            return test.validate(registry, testModel, testOp, result)
+            return test.validate(manager, testModel, testOp, result)
             .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('returns a rejected promise when async validation times out', () => {
             let test = new Field('name', { required: false });
             test.asyncValidators.push(slowInvalidAsyncValidator);
-            return test.validate(registry, testModel, testOp, result, {
+            return test.validate(manager, testModel, testOp, result, {
                     timeout: 100
                 })
                 .then(() => { throw new Error('expected to reject'); })

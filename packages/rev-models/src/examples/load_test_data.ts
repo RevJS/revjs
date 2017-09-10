@@ -1,7 +1,7 @@
-import { ModelRegistry } from '../registry/registry';
+import { ModelManager } from '../registry/registry';
 import { Person } from './02_defining_a_model';
 
-export function loadTestData(models: ModelRegistry): Promise<any> {
+export function loadTestData(models: ModelManager): Promise<any> {
 
     return Promise.all([
         models.create(new Person({

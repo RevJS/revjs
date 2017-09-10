@@ -7,7 +7,7 @@ import * as d from '../../decorators';
 import * as read from '../read';
 import { MockBackend } from './mock-backend';
 import { DEFAULT_READ_OPTIONS, validateOrderBy } from '../read';
-import { ModelRegistry } from '../../registry/registry';
+import { ModelManager } from '../../registry/registry';
 import { IModelMeta } from '../../models/meta';
 
 class TestModel extends Model {
@@ -27,7 +27,7 @@ let testResults = [
 let rewired = rewire('../read');
 let rwRead: typeof read & typeof rewired = rewired as any;
 let mockBackend: MockBackend;
-let registry: ModelRegistry;
+let manager: ModelManager;
 let testMeta: IModelMeta<TestModel>
 
 describe('rev.operations.read()', () => {
@@ -37,9 +37,9 @@ describe('rev.operations.read()', () => {
     beforeEach(() => {
         mockBackend = new MockBackend();
         mockBackend.results = testResults;
-        registry = new ModelRegistry();
-        registry.registerBackend('default', mockBackend);
-        registry.register(TestModel);
+        manager = new ModelManager();
+        manager.registerBackend('default', mockBackend);
+        manager.register(TestModel);
     });
 
     it('DEFAULT_READ_OPTIONS are as expected', () => {
@@ -50,7 +50,7 @@ describe('rev.operations.read()', () => {
     });
 
     it('calls backend.read() and returns results', () => {
-        return rwRead.read(registry, TestModel, whereClause)
+        return rwRead.read(manager, TestModel, whereClause)
             .then((res) => {
                 expect(mockBackend.readStub.callCount).to.equal(1);
                 let readCall = mockBackend.readStub.getCall(0);
@@ -63,7 +63,7 @@ describe('rev.operations.read()', () => {
     });
 
     it('allows backend.read() to be called without a where clause', () => {
-        return rwRead.read(registry, TestModel)
+        return rwRead.read(manager, TestModel)
             .then((res) => {
                 expect(mockBackend.readStub.callCount).to.equal(1);
                 let readCall = mockBackend.readStub.getCall(0);
@@ -76,7 +76,7 @@ describe('rev.operations.read()', () => {
     });
 
     it('calls backend.read() with DEFAULT_READ_OPTIONS if no options are set', () => {
-        return rwRead.read(registry, TestModel, whereClause, null)
+        return rwRead.read(manager, TestModel, whereClause, null)
             .then((res) => {
                 expect(mockBackend.readStub.callCount).to.equal(1);
                 let readCall = mockBackend.readStub.getCall(0);
@@ -87,7 +87,7 @@ describe('rev.operations.read()', () => {
     });
 
     it('calls backend.read() with overridden options if they are set', () => {
-        return rwRead.read(registry, TestModel, whereClause, { offset: 10 })
+        return rwRead.read(manager, TestModel, whereClause, { offset: 10 })
             .then((res) => {
                 expect(mockBackend.readStub.callCount).to.equal(1);
                 let readCall = mockBackend.readStub.getCall(0);
@@ -100,7 +100,7 @@ describe('rev.operations.read()', () => {
 
 
     it('rejects if model is not registered', () => {
-        return rwRead.read(registry, TestModel2)
+        return rwRead.read(manager, TestModel2)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('is not registered');
@@ -108,7 +108,7 @@ describe('rev.operations.read()', () => {
     });
 
     it('rejects if order_by option is invalid', () => {
-        return rwRead.read(registry, TestModel, whereClause, {
+        return rwRead.read(manager, TestModel, whereClause, {
             order_by: ['star_sign']
         })
             .then(() => { throw new Error('expected to reject'); })
@@ -119,7 +119,7 @@ describe('rev.operations.read()', () => {
 
     it('rejects with any operation errors added by the backend', () => {
         mockBackend.errorsToAdd = ['some_backend_error'];
-        return rwRead.read(registry, TestModel, whereClause)
+        return rwRead.read(manager, TestModel, whereClause)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -133,7 +133,7 @@ describe('rev.operations.read()', () => {
     it('rejects with expected error when backend.read rejects', () => {
         let expectedError = new Error('epic fail!');
         mockBackend.errorToThrow = expectedError;
-        return rwRead.read(registry, TestModel, whereClause)
+        return rwRead.read(manager, TestModel, whereClause)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err).to.equal(expectedError);
@@ -146,10 +146,10 @@ describe('validateOrderBy()', () => {
 
     beforeEach(() => {
         mockBackend = new MockBackend();
-        registry = new ModelRegistry();
-        registry.registerBackend('default', mockBackend);
-        registry.register(TestModel);
-        testMeta = registry.getModelMeta(TestModel);
+        manager = new ModelManager();
+        manager.registerBackend('default', mockBackend);
+        manager.register(TestModel);
+        testMeta = manager.getModelMeta(TestModel);
     });
 
     it('does no throw when order_by is a single field', () => {

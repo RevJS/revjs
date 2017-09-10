@@ -2,7 +2,7 @@
 import { Model } from '../models/model';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { IModelOperation } from './operation';
-import { ModelRegistry } from '../registry/registry';
+import { ModelManager } from '../registry/registry';
 import { IModelMeta } from '../models/meta';
 
 export interface IReadOptions {
@@ -23,11 +23,11 @@ export const DEFAULT_READ_OPTIONS: IReadOptions = {
     offset: 0
 };
 
-export function read<T extends Model>(registry: ModelRegistry, model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+export function read<T extends Model>(manager: ModelManager, model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
     return new Promise((resolve, reject) => {
 
-        let meta = registry.getModelMeta(model) as IModelMeta<T>;
-        let backend = registry.getBackend(meta.backend);
+        let meta = manager.getModelMeta(model) as IModelMeta<T>;
+        let backend = manager.getBackend(meta.backend);
         let operation: IModelOperation = {
             operation: 'read',
             where: where
@@ -37,7 +37,7 @@ export function read<T extends Model>(registry: ModelRegistry, model: new() => T
             validateOrderBy(model, meta, options.order_by);
         }
         let opts = Object.assign({}, DEFAULT_READ_OPTIONS, options);
-        backend.read(registry, model, where || {}, operationResult, opts)
+        backend.read(manager, model, where || {}, operationResult, opts)
             .then((res) => {
                 resolve(res);
             })

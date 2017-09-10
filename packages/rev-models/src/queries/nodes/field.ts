@@ -16,7 +16,7 @@ export class FieldNode<T extends Model> extends QueryNode<T> {
 
         super(parser, model, fieldName, parent);
 
-        const meta = parser.registry.getModelMeta(model);
+        const meta = parser.manager.getModelMeta(model);
 
         if (!(fieldName in meta.fieldsByName)) {
             throw new Error(`'${fieldName}' is not a recognised field`);

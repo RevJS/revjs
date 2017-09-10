@@ -1,6 +1,6 @@
 import * as rev from 'rev-models';
 
-import { models } from './01_defining_a_model_registry';
+import { models } from './01_defining_a_model_manager';
 
 let TITLES = [
     ['Mr', 'Mr.'],

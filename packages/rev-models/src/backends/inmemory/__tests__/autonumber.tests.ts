@@ -1,7 +1,7 @@
 
 import { expect } from 'chai';
 
-import { ModelRegistry } from '../../../registry/registry';
+import { ModelManager } from '../../../registry/registry';
 import { InMemoryBackend } from '../backend';
 import { ModelOperationResult } from '../../../operations/operationresult';
 import { DEFAULT_CREATE_OPTIONS, ICreateMeta } from '../../../operations/create';
@@ -17,7 +17,7 @@ export class TestModel extends Model {
 }
 describe('rev.backends.inmemory', () => {
 
-    let registry: ModelRegistry;
+    let manager: ModelManager;
     let backend: InMemoryBackend;
     let createResult: ModelOperationResult<TestModel, ICreateMeta>;
     let createResult2: ModelOperationResult<TestModel, ICreateMeta>;
@@ -25,10 +25,10 @@ describe('rev.backends.inmemory', () => {
     let updateResult: ModelOperationResult<TestModel, IUpdateMeta>;
 
     beforeEach(() => {
-        registry = new ModelRegistry();
+        manager = new ModelManager();
         backend = new InMemoryBackend();
-        registry.registerBackend('default', backend);
-        registry.register(TestModel);
+        manager.registerBackend('default', backend);
+        manager.register(TestModel);
         createResult = new ModelOperationResult<TestModel, ICreateMeta>({operation: 'create'});
         createResult2 = new ModelOperationResult<TestModel, ICreateMeta>({operation: 'create'});
         loadResult = new ModelOperationResult<TestModel, null>({operation: 'load'});
@@ -45,8 +45,8 @@ describe('rev.backends.inmemory', () => {
                 name: 'record 2',
             });
             return Promise.all([
-                backend.create(registry, model1, createResult, DEFAULT_CREATE_OPTIONS),
-                backend.create(registry, model2, createResult2, DEFAULT_CREATE_OPTIONS)
+                backend.create(manager, model1, createResult, DEFAULT_CREATE_OPTIONS),
+                backend.create(manager, model2, createResult2, DEFAULT_CREATE_OPTIONS)
             ])
                 .then((res) => {
                     expect(res[0].result).to.be.instanceof(TestModel);
@@ -66,8 +66,8 @@ describe('rev.backends.inmemory', () => {
                 name: 'record 2',
             });
             return Promise.all([
-                backend.create(registry, model1, createResult, DEFAULT_CREATE_OPTIONS),
-                backend.create(registry, model2, createResult2, DEFAULT_CREATE_OPTIONS)
+                backend.create(manager, model1, createResult, DEFAULT_CREATE_OPTIONS),
+                backend.create(manager, model2, createResult2, DEFAULT_CREATE_OPTIONS)
             ])
                 .then((res) => {
                     expect(res[0].result).to.be.instanceof(TestModel);
@@ -87,7 +87,7 @@ describe('rev.backends.inmemory', () => {
                 }
             ];
 
-            return backend.load(registry, TestModel, testData, loadResult)
+            return backend.load(manager, TestModel, testData, loadResult)
                 .then(() => {
                     expect(backend._storage['TestModel'])
                         .to.deep.equal([
@@ -100,7 +100,7 @@ describe('rev.backends.inmemory', () => {
                                 name: 'record 2',
                             }
                         ]);
-                    return backend.update(registry,
+                    return backend.update(manager,
                         new TestModel({
                             id: -10, name: 'Frank'
                         }),

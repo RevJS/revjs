@@ -17,7 +17,7 @@ If you just want to have a browse, the following classes would be good places
 to start:
 
  * [[Model]]
- * [[ModelRegistry]]
+ * [[ModelManager]]
 
 Have fun! Any problems or queries let us know!
 

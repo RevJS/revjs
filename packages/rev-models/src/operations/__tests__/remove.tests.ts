@@ -7,7 +7,7 @@ import * as d from '../../decorators';
 import * as remove from '../remove';
 import { MockBackend } from './mock-backend';
 import { DEFAULT_REMOVE_OPTIONS, IRemoveOptions } from '../remove';
-import { ModelRegistry } from '../../registry/registry';
+import { ModelManager } from '../../registry/registry';
 
 class TestModel extends Model {
     @d.TextField({ primaryKey: true })
@@ -28,7 +28,7 @@ class ModelWithNoPK extends Model {
 let rewired = rewire('../remove');
 let rwRemove: typeof remove & typeof rewired = rewired as any;
 let mockBackend: MockBackend;
-let registry: ModelRegistry;
+let manager: ModelManager;
 
 describe('rev.operations.remove()', () => {
 
@@ -39,15 +39,15 @@ describe('rev.operations.remove()', () => {
             where: {}
         };
         mockBackend = new MockBackend();
-        registry = new ModelRegistry();
-        registry.registerBackend('default', mockBackend);
-        registry.register(TestModel);
-        registry.register(ModelWithNoPK);
+        manager = new ModelManager();
+        manager.registerBackend('default', mockBackend);
+        manager.register(TestModel);
+        manager.register(ModelWithNoPK);
     });
 
     it('calls backend.remove() and returns successful result if model is valid', () => {
         let model = new TestModel({ name: 'bob', age: 21 });
-        return rwRemove.remove(registry, model, options)
+        return rwRemove.remove(manager, model, options)
             .then((res) => {
                 expect(mockBackend.removeStub.callCount).to.equal(1);
                 let removeCall = mockBackend.removeStub.getCall(0);
@@ -60,7 +60,7 @@ describe('rev.operations.remove()', () => {
     it('calls backend.remove() with DEFAULT_REMOVE_OPTIONS if no options are set', () => {
         let model = new TestModel({ name: 'bob', age: 21 });
         let testOpts = Object.assign({}, DEFAULT_REMOVE_OPTIONS, options);
-        return rwRemove.remove(registry, model, options)
+        return rwRemove.remove(manager, model, options)
             .then((res) => {
                 expect(mockBackend.removeStub.callCount).to.equal(1);
                 let removeCall = mockBackend.removeStub.getCall(0);
@@ -73,7 +73,7 @@ describe('rev.operations.remove()', () => {
     it('calls backend.remove() with overridden options if they are set', () => {
         let model = new TestModel({ name: 'bob', age: 21 });
         (options as any).someKey = 10;
-        return rwRemove.remove(registry, model, options)
+        return rwRemove.remove(manager, model, options)
             .then((res) => {
                 expect(mockBackend.removeStub.callCount).to.equal(1);
                 let removeCall = mockBackend.removeStub.getCall(0);
@@ -85,7 +85,7 @@ describe('rev.operations.remove()', () => {
 
     it('calls backend.remove() with primary key where clause when opts.where is not set', () => {
         let model = new TestModel({ name: 'bob', age: 21 });
-        return rwRemove.remove(registry, model)
+        return rwRemove.remove(manager, model)
             .then((res) => {
                 expect(mockBackend.removeStub.callCount).to.equal(1);
                 let removeCall = mockBackend.removeStub.getCall(0);
@@ -98,7 +98,7 @@ describe('rev.operations.remove()', () => {
 
     it('rejects if model is not registered', () => {
         let model = new UnregisteredModel();
-        return rwRemove.remove(registry, model, options)
+        return rwRemove.remove(manager, model, options)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('is not registered');
@@ -107,7 +107,7 @@ describe('rev.operations.remove()', () => {
 
     it('rejects when where clause is not specified and model has no primary key', () => {
         let model = new ModelWithNoPK();
-        return rwRemove.remove(registry, model)
+        return rwRemove.remove(manager, model)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('remove() must be called with a where clause for models with no primaryKey');
@@ -116,7 +116,7 @@ describe('rev.operations.remove()', () => {
 
     it('rejects when where clause is not specified and model primaryKey is undefined', () => {
         let model = new TestModel();
-        return rwRemove.remove(registry, model)
+        return rwRemove.remove(manager, model)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('primary key field \'name\' is undefined');
@@ -126,7 +126,7 @@ describe('rev.operations.remove()', () => {
     it('rejects with any operation errors added by the backend', () => {
         let model = new TestModel({ name: 'bob', age: 21 });
         mockBackend.errorsToAdd = ['some_backend_error'];
-        return rwRemove.remove(registry, model, options)
+        return rwRemove.remove(manager, model, options)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -141,7 +141,7 @@ describe('rev.operations.remove()', () => {
         let model = new TestModel({ name: 'bob', age: 21 });
         let expectedError = new Error('epic fail!');
         mockBackend.errorToThrow = expectedError;
-        return rwRemove.remove(registry, model, options)
+        return rwRemove.remove(manager, model, options)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err).to.equal(expectedError);

@@ -4,7 +4,7 @@ import { Model } from '../../../models/model';
 import * as d from '../../../decorators';
 import { QueryParser } from '../../../queries/queryparser';
 import { InMemoryQuery } from '../query';
-import { ModelRegistry } from '../../../registry/registry';
+import { ModelManager } from '../../../registry/registry';
 import { InMemoryBackend } from '../backend';
 
 class TestModel extends Model {
@@ -31,7 +31,7 @@ let record2 = {
     active: false
 };
 
-let registry: ModelRegistry;
+let manager: ModelManager;
 let parser: QueryParser;
 
 function getQuery(query: object) {
@@ -41,10 +41,10 @@ function getQuery(query: object) {
 describe('InMemoryQuery', () => {
 
     beforeEach(() => {
-        registry = new ModelRegistry();
-        registry.registerBackend('default', new InMemoryBackend());
-        registry.register(TestModel);
-        parser = new QueryParser(registry);
+        manager = new ModelManager();
+        manager.registerBackend('default', new InMemoryBackend());
+        manager.register(TestModel);
+        parser = new QueryParser(manager);
     });
 
     describe('Empty query', () => {

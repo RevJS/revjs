@@ -5,7 +5,7 @@ import { FieldNode } from '../field';
 import { QueryParser } from '../../queryparser';
 import { ValueOperator } from '../value';
 import { Model } from '../../../models/model';
-import { ModelRegistry } from '../../../registry/registry';
+import { ModelManager } from '../../../registry/registry';
 import { InMemoryBackend } from '../../../backends/inmemory/backend';
 
 class TestModel extends Model {
@@ -17,10 +17,10 @@ class TestModel extends Model {
         active: boolean;
 }
 
-let registry = new ModelRegistry();
-registry.registerBackend('default', new InMemoryBackend());
-registry.register(TestModel);
-let parser = new QueryParser(registry);
+let manager = new ModelManager();
+manager.registerBackend('default', new InMemoryBackend());
+manager.register(TestModel);
+let parser = new QueryParser(manager);
 
 describe('class FieldNode<T> - constructor', () => {
 

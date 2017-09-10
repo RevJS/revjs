@@ -2,7 +2,7 @@
 import { Model } from '../models/model';
 import { IValidationOptions, validate } from './validate';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
-import { ModelRegistry } from '../registry/registry';
+import { ModelManager } from '../registry/registry';
 import { IModelOperation } from './operation';
 import { isSet } from '../utils/index';
 
@@ -23,7 +23,7 @@ export const DEFAULT_EXEC_OPTIONS: IExecOptions = {
     validate: true
 };
 
-export function exec<R>(registry: ModelRegistry, model: Model, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
+export function exec<R>(manager: ModelManager, model: Model, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
     return new Promise((resolve, reject) => {
 
         if (typeof model != 'object' || !(model instanceof Model)) {
@@ -33,7 +33,7 @@ export function exec<R>(registry: ModelRegistry, model: Model, method: string, a
             throw new Error('Specified method name is not valid');
         }
 
-        let meta = registry.getModelMeta(model);
+        let meta = manager.getModelMeta(model);
         let opts: IExecOptions = Object.assign({}, DEFAULT_EXEC_OPTIONS, options);
 
         let operation: IModelOperation = {
@@ -43,7 +43,7 @@ export function exec<R>(registry: ModelRegistry, model: Model, method: string, a
 
         let promise = Promise.resolve();
         if (opts.validate) {
-            promise = validate(registry, model, operation, opts.validation ? opts.validation : null)
+            promise = validate(manager, model, operation, opts.validation ? opts.validation : null)
                 .then((validationResult) => {
                     if (!validationResult.valid) {
                         throw operationResult.createValidationError(validationResult);
@@ -63,8 +63,8 @@ export function exec<R>(registry: ModelRegistry, model: Model, method: string, a
                     return model[method].call(model, argObj, operationResult);
                 }
                 else {
-                    let backend = registry.getBackend(meta.backend);
-                    return backend.exec(registry, model, method, argObj, operationResult, opts);
+                    let backend = manager.getBackend(meta.backend);
+                    return backend.exec(manager, model, method, argObj, operationResult, opts);
                 }
             })
             .then((res) => {

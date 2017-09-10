@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
 
-import * as registry from '../registry';
+import * as manager from '../registry';
 import * as d from '../../decorators';
 import { Model } from '../../models/model';
 import { IBackend } from '../../backends/backend';
@@ -18,14 +18,14 @@ class TestModel2 extends Model {}
 
 class EmptyModel extends Model {}
 
-describe('ModelRegistry', () => {
-    let testReg: registry.ModelRegistry;
+describe('ModelManager', () => {
+    let testReg: manager.ModelManager;
     let testMeta: IModelMeta<TestModel>;
     let testMeta2: IModelMeta<TestModel>;
     let testBackend: IBackend;
 
     beforeEach(() => {
-        testReg = new registry.ModelRegistry();
+        testReg = new manager.ModelManager();
         testBackend = {
             create: () => {},
             read: () => {},
@@ -44,7 +44,7 @@ describe('ModelRegistry', () => {
 
     describe('constructor()', () => {
 
-        it('creates a registry with no models and no backends', () => {
+        it('creates a manager with no models and no backends', () => {
             expect(testReg.getModelNames()).to.have.length(0);
             expect(testReg.getBackendNames()).to.have.length(0);
         });
@@ -82,12 +82,12 @@ describe('ModelRegistry', () => {
             testReg.registerBackend('default', testBackend);
         });
 
-        it('adds a valid model to the registry', () => {
+        it('adds a valid model to the manager', () => {
             testReg.register(TestModel, testMeta);
             expect(testReg.getModelMeta('TestModel').ctor).to.equal(TestModel);
         });
 
-        it('adds a decorated model to the registry.', () => {
+        it('adds a decorated model to the manager.', () => {
             class DecoratedModel extends Model {
                 @d.TextField()
                     name: string;
@@ -108,7 +108,7 @@ describe('ModelRegistry', () => {
             testReg.register(TestModel, testMeta);
             expect(() => {
                 testReg.register(TestModel, testMeta);
-            }).to.throw('already exists in the registry');
+            }).to.throw('has already been registered');
         });
 
         it('should initialise metadata', () => {

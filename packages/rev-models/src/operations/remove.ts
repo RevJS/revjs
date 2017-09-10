@@ -2,7 +2,7 @@
 import { Model } from '../models/model';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { IModelOperation } from './operation';
-import { ModelRegistry } from '../registry/registry';
+import { ModelManager } from '../registry/registry';
 import { getModelPrimaryKeyQuery } from './utils';
 
 export interface IRemoveOptions {
@@ -15,11 +15,11 @@ export interface IRemoveMeta extends IOperationMeta {
 
 export const DEFAULT_REMOVE_OPTIONS: IRemoveOptions = {};
 
-export function remove<T extends Model>(registry: ModelRegistry, model: T, options?: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+export function remove<T extends Model>(manager: ModelManager, model: T, options?: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
     return new Promise((resolve, reject) => {
 
-        let meta = registry.getModelMeta(model);
-        let backend = registry.getBackend(meta.backend);
+        let meta = manager.getModelMeta(model);
+        let backend = manager.getBackend(meta.backend);
         let opts = Object.assign({}, DEFAULT_REMOVE_OPTIONS, options);
 
         if (!opts.where || typeof opts.where != 'object') {
@@ -36,7 +36,7 @@ export function remove<T extends Model>(registry: ModelRegistry, model: T, optio
             where: opts.where
         };
         let operationResult = new ModelOperationResult<T, IRemoveMeta>(operation);
-        backend.remove<T>(registry, model, opts.where, operationResult, opts)
+        backend.remove<T>(manager, model, opts.where, operationResult, opts)
             .then((res) => {
                 resolve(res);
             })

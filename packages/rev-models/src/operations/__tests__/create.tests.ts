@@ -8,7 +8,7 @@ import * as create from '../create';
 import { MockBackend } from './mock-backend';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { DEFAULT_CREATE_OPTIONS } from '../create';
-import { ModelRegistry } from '../../registry/registry';
+import { ModelManager } from '../../registry/registry';
 
 let GENDERS = [
     ['male', 'Male'],
@@ -30,23 +30,23 @@ class TestModel2 extends Model {}
 
 let rewired = rewire('../create');
 let rwCreate: typeof create & typeof rewired = rewired as any;
-let registry: ModelRegistry;
+let manager: ModelManager;
 let mockBackend: MockBackend;
 
 describe('rev.operations.create()', () => {
 
     beforeEach(() => {
-        registry = new ModelRegistry();
+        manager = new ModelManager();
         mockBackend = new MockBackend();
-        registry.registerBackend('default', mockBackend);
-        registry.register(TestModel);
+        manager.registerBackend('default', mockBackend);
+        manager.register(TestModel);
     });
 
     it('calls backend.create() and returns successful result if model is valid', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        return rwCreate.create(registry, model)
+        return rwCreate.create(manager, model)
             .then((res) => {
                 expect(mockBackend.createStub.callCount).to.equal(1);
                 let createCall = mockBackend.createStub.getCall(0);
@@ -61,7 +61,7 @@ describe('rev.operations.create()', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        return rwCreate.create(registry, model, null)
+        return rwCreate.create(manager, model, null)
             .then((res) => {
                 expect(mockBackend.createStub.callCount).to.equal(1);
                 let readCall = mockBackend.createStub.getCall(0);
@@ -74,7 +74,7 @@ describe('rev.operations.create()', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        return rwCreate.create(registry, model, { validation: {} })
+        return rwCreate.create(manager, model, { validation: {} })
             .then((res) => {
                 expect(mockBackend.createStub.callCount).to.equal(1);
                 let readCall = mockBackend.createStub.getCall(0);
@@ -84,7 +84,7 @@ describe('rev.operations.create()', () => {
     });
 
     it('rejects when model is not an object', () => {
-        return rwCreate.create(registry, 'test' as any)
+        return rwCreate.create(manager, 'test' as any)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('Specified model is not a Model instance');
@@ -93,7 +93,7 @@ describe('rev.operations.create()', () => {
 
     it('rejects when model is not an instance of Model', () => {
         let model = {test: 1};
-        return rwCreate.create(registry, model as any)
+        return rwCreate.create(manager, model as any)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('Specified model is not a Model instance');
@@ -102,7 +102,7 @@ describe('rev.operations.create()', () => {
 
     it('rejects if model is not registered', () => {
         let model = new TestModel2();
-        return rwCreate.create(registry, model)
+        return rwCreate.create(manager, model)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('is not registered');
@@ -111,7 +111,7 @@ describe('rev.operations.create()', () => {
 
     it('rejects with unsuccessful result when model required fields not set', () => {
         let model = new TestModel();
-        return rwCreate.create(registry, model)
+        return rwCreate.create(manager, model)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -129,7 +129,7 @@ describe('rev.operations.create()', () => {
         model.gender = 'fish';
         model.age = 9;
         model.email = 'www.google.com';
-        return rwCreate.create(registry, model)
+        return rwCreate.create(manager, model)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -146,7 +146,7 @@ describe('rev.operations.create()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorsToAdd = ['some_backend_error'];
-        return rwCreate.create(registry, model)
+        return rwCreate.create(manager, model)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -163,7 +163,7 @@ describe('rev.operations.create()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorToThrow = expectedError;
-        return rwCreate.create(registry, model)
+        return rwCreate.create(manager, model)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err).to.equal(expectedError);

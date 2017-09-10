@@ -1,6 +1,6 @@
 
 import { Model } from '../models/model';
-import { ModelRegistry } from '../registry/registry';
+import { ModelManager } from '../registry/registry';
 
 export interface IQueryNode<T extends Model> {
     operator: string;
@@ -18,7 +18,7 @@ export interface IOperatorRegister {
 }
 
 export interface IQueryParser {
-    registry: ModelRegistry;
+    manager: ModelManager;
     CONJUNCTION_OPERATORS: IOperatorRegister;
     FIELD_OPERATORS: IOperatorRegister;
 

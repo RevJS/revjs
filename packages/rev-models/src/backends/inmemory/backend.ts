@@ -10,7 +10,7 @@ import { IRemoveOptions, IRemoveMeta } from '../../operations/remove';
 import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
 import { sortRecords } from './sort';
-import { ModelRegistry } from '../../registry/registry';
+import { ModelManager } from '../../registry/registry';
 import { AutoNumberField } from '../../fields';
 import { IExecArgs, IExecOptions, IExecMeta } from '../../operations/exec';
 
@@ -28,10 +28,10 @@ export class InMemoryBackend implements IBackend {
         this._storage = {};
     }
 
-    load<T extends Model>(registry: ModelRegistry, model: new(...args: any[]) => T, data: any[], result: ModelOperationResult<T, null>): Promise<ModelOperationResult<T, null>> {
+    load<T extends Model>(manager: ModelManager, model: new(...args: any[]) => T, data: any[], result: ModelOperationResult<T, null>): Promise<ModelOperationResult<T, null>> {
         return new Promise<ModelOperationResult<T, null>>((resolve) => {
 
-            let meta = registry.getModelMeta(model);
+            let meta = manager.getModelMeta(model);
             let modelStorage = this._getModelStorage(meta);
 
             if (typeof data != 'object' || !(data instanceof Array)
@@ -51,10 +51,10 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    create<T extends Model>(registry: ModelRegistry, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
+    create<T extends Model>(manager: ModelManager, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
         return new Promise<ModelOperationResult<T, ICreateMeta>>((resolve) => {
 
-            let meta = registry.getModelMeta(model);
+            let meta = manager.getModelMeta(model);
             let modelStorage = this._getModelStorage(meta);
 
             let record = {};
@@ -67,15 +67,15 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    update<T extends Model>(registry: ModelRegistry, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+    update<T extends Model>(manager: ModelManager, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
         return new Promise<ModelOperationResult<T, IUpdateMeta>>((resolve) => {
 
             if (!where) {
                 throw new Error('update() requires the \'where\' parameter');
             }
 
-            let meta = registry.getModelMeta(model);
-            let parser = new QueryParser(registry);
+            let meta = manager.getModelMeta(model);
+            let parser = new QueryParser(manager);
             let queryNode = parser.getQueryNodeForQuery(meta.ctor, where);
             let query = new InMemoryQuery(queryNode);
 
@@ -93,10 +93,10 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    read<T extends Model>(registry: ModelRegistry, model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+    read<T extends Model>(manager: ModelManager, model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
         return new Promise<ModelOperationResult<T, IReadMeta>>((resolve) => {
 
-            let meta = registry.getModelMeta(model);
+            let meta = manager.getModelMeta(model);
             if (!where) {
                 throw new Error('read() requires the \'where\' parameter');
             }
@@ -108,7 +108,7 @@ export class InMemoryBackend implements IBackend {
             }
 
             let modelStorage = this._getModelStorage(meta);
-            let parser = new QueryParser(registry);
+            let parser = new QueryParser(manager);
             let queryNode = parser.getQueryNodeForQuery(model, where);
             let query = new InMemoryQuery(queryNode);
             result.results = [];
@@ -133,15 +133,15 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    remove<T extends Model>(registry: ModelRegistry, model: T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+    remove<T extends Model>(manager: ModelManager, model: T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
         return new Promise<ModelOperationResult<T, IRemoveMeta>>((resolve, reject) => {
 
             if (!where) {
                 throw new Error('remove() requires the \'where\' parameter');
             }
 
-            let meta = registry.getModelMeta(model);
-            let parser = new QueryParser(registry);
+            let meta = manager.getModelMeta(model);
+            let parser = new QueryParser(manager);
             let queryNode = parser.getQueryNodeForQuery(meta.ctor, where);
             let query = new InMemoryQuery(queryNode);
 
@@ -163,7 +163,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    exec<R>(registry: ModelRegistry, model: Model, method: string, argObj: IExecArgs, result: ModelOperationResult<R, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
+    exec<R>(manager: ModelManager, model: Model, method: string, argObj: IExecArgs, result: ModelOperationResult<R, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
         return Promise.reject(new Error('InMemoryBackend.exec() not supported'));
     }
 

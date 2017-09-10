@@ -1,7 +1,7 @@
-import { ModelRegistry, InMemoryBackend } from 'rev-models';
+import { ModelManager, InMemoryBackend } from 'rev-models';
 
-// Create an empty ModelRegistry
-const models = new ModelRegistry();
+// Create an empty ModelManager
+const models = new ModelManager();
 
 // Add a backend for model data storage
 models.registerBackend('default', new InMemoryBackend());

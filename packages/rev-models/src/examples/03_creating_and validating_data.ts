@@ -1,4 +1,4 @@
-import { models } from './01_defining_a_model_registry';
+import { models } from './01_defining_a_model_manager';
 import { Person } from './02_defining_a_model';
 
 let person = new Person({

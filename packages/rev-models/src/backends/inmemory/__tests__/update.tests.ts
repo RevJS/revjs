@@ -1,7 +1,7 @@
 
 import { expect } from 'chai';
 
-import { ModelRegistry } from '../../../registry/registry';
+import { ModelManager } from '../../../registry/registry';
 import { InMemoryBackend } from '../backend';
 import { ModelOperationResult } from '../../../operations/operationresult';
 import { TestModel, testData } from './testdata';
@@ -9,7 +9,7 @@ import { IUpdateOptions, IUpdateMeta } from '../../../operations/update';
 
 describe('rev.backends.inmemory', () => {
 
-    let registry: ModelRegistry;
+    let manager: ModelManager;
     let options: IUpdateOptions;
     let backend: InMemoryBackend;
     let loadResult: ModelOperationResult<TestModel, null>;
@@ -17,11 +17,11 @@ describe('rev.backends.inmemory', () => {
     let updateResult2: ModelOperationResult<TestModel, IUpdateMeta>;
 
     beforeEach(() => {
-        registry = new ModelRegistry();
+        manager = new ModelManager();
         options = {};
         backend = new InMemoryBackend();
-        registry.registerBackend('default', backend);
-        registry.register(TestModel);
+        manager.registerBackend('default', backend);
+        manager.register(TestModel);
         loadResult = new ModelOperationResult<TestModel, null>({operation: 'load'});
         updateResult = new ModelOperationResult<TestModel, IUpdateMeta>({operation: 'update'});
         updateResult2 = new ModelOperationResult<TestModel, IUpdateMeta>({operation: 'update'});
@@ -31,7 +31,7 @@ describe('rev.backends.inmemory', () => {
 
         it('returns with total_count = 0 when there is no data and where clause = {}', () => {
             let model = new TestModel({ id: 1, name: 'bob' });
-            return backend.update(registry, model, {}, updateResult, options)
+            return backend.update(manager, model, {}, updateResult, options)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -42,7 +42,7 @@ describe('rev.backends.inmemory', () => {
 
         it('returns with total_count = 0 when there is no data and where clause sets a filter', () => {
             let model = new TestModel({ id: 1, name: 'bob' });
-            return backend.update(registry, model, { id: { $gte: 0 } }, updateResult, {})
+            return backend.update(manager, model, { id: { $gte: 0 } }, updateResult, {})
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -56,7 +56,7 @@ describe('rev.backends.inmemory', () => {
     describe('update() - with data', () => {
 
         beforeEach(() => {
-            return backend.load(registry, TestModel, testData, loadResult)
+            return backend.load(manager, TestModel, testData, loadResult)
             .then(() => {
                 // Assert that stored data matches testData
                 for (let i = 0; i < testData.length; i++) {
@@ -68,7 +68,7 @@ describe('rev.backends.inmemory', () => {
 
         it('updates all records with non-undefined model fields when where clause = {}', () => {
             let model = new TestModel({ name: 'bob' });
-            return backend.update(registry, model, {}, updateResult, options)
+            return backend.update(manager, model, {}, updateResult, options)
                 .then((res) => {
                     let storage = backend._storage['TestModel'];
                     expect(res.success).to.be.true;
@@ -86,7 +86,7 @@ describe('rev.backends.inmemory', () => {
 
         it('updates filtered records with non-undefined model fields when where clause is set', () => {
             let model = new TestModel({ name: 'gertrude', gender: 'female' });
-            return backend.update(registry, model, {
+            return backend.update(manager, model, {
                 id: { $gt: 0, $lt: 3 }
             }, updateResult, {})
                 .then((res) => {
@@ -115,7 +115,7 @@ describe('rev.backends.inmemory', () => {
                 age: 112,
                 newsletter: false
             });
-            return backend.update(registry, model, { id: 2 }, updateResult, {
+            return backend.update(manager, model, { id: 2 }, updateResult, {
                 fields: ['age']
             })
                 .then((res) => {
@@ -134,7 +134,7 @@ describe('rev.backends.inmemory', () => {
 
         it('throws an error if where clause is not provided', () => {
             let model = new TestModel();
-            return backend.update(registry, model, null, updateResult, {})
+            return backend.update(manager, model, null, updateResult, {})
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('update() requires the \'where\' parameter');
@@ -143,7 +143,7 @@ describe('rev.backends.inmemory', () => {
 
         it('throws when an invalid query is specified', () => {
             let model = new TestModel();
-            return backend.update(registry, model, {
+            return backend.update(manager, model, {
                     non_existent_field: 42
                 }, updateResult, {})
                 .then(() => { throw new Error('expected to reject'); })

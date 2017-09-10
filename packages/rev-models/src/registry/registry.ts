@@ -14,19 +14,19 @@ import { ModelValidationResult } from '../validation/validationresult';
 import { IExecOptions, exec, IExecArgs } from '../operations/exec';
 
 /**
- * A **Model Registry** has the following responsibilities:
+ * A **Model Manager** has the following responsibilities:
  *
  * * Keep track of the current set of registered [[Model]]s and their metadata
  * * Keep track of the current set of registered [[IBackend]]s
  * * Provide an easy way to perform actions on models (Create, Update, etc.)
  *
- * The example below shows how to create a new model registry:
+ * The example below shows how to create a new model manager:
  *
  * ```ts
- * [[include:examples/01_defining_a_model_registry.ts]]
+ * [[include:examples/01_defining_a_model_manager.ts]]
  * ```
  */
-export class ModelRegistry {
+export class ModelManager {
 
     private _models: { [modelName: string]: IModelMeta<any> };
     private _backends: { [backendName: string]: IBackend };
@@ -47,13 +47,13 @@ export class ModelRegistry {
 
     private assertModelNameIsRegistered(modelName: string) {
         if (!this.isRegistered(modelName)) {
-            throw new Error(`RegistryError: Model '${modelName}' is not registered`);
+            throw new Error(`ModelManagerError: Model '${modelName}' is not registered`);
         }
     }
 
     private assertModelClassIsRegistered<T extends Model>(modelCtor: new(...args: any[]) => T) {
         if (!modelCtor || !modelCtor.name) {
-            throw new Error('RegistryError: Supplied object is not a model');
+            throw new Error('ModelManagerError: Supplied object is not a model');
         }
         this.assertModelNameIsRegistered(modelCtor.name);
     }
@@ -63,7 +63,7 @@ export class ModelRegistry {
     }
 
     /**
-     * Registers a [[Model]] class with the registry. See the [[Model]]
+     * Registers a [[Model]] class with the manager. See the [[Model]]
      * documentation for more information on creating RevJS Models.
      *
      * You can optionally provide a `meta` object along with the model class
@@ -72,7 +72,7 @@ export class ModelRegistry {
      * the metadata that can be provided.
      *
      * The below example shows the creation of a model, and registering it with
-     * a ModelRegistry:
+     * a ModelModelManager:
      *
      * ```ts
      * [[include:examples/02_defining_a_model.ts]]
@@ -88,7 +88,7 @@ export class ModelRegistry {
         checkIsModelConstructor(model);
         let modelName = model.name;
         if (this.isRegistered(modelName)) {
-            throw new Error(`RegistryError: Model '${modelName}' already exists in the registry.`);
+            throw new Error(`ModelManagerError: Model '${modelName}' has already been registered.`);
         }
 
         // Initialise model metadata
@@ -144,7 +144,7 @@ export class ModelRegistry {
      *
      * The **backendName** you specify should correspond to the
      * [[IModelMeta.backend]] value you intend to use when registering models
-     * with [[ModelRegistry.register]].
+     * with [[ModelModelManager.register]].
      *
      * If you are only using one backend, you can just use *default* as the
      * backend name, and there is no need to specify a backend name when
@@ -156,24 +156,24 @@ export class ModelRegistry {
      */
     registerBackend(backendName: string, backend: IBackend) {
         if (!backendName) {
-            throw new Error('RegistryError: you must specify a name for the backend.');
+            throw new Error('ModelManagerError: you must specify a name for the backend.');
         }
         if (!backend || typeof backend != 'object') {
-            throw new Error('RegistryError: you must pass an instance of a backend class.');
+            throw new Error('ModelManagerError: you must pass an instance of a backend class.');
         }
         if (typeof backend.create != 'function' || typeof backend.update != 'function'
             || typeof backend.read != 'function' || typeof backend.remove != 'function') {
-            throw new Error('RegistryError: the specified backend does not fully implement the IBackend interface.');
+            throw new Error('ModelManagerError: the specified backend does not fully implement the IBackend interface.');
         }
         this._backends[backendName] = backend;
     }
 
     getBackend(backendName: string): IBackend {
         if (!backendName) {
-            throw new Error('RegistryError: you must specify the name of the backend to get.');
+            throw new Error('ModelManagerError: you must specify the name of the backend to get.');
         }
         if (!(backendName in this._backends)) {
-            throw new Error(`RegistryError: Backend '${backendName}' has has not been configured.`);
+            throw new Error(`ModelManagerError: Backend '${backendName}' has has not been configured.`);
         }
         return this._backends[backendName];
     }

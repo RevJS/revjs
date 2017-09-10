@@ -3,7 +3,7 @@ import { Model } from '../models/model';
 import { IValidationOptions, validate } from './validate';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { IModelOperation } from './operation';
-import { ModelRegistry } from '../registry/registry';
+import { ModelManager } from '../registry/registry';
 
 export interface ICreateOptions {
     validation?: IValidationOptions;
@@ -15,22 +15,22 @@ export interface ICreateMeta extends IOperationMeta {
 
 export const DEFAULT_CREATE_OPTIONS: ICreateOptions = {};
 
-export function create<T extends Model>(registry: ModelRegistry, model: T, options?: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
+export function create<T extends Model>(manager: ModelManager, model: T, options?: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
     return new Promise((resolve, reject) => {
 
         if (typeof model != 'object' || !(model instanceof Model)) {
             throw new Error('Specified model is not a Model instance');
         }
 
-        let meta = registry.getModelMeta(model);
-        let backend = registry.getBackend(meta.backend);
+        let meta = manager.getModelMeta(model);
+        let backend = manager.getBackend(meta.backend);
 
         let operation: IModelOperation = {
             operation: 'create'
         };
         let operationResult = new ModelOperationResult<T, ICreateMeta>(operation);
         let opts = Object.assign({}, DEFAULT_CREATE_OPTIONS, options);
-        validate(registry, model, operation, opts.validation ? opts.validation : null)
+        validate(manager, model, operation, opts.validation ? opts.validation : null)
             .then((validationResult) => {
 
                 if (!validationResult.valid) {
@@ -40,7 +40,7 @@ export function create<T extends Model>(registry: ModelRegistry, model: T, optio
                     operationResult.validation = validationResult;
                 }
 
-                return backend.create(registry, model, operationResult, opts);
+                return backend.create(manager, model, operationResult, opts);
 
             })
             .then((res) => {
