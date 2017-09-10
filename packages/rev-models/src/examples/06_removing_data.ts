@@ -22,7 +22,7 @@ loadTestData(models)
 .then((res) => {
 
     // Remove Jane Doe's record
-    return models.remove(res.results[0])
+    return models.remove(res.results[0]);
 
 })
 .then((res) => {

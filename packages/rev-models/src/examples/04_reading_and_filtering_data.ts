@@ -4,35 +4,27 @@ import { loadTestData } from './load_test_data';
 
 loadTestData(models)
 
-.then(() => {
-    return models.read(Person);
-})
+.then(() => models.read(Person))
 .then((res) => {
     console.log('All records:', res.results);
 })
 
-.then(() => {
-    return models.read(Person, {}, { offset: 2, limit: 3 });
-})
+.then(() => models.read(Person, {}, { offset: 2, limit: 3 }))
 .then((res) => {
     console.log('Last 3 records:', res.results);
 })
 
-.then(() => {
-    return models.read(Person, { newsletter: true });
-})
+.then(() => models.read(Person, { newsletter: true }))
 .then((res) => {
     console.log('Newsletter Subscribers Only:', res.results);
 })
 
-.then(() => {
-    return models.read(Person, {
-        $or: [
-            { age: { $lt: 21 }},
-            { age: { $gt: 40 }}
-        ]
-    });
-})
+.then(() => models.read(Person, {
+                $or: [
+                    { age: { $lt: 21 }},
+                    { age: { $gt: 40 }}
+                ]
+}))
 .then((res) => {
     console.log('Aged less than 21 or over 40:', res.results);
 });

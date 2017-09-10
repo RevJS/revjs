@@ -223,6 +223,12 @@ export class ModelManager {
      * If the model does not have a primary key defined, then you'll need to
      * set the `where` option (see [[IUpdateOptions.where]])
      *
+     * Below is an example of how to use the update method:
+     *
+     * ```ts
+     * [[include:examples/05_updating_data.ts]]
+     * ```
+     *
      * @param model An instance of a registered model containing the data to
      * be updated
      * @param options Options for the update
@@ -231,19 +237,78 @@ export class ModelManager {
         return update(this, model, options);
     }
 
+    /**
+     * Removes a model record from the backend using data from the passed model
+     * instance.
+     *
+     * If the model has a primary key defined (see [[IModelMeta.primaryKey]])
+     * then you only need to pass the model into this method.
+     *
+     * If the model does not have a primary key defined, then you'll need to
+     * set the `where` option (see [[IUpdateOptions.where]])
+     *
+     * Below is an example of how to use the remove method:
+     *
+     * ```ts
+     * [[include:examples/06_removing_data.ts]]
+     * ```
+     * @param model An instance of a registered model containing the primary
+     * key of the record to be removed. If you do not have an instance of the
+     * record, just pass a new model instance and set `options.where`
+     * @param options Options for the record removal
+     */
     remove<T extends Model>(model: T, options?: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
         return remove(this, model, options);
     }
 
+    /**
+     * Reads records from the backend which are filtered using the specified
+     * **where** clause.
+     *
+     * Below is an example of how to use the read method:
+     *
+     * ```ts
+     * [[include:examples/04_reading_and_filtering_data.ts]]
+     * ```
+     * @param model The Class constructor of the model to read
+     * @param where The where clause (documentation of the query language TODO!)
+     * @param options Options for record retrieval (e.g. record limit)
+     */
     read<T extends Model>(model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
         return read(this, model, where, options);
     }
 
+    /**
+     * Validates the information currently stored in a model.
+     *
+     * NOTE: The `create` and `update` methods run validation before committing
+     * changes to the backend, so you may not need to call this method yourself.
+     *
+     * Model validation proceeds as follows:
+     * 1. Validate fields
+     * 2. Validate model (using [[Model.validate]] then [[Model.validateAsync]])
+     *
+     * @param model The model instance to be validated
+     * @param options Any options to use for the validation
+     */
     validate<T extends Model>(model: T, options?: IValidationOptions): Promise<ModelValidationResult> {
         let operation: IModelOperation = { operation: 'validate' };
         return validate(this, model, operation, options);
     }
 
+    /**
+     * Executes a function on a model instance. If the function does not exist
+     * in the current model, the execution is passed to the backend.
+     *
+     * This method is primarily used for calling server-side functions from a
+     * client.
+     *
+     * @param model The model instance containing the data needed for this
+     * method call
+     * @param method The name of the method to be called
+     * @param argObj Any additional arguments to be passed to the method
+     * @param options Additional options
+     */
     exec<R>(model: Model, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, any>> {
         return exec(this, model, method, argObj, options);
     }
