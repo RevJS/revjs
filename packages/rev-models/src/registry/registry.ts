@@ -15,11 +15,11 @@ import { IExecOptions, exec, IExecArgs } from '../operations/exec';
 
 /**
  * A **Model Registry** has the following responsibilities:
- * 
+ *
  * * Keep track of the current set of registered [[Model]]s and their metadata
  * * Keep track of the current set of registered [[IBackend]]s
  * * Provide an easy way to perform actions on models (Create, Update, etc.)
- * 
+ *
  * The example below shows how to create a new model registry:
  *
  * ```ts
@@ -138,6 +138,22 @@ export class ModelRegistry {
 
     /* Backend Registration Functions */
 
+    /**
+     * Registers a backend to be used for model storage & retrieval. You must
+     * provide a backend before registering models.
+     *
+     * The **backendName** you specify should correspond to the
+     * [[IModelMeta.backend]] value you intend to use when registering models
+     * with [[ModelRegistry.register]].
+     *
+     * If you are only using one backend, you can just use *default* as the
+     * backend name, and there is no need to specify a backend name when
+     * registering models.
+     *
+     * @param backendName A string identifier for the backend (e.g. 'default'
+     * or 'customer_db')
+     * @param backend A backend instance
+     */
     registerBackend(backendName: string, backend: IBackend) {
         if (!backendName) {
             throw new Error('RegistryError: you must specify a name for the backend.');
