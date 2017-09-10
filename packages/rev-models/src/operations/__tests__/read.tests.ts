@@ -7,7 +7,7 @@ import * as d from '../../decorators';
 import * as read from '../read';
 import { MockBackend } from './mock-backend';
 import { DEFAULT_READ_OPTIONS, validateOrderBy } from '../read';
-import { ModelManager } from '../../registry/registry';
+import { ModelManager } from '../../models/manager';
 import { IModelMeta } from '../../models/meta';
 
 class TestModel extends Model {

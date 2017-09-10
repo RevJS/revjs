@@ -6,7 +6,7 @@ import { IModelOperation } from '../operations/operation';
 import { ModelValidationResult } from './validationresult';
 import { IValidationOptions } from '../operations/validate';
 import { TextField, NumberField, SelectionField } from '../fields/index';
-import { ModelManager } from '../registry/registry';
+import { ModelManager } from '../models/manager';
 
 export type IFieldValidator =
     <T extends Model>(

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
 
-import * as manager from '../registry';
+import * as manager from '../manager';
 import * as d from '../../decorators';
 import { Model } from '../../models/model';
 import { IBackend } from '../../backends/backend';

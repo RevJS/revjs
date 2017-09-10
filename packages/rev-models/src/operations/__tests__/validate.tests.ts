@@ -5,7 +5,7 @@ import { Model } from '../../models/model';
 import { TextField } from '../../fields/';
 import { validate, IValidationContext } from '../validate';
 import { VALIDATION_MESSAGES as msg } from '../../validation/validationmsg';
-import { ModelManager } from '../../registry/registry';
+import { ModelManager } from '../../models/manager';
 import { InMemoryBackend } from '../../backends/inmemory/backend';
 
 describe('validate()', () => {

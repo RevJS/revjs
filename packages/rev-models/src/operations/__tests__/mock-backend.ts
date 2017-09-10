@@ -1,7 +1,7 @@
 
 import * as sinon from 'sinon';
 import { IBackend } from '../../backends/backend';
-import { ModelManager } from '../../registry/registry';
+import { ModelManager } from '../../models/manager';
 import { ModelOperationResult } from '../operationresult';
 import { Model } from '../../models/model';
 import { ICreateOptions, ICreateMeta } from '../create';

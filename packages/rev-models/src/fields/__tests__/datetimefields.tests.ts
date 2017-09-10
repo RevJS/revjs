@@ -6,7 +6,7 @@ import { dateOnlyValidator, requiredValidator, timeOnlyValidator, dateTimeValida
 import { expect } from 'chai';
 import { IModelOperation } from '../../operations/operation';
 import { Model } from '../../models/model';
-import { ModelManager } from '../../registry/registry';
+import { ModelManager } from '../../models/manager';
 
 class TestModel extends Model {
     value: any;

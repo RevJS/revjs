@@ -6,7 +6,7 @@ import { IModelOperation } from '../../operations/operation';
 
 import { expect } from 'chai';
 import { Model } from '../../models/model';
-import { ModelManager } from '../../registry/registry';
+import { ModelManager } from '../../models/manager';
 
 class TestModel extends Model {
     value: any;

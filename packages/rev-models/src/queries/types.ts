@@ -1,6 +1,6 @@
 
 import { Model } from '../models/model';
-import { ModelManager } from '../registry/registry';
+import { ModelManager } from '../models/manager';
 
 export interface IQueryNode<T extends Model> {
     operator: string;

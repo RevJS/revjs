@@ -1,4 +1,4 @@
-import { ModelManager } from '../registry/registry';
+import { ModelManager } from '../models/manager';
 import { Person } from './02_defining_a_model';
 
 export function loadTestData(models: ModelManager): Promise<any> {

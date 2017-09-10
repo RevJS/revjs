@@ -10,7 +10,7 @@ import { IRemoveOptions, IRemoveMeta } from '../../operations/remove';
 import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
 import { sortRecords } from './sort';
-import { ModelManager } from '../../registry/registry';
+import { ModelManager } from '../../models/manager';
 import { AutoNumberField } from '../../fields';
 import { IExecArgs, IExecOptions, IExecMeta } from '../../operations/exec';
 

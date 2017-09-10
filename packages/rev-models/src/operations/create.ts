@@ -3,7 +3,7 @@ import { Model } from '../models/model';
 import { IValidationOptions, validate } from './validate';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { IModelOperation } from './operation';
-import { ModelManager } from '../registry/registry';
+import { ModelManager } from '../models/manager';
 
 export interface ICreateOptions {
     validation?: IValidationOptions;

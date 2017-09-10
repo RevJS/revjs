@@ -9,7 +9,7 @@ import * as exec from '../exec';
 import { MockBackend } from './mock-backend';
 // import { ModelValidationResult } from '../../validation/validationresult';
 import { IExecOptions } from '../exec';
-import { ModelManager } from '../../registry/registry';
+import { ModelManager } from '../../models/manager';
 import { ModelOperationResult } from '../operationresult';
 
 class TestModel extends Model {

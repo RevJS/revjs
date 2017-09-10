@@ -5,7 +5,7 @@ import { ICreateOptions, ICreateMeta } from '../operations/create';
 import { IUpdateOptions, IUpdateMeta } from '../operations/update';
 import { IReadOptions, IReadMeta } from '../operations/read';
 import { IRemoveOptions, IRemoveMeta } from '../operations/remove';
-import { ModelManager } from '../registry/registry';
+import { ModelManager } from '../models/manager';
 import { IExecArgs, IExecOptions, IExecMeta } from '../operations/exec';
 
 export interface IBackend {

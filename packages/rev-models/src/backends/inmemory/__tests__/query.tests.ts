@@ -4,7 +4,7 @@ import { Model } from '../../../models/model';
 import * as d from '../../../decorators';
 import { QueryParser } from '../../../queries/queryparser';
 import { InMemoryQuery } from '../query';
-import { ModelManager } from '../../../registry/registry';
+import { ModelManager } from '../../../models/manager';
 import { InMemoryBackend } from '../backend';
 
 class TestModel extends Model {

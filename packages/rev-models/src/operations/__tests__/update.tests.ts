@@ -8,7 +8,7 @@ import * as update from '../update';
 import { MockBackend } from './mock-backend';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { DEFAULT_UPDATE_OPTIONS, IUpdateOptions } from '../update';
-import { ModelManager } from '../../registry/registry';
+import { ModelManager } from '../../models/manager';
 
 let GENDERS = [
     ['male', 'Male'],

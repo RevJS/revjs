@@ -7,7 +7,7 @@ import * as d from '../../decorators';
 import * as remove from '../remove';
 import { MockBackend } from './mock-backend';
 import { DEFAULT_REMOVE_OPTIONS, IRemoveOptions } from '../remove';
-import { ModelManager } from '../../registry/registry';
+import { ModelManager } from '../../models/manager';
 
 class TestModel extends Model {
     @d.TextField({ primaryKey: true })

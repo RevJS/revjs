@@ -5,7 +5,7 @@ import { QueryParser } from '../queryparser';
 import { ConjunctionNode } from '../nodes/conjunction';
 import { FieldNode } from '../nodes/field';
 import { Model } from '../../models/model';
-import { ModelManager } from '../../registry/registry';
+import { ModelManager } from '../../models/manager';
 import { InMemoryBackend } from '../../backends/inmemory/backend';
 
 class TestModel extends Model {

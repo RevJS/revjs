@@ -6,7 +6,7 @@ import { Model } from '../models/model';
 import { IModelOperation } from '../operations/operation';
 import { ModelValidationResult } from '../validation/validationresult';
 import { IValidationOptions } from '../operations/validate';
-import { ModelManager } from '../registry/registry';
+import { ModelManager } from '../models/manager';
 
 export interface IFieldOptions {
     label?: string;

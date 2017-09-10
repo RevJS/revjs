@@ -2,7 +2,7 @@ import { Model } from '../models/model';
 import { IModelOperation } from './operation';
 import { ModelValidationResult } from '../validation/validationresult';
 import { VALIDATION_MESSAGES as msg } from '../validation/validationmsg';
-import { ModelManager } from '../registry/registry';
+import { ModelManager } from '../models/manager';
 
 export interface IValidationOptions {
     timeout?: number;

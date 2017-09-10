@@ -1,7 +1,7 @@
 
 import { expect } from 'chai';
 
-import { ModelManager } from '../../../registry/registry';
+import { ModelManager } from '../../../models/manager';
 import { InMemoryBackend } from '../backend';
 import { ModelOperationResult } from '../../../operations/operationresult';
 import { TestModel } from './testdata';

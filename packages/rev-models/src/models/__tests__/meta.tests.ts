@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
 import * as d from '../../decorators';
 import { Model } from '../model';
-import { ModelManager } from '../../registry/registry';
+import { ModelManager } from '../../models/manager';
 
 class TestModel extends Model {
     id: number = 1;

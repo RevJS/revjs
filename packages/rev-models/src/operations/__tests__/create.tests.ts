@@ -8,7 +8,7 @@ import * as create from '../create';
 import { MockBackend } from './mock-backend';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { DEFAULT_CREATE_OPTIONS } from '../create';
-import { ModelManager } from '../../registry/registry';
+import { ModelManager } from '../../models/manager';
 
 let GENDERS = [
     ['male', 'Male'],

@@ -2,7 +2,7 @@
 import { Model } from '../models/model';
 import { IValidationOptions, validate } from './validate';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
-import { ModelManager } from '../registry/registry';
+import { ModelManager } from '../models/manager';
 import { IModelOperation } from './operation';
 import { isSet } from '../utils/index';
 

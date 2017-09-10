@@ -2,7 +2,7 @@
 import { Model } from '../models/model';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { IModelOperation } from './operation';
-import { ModelManager } from '../registry/registry';
+import { ModelManager } from '../models/manager';
 import { IModelMeta } from '../models/meta';
 
 export interface IReadOptions {
