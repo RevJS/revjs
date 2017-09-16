@@ -16,6 +16,11 @@ class TestModel extends Model {
         age: number;
 }
 
+class TestModel2 extends Model {
+    @d.TextField({ primaryKey: true, required: false })
+        name: string;
+}
+
 class UnregisteredModel extends Model {}
 
 class ModelWithNoPK extends Model {
@@ -102,6 +107,16 @@ describe('rev.operations.remove()', () => {
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('is not registered');
+            });
+    });
+
+    it('rejects if model meta.stored is false', () => {
+        manager.register(TestModel2, { stored: false });
+        let model = new TestModel2();
+        return rwRemove.remove(manager, model)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('Cannot call remove() on models with stored: false');
             });
     });
 

@@ -26,6 +26,10 @@ export function update<T extends Model>(manager: ModelManager, model: T, options
         }
 
         let meta = manager.getModelMeta(model);
+        if (!meta.stored) {
+            throw new Error('Cannot call update() on models with stored: false');
+        }
+
         let backend = manager.getBackend(meta.backend);
         let opts: IUpdateOptions = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
 

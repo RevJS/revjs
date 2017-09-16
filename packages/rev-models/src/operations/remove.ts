@@ -19,6 +19,10 @@ export function remove<T extends Model>(manager: ModelManager, model: T, options
     return new Promise((resolve, reject) => {
 
         let meta = manager.getModelMeta(model);
+        if (!meta.stored) {
+            throw new Error('Cannot call remove() on models with stored: false');
+        }
+
         let backend = manager.getBackend(meta.backend);
         let opts = Object.assign({}, DEFAULT_REMOVE_OPTIONS, options);
 

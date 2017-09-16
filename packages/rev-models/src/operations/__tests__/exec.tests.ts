@@ -22,6 +22,15 @@ class TestModel extends Model {
 
 }
 
+class TestModel2 extends Model {
+    @d.TextField({ required: false  })
+        name: string;
+
+    testMethod(argObj: any, result: ModelOperationResult<this, any>): any {
+        return `name: ${this.name}, argObj: ${JSON.stringify(argObj)}`;
+    }
+}
+
 class UnregisteredModel extends Model {}
 
 let rewired = rewire('../exec');
@@ -79,6 +88,12 @@ describe('rev.operations.exec()', () => {
                 .catch((err) => {
                     expect(err.message).to.contain('is not registered');
                 });
+        });
+
+        it('does not reject if model meta.stored is false', () => {
+            manager.register(TestModel2, { stored: false });
+            let model = new TestModel2();
+            return rwExec.exec(manager, model, 'testMethod');
         });
 
         it('fail validation if validate = true and model is not valid', () => {

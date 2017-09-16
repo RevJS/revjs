@@ -26,6 +26,11 @@ class TestModel extends Model {
         email: string;
 }
 
+class TestModel2 extends Model {
+    @d.TextField({ primaryKey: true, required: false })
+        name: string;
+}
+
 class UnregisteredModel extends Model {}
 
 class ModelWithNoPK extends Model {
@@ -138,6 +143,16 @@ describe('rev.operations.update()', () => {
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('is not registered');
+            });
+    });
+
+    it('rejects if model meta.stored is false', () => {
+        manager.register(TestModel2, { stored: false });
+        let model = new TestModel2();
+        return rwUpdate.update(manager, model)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('Cannot call update() on models with stored: false');
             });
     });
 
