@@ -6,10 +6,9 @@ import { InMemoryBackend } from '../backend';
 import { ModelOperationResult } from '../../../operations/operationresult';
 import { DEFAULT_CREATE_OPTIONS, ICreateMeta } from '../../../operations/create';
 import * as d from '../../../decorators';
-import { Model } from '../../../models/model';
 import { IUpdateMeta } from '../../../operations/update';
 
-export class TestModel extends Model {
+export class TestModel {
     @d.AutoNumberField({ primaryKey: true })
         id: number;
     @d.TextField()
@@ -38,12 +37,11 @@ describe('rev.backends.inmemory', () => {
     describe('AutoNumberField', () => {
 
         it('new records get sequential numbers starting from 1', () => {
-            let model1 = new TestModel({
-                name: 'record 1',
-            });
-            let model2 = new TestModel({
-                name: 'record 2',
-            });
+            let model1 = new TestModel();
+            model1.name = 'record 1';
+            let model2 = new TestModel();
+            model2.name = 'record 2';
+
             return Promise.all([
                 backend.create(manager, model1, createResult, DEFAULT_CREATE_OPTIONS),
                 backend.create(manager, model2, createResult2, DEFAULT_CREATE_OPTIONS)
@@ -57,14 +55,13 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('create() - values provided for AutoNumberField are ignored', () => {
-            let model1 = new TestModel({
-                id: 99,
-                name: 'record 1',
-            });
-            let model2 = new TestModel({
-                id: 227,
-                name: 'record 2',
-            });
+            let model1 = new TestModel();
+            model1.id = 99;
+            model1.name = 'record 1';
+            let model2 = new TestModel();
+            model2.id = 227;
+            model2.name = 'record 2';
+
             return Promise.all([
                 backend.create(manager, model1, createResult, DEFAULT_CREATE_OPTIONS),
                 backend.create(manager, model2, createResult2, DEFAULT_CREATE_OPTIONS)
@@ -87,7 +84,7 @@ describe('rev.backends.inmemory', () => {
                 }
             ];
 
-            return backend.load(manager, TestModel, testData, loadResult)
+            return backend.load(manager, TestModel, testData)
                 .then(() => {
                     expect(backend._storage['TestModel'])
                         .to.deep.equal([
@@ -100,10 +97,11 @@ describe('rev.backends.inmemory', () => {
                                 name: 'record 2',
                             }
                         ]);
+                    let model = new TestModel();
+                    model.id = -10;
+                    model.name = 'Frank';
                     return backend.update(manager,
-                        new TestModel({
-                            id: -10, name: 'Frank'
-                        }),
+                        model,
                         {}, updateResult, {});
                 })
                 .then(() => {

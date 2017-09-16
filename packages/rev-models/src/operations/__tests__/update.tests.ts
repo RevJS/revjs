@@ -2,7 +2,6 @@
 import { expect } from 'chai';
 import rewire = require('rewire');
 
-import { Model } from '../../models/model';
 import * as d from '../../decorators';
 import * as update from '../update';
 import { MockBackend } from './mock-backend';
@@ -15,7 +14,7 @@ let GENDERS = [
     ['female', 'Female']
 ];
 
-class TestModel extends Model {
+class TestModel {
     @d.TextField({ primaryKey: true })
         name: string;
     @d.SelectionField({ selection: GENDERS })
@@ -26,14 +25,14 @@ class TestModel extends Model {
         email: string;
 }
 
-class TestModel2 extends Model {
+class TestModel2 {
     @d.TextField({ primaryKey: true, required: false })
         name: string;
 }
 
-class UnregisteredModel extends Model {}
+class UnregisteredModel {}
 
-class ModelWithNoPK extends Model {
+class ModelWithNoPK {
     @d.TextField()
         name: string;
     @d.IntegerField()
@@ -175,7 +174,8 @@ describe('rev.operations.update()', () => {
     });
 
     it('rejects when options.fields set to something other than an array', () => {
-        let model = new TestModel({ name: 'Bob', gender: 'male' });
+        let model = new TestModel();
+        Object.assign(model, { name: 'bob', gender: 'male' });
         options = {
             fields: 'name, gender' as any
         };
@@ -187,7 +187,8 @@ describe('rev.operations.update()', () => {
     });
 
     it('rejects when options.fields contains an invalid fiel name', () => {
-        let model = new TestModel({ name: 'Bob', gender: 'male' });
+        let model = new TestModel();
+        Object.assign(model, { name: 'bob', gender: 'male' });
         options = {
             fields: ['cc_number']
         };

@@ -7,11 +7,10 @@ import { VALIDATION_MESSAGES as msg } from '../validationmsg';
 import { ModelValidationResult } from '../validationresult';
 import { IModelOperation } from '../../operations/operation';
 import { IValidationOptions } from '../../operations/validate';
-import { Model } from '../../models/model';
 import { ModelManager } from '../../models/manager';
 import { InMemoryBackend } from '../../backends/inmemory/backend';
 
-class TestModel extends Model {
+class TestModel {
     id: any;
     name: any;
     age: any;

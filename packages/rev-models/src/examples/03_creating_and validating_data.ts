@@ -1,10 +1,12 @@
 import { models } from './01_defining_a_model_manager';
 import { Person } from './02_defining_a_model';
 
-let person = new Person({
-    first_name: 'Bill', last_name: 'Bloggs',
-    age: 31, email: 'bill@bloggs.com', newsletter: false
-});
+let person = new Person();
+person.first_name = 'Bill';
+person.last_name = 'Bloggs';
+person.age = 31;
+person.email = 'bill@bloggs.com';
+person.newsletter = false;
 
 models.create(person)
 .then((res) => {
@@ -14,9 +16,8 @@ models.create(person)
 // models.create() will reject if model is invalid
 // you can also manually trigger validation:
 
-let invalid_person = new Person({
-    title: 'invalid_title'
-});
+let invalid_person = new Person();
+invalid_person.title = 'invalid_title';
 
 models.validate(invalid_person)
 .then((res) => {

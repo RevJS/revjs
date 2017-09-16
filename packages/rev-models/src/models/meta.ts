@@ -1,6 +1,6 @@
 
 import { Field } from '../fields/field';
-import { Model } from './model';
+import { IModel } from './model';
 import { ModelManager } from './manager';
 
 export interface IModelMeta<T> {
@@ -21,7 +21,7 @@ export const DISALLOWED_FIELD_NAMES = [
     'validateAsync'
 ];
 
-function populateMetaFromClassFields<T extends Model>(model: new(...args: any[]) => T, meta: IModelMeta<T>) {
+function populateMetaFromClassFields<T extends IModel>(model: new(...args: any[]) => T, meta: IModelMeta<T>) {
     // Load fields from prototype __fields property if present (fields added via decorators)
     let proto = model.prototype;
     if (proto.__fields) {
@@ -40,7 +40,7 @@ function populateMetaFromClassFields<T extends Model>(model: new(...args: any[])
     }
 }
 
-export function initialiseMeta<T extends Model>(manager: ModelManager, model: new(...args: any[]) => T, meta?: IModelMeta<T>): IModelMeta<T> {
+export function initialiseMeta<T extends IModel>(manager: ModelManager, model: new(...args: any[]) => T, meta?: IModelMeta<T>): IModelMeta<T> {
 
     if (!meta) {
         meta = {};

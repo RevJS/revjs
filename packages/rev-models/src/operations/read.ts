@@ -1,5 +1,5 @@
 
-import { Model } from '../models/model';
+import { IModel } from '../models/model';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { IModelOperation } from './operation';
 import { ModelManager } from '../models/manager';
@@ -23,7 +23,7 @@ export const DEFAULT_READ_OPTIONS: IReadOptions = {
     offset: 0
 };
 
-export function read<T extends Model>(manager: ModelManager, model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+export function read<T extends IModel>(manager: ModelManager, model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
     return new Promise((resolve, reject) => {
 
         let meta = manager.getModelMeta(model) as IModelMeta<T>;
@@ -47,7 +47,7 @@ export function read<T extends Model>(manager: ModelManager, model: new() => T, 
     });
 }
 
-export function validateOrderBy<T extends Model>(model: new() => T, meta: IModelMeta<T>, order_by: any) {
+export function validateOrderBy<T extends IModel>(model: new() => T, meta: IModelMeta<T>, order_by: any) {
 
     if (typeof order_by != 'object'
             || !(order_by instanceof Array)

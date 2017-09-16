@@ -1,6 +1,6 @@
 
 import { initialiseMeta, IModelMeta } from '../models/meta';
-import { Model, ModelCtor } from '../models/model';
+import { IModel, ModelCtor } from '../models/model';
 import { checkIsModelConstructor } from '../models/utils';
 import { IBackend } from '../backends/backend';
 import { IModelOperation } from '../operations/operation';
@@ -16,7 +16,7 @@ import { IExecOptions, exec, IExecArgs } from '../operations/exec';
 /**
  * A **Model Manager** has the following responsibilities:
  *
- * * Keep track of the current set of registered [[Model]]s and their metadata
+ * * Keep track of the current set of registered models and their metadata
  * * Keep track of the current set of registered [[IBackend]]s
  * * Provide Create, Read, Update, Delete and Validation functions for models
  *
@@ -51,20 +51,21 @@ export class ModelManager {
         }
     }
 
-    private assertModelClassIsRegistered<T extends Model>(modelCtor: new(...args: any[]) => T) {
+    private assertModelClassIsRegistered(modelCtor: ModelCtor) {
         if (!modelCtor || !modelCtor.name) {
             throw new Error('ModelManagerError: Supplied object is not a model');
         }
         this.assertModelNameIsRegistered(modelCtor.name);
     }
 
-    private assertModelIsRegistered<T extends Model>(model: T) {
+    private assertModelIsRegistered(model: IModel) {
         this.assertModelClassIsRegistered(model.constructor as any);
     }
 
     /**
-     * Registers a [[Model]] class with the manager. See the [[Model]]
-     * documentation for more information on creating RevJS Models.
+     * Registers a model class with the manager.
+     *
+     * A valid model class is any named ES6 class or constructor function.
      *
      * You can optionally provide a `meta` object along with the model class
      * to specify additional properties, such as which backend it should use, or
@@ -82,7 +83,7 @@ export class ModelManager {
      * instance**
      * @param meta Optional additional metadata about the model being registered
      */
-    register<T extends Model>(model: new(...args: any[]) => T, meta?: IModelMeta<T>) {
+    register<T extends IModel>(model: new(...args: any[]) => T, meta?: IModelMeta<T>) {
 
         // Check model constructor
         checkIsModelConstructor(model);
@@ -116,7 +117,7 @@ export class ModelManager {
      *
      * @param model The model Name, Class or Instance to retrieve the metadata for
      */
-    getModelMeta(model: string | ModelCtor | Model) {
+    getModelMeta(model: string | ModelCtor | IModel) {
         let modelName: string;
         if (typeof model == 'string') {
             this.assertModelNameIsRegistered(model);
@@ -209,7 +210,7 @@ export class ModelManager {
      * backend
      * @param options An optional set of options
      */
-    create<T extends Model>(model: T, options?: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
+    create<T extends IModel>(model: T, options?: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
         return create(this, model, options);
     }
 
@@ -233,7 +234,7 @@ export class ModelManager {
      * be updated
      * @param options Options for the update
      */
-    update<T extends Model>(model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+    update<T extends IModel>(model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
         return update(this, model, options);
     }
 
@@ -257,7 +258,7 @@ export class ModelManager {
      * record, just pass a new model instance and set `options.where`
      * @param options Options for the record removal
      */
-    remove<T extends Model>(model: T, options?: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+    remove<T extends IModel>(model: T, options?: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
         return remove(this, model, options);
     }
 
@@ -274,7 +275,7 @@ export class ModelManager {
      * @param where The where clause (documentation of the query language TODO!)
      * @param options Options for record retrieval (e.g. record limit)
      */
-    read<T extends Model>(model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+    read<T extends IModel>(model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
         return read(this, model, where, options);
     }
 
@@ -286,12 +287,12 @@ export class ModelManager {
      *
      * Model validation proceeds as follows:
      * 1. Validate fields
-     * 2. Validate model (using [[Model.validate]] then [[Model.validateAsync]])
+     * 2. Validate model (using [[IModel.validate]])
      *
      * @param model The model instance to be validated
      * @param options Any options to use for the validation
      */
-    validate<T extends Model>(model: T, options?: IValidationOptions): Promise<ModelValidationResult> {
+    validate<T extends IModel>(model: T, options?: IValidationOptions): Promise<ModelValidationResult> {
         let operation: IModelOperation = { operation: 'validate' };
         return validate(this, model, operation, options);
     }
@@ -309,7 +310,7 @@ export class ModelManager {
      * @param argObj Any additional arguments to be passed to the method
      * @param options Additional options
      */
-    exec<R>(model: Model, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, any>> {
+    exec<R>(model: IModel, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, any>> {
         return exec(this, model, method, argObj, options);
     }
 

@@ -1,6 +1,6 @@
 import { VALIDATION_MESSAGES as msg } from './validationmsg';
 import { isSet } from '../utils';
-import { Model } from '../models/model';
+import { IModel } from '../models/model';
 import { Field } from '../fields/field';
 import { IModelOperation } from '../operations/operation';
 import { ModelValidationResult } from './validationresult';
@@ -9,7 +9,7 @@ import { TextField, NumberField, SelectionField } from '../fields/index';
 import { ModelManager } from '../models/manager';
 
 export type IFieldValidator =
-    <T extends Model>(
+    <T extends IModel>(
         manager: ModelManager,
         model: T,
         field: Field,
@@ -18,7 +18,7 @@ export type IFieldValidator =
         options?: IValidationOptions) => void;
 
 export type IAsyncFieldValidator =
-    <T extends Model>(
+    <T extends IModel>(
         manager: ModelManager,
         model: T,
         field: Field,
@@ -26,7 +26,7 @@ export type IAsyncFieldValidator =
         result: ModelValidationResult,
         options?: IValidationOptions) => Promise<void>;
 
-export function requiredValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function requiredValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (!isSet(model[field.name])) {
         result.addFieldError(
             field.name,
@@ -36,7 +36,7 @@ export function requiredValidator<T extends Model>(manager: ModelManager, model:
     }
 }
 
-export function stringValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function stringValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name]) && typeof model[field.name] != 'string') {
         result.addFieldError(
             field.name,
@@ -46,7 +46,7 @@ export function stringValidator<T extends Model>(manager: ModelManager, model: T
     }
 }
 
-export function stringEmptyValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function stringEmptyValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof model[field.name] == 'string'
             && model[field.name].length == 0) {
         result.addFieldError(
@@ -57,7 +57,7 @@ export function stringEmptyValidator<T extends Model>(manager: ModelManager, mod
     }
 }
 
-export function regExValidator<T extends Model>(manager: ModelManager, model: T, field: TextField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function regExValidator<T extends IModel>(manager: ModelManager, model: T, field: TextField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof model[field.name] == 'string'
             && typeof field.options.regEx == 'object'
             && field.options.regEx instanceof RegExp
@@ -70,7 +70,7 @@ export function regExValidator<T extends Model>(manager: ModelManager, model: T,
     }
 }
 
-export function numberValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function numberValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name]) && (
         isNaN(model[field.name]) || model[field.name] === '')) {
         result.addFieldError(
@@ -81,7 +81,7 @@ export function numberValidator<T extends Model>(manager: ModelManager, model: T
     }
 }
 
-export function integerValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function integerValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name]) && !(/^(-?[1-9][0-9]*|0)$/.test(model[field.name]))) {
         result.addFieldError(
             field.name,
@@ -91,7 +91,7 @@ export function integerValidator<T extends Model>(manager: ModelManager, model: 
     }
 }
 
-export function booleanValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function booleanValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name]) && typeof model[field.name] != 'boolean') {
         result.addFieldError(
             field.name,
@@ -101,7 +101,7 @@ export function booleanValidator<T extends Model>(manager: ModelManager, model: 
     }
 }
 
-export function minStringLengthValidator<T extends Model>(manager: ModelManager, model: T, field: TextField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function minStringLengthValidator<T extends IModel>(manager: ModelManager, model: T, field: TextField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof model[field.name] == 'string'
             && model[field.name].length < field.options.minLength) {
         result.addFieldError(
@@ -112,7 +112,7 @@ export function minStringLengthValidator<T extends Model>(manager: ModelManager,
     }
 }
 
-export function maxStringLengthValidator<T extends Model>(manager: ModelManager, model: T, field: TextField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function maxStringLengthValidator<T extends IModel>(manager: ModelManager, model: T, field: TextField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof model[field.name] == 'string'
             && model[field.name].length > field.options.maxLength) {
         result.addFieldError(
@@ -123,7 +123,7 @@ export function maxStringLengthValidator<T extends Model>(manager: ModelManager,
     }
 }
 
-export function minValueValidator<T extends Model>(manager: ModelManager, model: T, field: TextField | NumberField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function minValueValidator<T extends IModel>(manager: ModelManager, model: T, field: TextField | NumberField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])
             && model[field.name] < field.options.minValue) {
         result.addFieldError(
@@ -134,7 +134,7 @@ export function minValueValidator<T extends Model>(manager: ModelManager, model:
     }
 }
 
-export function maxValueValidator<T extends Model>(manager: ModelManager, model: T, field: TextField | NumberField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function maxValueValidator<T extends IModel>(manager: ModelManager, model: T, field: TextField | NumberField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])
             && model[field.name] > field.options.maxValue) {
         result.addFieldError(
@@ -145,7 +145,7 @@ export function maxValueValidator<T extends Model>(manager: ModelManager, model:
     }
 }
 
-export function singleSelectionValidator<T extends Model>(manager: ModelManager, model: T, field: SelectionField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function singleSelectionValidator<T extends IModel>(manager: ModelManager, model: T, field: SelectionField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         for (let opt of field.options.selection) {
             if (opt[0] == model[field.name]) {
@@ -160,7 +160,7 @@ export function singleSelectionValidator<T extends Model>(manager: ModelManager,
     }
 }
 
-export function listEmptyValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function listEmptyValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof model[field.name] == 'object' && model[field.name] instanceof Array
             && model[field.name].length == 0) {
         result.addFieldError(
@@ -171,7 +171,7 @@ export function listEmptyValidator<T extends Model>(manager: ModelManager, model
     }
 }
 
-export function multipleSelectionValidator<T extends Model>(manager: ModelManager, model: T, field: SelectionField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function multipleSelectionValidator<T extends IModel>(manager: ModelManager, model: T, field: SelectionField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         if (typeof model[field.name] != 'object' || !(model[field.name] instanceof Array)) {
             result.addFieldError(
@@ -205,7 +205,7 @@ let dateOnlyRegex = /^[0-9]{4}-[01][0-9]-[0-3][0-9]$/;
 let timeOnlyRegex = /^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/;
 let dateTimeRegex = /^[0-9]{4}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/;
 
-export function dateOnlyValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function dateOnlyValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         if (typeof model[field.name] == 'object' && model[field.name] instanceof Date) {
             return;
@@ -222,7 +222,7 @@ export function dateOnlyValidator<T extends Model>(manager: ModelManager, model:
     }
 }
 
-export function timeOnlyValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function timeOnlyValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         if (typeof model[field.name] == 'object' && model[field.name] instanceof Date) {
             return;
@@ -239,7 +239,7 @@ export function timeOnlyValidator<T extends Model>(manager: ModelManager, model:
     }
 }
 
-export function dateTimeValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function dateTimeValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         if (typeof model[field.name] == 'object' && model[field.name] instanceof Date) {
             return;

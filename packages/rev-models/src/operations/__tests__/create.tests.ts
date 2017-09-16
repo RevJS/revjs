@@ -2,7 +2,6 @@
 import { expect } from 'chai';
 import rewire = require('rewire');
 
-import { Model } from '../../models/model';
 import * as d from '../../decorators';
 import * as create from '../create';
 import { MockBackend } from './mock-backend';
@@ -15,7 +14,7 @@ let GENDERS = [
     ['female', 'Female']
 ];
 
-class TestModel extends Model {
+class TestModel {
     @d.TextField()
         name: string;
     @d.SelectionField({ selection: GENDERS })
@@ -26,7 +25,7 @@ class TestModel extends Model {
         email: string;
 }
 
-class TestModel2 extends Model {
+class TestModel2 {
     @d.TextField({ required: false })
         name: string;
 }
@@ -88,15 +87,6 @@ describe('rev.operations.create()', () => {
 
     it('rejects when model is not an object', () => {
         return rwCreate.create(manager, 'test' as any)
-            .then(() => { throw new Error('expected to reject'); })
-            .catch((err) => {
-                expect(err.message).to.contain('Specified model is not a Model instance');
-            });
-    });
-
-    it('rejects when model is not an instance of Model', () => {
-        let model = {test: 1};
-        return rwCreate.create(manager, model as any)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('Specified model is not a Model instance');

@@ -3,16 +3,14 @@ import { expect } from 'chai';
 import rewire = require('rewire');
 import * as sinon from 'sinon';
 
-import { Model } from '../../models/model';
 import * as d from '../../decorators';
 import * as exec from '../exec';
 import { MockBackend } from './mock-backend';
-// import { ModelValidationResult } from '../../validation/validationresult';
 import { IExecOptions } from '../exec';
 import { ModelManager } from '../../models/manager';
 import { ModelOperationResult } from '../operationresult';
 
-class TestModel extends Model {
+class TestModel {
     @d.TextField({ required: true })
         name: string;
 
@@ -22,7 +20,7 @@ class TestModel extends Model {
 
 }
 
-class TestModel2 extends Model {
+class TestModel2 {
     @d.TextField({ required: false  })
         name: string;
 
@@ -31,7 +29,7 @@ class TestModel2 extends Model {
     }
 }
 
-class UnregisteredModel extends Model {}
+class UnregisteredModel {}
 
 let rewired = rewire('../exec');
 let rwExec: typeof exec & typeof rewired = rewired as any;
@@ -57,15 +55,6 @@ describe('rev.operations.exec()', () => {
 
         it('rejects when model is not an object', () => {
             return rwExec.exec(manager, 'test' as any, 'testMethod')
-                .then(() => { throw new Error('expected to reject'); })
-                .catch((err) => {
-                    expect(err.message).to.contain('Specified model is not a Model instance');
-                });
-        });
-
-        it('rejects when model is not an instance of Model', () => {
-            let model = {test: 1};
-            return rwExec.exec(manager, model as any, 'testMethod')
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('Specified model is not a Model instance');
@@ -106,7 +95,8 @@ describe('rev.operations.exec()', () => {
     describe('synchronous model methods', () => {
 
         it('calls model method when it exists and passes argObj and operationResult', () => {
-            let model = new TestModel({ name: 'Joe' });
+            let model = new TestModel();
+            model.name = 'Joe';
             model.testMethod = callSpy;
             return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
                 .then((res) => {
@@ -118,7 +108,8 @@ describe('rev.operations.exec()', () => {
         });
 
         it('throws if model method is not a function', () => {
-            let model = new TestModel({ name: 'Joe' });
+            let model = new TestModel();
+            model.name = 'Joe';
             model.testMethod = 'oh deary me' as any;
             return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
                 .then(() => { throw new Error('expected to reject'); })
@@ -128,7 +119,8 @@ describe('rev.operations.exec()', () => {
         });
 
         it('when no result is returned, a successful operationResult is returned', () => {
-            let model = new TestModel({ name: 'Joe' });
+            let model = new TestModel();
+            model.name = 'Joe';
             model.testMethod = () => undefined;
             return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
                 .then((res) => {
@@ -139,7 +131,8 @@ describe('rev.operations.exec()', () => {
         });
 
         it('when a plain result is returned, it is wrapped in an operationResult', () => {
-            let model = new TestModel({ name: 'Joe' });
+            let model = new TestModel();
+            model.name = 'Joe';
             model.testMethod = () => 'gerrald';
             return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
                 .then((res) => {
@@ -150,7 +143,8 @@ describe('rev.operations.exec()', () => {
         });
 
         it('when a ModelOperationResult is returned, it is passed on', () => {
-            let model = new TestModel({ name: 'Joe' });
+            let model = new TestModel();
+            model.name = 'Joe';
             model.testMethod = (argObj: any, result: ModelOperationResult<any, any>) => {
                 result.addError('oh noes!');
                 result.result = 'some custom result';
@@ -165,7 +159,8 @@ describe('rev.operations.exec()', () => {
         });
 
         it('rejects if a synchronous error occurs', () => {
-            let model = new TestModel({ name: 'Joe' });
+            let model = new TestModel();
+            model.name = 'Joe';
             model.testMethod = () => {
                 throw new Error('sync error');
             };
@@ -181,7 +176,8 @@ describe('rev.operations.exec()', () => {
     describe('asynchronous model methods', () => {
 
         it('when no result is returned, a successful operationResult is returned', () => {
-            let model = new TestModel({ name: 'Joe' });
+            let model = new TestModel();
+            model.name = 'Joe';
             model.testMethod = () => Promise.resolve();
             return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
                 .then((res) => {
@@ -192,7 +188,8 @@ describe('rev.operations.exec()', () => {
         });
 
         it('when a plain result is returned, it is wrapped in an operationResult', () => {
-            let model = new TestModel({ name: 'Joe' });
+            let model = new TestModel();
+            model.name = 'Joe';
             model.testMethod = () => Promise.resolve('gerrald');
             return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
                 .then((res) => {
@@ -203,7 +200,8 @@ describe('rev.operations.exec()', () => {
         });
 
         it('when a ModelOperationResult is returned, it is passed on', () => {
-            let model = new TestModel({ name: 'Joe' });
+            let model = new TestModel();
+            model.name = 'Joe';
             model.testMethod = (argObj: any, result: ModelOperationResult<any, any>) => {
                 result.addError('oh noes!');
                 result.result = 'some custom result';
@@ -218,7 +216,8 @@ describe('rev.operations.exec()', () => {
         });
 
         it('rejects if model method rejects', () => {
-            let model = new TestModel({ name: 'Joe' });
+            let model = new TestModel();
+            model.name = 'Joe';
             model.testMethod = () => Promise.reject(new Error('async error'));
             return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
                 .then(() => { throw new Error('expected to reject'); })
@@ -233,7 +232,8 @@ describe('rev.operations.exec()', () => {
     describe('backend methods', () => {
 
         it('if model does not contain method, backend.exec() is called instead', () => {
-            let model = new TestModel({ name: 'Joe' });
+            let model = new TestModel();
+            model.name = 'Joe';
             let args = { someArg: 'wheeeeee!' };
             let opts: IExecOptions = {
                 validate: true,

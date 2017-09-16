@@ -1,9 +1,9 @@
 
 import { QueryNode } from './query';
 import { IQueryParser, IQueryNode } from '../types';
-import { Model } from '../../models/model';
+import { IModel } from '../../models/model';
 
-export class ConjunctionNode<T extends Model> extends QueryNode<T> {
+export class ConjunctionNode<T extends IModel> extends QueryNode<T> {
 
     constructor(
             parser: IQueryParser,

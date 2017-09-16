@@ -2,25 +2,25 @@ import { expect } from 'chai';
 import { IFieldOptions, Field, DEFAULT_FIELD_OPTIONS } from '../field';
 import { requiredValidator } from '../../validation/validators';
 import { ModelValidationResult } from '../../validation/validationresult';
-import { Model } from '../../models/model';
 import { IModelOperation } from '../../operations/operation';
 import { ModelManager } from '../../models/manager';
 import { IModelMeta } from '../../../lib/models/meta';
+import { IModel } from '../../models/model';
 
-function quickValidAsyncValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
+function quickValidAsyncValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         resolve();
     });
 }
 
-function quickInvalidAsyncValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
+function quickInvalidAsyncValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         result.addFieldError('name', 'name field is invalid');
         resolve();
     });
 }
 
-function slowInvalidAsyncValidator<T extends Model>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
+function slowInvalidAsyncValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         setTimeout(() => {
             result.addFieldError('name', 'name field is invalid');
@@ -29,7 +29,7 @@ function slowInvalidAsyncValidator<T extends Model>(manager: ModelManager, model
     });
 }
 
-class TestModel extends Model {
+class TestModel {
     name: string;
 }
 
@@ -95,7 +95,8 @@ describe('rev.fields.field', () => {
         let result: ModelValidationResult;
 
         beforeEach(() => {
-            testModel = new TestModel({ name: null });
+            testModel = new TestModel();
+            testModel.name = null;
             result = new ModelValidationResult();
         });
 

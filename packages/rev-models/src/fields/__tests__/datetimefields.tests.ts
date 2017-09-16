@@ -5,10 +5,9 @@ import { dateOnlyValidator, requiredValidator, timeOnlyValidator, dateTimeValida
 
 import { expect } from 'chai';
 import { IModelOperation } from '../../operations/operation';
-import { Model } from '../../models/model';
 import { ModelManager } from '../../models/manager';
 
-class TestModel extends Model {
+class TestModel {
     value: any;
 }
 
@@ -22,9 +21,8 @@ describe('rev.fields.datetimefields', () => {
     let result: ModelValidationResult;
 
     beforeEach(() => {
-        testModel = new TestModel({
-            value: null
-        });
+        testModel = new TestModel();
+        testModel.value = null;
         result = new ModelValidationResult();
     });
 

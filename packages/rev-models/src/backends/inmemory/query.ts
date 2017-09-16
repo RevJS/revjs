@@ -1,13 +1,13 @@
 
 import { IQueryNode } from '../../queries/types';
-import { Model } from '../../models/model';
+import { IModel } from '../../models/model';
 import { ConjunctionNode } from '../../queries/nodes/conjunction';
 import { FieldNode } from '../../queries/nodes/field';
 import { ValueOperator } from '../../queries/nodes/value';
 import { ValueListOperator } from '../../queries/nodes/valuelist';
 import { getLikeOperatorRegExp } from '../../queries/utils';
 
-export class InMemoryQuery<T extends Model> {
+export class InMemoryQuery<T extends IModel> {
 
     constructor(private query: IQueryNode<T>) {}
 

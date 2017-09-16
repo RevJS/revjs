@@ -9,7 +9,7 @@ let TITLES = [
     ['Dr', 'Dr.']
 ];
 
-export class Person extends rev.Model {
+export class Person {
 
     @rev.AutoNumberField({ primaryKey: true })
         id: number;

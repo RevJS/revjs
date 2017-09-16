@@ -1,5 +1,5 @@
 
-import { Model } from '../models/model';
+import { IModel } from '../models/model';
 import { IValidationOptions, validate } from './validate';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { IModelOperation } from './operation';
@@ -15,10 +15,10 @@ export interface ICreateMeta extends IOperationMeta {
 
 export const DEFAULT_CREATE_OPTIONS: ICreateOptions = {};
 
-export function create<T extends Model>(manager: ModelManager, model: T, options?: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
+export function create<T extends IModel>(manager: ModelManager, model: T, options?: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
     return new Promise((resolve, reject) => {
 
-        if (typeof model != 'object' || !(model instanceof Model)) {
+        if (typeof model != 'object') {
             throw new Error('Specified model is not a Model instance');
         }
 

@@ -1,13 +1,12 @@
 
 import { expect } from 'chai';
-import { Model } from '../../../models/model';
 import * as d from '../../../decorators';
 import { QueryParser } from '../../../queries/queryparser';
 import { InMemoryQuery } from '../query';
 import { ModelManager } from '../../../models/manager';
 import { InMemoryBackend } from '../backend';
 
-class TestModel extends Model {
+class TestModel {
     @d.TextField() name: string;
     @d.TextField() job_title: string;
     @d.IntegerField() score: number;

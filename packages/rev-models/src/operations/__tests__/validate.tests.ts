@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import * as d from '../../decorators';
 import { IModelMeta } from '../../models/meta';
-import { Model } from '../../models/model';
 import { TextField } from '../../fields/';
 import { validate, IValidationContext } from '../validate';
 import { VALIDATION_MESSAGES as msg } from '../../validation/validationmsg';
@@ -11,7 +10,7 @@ import { InMemoryBackend } from '../../backends/inmemory/backend';
 describe('validate()', () => {
     let manager: ModelManager;
 
-    class TestModel extends Model {
+    class TestModel {
         @d.IntegerField({ minValue: 10 })
             id: number;
         @d.TextField()
@@ -21,6 +20,13 @@ describe('validate()', () => {
         
         testMethod() {
             return true;
+        }
+
+        validate(vc: IValidationContext) {}
+        validateAsync(vc: IValidationContext) {}
+
+        constructor(data: any) {
+            Object.assign(this, data);
         }
     }
 
@@ -53,7 +59,7 @@ describe('validate()', () => {
     });
 
     it('should reject if model not registered', () => {
-        class UnregisteredModel extends Model {}
+        class UnregisteredModel {}
         let test = new UnregisteredModel();
         return validate(manager, test, {operation: 'create'})
             .then(() => { throw new Error('expected to reject'); })
@@ -126,7 +132,7 @@ describe('validate()', () => {
         });
         delayModelMeta.fields.push(delayField);
 
-        class DelayModel extends Model {}
+        class DelayModel {}
         manager.register(DelayModel, delayModelMeta);
         let test = new DelayModel();
 

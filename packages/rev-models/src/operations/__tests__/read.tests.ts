@@ -2,7 +2,6 @@
 import { expect } from 'chai';
 import rewire = require('rewire');
 
-import { Model } from '../../models/model';
 import * as d from '../../decorators';
 import * as read from '../read';
 import { MockBackend } from './mock-backend';
@@ -10,19 +9,21 @@ import { DEFAULT_READ_OPTIONS, validateOrderBy } from '../read';
 import { ModelManager } from '../../models/manager';
 import { IModelMeta } from '../../models/meta';
 
-class TestModel extends Model {
+class TestModel {
     @d.TextField()
         name: string;
     @d.IntegerField()
         age: number;
 }
 
-class TestModel2 extends Model {}
+class TestModel2 {}
 
 let testResults = [
-    new TestModel({ name: 'Test 1', age: 1 }),
-    new TestModel({ name: 'Test 2', age: 2 })
+    new TestModel(),
+    new TestModel()
 ];
+Object.assign(testResults[0], { name: 'Test 1', age: 1 });
+Object.assign(testResults[1], { name: 'Test 2', age: 2 });
 
 let rewired = rewire('../read');
 let rwRead: typeof read & typeof rewired = rewired as any;
@@ -97,7 +98,6 @@ describe('rev.operations.read()', () => {
                 expect(readCall.args[4].offset).to.equal(10);
             });
     });
-
 
     it('rejects if model is not registered', () => {
         return rwRead.read(manager, TestModel2)

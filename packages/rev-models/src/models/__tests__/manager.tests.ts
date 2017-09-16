@@ -3,20 +3,19 @@ import { IntegerField, TextField, DateField } from '../../fields';
 
 import * as manager from '../manager';
 import * as d from '../../decorators';
-import { Model } from '../../models/model';
 import { IBackend } from '../../backends/backend';
 import { InMemoryBackend } from '../../backends/inmemory/backend';
 import { IModelMeta } from '../../models/meta';
 
-class TestModel extends Model {
+class TestModel {
     id: number = 1;
     name: string = 'A Test Model';
     date: Date = new Date();
 }
 
-class TestModel2 extends Model {}
+class TestModel2 {}
 
-class EmptyModel extends Model {}
+class EmptyModel {}
 
 describe('ModelManager', () => {
     let testReg: manager.ModelManager;
@@ -88,7 +87,7 @@ describe('ModelManager', () => {
         });
 
         it('adds a decorated model to the manager.', () => {
-            class DecoratedModel extends Model {
+            class DecoratedModel {
                 @d.TextField()
                     name: string;
                 @d.IntegerField()
@@ -161,10 +160,9 @@ describe('ModelManager', () => {
 
         it('should return model metadata based on model instance', () => {
             testReg.register(TestModel, testMeta);
-            let model = new TestModel({
-                id: 1,
-                name: 'Bob'
-            });
+            let model = new TestModel();
+            model.id = 1;
+            model.name = 'Bob';
             let meta = testReg.getModelMeta(model);
             expect(meta.ctor).to.equal(TestModel);
         });

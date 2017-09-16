@@ -4,11 +4,10 @@ import * as d from '../../decorators';
 import { QueryParser } from '../queryparser';
 import { ConjunctionNode } from '../nodes/conjunction';
 import { FieldNode } from '../nodes/field';
-import { Model } from '../../models/model';
 import { ModelManager } from '../../models/manager';
 import { InMemoryBackend } from '../../backends/inmemory/backend';
 
-class TestModel extends Model {
+class TestModel {
     @d.IntegerField()
         id: number;
     @d.TextField()

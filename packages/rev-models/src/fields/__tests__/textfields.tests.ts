@@ -5,10 +5,9 @@ import { stringValidator, requiredValidator, stringEmptyValidator, minStringLeng
 import { IModelOperation } from '../../operations/operation';
 
 import { expect } from 'chai';
-import { Model } from '../../models/model';
 import { ModelManager } from '../../models/manager';
 
-class TestModel extends Model {
+class TestModel {
     value: any;
 }
 
@@ -22,9 +21,8 @@ describe('rev.fields.textfields', () => {
     let result: ModelValidationResult;
 
     beforeEach(() => {
-        testModel = new TestModel({
-            value: null as any
-        });
+        testModel = new TestModel();
+        testModel.value = null;
         result = new ModelValidationResult();
     });
 

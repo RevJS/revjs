@@ -3,7 +3,7 @@ export * from './decorators';
 import * as fields from './fields';
 export { fields };
 
-export { Model } from './models/model';
+export { IModel } from './models/model';
 export { IModelMeta } from './models/meta';
 export { ModelManager } from './models/manager';
 export { IValidationContext } from './operations/validate';

@@ -1,7 +1,7 @@
-import { Model } from '../models/model';
+import { IModel } from '../models/model';
 import { IModelMeta } from '../models/meta';
 
-export function getModelPrimaryKeyQuery<T extends Model>(model: T, meta: IModelMeta<T>) {
+export function getModelPrimaryKeyQuery<T extends IModel>(model: T, meta: IModelMeta<T>) {
     if (!meta.primaryKey || meta.primaryKey.length == 0) {
         throw new Error('KeyError: no primaryKey defined');
     }

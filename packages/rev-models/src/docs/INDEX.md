@@ -16,7 +16,6 @@ If you are new to RevJS, we recommend checking out a RevJS Tutorial first!
 If you just want to have a browse, the following classes would be good places
 to start:
 
- * [[Model]]
  * [[ModelManager]]
 
 Have fun! Any problems or queries let us know!

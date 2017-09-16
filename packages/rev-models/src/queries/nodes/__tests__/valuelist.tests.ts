@@ -3,11 +3,10 @@ import { expect } from 'chai';
 import * as d from '../../../decorators';
 import { QueryParser } from '../../queryparser';
 import { ValueListOperator } from '../valuelist';
-import { Model } from '../../../models/model';
 import { ModelManager } from '../../../models/manager';
 import { InMemoryBackend } from '../../../backends/inmemory/backend';
 
-class TestModel extends Model {
+class TestModel {
     @d.IntegerField()
         id: number;
     @d.TextField()

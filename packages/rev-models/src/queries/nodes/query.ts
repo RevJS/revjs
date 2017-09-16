@@ -1,9 +1,9 @@
 import { IQueryParser, IQueryNode } from '../types';
 
 import { printObj } from '../../utils/index';
-import { Model } from '../../models/model';
+import { IModel } from '../../models/model';
 
-export class QueryNode<T extends Model> implements IQueryNode<T> {
+export class QueryNode<T extends IModel> implements IQueryNode<T> {
     public children: Array<IQueryNode<T>>;
 
     constructor(

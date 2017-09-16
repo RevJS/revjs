@@ -1,5 +1,4 @@
 
-import { Model } from '../../../models/model';
 import * as d from '../../../decorators';
 
 let GENDERS = [
@@ -7,7 +6,7 @@ let GENDERS = [
     ['female', 'Female']
 ];
 
-export class TestModel extends Model {
+export class TestModel {
     @d.IntegerField({ primaryKey: true })
         id: number;
     @d.TextField()

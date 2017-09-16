@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 
 import { checkIsModelConstructor } from '../utils';
-import { Model } from '../model';
 
 describe('rev.model', () => {
 
@@ -11,7 +10,7 @@ describe('rev.model', () => {
 
         it('should not throw if a constructor is passed', () => {
             expect(() => {
-                checkIsModelConstructor(class MyModel extends Model {});
+                checkIsModelConstructor(class MyModel {});
             }).to.not.throw();
         });
 
@@ -28,12 +27,6 @@ describe('rev.model', () => {
                 }).to.throw(errorMessage);
             expect(() => { checkIsModelConstructor({name: 'Fred'} as any);
                 }).to.throw(errorMessage);
-        });
-
-        it('should throw if class does not extend Model', () => {
-            expect(() => {
-                checkIsModelConstructor(class MyModel {});
-            }).to.throw('Models must extend the rev-models.Model class');
         });
 
     });

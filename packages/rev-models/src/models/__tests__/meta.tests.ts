@@ -3,16 +3,15 @@ import { initialiseMeta, checkMetadataInitialised, IModelMeta } from '../meta';
 import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
 import * as d from '../../decorators';
-import { Model } from '../model';
 import { ModelManager } from '../../models/manager';
 
-class TestModel extends Model {
+class TestModel {
     id: number = 1;
     name: string = 'A Test Model';
     date: Date = new Date();
 }
 
-class TestModel2 extends Model {}
+class TestModel2 {}
 
 function getAnyObject() {
     return Object.assign({});
@@ -171,7 +170,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('creates metadata as expected when only decorators are used', () => {
-        class MyClass extends Model {
+        class MyClass {
             @d.IntegerField()
                 id: number;
             @d.TextField()
@@ -185,7 +184,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('decorator metadata is added to empty metadata', () => {
-        class MyClass extends Model {
+        class MyClass {
             @d.IntegerField()
                 id: number;
             @d.TextField()
@@ -199,7 +198,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('decorator metadata is added to existing metadata', () => {
-        class MyClass extends Model {
+        class MyClass {
             @d.IntegerField()
                 id: number;
             @d.TextField()
@@ -218,7 +217,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('does not removes the __fields property', () => {
-        class MyClass extends Model {
+        class MyClass {
             @d.TextField()
                 name: string;
         }
@@ -228,7 +227,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('meta.primaryKey defaults to []', () => {
-        class MyClass extends Model {
+        class MyClass {
             @d.IntegerField()
                 id: number;
             @d.TextField()
@@ -239,7 +238,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('fields with primaryKey set are added to meta.primaryKey', () => {
-        class MyClass extends Model {
+        class MyClass {
             @d.IntegerField({primaryKey: true})
                 id: number;
             @d.TextField({primaryKey: true})
@@ -250,7 +249,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('fields with primaryKey set are merged with existing meta.primaryKey', () => {
-        class MyClass extends Model {
+        class MyClass {
             @d.IntegerField({primaryKey: true})
                 id: number;
             @d.TextField()
@@ -264,7 +263,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('meta.primaryKey is left untouched if fields do not override it', () => {
-        class MyClass extends Model {
+        class MyClass {
             @d.IntegerField()
                 id: number;
             @d.TextField()
@@ -278,7 +277,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('throws if meta.primaryKey is not an array', () => {
-        class MyClass extends Model {
+        class MyClass {
             @d.IntegerField()
                 id: number;
             @d.TextField()
@@ -292,7 +291,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('throws if an invalid field name is in meta.primaryKey', () => {
-        class MyClass extends Model {
+        class MyClass {
             @d.IntegerField()
                 id: number;
             @d.TextField()
@@ -307,7 +306,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('throws an error if for some reason prototype.__fields is not an array', () => {
-        class MyClass extends Model {}
+        class MyClass {}
         (MyClass.prototype as any).__fields = 'flibble';
         expect(() => {
             initialiseMeta(testManager, MyClass);
@@ -315,7 +314,7 @@ describe('initialiseMeta() - with decorators', () => {
     });
 
     it('throws an error if meta.fields is not an array', () => {
-        class MyClass extends Model {
+        class MyClass {
             @d.TextField()
                 name: string;
         }

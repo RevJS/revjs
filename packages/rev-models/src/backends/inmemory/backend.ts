@@ -2,7 +2,7 @@
 import { IBackend } from '../';
 import { IModelMeta } from '../../models/meta';
 import { ModelOperationResult } from '../../operations/operationresult';
-import { Model } from '../../models/model';
+import { IModel } from '../../models/model';
 import { ICreateOptions, ICreateMeta } from '../../operations/create';
 import { IUpdateOptions, IUpdateMeta } from '../../operations/update';
 import { IReadOptions, IReadMeta } from '../../operations/read';
@@ -28,7 +28,7 @@ export class InMemoryBackend implements IBackend {
         this._storage = {};
     }
 
-    load<T extends Model>(manager: ModelManager, model: new(...args: any[]) => T, data: any[], result: ModelOperationResult<T, null>): Promise<ModelOperationResult<T, null>> {
+    load<T extends IModel>(manager: ModelManager, model: new(...args: any[]) => T, data: any[]): Promise<ModelOperationResult<T, null>> {
         return new Promise<ModelOperationResult<T, null>>((resolve) => {
 
             let meta = manager.getModelMeta(model);
@@ -45,13 +45,11 @@ export class InMemoryBackend implements IBackend {
                 this._writeFields('create', srcData, meta, record);
                 modelStorage.push(record);
             }
-
-            resolve(result);
-
+            resolve();
         });
     }
 
-    create<T extends Model>(manager: ModelManager, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
+    create<T extends IModel>(manager: ModelManager, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
         return new Promise<ModelOperationResult<T, ICreateMeta>>((resolve) => {
 
             let meta = manager.getModelMeta(model);
@@ -61,13 +59,15 @@ export class InMemoryBackend implements IBackend {
             this._writeFields('create', model, meta, record);
             modelStorage.push(record);
 
-            result.result = new meta.ctor(record);
+            result.result = new meta.ctor();
+            Object.assign(result.result, record);
+
             resolve(result);
 
         });
     }
 
-    update<T extends Model>(manager: ModelManager, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+    update<T extends IModel>(manager: ModelManager, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
         return new Promise<ModelOperationResult<T, IUpdateMeta>>((resolve) => {
 
             if (!where) {
@@ -93,7 +93,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    read<T extends Model>(manager: ModelManager, model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+    read<T extends IModel>(manager: ModelManager, model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
         return new Promise<ModelOperationResult<T, IReadMeta>>((resolve) => {
 
             let meta = manager.getModelMeta(model);
@@ -114,7 +114,9 @@ export class InMemoryBackend implements IBackend {
             result.results = [];
             for (let record of modelStorage) {
                 if (query.testRecord(record)) {
-                    result.results.push(new model(record));
+                    let modelInstance = new model();
+                    Object.assign(modelInstance, record);
+                    result.results.push(modelInstance);
                 }
             }
             if (options.order_by) {
@@ -133,7 +135,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    remove<T extends Model>(manager: ModelManager, model: T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+    remove<T extends IModel>(manager: ModelManager, model: T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
         return new Promise<ModelOperationResult<T, IRemoveMeta>>((resolve, reject) => {
 
             if (!where) {
@@ -163,7 +165,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    exec<R>(manager: ModelManager, model: Model, method: string, argObj: IExecArgs, result: ModelOperationResult<R, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
+    exec<R>(manager: ModelManager, model: IModel, method: string, argObj: IExecArgs, result: ModelOperationResult<R, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
         return Promise.reject(new Error('InMemoryBackend.exec() not supported'));
     }
 
@@ -188,7 +190,7 @@ export class InMemoryBackend implements IBackend {
         return ++this._sequences[meta.name][field];
     }
 
-    _writeFields<T extends Model>(operation: string, model: T, meta: IModelMeta<any>, target: any, fields?: string[]): void {
+    _writeFields<T extends IModel>(operation: string, model: T, meta: IModelMeta<any>, target: any, fields?: string[]): void {
         let fieldList = fields ? fields : Object.keys(meta.fieldsByName);
         for (let fieldName of fieldList) {
 

@@ -2,28 +2,27 @@
 import { expect } from 'chai';
 import rewire = require('rewire');
 
-import { Model } from '../../models/model';
 import * as d from '../../decorators';
 import * as remove from '../remove';
 import { MockBackend } from './mock-backend';
 import { DEFAULT_REMOVE_OPTIONS, IRemoveOptions } from '../remove';
 import { ModelManager } from '../../models/manager';
 
-class TestModel extends Model {
+class TestModel {
     @d.TextField({ primaryKey: true })
         name: string;
     @d.IntegerField()
         age: number;
 }
 
-class TestModel2 extends Model {
+class TestModel2 {
     @d.TextField({ primaryKey: true, required: false })
         name: string;
 }
 
-class UnregisteredModel extends Model {}
+class UnregisteredModel {}
 
-class ModelWithNoPK extends Model {
+class ModelWithNoPK {
     @d.TextField()
         name: string;
     @d.IntegerField()
@@ -51,7 +50,8 @@ describe('rev.operations.remove()', () => {
     });
 
     it('calls backend.remove() and returns successful result if model is valid', () => {
-        let model = new TestModel({ name: 'bob', age: 21 });
+        let model = new TestModel();
+        Object.assign(model, { name: 'bob', age: 21 });
         return rwRemove.remove(manager, model, options)
             .then((res) => {
                 expect(mockBackend.removeStub.callCount).to.equal(1);
@@ -63,7 +63,8 @@ describe('rev.operations.remove()', () => {
     });
 
     it('calls backend.remove() with DEFAULT_REMOVE_OPTIONS if no options are set', () => {
-        let model = new TestModel({ name: 'bob', age: 21 });
+        let model = new TestModel();
+        Object.assign(model, { name: 'bob', age: 21 });
         let testOpts = Object.assign({}, DEFAULT_REMOVE_OPTIONS, options);
         return rwRemove.remove(manager, model, options)
             .then((res) => {
@@ -76,7 +77,8 @@ describe('rev.operations.remove()', () => {
     });
 
     it('calls backend.remove() with overridden options if they are set', () => {
-        let model = new TestModel({ name: 'bob', age: 21 });
+        let model = new TestModel();
+        Object.assign(model, { name: 'bob', age: 21 });
         (options as any).someKey = 10;
         return rwRemove.remove(manager, model, options)
             .then((res) => {
@@ -89,7 +91,8 @@ describe('rev.operations.remove()', () => {
     });
 
     it('calls backend.remove() with primary key where clause when opts.where is not set', () => {
-        let model = new TestModel({ name: 'bob', age: 21 });
+        let model = new TestModel();
+        Object.assign(model, { name: 'bob', age: 21 });
         return rwRemove.remove(manager, model)
             .then((res) => {
                 expect(mockBackend.removeStub.callCount).to.equal(1);
@@ -139,7 +142,8 @@ describe('rev.operations.remove()', () => {
     });
 
     it('rejects with any operation errors added by the backend', () => {
-        let model = new TestModel({ name: 'bob', age: 21 });
+        let model = new TestModel();
+        Object.assign(model, { name: 'bob', age: 21 });
         mockBackend.errorsToAdd = ['some_backend_error'];
         return rwRemove.remove(manager, model, options)
             .then((res) => { throw new Error('expected reject'); })
@@ -153,7 +157,8 @@ describe('rev.operations.remove()', () => {
     });
 
     it('rejects with expected error when backend.remove rejects', () => {
-        let model = new TestModel({ name: 'bob', age: 21 });
+        let model = new TestModel();
+        Object.assign(model, { name: 'bob', age: 21 });
         let expectedError = new Error('epic fail!');
         mockBackend.errorToThrow = expectedError;
         return rwRemove.remove(manager, model, options)

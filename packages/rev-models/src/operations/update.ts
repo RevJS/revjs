@@ -1,6 +1,6 @@
 
 import { IValidationOptions, validate } from './validate';
-import { Model } from '../models/model';
+import { IModel } from '../models/model';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { IModelOperation } from './operation';
 import { ModelManager } from '../models/manager';
@@ -18,10 +18,10 @@ export interface IUpdateMeta extends IOperationMeta {
 
 export const DEFAULT_UPDATE_OPTIONS: IUpdateOptions = {};
 
-export function update<T extends Model>(manager: ModelManager, model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+export function update<T extends IModel>(manager: ModelManager, model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
     return new Promise((resolve, reject) => {
 
-        if (typeof model != 'object' || !(model instanceof Model)) {
+        if (typeof model != 'object') {
             throw new Error('Specified model is not a Model instance');
         }
 

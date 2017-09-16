@@ -6,7 +6,7 @@ import { ValueListOperator } from './nodes/valuelist';
 
 import { IQueryParser, IQueryNode, IOperatorRegister } from './types';
 import { printObj } from '../utils/index';
-import { Model } from '../models/model';
+import { IModel } from '../models/model';
 import { ModelManager } from '../models/manager';
 
 export class QueryParser implements IQueryParser {
@@ -42,7 +42,7 @@ export class QueryParser implements IQueryParser {
         Object.assign(this.FIELD_OPERATORS, operators);
     }
 
-    getQueryNodeForQuery<T extends Model>(
+    getQueryNodeForQuery<T extends IModel>(
             model: new() => T,
             value: object,
             parent?: IQueryNode<T>): IQueryNode<T> {

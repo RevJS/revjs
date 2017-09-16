@@ -1,9 +1,9 @@
 import { QueryNode } from './query';
 import { IQueryParser, IQueryNode } from '../types';
 import { isFieldValue } from '../utils';
-import { Model } from '../../models/model';
+import { IModel } from '../../models/model';
 
-export class ValueOperator<T extends Model> extends QueryNode<T> {
+export class ValueOperator<T extends IModel> extends QueryNode<T> {
 
     constructor(
             parser: IQueryParser,

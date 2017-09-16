@@ -1,8 +1,8 @@
 
-import { Model } from '../models/model';
+import { IModel } from '../models/model';
 import { ModelManager } from '../models/manager';
 
-export interface IQueryNode<T extends Model> {
+export interface IQueryNode<T extends IModel> {
     operator: string;
     parent: IQueryNode<T>;
     children: Array<IQueryNode<T>>;
@@ -11,7 +11,7 @@ export interface IQueryNode<T extends Model> {
 export interface IOperatorRegister {
     [operator: string]: new(
             parser: IQueryParser,
-            model: new() => Model,
+            model: new() => IModel,
             operator: string,
             value: any,
             parent: IQueryNode<any>) => IQueryNode<any>;
@@ -25,7 +25,7 @@ export interface IQueryParser {
     registerFieldOperators(operators: IOperatorRegister): void;
     registerConjunctionOperators(operators: IOperatorRegister): void;
 
-    getQueryNodeForQuery<T extends Model>(
+    getQueryNodeForQuery<T extends IModel>(
         model: new() => T,
         value: any,
         parent?: IQueryNode<T>): IQueryNode<T>;

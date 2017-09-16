@@ -1,5 +1,5 @@
 
-import { Model } from '../models/model';
+import { IModel } from '../models/model';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { ModelManager } from '../models/manager';
 import { IModelOperation } from './operation';
@@ -21,10 +21,10 @@ export const DEFAULT_EXEC_OPTIONS: IExecOptions = {
     validate: true
 };
 
-export function exec<R>(manager: ModelManager, model: Model, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
+export function exec<R>(manager: ModelManager, model: IModel, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
     return new Promise((resolve, reject) => {
 
-        if (typeof model != 'object' || !(model instanceof Model)) {
+        if (typeof model != 'object') {
             throw new Error('Specified model is not a Model instance');
         }
         if (!method || typeof method != 'string') {
