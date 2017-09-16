@@ -1,14 +1,12 @@
 
 import { Model } from '../models/model';
-import { IValidationOptions, validate } from './validate';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { ModelManager } from '../models/manager';
 import { IModelOperation } from './operation';
 import { isSet } from '../utils/index';
 
 export interface IExecOptions {
-    validation?: IValidationOptions;
-    validate?: boolean;
+    // For future use
 }
 
 export interface IExecMeta extends IOperationMeta {
@@ -42,17 +40,6 @@ export function exec<R>(manager: ModelManager, model: Model, method: string, arg
         let operationResult = new ModelOperationResult<R, IExecMeta>(operation);
 
         let promise = Promise.resolve();
-        if (opts.validate) {
-            promise = validate(manager, model, operation, opts.validation ? opts.validation : null)
-                .then((validationResult) => {
-                    if (!validationResult.valid) {
-                        throw operationResult.createValidationError(validationResult);
-                    }
-                    else {
-                        operationResult.validation = validationResult;
-                    }
-                });
-        }
 
         promise
             .then(() => {

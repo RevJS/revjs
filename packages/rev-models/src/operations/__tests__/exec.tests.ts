@@ -96,19 +96,7 @@ describe('rev.operations.exec()', () => {
             return rwExec.exec(manager, model, 'testMethod');
         });
 
-        it('fail validation if validate = true and model is not valid', () => {
-            let model = new TestModel();
-            return rwExec.exec(manager, model, 'testMethod')
-                .then(() => { throw new Error('expected to reject'); })
-                .catch((err) => {
-                    expect(err.message).to.contain('ValidationError');
-                    let fieldErrors = err.result.validation.fieldErrors;
-                    expect(fieldErrors).to.have.property('name');
-                    expect(fieldErrors['name'][0].code).to.equal('required');
-                });
-        });
-
-        it('does not fail validation for invalid model if validate = false', () => {
+        it('does not fail validation for invalid model', () => {
             let model = new TestModel();
             return rwExec.exec(manager, model, 'testMethod', null, { validate: false });
         });
