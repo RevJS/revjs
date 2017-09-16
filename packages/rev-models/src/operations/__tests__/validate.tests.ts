@@ -143,6 +143,17 @@ describe('validate()', () => {
             });
     });
 
+    it('should return a valid result if model has no validate method', () => {
+
+        TestModel.prototype.validate = undefined;
+
+        return validate(manager, validModel, {operation: 'create'})
+            .then((res) => {
+                expect(res.valid).to.equal(true);
+                expect(res.fieldErrors).to.deep.equal({});
+            });
+    });
+
     it('should return a valid result if model.validate does not set an error', () => {
 
         TestModel.prototype.validate = () => undefined;
@@ -182,6 +193,17 @@ describe('validate()', () => {
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('Validator epic fail...');
+            });
+    });
+
+    it('should return a valid result if model has no validateAsync method', () => {
+
+        TestModel.prototype.validateAsync = undefined;
+
+        return validate(manager, validModel, {operation: 'create'})
+            .then((res) => {
+                expect(res.valid).to.equal(true);
+                expect(res.fieldErrors).to.deep.equal({});
             });
     });
 

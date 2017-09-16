@@ -54,7 +54,7 @@ describe('rev.backends.inmemory', () => {
     describe('read() - with data', () => {
 
         beforeEach(() => {
-            return backend.load(manager, TestModel, testData, loadResult);
+            return backend.load(manager, TestModel, testData);
         });
 
         it('returns all records when where clause = {}', () => {

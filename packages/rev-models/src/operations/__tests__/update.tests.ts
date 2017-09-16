@@ -127,15 +127,6 @@ describe('rev.operations.update()', () => {
             });
     });
 
-    it('rejects when model is not an instance of Model', () => {
-        let model = {test: 1};
-        return rwUpdate.update(manager, model as any)
-            .then(() => { throw new Error('expected to reject'); })
-            .catch((err) => {
-                expect(err.message).to.contain('Specified model is not a Model instance');
-            });
-    });
-
     it('rejects if model is not registered', () => {
         let model = new UnregisteredModel();
         return rwUpdate.update(manager, model)

@@ -37,8 +37,12 @@ export function validate<T extends IModel>(manager: ModelManager, model: T, oper
         Promise.all(promises)
             .then(() => {
                 // Trigger model validation
-                model.validate({ operation, result, options });
-                return model.validateAsync({ operation, result, options });
+                if (typeof model.validate == 'function') {
+                    model.validate({ operation, result, options });
+                }
+                if (typeof model.validateAsync == 'function') {
+                    return model.validateAsync({ operation, result, options });
+                }
             })
             .then(() => {
                 resolve(result);

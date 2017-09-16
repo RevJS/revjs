@@ -30,7 +30,9 @@ describe('rev.backends.inmemory', () => {
     describe('update() - with no data', () => {
 
         it('returns with total_count = 0 when there is no data and where clause = {}', () => {
-            let model = new TestModel({ id: 1, name: 'bob' });
+            let model = new TestModel();
+            model.id = 1;
+            model.name = 'bob';
             return backend.update(manager, model, {}, updateResult, options)
                 .then((res) => {
                     expect(res.success).to.be.true;
@@ -41,7 +43,9 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('returns with total_count = 0 when there is no data and where clause sets a filter', () => {
-            let model = new TestModel({ id: 1, name: 'bob' });
+            let model = new TestModel();
+            model.id = 1;
+            model.name = 'bob';
             return backend.update(manager, model, { id: { $gte: 0 } }, updateResult, {})
                 .then((res) => {
                     expect(res.success).to.be.true;
@@ -56,7 +60,7 @@ describe('rev.backends.inmemory', () => {
     describe('update() - with data', () => {
 
         beforeEach(() => {
-            return backend.load(manager, TestModel, testData, loadResult)
+            return backend.load(manager, TestModel, testData)
             .then(() => {
                 // Assert that stored data matches testData
                 for (let i = 0; i < testData.length; i++) {
@@ -67,7 +71,8 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('updates all records with non-undefined model fields when where clause = {}', () => {
-            let model = new TestModel({ name: 'bob' });
+            let model = new TestModel();
+            model.name = 'bob';
             return backend.update(manager, model, {}, updateResult, options)
                 .then((res) => {
                     let storage = backend._storage['TestModel'];
@@ -85,7 +90,9 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('updates filtered records with non-undefined model fields when where clause is set', () => {
-            let model = new TestModel({ name: 'gertrude', gender: 'female' });
+            let model = new TestModel();
+            model.name = 'gertrude';
+            model.gender = 'female';
             return backend.update(manager, model, {
                 id: { $gt: 0, $lt: 3 }
             }, updateResult, {})
@@ -108,13 +115,12 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('updates records with specific fields when options.fields is set', () => {
-            let model = new TestModel({
-                id: 99,
-                name: 'gertrude',
-                gender: 'female',
-                age: 112,
-                newsletter: false
-            });
+            let model = new TestModel();
+            model.id = 99;
+            model.name = 'gertrude';
+            model.gender = 'female';
+            model.age = 112;
+            model.newsletter = false;
             return backend.update(manager, model, { id: 2 }, updateResult, {
                 fields: ['age']
             })

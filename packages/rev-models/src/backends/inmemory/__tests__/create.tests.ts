@@ -26,10 +26,9 @@ describe('rev.backends.inmemory', () => {
     describe('create()', () => {
 
         it('stores model data as a plain object and returns a new model instance', () => {
-            let model = new TestModel({
-                name: 'test model',
-                age: 20
-            });
+            let model = new TestModel();
+            model.name = 'test model';
+            model.age = 20;
             return backend.create(manager, model, createResult, DEFAULT_CREATE_OPTIONS)
                 .then((res) => {
                     expect(backend._storage['TestModel']).to.deep.equal([
@@ -48,14 +47,12 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('stores multiple records', () => {
-            let model1 = new TestModel({
-                name: 'test model 1',
-                age: 21
-            });
-            let model2 = new TestModel({
-                name: 'test model 2',
-                age: 22
-            });
+            let model1 = new TestModel();
+            model1.name = 'test model 1';
+            model1.age = 21;
+            let model2 = new TestModel();
+            model2.name = 'test model 2';
+            model2.age = 22;
             return Promise.all([
                 backend.create(manager, model1, createResult, DEFAULT_CREATE_OPTIONS),
                 backend.create(manager, model2, createResult2, DEFAULT_CREATE_OPTIONS)
