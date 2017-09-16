@@ -23,6 +23,10 @@ export function create<T extends Model>(manager: ModelManager, model: T, options
         }
 
         let meta = manager.getModelMeta(model);
+        if (!meta.stored) {
+            throw new Error('Cannot call create() on models with stored: false');
+        }
+
         let backend = manager.getBackend(meta.backend);
 
         let operation: IModelOperation = {

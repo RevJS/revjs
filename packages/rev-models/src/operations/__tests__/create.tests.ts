@@ -26,7 +26,10 @@ class TestModel extends Model {
         email: string;
 }
 
-class TestModel2 extends Model {}
+class TestModel2 extends Model {
+    @d.TextField({ required: false })
+        name: string;
+}
 
 let rewired = rewire('../create');
 let rwCreate: typeof create & typeof rewired = rewired as any;
@@ -106,6 +109,16 @@ describe('rev.operations.create()', () => {
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('is not registered');
+            });
+    });
+
+    it('rejects if model meta.stored is false', () => {
+        manager.register(TestModel2, { stored: false });
+        let model = new TestModel2();
+        return rwCreate.create(manager, model)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('Cannot call create() on models with stored: false');
             });
     });
 
