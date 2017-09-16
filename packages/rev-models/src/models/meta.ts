@@ -13,6 +13,7 @@ export interface IModelMeta<T> {
     };
     primaryKey?: string[];
     backend?: string;
+    stored?: boolean;
 }
 
 export const DISALLOWED_FIELD_NAMES = [
@@ -79,6 +80,7 @@ export function initialiseMeta<T extends Model>(manager: ModelManager, model: ne
     }
     meta.label = meta.label ? meta.label : meta.name;
     meta.backend = meta.backend ? meta.backend : 'default';
+    meta.stored = (meta.stored === undefined) ? true : meta.stored ? true : false;
     meta.ctor = model;
     meta.fieldsByName = {};
 

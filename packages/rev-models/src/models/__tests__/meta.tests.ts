@@ -110,6 +110,24 @@ describe('initialiseMeta()', () => {
         expect(testModel2MetaRes.label).to.equal('Awesome Entity');
     });
 
+    it('should set meta.stored (true if not defined)', () => {
+        testModelMeta.stored = undefined;
+        testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
+        expect(testModelMetaRes.stored).to.equal(true);
+
+        testModelMeta.stored = false;
+        testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
+        expect(testModelMetaRes.stored).to.equal(false);
+
+        testModelMeta.stored = true;
+        testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
+        expect(testModelMetaRes.stored).to.equal(true);
+
+        testModelMeta.stored = 'truthy' as any;
+        testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
+        expect(testModelMetaRes.stored).to.equal(true);
+    });
+
     it('assigns meta.ctor to the class constructor', () => {
         testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
         expect(testModelMetaRes.ctor).to.equal(TestModel);
