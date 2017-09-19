@@ -9,6 +9,7 @@ export interface IValidationOptions {
 }
 
 export interface IValidationContext {
+    manager: ModelManager;
     operation: IModelOperation;
     result: ModelValidationResult;
     options?: IValidationOptions;
@@ -38,10 +39,10 @@ export function validate<T extends IModel>(manager: ModelManager, model: T, oper
             .then(() => {
                 // Trigger model validation
                 if (typeof model.validate == 'function') {
-                    model.validate({ operation, result, options });
+                    model.validate({ manager, operation, result, options });
                 }
                 if (typeof model.validateAsync == 'function') {
-                    return model.validateAsync({ operation, result, options });
+                    return model.validateAsync({ manager, operation, result, options });
                 }
             })
             .then(() => {
