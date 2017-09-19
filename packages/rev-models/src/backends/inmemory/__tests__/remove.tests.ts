@@ -41,7 +41,8 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('returns with total_count = 0 when there is no data and where clause sets a filter', () => {
-            let model = new TestModel({ id: 1 });
+            let model = new TestModel();
+            model.id = 1;
             return backend.remove(manager, model, { id: 1 }, removeResult, {})
                 .then((res) => {
                     expect(res.success).to.be.true;
@@ -56,7 +57,7 @@ describe('rev.backends.inmemory', () => {
     describe('remove() - with data', () => {
 
         beforeEach(() => {
-            return backend.load(manager, TestModel, testData, loadResult)
+            return backend.load(manager, TestModel, testData)
             .then(() => {
                 // Assert that stored data matches testData
                 for (let i = 0; i < testData.length; i++) {
@@ -67,7 +68,8 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('removes all records when where clause = {}', () => {
-            let model = new TestModel({ name: 'bob' });
+            let model = new TestModel();
+            model.name = 'bob';
             expect(backend._storage['TestModel']).to.have.length(5);
             return backend.remove(manager, model, {}, removeResult, options)
                 .then((res) => {

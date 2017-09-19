@@ -43,7 +43,7 @@ describe('rev.backends.inmemory', () => {
     describe('load()', () => {
 
         it('populates InMemoryBackend._storage with a copy of passed data', () => {
-            return backend.load(manager, TestModel, testData, loadResult)
+            return backend.load(manager, TestModel, testData)
                 .then(() => {
                     expect(backend._storage['TestModel']).to.deep.equal(testData);
                     expect(backend._storage['TestModel']).not.to.equal(testData);
@@ -52,7 +52,7 @@ describe('rev.backends.inmemory', () => {
 
         it('rejects if passed data is not an array of objects', () => {
             let badData = ['a', 'b', 'b', 1, 2, 3];
-            return backend.load(manager, TestModel, badData as any, loadResult)
+            return backend.load(manager, TestModel, badData as any)
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('data must be an array of objects');

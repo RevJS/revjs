@@ -23,7 +23,7 @@ describe('validate()', () => {
         }
 
         validate(vc: IValidationContext) {}
-        validateAsync(vc: IValidationContext) {}
+        validateAsync(vc: IValidationContext): any {}
 
         constructor(data: any) {
             Object.assign(this, data);
