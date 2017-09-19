@@ -6,7 +6,7 @@ import * as sinon from 'sinon';
 import * as d from '../../decorators';
 import * as exec from '../exec';
 import { MockBackend } from './mock-backend';
-import { IExecOptions } from '../exec';
+import { IExecOptions, IMethodContext } from '../exec';
 import { ModelManager } from '../../models/manager';
 import { ModelOperationResult } from '../operationresult';
 
@@ -94,15 +94,19 @@ describe('rev.operations.exec()', () => {
 
     describe('synchronous model methods', () => {
 
-        it('calls model method when it exists and passes argObj and operationResult', () => {
+        it('calls model method when it exists and passes IMethodContext', () => {
             let model = new TestModel();
             model.name = 'Joe';
             model.testMethod = callSpy;
             return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
                 .then((res) => {
                     expect(callSpy.callCount).to.equal(1);
-                    expect(callSpy.args[0][0]).to.equal(testArgs);
-                    expect(callSpy.args[0][1]).to.be.instanceof(ModelOperationResult);
+                    expect(callSpy.args[0][0]).to.deep.equal({
+                        manager: manager,
+                        args: testArgs,
+                        result: res,
+                        options: { validate: false }
+                    });
                     expect(mockBackend.execStub.callCount).to.equal(0);
                 });
         });
@@ -145,10 +149,10 @@ describe('rev.operations.exec()', () => {
         it('when a ModelOperationResult is returned, it is passed on', () => {
             let model = new TestModel();
             model.name = 'Joe';
-            model.testMethod = (argObj: any, result: ModelOperationResult<any, any>) => {
-                result.addError('oh noes!');
-                result.result = 'some custom result';
-                return result;
+            model.testMethod = (mc: IMethodContext<any>) => {
+                mc.result.addError('oh noes!');
+                mc.result.result = 'some custom result';
+                return mc.result;
             };
             return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
                 .then((res) => {
@@ -202,10 +206,10 @@ describe('rev.operations.exec()', () => {
         it('when a ModelOperationResult is returned, it is passed on', () => {
             let model = new TestModel();
             model.name = 'Joe';
-            model.testMethod = (argObj: any, result: ModelOperationResult<any, any>) => {
-                result.addError('oh noes!');
-                result.result = 'some custom result';
-                return Promise.resolve(result);
+            model.testMethod = (mc: IMethodContext<any>) => {
+                mc.result.addError('oh noes!');
+                mc.result.result = 'some custom result';
+                return Promise.resolve(mc.result);
             };
             return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
                 .then((res) => {

@@ -17,11 +17,18 @@ export interface IExecArgs {
     [key: string]: any;
 }
 
+export interface IMethodContext<T> {
+    manager: ModelManager;
+    args: IExecArgs;
+    result: ModelOperationResult<T, IExecMeta>;
+    options?: IExecOptions;
+}
+
 export const DEFAULT_EXEC_OPTIONS: IExecOptions = {
-    validate: true
+    // For future use
 };
 
-export function exec<R>(manager: ModelManager, model: IModel, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
+export function exec<R>(manager: ModelManager, model: IModel, method: string, args?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
     return new Promise((resolve, reject) => {
 
         if (typeof model != 'object') {
@@ -37,30 +44,29 @@ export function exec<R>(manager: ModelManager, model: IModel, method: string, ar
         let operation: IModelOperation = {
             operation: method
         };
-        let operationResult = new ModelOperationResult<R, IExecMeta>(operation);
+        let result = new ModelOperationResult<R, IExecMeta>(operation);
+        let ctx: IMethodContext<R> = { manager, args, result, options };
 
-        let promise = Promise.resolve();
-
-        promise
+        Promise.resolve()  // TODO: improve this...
             .then(() => {
                 if (model[method]) {
                     if (typeof model[method] != 'function') {
                         throw new Error(`${model.constructor.name}.${method} is not a function`);
                     }
-                    return model[method].call(model, argObj, operationResult);
+                    return model[method].call(model, ctx);
                 }
                 else {
                     let backend = manager.getBackend(meta.backend);
-                    return backend.exec(manager, model, method, argObj, operationResult, opts);
+                    return backend.exec(manager, model, method, args, result, opts);
                 }
             })
             .then((res) => {
                 if (!isSet(res)) {
-                    resolve(operationResult);
+                    resolve(result);
                 }
                 else if (!(res instanceof ModelOperationResult)) {
-                    operationResult.result = res;
-                    resolve(operationResult);
+                    result.result = res;
+                    resolve(result);
                 }
                 else {
                     resolve(res);
