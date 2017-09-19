@@ -1,35 +1,35 @@
 
-import { ModelRegistry, Model } from 'rev-models';
+import { ModelManager, IModel } from 'rev-models';
 import { IApiMeta, initialiseApiMeta } from '../api/meta';
 import { getGraphQLSchema } from '../graphql/schema';
 import { GraphQLSchema } from 'graphql';
 
 import { IApiDefinition } from '../api/definition';
 
-export class ModelApiRegistry {
+export class ModelApiManager {
 
-    modelRegistry: ModelRegistry;
+    modelManager: ModelManager;
     _apiMeta: {
         [modelName: string]: IApiMeta
     };
 
-    constructor(modelRegistry: ModelRegistry) {
-        if (typeof modelRegistry != 'object' || !(modelRegistry instanceof ModelRegistry)) {
-            throw new Error(`ApiRegistryError: Invalid ModelRegistry passed in constructor.`);
+    constructor(modelManager: ModelManager) {
+        if (typeof modelManager != 'object' || !(modelManager instanceof ModelManager)) {
+            throw new Error(`ApiManagerError: Invalid ModelManager passed in constructor.`);
         }
-        this.modelRegistry = modelRegistry;
+        this.modelManager = modelManager;
         this._apiMeta = {};
     }
 
-    getModelRegistry() {
-        return this.modelRegistry;
+    getModelManager() {
+        return this.modelManager;
     }
 
     isRegistered(modelName: string) {
         return (modelName && (modelName in this._apiMeta));
     }
 
-    register<T extends Model>(apiDefinition: IApiDefinition<T>) {
+    register<T extends IModel>(apiDefinition: IApiDefinition<T>) {
         // Add api meta to the registry if valid
         let apiMeta = initialiseApiMeta(this, apiDefinition);
         this._apiMeta[apiDefinition.model.name] = apiMeta;
@@ -52,7 +52,7 @@ export class ModelApiRegistry {
 
     getApiMeta(modelName: string): IApiMeta {
         if (!(modelName in this._apiMeta)) {
-            throw new Error(`ApiRegistryError: Model '${modelName}' does not have a registered API.`);
+            throw new Error(`ApiManagerError: Model '${modelName}' does not have a registered API.`);
         }
         return this._apiMeta[modelName];
     }
@@ -61,7 +61,7 @@ export class ModelApiRegistry {
         return getGraphQLSchema(this);
     }
 
-    clearRegistry() {
+    clearManager() {
         this._apiMeta = {};
     }
 }

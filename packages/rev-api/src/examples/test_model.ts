@@ -1,7 +1,7 @@
 
 import * as rev from 'rev-models';
 
-export class Person extends rev.Model {
+export class Person {
 
     @rev.TextField({label: 'First Name'})
         first_name: string;
@@ -17,6 +17,6 @@ export class Person extends rev.Model {
         date_registered: Date;
 }
 
-export const models: rev.ModelRegistry = new rev.ModelRegistry();
+export const models: rev.ModelManager = new rev.ModelManager();
 models.registerBackend('default', new rev.InMemoryBackend());
 models.register(Person);

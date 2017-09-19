@@ -1,6 +1,6 @@
 
 import * as models from './models.fixture';
-import { ModelApiRegistry } from '../../registry/registry';
+import { ModelApiManager } from '../../api/manager';
 import { getGraphQLSchema } from '../schema';
 
 import { expect } from 'chai';
@@ -8,10 +8,10 @@ import { expect } from 'chai';
 describe('getGraphQLSchema()', () => {
 
     describe('query{} - API with no readable models', () => {
-        let api: ModelApiRegistry;
+        let api: ModelApiManager;
 
         before(() => {
-            api = new ModelApiRegistry(models.modelRegistry);
+            api = new ModelApiManager(models.modelManager);
         });
 
         it('should not have any models available for read', () => {

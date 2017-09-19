@@ -1,6 +1,5 @@
 
 import * as rev from 'rev-models';
-import * as registry from '../registry';
 
 import rewire = require('rewire');
 import * as sinon from 'sinon';
@@ -8,8 +7,9 @@ import * as sinon from 'sinon';
 import { IApiDefinition } from '../../api/definition';
 
 import { expect } from 'chai';
+import { ModelApiManager } from '../manager';
 
-class TestModel extends rev.Model {
+class TestModel {
     @rev.IntegerField()
         id: number = 1;
     @rev.TextField()
@@ -20,14 +20,14 @@ class TestModel extends rev.Model {
 
 let apiMeta: IApiDefinition<TestModel>;
 
-describe('ModelApiRegistry', () => {
-    let modelReg: rev.ModelRegistry;
-    let testApiReg: registry.ModelApiRegistry;
+describe('ModelApiManager', () => {
+    let models: rev.ModelManager;
+    let testApi: ModelApiManager;
 
     beforeEach(() => {
-        modelReg = new rev.ModelRegistry();
-        modelReg.registerBackend('default', new rev.InMemoryBackend());
-        testApiReg = new registry.ModelApiRegistry(modelReg);
+        models = new rev.ModelManager();
+        models.registerBackend('default', new rev.InMemoryBackend());
+        testApi = new ModelApiManager(models);
         apiMeta = {
             model: TestModel,
             operations: [ 'read' ]
@@ -36,17 +36,17 @@ describe('ModelApiRegistry', () => {
 
     describe('constructor()', () => {
 
-        it('successfully creates a registry', () => {
+        it('successfully creates a manager', () => {
             expect(() => {
-                testApiReg = new registry.ModelApiRegistry(modelReg);
+                testApi = new ModelApiManager(models);
             }).to.not.throw();
-            expect(testApiReg.getModelRegistry()).to.equal(modelReg);
+            expect(testApi.getModelManager()).to.equal(models);
         });
 
-        it('throws if not passed a ModelRegistry', () => {
+        it('throws if not passed a ModelManager', () => {
             expect(() => {
-                testApiReg = new registry.ModelApiRegistry(null);
-            }).to.throw('Invalid ModelRegistry passed in constructor');
+                testApi = new ModelApiManager(null);
+            }).to.throw('Invalid ModelManager passed in constructor');
         });
 
     });
@@ -54,21 +54,21 @@ describe('ModelApiRegistry', () => {
     describe('isRegistered()', () => {
 
         it('returns false when a model is not registered', () => {
-            expect(testApiReg.isRegistered('TestModel')).to.equal(false);
+            expect(testApi.isRegistered('TestModel')).to.equal(false);
         });
 
         it('returns true when a model is registered', () => {
-            modelReg.register(TestModel);
-            testApiReg.register(apiMeta);
-            expect(testApiReg.isRegistered('TestModel')).to.equal(true);
+            models.register(TestModel);
+            testApi.register(apiMeta);
+            expect(testApi.isRegistered('TestModel')).to.equal(true);
         });
 
         it('returns false when a non-string is passed for modelName', () => {
-            expect(testApiReg.isRegistered(22 as any)).to.equal(false);
+            expect(testApi.isRegistered(22 as any)).to.equal(false);
         });
 
         it('returns false when an object is passed for modelName', () => {
-            expect(testApiReg.isRegistered({test: 1} as any)).to.equal(false);
+            expect(testApi.isRegistered({test: 1} as any)).to.equal(false);
         });
 
     });
@@ -76,35 +76,35 @@ describe('ModelApiRegistry', () => {
     describe('register()', () => {
 
         it('adds a valid api to the registry', () => {
-            modelReg.register(TestModel);
-            testApiReg.register(apiMeta);
-            expect(testApiReg.getApiMeta('TestModel')).to.equal(apiMeta);
+            models.register(TestModel);
+            testApi.register(apiMeta);
+            expect(testApi.getApiMeta('TestModel')).to.equal(apiMeta);
         });
 
         it('rejects if api meta does not include a model constructor', () => {
             expect(() => {
-                testApiReg.register({} as any);
+                testApi.register({} as any);
             }).to.throw('ApiMetadataError');
         });
 
         it('throws an error if model has not been registered', () => {
             expect(() => {
-                testApiReg.register(apiMeta);
-            }).to.throw(`RegistryError`);
+                testApi.register(apiMeta);
+            }).to.throw(`ManagerError`);
         });
 
         it('throws an error if model already has an api registered', () => {
-            modelReg.register(TestModel);
-            testApiReg.register(apiMeta);
+            models.register(TestModel);
+            testApi.register(apiMeta);
             expect(() => {
-                testApiReg.register(apiMeta);
+                testApi.register(apiMeta);
             }).to.throw(`Model 'TestModel' already has a registered API`);
         });
 
         it('throws an error if api metadata is invalid', () => {
-            modelReg.register(TestModel);
+            models.register(TestModel);
             expect(() => {
-                testApiReg.register({} as any);
+                testApi.register({} as any);
             }).to.throw(`ApiMetadataError`);
         });
 
@@ -113,13 +113,13 @@ describe('ModelApiRegistry', () => {
     describe('getModelNames()', () => {
 
         it('returns an empty list when no model APIs are registered', () => {
-            expect(testApiReg.getModelNames()).to.deep.equal([]);
+            expect(testApi.getModelNames()).to.deep.equal([]);
         });
 
         it('returns list of model names that have APIs registered', () => {
-            modelReg.register(TestModel);
-            testApiReg.register(apiMeta);
-            expect(testApiReg.getModelNames()).to.deep.equal(['TestModel']);
+            models.register(TestModel);
+            testApi.register(apiMeta);
+            expect(testApi.getModelNames()).to.deep.equal(['TestModel']);
         });
 
     });
@@ -127,27 +127,27 @@ describe('ModelApiRegistry', () => {
     describe('getModelNamesByOperation()', () => {
 
         it('returns an empty list when no model APIs are registered', () => {
-            expect(testApiReg.getModelNamesByOperation('read')).to.deep.equal([]);
+            expect(testApi.getModelNamesByOperation('read')).to.deep.equal([]);
         });
 
         it('returns list of model names that have the specified method registered', () => {
             apiMeta = {
                 model: TestModel,
                 operations: [ 'read' ]
-            }
-            modelReg.register(TestModel);
-            testApiReg.register(apiMeta);
-            expect(testApiReg.getModelNamesByOperation('read')).to.deep.equal(['TestModel']);
+            };
+            models.register(TestModel);
+            testApi.register(apiMeta);
+            expect(testApi.getModelNamesByOperation('read')).to.deep.equal(['TestModel']);
         });
 
         it('does not return models that do not have the specified method registered', () => {
             apiMeta = {
                 model: TestModel,
                 operations: [ 'create' ]
-            }
-            modelReg.register(TestModel);
-            testApiReg.register(apiMeta);
-            expect(testApiReg.getModelNamesByOperation('read')).to.deep.equal([]);
+            };
+            models.register(TestModel);
+            testApi.register(apiMeta);
+            expect(testApi.getModelNamesByOperation('read')).to.deep.equal([]);
         });
 
     });
@@ -155,30 +155,30 @@ describe('ModelApiRegistry', () => {
     describe('getApiMeta()', () => {
 
         it('should return requested api meta', () => {
-            modelReg.register(TestModel);
-            testApiReg.register(apiMeta);
-            expect(testApiReg.getApiMeta('TestModel')).to.equal(apiMeta);
+            models.register(TestModel);
+            testApi.register(apiMeta);
+            expect(testApi.getApiMeta('TestModel')).to.equal(apiMeta);
         });
 
         it('should throw an error if the model does not have an api defined', () => {
-            modelReg.register(TestModel);
+            models.register(TestModel);
             expect(() => {
-                testApiReg.getApiMeta('TestModel');
+                testApi.getApiMeta('TestModel');
             }).to.throw(`Model 'TestModel' does not have a registered API`);
         });
 
     });
 
     describe('getGraphQLSchema()', () => {
-        let rwRegistry = rewire('../registry') as any;
+        let rwManager = rewire('../manager') as any;
         let schemaSpy = {
             getGraphQLSchema: sinon.stub().returns('test')
         };
-        rwRegistry.__set__('schema_1', schemaSpy);
+        rwManager.__set__('schema_1', schemaSpy);
 
         it('should return result of external getGraphQLSchema function', () => {
             expect(schemaSpy.getGraphQLSchema.callCount).to.equal(0);
-            let reg = new rwRegistry.ModelApiRegistry(modelReg);
+            let reg = new rwManager.ModelApiManager(models);
             expect(reg.getGraphQLSchema()).to.equal('test');
             expect(schemaSpy.getGraphQLSchema.callCount).to.equal(1);
             expect(schemaSpy.getGraphQLSchema.getCall(0).args[0]).to.equal(reg);

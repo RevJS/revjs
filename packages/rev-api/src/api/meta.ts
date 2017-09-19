@@ -1,9 +1,9 @@
 
-import { Model } from 'rev-models';
+import { IModel } from 'rev-models';
 import { fields } from 'rev-models';
 import { IApiMethod } from './method';
 import { IApiDefinition } from './definition';
-import { ModelApiRegistry } from '../registry/registry';
+import { ModelApiManager } from '../api/manager';
 import { STANDARD_OPERATIONS } from 'rev-models/lib/operations';
 
 export interface IApiMeta {
@@ -13,8 +13,8 @@ export interface IApiMeta {
     };
 }
 
-export function initialiseApiMeta<T extends Model>(
-        apiRegistry: ModelApiRegistry,
+export function initialiseApiMeta<T extends IModel>(
+        apiManager: ModelApiManager,
         apiMeta: IApiDefinition<T>): IApiMeta {
 
     // Check API Metadata
@@ -46,9 +46,9 @@ export function initialiseApiMeta<T extends Model>(
     }
 
     // Load model metadata
-    let modelMeta = apiRegistry.modelRegistry.getModelMeta(apiMeta.model);
-    if (apiRegistry.isRegistered(modelMeta.name)) {
-        throw new Error(`ApiRegistryError: Model '${modelMeta.name}' already has a registered API.`);
+    let modelMeta = apiManager.modelManager.getModelMeta(apiMeta.model);
+    if (apiManager.isRegistered(modelMeta.name)) {
+        throw new Error(`ApiManagerError: Model '${modelMeta.name}' already has a registered API.`);
     }
 
     // Configure API methods

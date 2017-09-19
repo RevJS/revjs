@@ -1,8 +1,8 @@
 
 import { IApiMethod } from './method';
-import { Model } from 'rev-models';
+import { IModel } from 'rev-models';
 
-export interface IApiDefinition<T extends Model> {
+export interface IApiDefinition<T extends IModel> {
     model: new(...args: any[]) => T;
     operations?: string[];
     methods?: {

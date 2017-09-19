@@ -1,6 +1,6 @@
 
 import * as rev from 'rev-models';
-import { ModelApiRegistry } from '../index';
+import { ModelApiManager } from '../index';
 
 import { Person, models } from './test_model';
 
@@ -8,7 +8,7 @@ import { Person, models } from './test_model';
 // import * as rev from 'rev-models';
 // import * as api from 'rev-api';
 
-let api = new ModelApiRegistry(models);
+let api = new ModelApiManager(models);
 
 api.register({
     model: Person,

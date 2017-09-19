@@ -1,9 +1,9 @@
 import * as rev from 'rev-models';
 
-export const modelRegistry = new rev.ModelRegistry();
-modelRegistry.registerBackend('default', new rev.InMemoryBackend());
+export const modelManager = new rev.ModelManager();
+modelManager.registerBackend('default', new rev.InMemoryBackend());
 
-export class User extends rev.Model {
+export class User {
     @rev.IntegerField()
         id: number = 1;
     @rev.TextField()
@@ -11,9 +11,9 @@ export class User extends rev.Model {
     @rev.DateField()
         date_registered: Date = new Date();
 }
-modelRegistry.register(User);
+modelManager.register(User);
 
-export class Post extends rev.Model {
+export class Post {
     @rev.IntegerField()
         id: number = 10;
     @rev.TextField()
@@ -25,7 +25,7 @@ export class Post extends rev.Model {
     @rev.DateTimeField()
         post_date: Date;
 }
-modelRegistry.register(Post);
+modelManager.register(Post);
 
-export const UserMeta = modelRegistry.getModelMeta('User');
-export const PostMeta = modelRegistry.getModelMeta('Post');
+export const UserMeta = modelManager.getModelMeta('User');
+export const PostMeta = modelManager.getModelMeta('Post');

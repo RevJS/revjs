@@ -4,10 +4,10 @@ import * as f from 'rev-models/lib/fields';
 import { initialiseApiMeta, IApiMeta } from '../meta';
 
 import { expect } from 'chai';
-import { ModelApiRegistry } from '../../registry/registry';
+import { ModelApiManager } from '../../api/manager';
 import { IApiDefinition } from '../definition';
 
-class TestModel extends rev.Model {
+class TestModel {
     id: number = 1;
     name: string = 'A Test Model';
     date: Date = new Date();
@@ -25,10 +25,10 @@ let testMeta: rev.IModelMeta<TestModel> = {
     ]
 };
 
-class UnRegModel extends rev.Model {}
+class UnRegModel {}
 
-let models: rev.ModelRegistry;
-let apiReg: ModelApiRegistry;
+let models: rev.ModelManager;
+let apiReg: ModelApiManager;
 
 let apiMetaDef: IApiDefinition<TestModel>;
 let apiMeta: IApiMeta;
@@ -36,10 +36,10 @@ let apiMeta: IApiMeta;
 describe('initialiseApiMeta() - system methods', () => {
 
     beforeEach(() => {
-        models = new rev.ModelRegistry();
+        models = new rev.ModelManager();
         models.registerBackend('default', new rev.InMemoryBackend());
         models.register(TestModel, testMeta);
-        apiReg = new ModelApiRegistry(models);
+        apiReg = new ModelApiManager(models);
         testMeta = models.getModelMeta(TestModel);
     });
 
@@ -104,7 +104,7 @@ describe('initialiseApiMeta() - system methods', () => {
             } as any;
             expect(() => {
                 initialiseApiMeta(apiReg, apiMetaDef);
-            }).to.throw('RegistryError');
+            }).to.throw('ManagerError');
         });
 
         it('throws an error if operations array contains invalid methods', () => {

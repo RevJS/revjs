@@ -1,4 +1,4 @@
-import { ModelApiRegistry } from '../registry/registry';
+import { ModelApiManager } from '../api/manager';
 import { IModelOperationResult } from 'rev-models/lib/operations/operationresult';
 
 import {
@@ -17,11 +17,11 @@ import { DummyModelType } from './types';
 import { GraphQLString } from 'graphql';
 
 
-export function getGraphQLSchema(registry: ModelApiRegistry): GraphQLSchema {
+export function getGraphQLSchema(manager: ModelApiManager): GraphQLSchema {
 
     const schema: any = {};
 
-    let readModels = registry.getModelNamesByOperation('read');
+    let readModels = manager.getModelNamesByOperation('read');
 
     let queries = {
         name: 'query',
@@ -55,8 +55,8 @@ export function getGraphQLSchema(registry: ModelApiRegistry): GraphQLSchema {
         name: 'mutation',
         fields: {}
     };
-    for (let modelName of registry.getModelNames()) {
-        let meta = registry.getApiMeta(modelName);
+    for (let modelName of manager.getModelNames()) {
+        let meta = manager.getApiMeta(modelName);
         for (let methodName in meta.methods) {
             let mutationName = modelName + '_' + methodName;
             mutations.fields[mutationName] = {
