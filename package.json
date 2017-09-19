@@ -8,18 +8,18 @@
     "test": "lerna run test"
   },
   "devDependencies": {
-    "lerna": "2.0.0-rc.5",
-    "@types/chai": "4.0.0",
-    "@types/mocha": "2.2.41",
+    "lerna": "2.2.0",
+    "@types/chai": "4.0.4",
+    "@types/mocha": "2.2.43",
     "@types/rewire": "2.5.28",
-    "@types/sinon": "2.3.0",
-    "chai": "4.0.1",
-    "mocha": "3.4.2",
+    "@types/sinon": "2.3.4",
+    "chai": "4.1.2",
+    "mocha": "3.5.3",
     "rewire": "2.5.2",
-    "sinon": "2.3.2",
-    "ts-node": "3.0.4",
-    "tslint": "5.4.2",
+    "sinon": "3.3.0",
+    "ts-node": "3.3.0",
+    "tslint": "5.7.0",
     "typedoc": "^0.8.0",
-    "typescript": "2.3.4"
+    "typescript": "2.5.2"
   }
 }

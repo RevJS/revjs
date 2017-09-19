@@ -46,7 +46,7 @@ export class MockBackend implements IBackend {
         return this.getReturnValue(result);
     }
 
-    exec<T extends IModel>(manager: ModelManager, model: T, method: string, argObj: IExecArgs, result: ModelOperationResult<T, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<T, IExecMeta>> {
+    exec<R>(manager: ModelManager, model: IModel, method: string, argObj: IExecArgs, result: ModelOperationResult<R, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
         this.addErrors(result);
         this.execStub.apply(null, arguments);
         return this.getReturnValue(result);

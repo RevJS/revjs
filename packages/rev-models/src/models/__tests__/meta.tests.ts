@@ -353,7 +353,7 @@ describe('checkMetadataInitialised()', () => {
         let nonObjects = [undefined, null, 22, 'string'];
         for (let obj of nonObjects) {
             expect(() => {
-                testModelMeta = obj;
+                testModelMeta = obj as any;
                 checkMetadataInitialised(TestModel);
             }).to.throw(notInitedMsg);
         }

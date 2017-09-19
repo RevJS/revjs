@@ -69,7 +69,7 @@ describe('rev.fields.field', () => {
 
         it('throws an error if options is not an object', () => {
             expect(() => {
-                new Field('name', () => '33');
+                new Field('name', (() => '33') as any);
             }).to.throw('the options parameter must be an object');
         });
 
