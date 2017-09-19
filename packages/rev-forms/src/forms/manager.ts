@@ -1,21 +1,21 @@
 
-import { Model, ModelRegistry } from 'rev-models';
+import { IModel, ModelManager } from 'rev-models';
 import { IFormMeta, checkFormMeta } from '../forms/meta';
 
-export class ModelFormRegistry {
+export class ModelFormManager {
 
-    modelRegistry: ModelRegistry;
+    modelManager: ModelManager;
     _formMeta: {
         [modelName: string]: {
             [formName: string]: IFormMeta
         }
     };
 
-    constructor(modelRegistry: ModelRegistry) {
-        if (typeof modelRegistry != 'object' || !(modelRegistry instanceof ModelRegistry)) {
-            throw new Error(`ApiRegistryError: Invalid ModelRegistry passed in constructor.`);
+    constructor(modelManager: ModelManager) {
+        if (typeof modelManager != 'object' || !(modelManager instanceof ModelManager)) {
+            throw new Error(`ApiManagerError: Invalid ModelManager passed in constructor.`);
         }
-        this.modelRegistry = modelRegistry;
+        this.modelManager = modelManager;
         this._formMeta = {};
     }
 
@@ -25,31 +25,31 @@ export class ModelFormRegistry {
                 && (formName in this._formMeta[modelName]));
     }
 
-    public register<T extends Model>(model: new() => T, formName: string, formMeta: IFormMeta) {
+    public register<T extends IModel>(model: new() => T, formName: string, formMeta: IFormMeta) {
 
         // Check model constructor
         if (!model || !model.name) {
-            throw new Error(`FormRegistryError: Invalid model specified.`);
+            throw new Error(`FormManagerError: Invalid model specified.`);
         }
 
         let modelName = model.name;
-        if (!this.modelRegistry.isRegistered(modelName)) {
-            throw new Error(`FormRegistryError: Model '${modelName}' has not been registered.`);
+        if (!this.modelManager.isRegistered(modelName)) {
+            throw new Error(`FormManagerError: Model '${modelName}' has not been registered.`);
         }
 
         // Check form name
         if (!formName || typeof formName != 'string') {
-            throw new Error(`FormRegistryError: Invalid formName specified.`);
+            throw new Error(`FormManagerError: Invalid formName specified.`);
         }
         if (this.isRegistered(modelName, formName)) {
-            throw new Error(`FormRegistryError: Form '${formName}' is already defined for model '${modelName}'.`);
+            throw new Error(`FormManagerError: Form '${formName}' is already defined for model '${modelName}'.`);
         }
 
         // Check form meta
-        let modelMeta = this.modelRegistry.getModelMeta(modelName);
+        let modelMeta = this.modelManager.getModelMeta(modelName);
         checkFormMeta(modelMeta, formMeta);
 
-        // Add form meta to the registry
+        // Add form meta to the Manager
         if (!(modelName in this._formMeta)) {
             this._formMeta[modelName] = {};
         }
@@ -65,12 +65,12 @@ export class ModelFormRegistry {
 
     public getForm(modelName: string, formName: string): IFormMeta {
         if (!(modelName in this._formMeta) || !(formName in this._formMeta[modelName])) {
-            throw new Error(`FormRegistryError: Form '${formName}' is not defined for model '${modelName}'.`);
+            throw new Error(`FormManagerError: Form '${formName}' is not defined for model '${modelName}'.`);
         }
         return this._formMeta[modelName][formName];
     }
 
-    public clearRegistry() {
+    public clearManager() {
         this._formMeta = {};
     }
 }

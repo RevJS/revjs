@@ -1,2 +1,2 @@
 
-export { ModelFormRegistry } from './registry/registry';
+export { ModelFormManager } from './forms/manager';

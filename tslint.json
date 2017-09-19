@@ -27,6 +27,7 @@
      "no-empty": false,
      "no-empty-interface": false,
      "no-string-literal": false,
+     "no-submodule-imports": false,
      "object-literal-shorthand": false,
      "member-access": [false],
      "prefer-const": false,

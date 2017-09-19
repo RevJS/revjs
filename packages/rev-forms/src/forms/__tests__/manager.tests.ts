@@ -1,15 +1,15 @@
 
 import {
-    Model, ModelRegistry, IModelMeta,
+    ModelManager, IModelMeta,
     fields as f, InMemoryBackend
 } from 'rev-models';
-import * as reg from '../registry';
+import * as reg from '../manager';
 
 import { IFormMeta } from '../../forms/meta';
 
 import { expect } from 'chai';
 
-class TestModel extends Model {
+class TestModel {
     id: number = 1;
     name: string = 'A Test Model';
     date: Date = new Date();
@@ -24,15 +24,15 @@ let testMeta: IModelMeta<TestModel> = {
 };
 
 let formMeta: IFormMeta;
-let modelReg: ModelRegistry;
+let modelReg: ModelManager;
 
-describe('ModelRegistry', () => {
-    let testReg: reg.ModelFormRegistry;
+describe('ModelManager', () => {
+    let testReg: reg.ModelFormManager;
 
     beforeEach(() => {
-        modelReg = new ModelRegistry();
+        modelReg = new ModelManager();
         modelReg.registerBackend('default', new InMemoryBackend());
-        testReg = new reg.ModelFormRegistry(modelReg);
+        testReg = new reg.ModelFormManager(modelReg);
         formMeta = {
             title: 'Test Form',
             fields: [ 'name', 'date' ]
@@ -41,16 +41,16 @@ describe('ModelRegistry', () => {
 
     describe('constructor()', () => {
 
-        it('successfully creates a registry', () => {
+        it('successfully creates a Manager', () => {
             expect(() => {
-                testReg = new reg.ModelFormRegistry(modelReg);
+                testReg = new reg.ModelFormManager(modelReg);
             }).to.not.throw();
         });
 
-        it('throws if not passed a ModelRegistry', () => {
+        it('throws if not passed a ModelManager', () => {
             expect(() => {
-                testReg = new reg.ModelFormRegistry(null);
-            }).to.throw('Invalid ModelRegistry passed in constructor');
+                testReg = new reg.ModelFormManager(null);
+            }).to.throw('Invalid ModelManager passed in constructor');
         });
 
     });
@@ -87,7 +87,7 @@ describe('ModelRegistry', () => {
 
     describe('register()', () => {
 
-        it('adds a valid form to the registry', () => {
+        it('adds a valid form to the Manager', () => {
             modelReg.register(TestModel, testMeta);
             testReg.register(TestModel, 'default', formMeta);
             expect(testReg.getForm('TestModel', 'default')).to.equal(formMeta);

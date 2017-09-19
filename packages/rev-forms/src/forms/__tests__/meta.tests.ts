@@ -5,7 +5,7 @@ import { IFormMeta, checkFormMeta } from '../meta';
 
 import { expect } from 'chai';
 
-class TestModel extends rev.Model {
+class TestModel {
     @rev.IntegerField()
         id: number = 1;
     @rev.TextField()
@@ -15,13 +15,13 @@ class TestModel extends rev.Model {
 }
 
 let formMeta: IFormMeta;
-let models: rev.ModelRegistry;
+let models: rev.ModelManager;
 let testMeta: rev.IModelMeta<TestModel>;
 
 describe('checkFormMeta()', () => {
 
     beforeEach(() => {
-        models = new rev.ModelRegistry();
+        models = new rev.ModelManager();
         models.registerBackend('default', new rev.InMemoryBackend());
         models.register(TestModel);
         testMeta = models.getModelMeta(TestModel);
