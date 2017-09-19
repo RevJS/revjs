@@ -27,6 +27,12 @@ export class Person {
     @rev.BooleanField({label: 'Registered for Newsletter?'})
         newsletter: boolean;
 
+    validate(vc: rev.IValidationContext) {
+        if (this.age < 16) {
+            vc.result.addFieldError('age', 'Person must be 16 or over');
+        }
+    }
+
 }
 
 models.register(Person, {
