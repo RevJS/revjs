@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import { Field } from 'redux-form';
-import { ModelRegistry } from 'rev-models';
+import { ModelManager } from 'rev-models';
 import * as fields from 'rev-models/lib/fields';
 import { IModelFieldComponentProps } from './types';
 
@@ -28,12 +28,12 @@ export class ModelField extends React.Component<IModelFieldProps, void> {
 
     constructor(props: IModelFieldProps, context: IModelProviderContext & IModelFormContext) {
         super(props);
-        let registry: ModelRegistry = context.modelRegistry;
+        let modelManager: ModelManager = context.modelManager;
         let modelFormMeta = context.modelForm;
         if (!modelFormMeta) {
             throw new Error('ModelField Error: must be nested inside a ModelForm.');
         }
-        this.fieldComponentProps.modelMeta = registry.getModelMeta(modelFormMeta.model);
+        this.fieldComponentProps.modelMeta = modelManager.getModelMeta(modelFormMeta.model);
         if (!(props.name in this.fieldComponentProps.modelMeta.fieldsByName)) {
             throw new Error(`ModelField Error: Model '${modelFormMeta.model}' does not have a field called '${props.name}'.`);
         }

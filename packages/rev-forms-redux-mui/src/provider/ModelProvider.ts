@@ -1,14 +1,14 @@
 
 import * as React from 'react';
 
-import { ModelRegistry } from 'rev-models';
+import { ModelManager } from 'rev-models';
 
 export interface IModelProviderProps {
-    registry: ModelRegistry;
+    modelManager: ModelManager;
 }
 
 export interface IModelProviderContext {
-    modelRegistry: ModelRegistry;
+    modelManager: ModelManager;
 }
 
 export class ModelProvider extends React.Component<IModelProviderProps, void> {
@@ -19,7 +19,7 @@ export class ModelProvider extends React.Component<IModelProviderProps, void> {
 
     getChildContext(): IModelProviderContext {
         return {
-            modelRegistry: this.props.registry
+            modelManager: this.props.modelManager
         };
     }
 

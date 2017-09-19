@@ -28,10 +28,10 @@ export class ModelFormC extends React.Component<IModelFormProps, void> {
         if (!props.form) {
             throw new Error('ModelForm Error: the "form" prop must be specified');
         }
-        if (!context.modelRegistry) {
+        if (!context.modelManager) {
             throw new Error('ModelForm Error: must be nested inside a ModelProvider.');
         }
-        if (!props.model || !context.modelRegistry.isRegistered(props.model)) {
+        if (!props.model || !context.modelManager.isRegistered(props.model)) {
             throw new Error(`ModelForm Error: Model '${props.model}' is not registered.`);
         }
         super(props);
