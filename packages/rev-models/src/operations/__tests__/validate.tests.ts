@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import * as sinon from 'sinon';
 import * as d from '../../decorators';
 import { IModelMeta } from '../../models/meta';
 import { TextField } from '../../fields/';
@@ -143,132 +144,174 @@ describe('validate()', () => {
             });
     });
 
-    it('should return a valid result if model has no validate method', () => {
+    describe('IModel.validate()', () => {
 
-        TestModel.prototype.validate = undefined;
+        it('IModel.validate() called with IValidationContext', () => {
+            let validateSpy = sinon.spy();
+            TestModel.prototype.validate = validateSpy;
 
-        return validate(manager, validModel, {operation: 'create'})
-            .then((res) => {
-                expect(res.valid).to.equal(true);
-                expect(res.fieldErrors).to.deep.equal({});
-            });
-    });
-
-    it('should return a valid result if model.validate does not set an error', () => {
-
-        TestModel.prototype.validate = () => undefined;
-
-        return validate(manager, validModel, {operation: 'create'})
-            .then((res) => {
-                expect(res.valid).to.equal(true);
-                expect(res.fieldErrors).to.deep.equal({});
-            });
-    });
-
-    it('should return an invalid result if model.validate sets an error', () => {
-
-        TestModel.prototype.validate = (vc: IValidationContext) => {
-            vc.result.addFieldError('name', 'That name is too stupid!', 'daftness', { stupidityLevel: 10 });
-        };
-
-        return validate(manager, validModel, {operation: 'create'})
-            .then((res) => {
-                expect(res.valid).to.equal(false);
-                expect(res.fieldErrors['name'].length).to.equal(1);
-                expect(res.fieldErrors['name'][0]).to.deep.equal({
-                    message: 'That name is too stupid!',
-                    code: 'daftness',
-                    stupidityLevel: 10
+            return validate(manager, validModel, {operation: 'create'})
+                .then((res) => {
+                    expect(validateSpy.callCount).to.equal(1);
+                    expect(validateSpy.getCall(0).args.length).to.equal(1);
+                    expect(validateSpy.getCall(0).args[0]).to.deep.equal({
+                        manager: manager,
+                        operation: { operation: 'create' },
+                        options: undefined,
+                        result: res
+                    });
                 });
-            });
-    });
+        });
 
-    it('should reject if model validate() throws an error', () => {
+        it('should return a valid result if model has no validate method', () => {
 
-        TestModel.prototype.validate = (vc: IValidationContext) => {
-            throw new Error('Validator epic fail...');
-        };
+            TestModel.prototype.validate = undefined;
 
-        return validate(manager, validModel, {operation: 'create'})
-            .then(() => { throw new Error('expected to reject'); })
-            .catch((err) => {
-                expect(err.message).to.contain('Validator epic fail...');
-            });
-    });
-
-    it('should return a valid result if model has no validateAsync method', () => {
-
-        TestModel.prototype.validateAsync = undefined;
-
-        return validate(manager, validModel, {operation: 'create'})
-            .then((res) => {
-                expect(res.valid).to.equal(true);
-                expect(res.fieldErrors).to.deep.equal({});
-            });
-    });
-
-    it('should return an invalid result if model validateAsync() fails', () => {
-
-        TestModel.prototype.validateAsync = (vc: IValidationContext) => {
-            return new Promise<void>((resolve, reject) => {
-                vc.result.addFieldError('name', 'Google says that name is stupid', 'daftness', { stupidRank: 99 });
-                resolve();
-            });
-        };
-
-        return validate(manager, validModel, {operation: 'create'})
-            .then((res) => {
-                expect(res.valid).to.equal(false);
-                expect(res.fieldErrors['name'].length).to.equal(1);
-                expect(res.fieldErrors['name'][0]).to.deep.equal({
-                    message: 'Google says that name is stupid',
-                    code: 'daftness',
-                    stupidRank: 99
+            return validate(manager, validModel, {operation: 'create'})
+                .then((res) => {
+                    expect(res.valid).to.equal(true);
+                    expect(res.fieldErrors).to.deep.equal({});
                 });
-            });
+        });
+
+        it('should return a valid result if model.validate does not set an error', () => {
+
+            TestModel.prototype.validate = () => undefined;
+
+            return validate(manager, validModel, {operation: 'create'})
+                .then((res) => {
+                    expect(res.valid).to.equal(true);
+                    expect(res.fieldErrors).to.deep.equal({});
+                });
+        });
+
+        it('should return an invalid result if model.validate sets an error', () => {
+
+            TestModel.prototype.validate = (vc: IValidationContext) => {
+                vc.result.addFieldError('name', 'That name is too stupid!', 'daftness', { stupidityLevel: 10 });
+            };
+
+            return validate(manager, validModel, {operation: 'create'})
+                .then((res) => {
+                    expect(res.valid).to.equal(false);
+                    expect(res.fieldErrors['name'].length).to.equal(1);
+                    expect(res.fieldErrors['name'][0]).to.deep.equal({
+                        message: 'That name is too stupid!',
+                        code: 'daftness',
+                        stupidityLevel: 10
+                    });
+                });
+        });
+
+        it('should reject if model validate() throws an error', () => {
+
+            TestModel.prototype.validate = (vc: IValidationContext) => {
+                throw new Error('Validator epic fail...');
+            };
+
+            return validate(manager, validModel, {operation: 'create'})
+                .then(() => { throw new Error('expected to reject'); })
+                .catch((err) => {
+                    expect(err.message).to.contain('Validator epic fail...');
+                });
+        });
+
     });
 
-    it('should reject if model validateAsync() throws an error', () => {
+    describe('IModel.validateAsync()', () => {
 
-        TestModel.prototype.validateAsync = (vc: IValidationContext) => {
-            throw new Error('Async Validator epic fail...');
-        };
+        it('IModel.validateAsync() called with IValidationContext', () => {
+            let validateSpy = sinon.spy();
+            TestModel.prototype.validateAsync = validateSpy;
 
-        return validate(manager, validModel, {operation: 'create'})
-            .then(() => { throw new Error('expected to reject'); })
-            .catch((err) => {
-                expect(err.message).to.contain('Async Validator epic fail...');
-            });
-    });
+            return validate(manager, validModel, {operation: 'create'})
+                .then((res) => {
+                    expect(validateSpy.callCount).to.equal(1);
+                    expect(validateSpy.getCall(0).args.length).to.equal(1);
+                    expect(validateSpy.getCall(0).args[0]).to.deep.equal({
+                        manager: manager,
+                        operation: { operation: 'create' },
+                        options: undefined,
+                        result: res
+                    });
+                });
+        });
 
-    it('should reject if model validateAsync() rejects', () => {
+        it('should return a valid result if model has no validateAsync method', () => {
 
-        TestModel.prototype.validateAsync = (vc: IValidationContext) => {
-            return Promise.reject(new Error('Can handle rejection...'));
-        };
+            TestModel.prototype.validateAsync = undefined;
 
-        return validate(manager, validModel, {operation: 'create'})
-            .then(() => { throw new Error('expected to reject'); })
-            .catch((err) => {
-                expect(err.message).to.contain('Can handle rejection...');
-            });
-    });
+            return validate(manager, validModel, {operation: 'create'})
+                .then((res) => {
+                    expect(res.valid).to.equal(true);
+                    expect(res.fieldErrors).to.deep.equal({});
+                });
+        });
 
-    it('should reject if model validateAsync times out', () => {
+        it('should return an invalid result if model validateAsync() fails', () => {
 
-        TestModel.prototype.validateAsync = (vc: IValidationContext) => {
-            return new Promise<void>((resolve, reject) => {
-                setTimeout(() => {
+            TestModel.prototype.validateAsync = (vc: IValidationContext) => {
+                return new Promise<void>((resolve, reject) => {
+                    vc.result.addFieldError('name', 'Google says that name is stupid', 'daftness', { stupidRank: 99 });
                     resolve();
-                }, 1000);
-            });
-        };
+                });
+            };
 
-        return validate(manager, validModel, {operation: 'create'}, { timeout: 10 })
-            .then(() => { throw new Error('expected to reject'); })
-            .catch((err) => {
-                expect(err.message).to.contain('timed out');
-            });
+            return validate(manager, validModel, {operation: 'create'})
+                .then((res) => {
+                    expect(res.valid).to.equal(false);
+                    expect(res.fieldErrors['name'].length).to.equal(1);
+                    expect(res.fieldErrors['name'][0]).to.deep.equal({
+                        message: 'Google says that name is stupid',
+                        code: 'daftness',
+                        stupidRank: 99
+                    });
+                });
+        });
+
+        it('should reject if model validateAsync() throws an error', () => {
+
+            TestModel.prototype.validateAsync = (vc: IValidationContext) => {
+                throw new Error('Async Validator epic fail...');
+            };
+
+            return validate(manager, validModel, {operation: 'create'})
+                .then(() => { throw new Error('expected to reject'); })
+                .catch((err) => {
+                    expect(err.message).to.contain('Async Validator epic fail...');
+                });
+        });
+
+        it('should reject if model validateAsync() rejects', () => {
+
+            TestModel.prototype.validateAsync = (vc: IValidationContext) => {
+                return Promise.reject(new Error('Can handle rejection...'));
+            };
+
+            return validate(manager, validModel, {operation: 'create'})
+                .then(() => { throw new Error('expected to reject'); })
+                .catch((err) => {
+                    expect(err.message).to.contain('Can handle rejection...');
+                });
+        });
+
+        it('should reject if model validateAsync times out', () => {
+
+            TestModel.prototype.validateAsync = (vc: IValidationContext) => {
+                return new Promise<void>((resolve, reject) => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 1000);
+                });
+            };
+
+            return validate(manager, validModel, {operation: 'create'}, { timeout: 10 })
+                .then(() => { throw new Error('expected to reject'); })
+                .catch((err) => {
+                    expect(err.message).to.contain('timed out');
+                });
+        });
+
     });
 
 });
