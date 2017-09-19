@@ -1,13 +1,13 @@
 
 import * as Hapi from 'hapi';
 import { graphqlHapi, graphiqlHapi } from 'graphql-server-hapi';
-import { ModelApiRegistry } from 'rev-api';
+import { ModelApiManager } from 'rev-api';
 import { getVersion } from './utils';
 
 export const pluginVersion = getVersion();
 
 export interface IModelApiPluginOptions {
-    registry: ModelApiRegistry;
+    apiManager: ModelApiManager;
     url?: string;
     graphiqlEnabled?: boolean;
     graphiqlUrl?: string;
@@ -31,11 +31,11 @@ export function ModelApiPlugin(server: Hapi.Server, options: IModelApiPluginOpti
         if (!opts.url || typeof opts.url != 'string') {
             throw new Error('RevApiPlugin: options.url must be a string');
         }
-        if (!opts.registry || !(opts.registry instanceof ModelApiRegistry)) {
-            throw new Error('RevApiPlugin: options.registry must be an instance of ModelApiRegistry');
+        if (!opts.apiManager || !(opts.apiManager instanceof ModelApiManager)) {
+            throw new Error('RevApiPlugin: options.apiManager must be an instance of ModelApiManager');
         }
 
-        let schema = opts.registry.getGraphQLSchema();
+        let schema = opts.apiManager.getGraphQLSchema();
 
         let plugins: any = [
             {

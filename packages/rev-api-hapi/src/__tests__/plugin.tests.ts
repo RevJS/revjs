@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import * as Hapi from 'hapi';
 import { createServer, createApiRegistry } from '../test-utils';
-import { ModelApiRegistry } from 'rev-api';
+import { ModelApiManager } from 'rev-api';
 import { IModelApiPluginOptions, ModelApiPlugin, pluginVersion } from '../plugin/plugin';
 
 let pkgJson = require('../../package.json');
@@ -11,13 +11,13 @@ let pkgJson = require('../../package.json');
 describe('RevApiPlugin - registration', () => {
 
     let server: Hapi.Server;
-    let apiRegistry: ModelApiRegistry;
+    let manager: ModelApiManager;
     let testOptions: IModelApiPluginOptions;
 
     before(() => {
-        apiRegistry = createApiRegistry();
+        manager = createApiRegistry();
         testOptions = {
-            registry: apiRegistry
+            apiManager: manager
         };
         return createServer({
             addPlugins: {

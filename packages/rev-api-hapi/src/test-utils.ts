@@ -1,8 +1,8 @@
 
 import * as Hapi from 'hapi';
 import * as rev from 'rev-models';
-import { ModelRegistry, InMemoryBackend } from 'rev-models';
-import { ModelApiRegistry } from 'rev-api';
+import { ModelManager, InMemoryBackend } from 'rev-models';
+import { ModelApiManager } from 'rev-api';
 
 export interface IServerOptions {
     addPlugins?: any;
@@ -30,7 +30,7 @@ export function createServer(options: IServerOptions): Promise<Hapi.Server> {
 
 export function createApiRegistry() {
 
-    class TestModel extends rev.Model {
+    class TestModel {
         @rev.IntegerField()
             id: number = 1;
         @rev.TextField()
@@ -39,11 +39,11 @@ export function createApiRegistry() {
             date: Date = new Date();
     }
 
-    let modelRegistry = new ModelRegistry();
+    let modelRegistry = new ModelManager();
     modelRegistry.registerBackend('default', new InMemoryBackend());
     modelRegistry.register(TestModel);
 
-    let apiRegistry = new ModelApiRegistry(modelRegistry);
+    let apiRegistry = new ModelApiManager(modelRegistry);
     apiRegistry.register({ model: TestModel, operations: ['create', 'update', 'remove', 'read'] });
     return apiRegistry;
 }
