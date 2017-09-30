@@ -14,7 +14,7 @@ export interface IModelProviderContext {
 export class ModelProvider extends React.Component<IModelProviderProps, void> {
 
     static childContextTypes = {
-        modelRegistry: React.PropTypes.object
+        modelManager: React.PropTypes.object
     };
 
     getChildContext(): IModelProviderContext {

@@ -20,7 +20,7 @@ export interface IModelFieldProps {
 export class ModelField extends React.Component<IModelFieldProps, void> {
 
     static contextTypes = {
-        modelRegistry: React.PropTypes.object,
+        modelManager: React.PropTypes.object,
         modelForm: React.PropTypes.object
     };
 

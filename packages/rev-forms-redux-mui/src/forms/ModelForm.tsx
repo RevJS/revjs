@@ -21,7 +21,7 @@ export interface IModelFormContext {
 export class ModelFormC extends React.Component<IModelFormProps, void> {
 
     static contextTypes = {
-        modelRegistry: React.PropTypes.object
+        modelManager: React.PropTypes.object
     };
 
     constructor(props: IModelFormProps, context: IModelProviderContext) {
