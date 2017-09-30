@@ -6,29 +6,51 @@ import { IModelFormMeta } from '../forms/ModelForm';
 import { IExecArgs, IExecOptions } from 'rev-models/lib/operations/exec';
 import { connectWithContext } from '../utils/redux-utils';
 import { getFormValues } from 'redux-form';
+import { ModelManager } from 'rev-models';
 
 export interface IModelActionProps {
-    modelForm: IModelFormMeta;
     label: string;
     method: string;
+    values?: any;
     args?: IExecArgs;
     options?: IExecOptions;
 }
 
+export interface IModelActionContext {
+    modelForm: IModelFormMeta;
+    modelManager: ModelManager;
+}
+
 export class ModelActionC extends React.Component<IModelActionProps, void> {
+
+    static contextTypes = {
+        modelForm: React.PropTypes.object,
+        modelManager: React.PropTypes.object
+    };
+
+    constructor(props: IModelActionProps, context: IModelActionContext) {
+        if (!context.modelForm) {
+            throw new Error('ModelAction Error: must be nested inside a ModelForm');
+        }
+        if (!context.modelManager) {
+            throw new Error('ModelAction Error: must be nested inside a ModelProvider.');
+        }
+        super(props);
+    }
 
     onAction() {
         console.log('onAction', this);
-        /*
-        this._modelForm.execAction(this.props.method, this.props.args, this.props.options);
-
-        // pass action name and model data to registry for execution
-        console.log('execAction', method, args, options);
-        console.log('this', this);
-        const modelCls = this._registry.getModelMeta(this._model).ctor;
-        const model = new modelCls();
-        this._registry.exec(model, method, args, options);
-        */
+        let ctx: IModelActionContext = this.context;
+        let modelMeta = ctx.modelManager.getModelMeta(ctx.modelForm.model);
+        let model = new modelMeta.ctor();
+        Object.assign(model, this.props.values);
+        ctx.modelManager.exec(model, this.props.method, this.props.args, this.props.options)
+        .then((res) => {
+            console.log('exec result', res);
+        })
+        .catch((err) => {
+            console.log('exec failure', err);
+        });
     }
 
     render() {
@@ -42,13 +64,7 @@ export class ModelActionC extends React.Component<IModelActionProps, void> {
 }
 
 function mapStateToProps(state: any, ownProps: IModelActionProps, context: any): IModelActionProps {
-/*    let props = {
-        ...ownProps,
-        ...context
-    };
-    console.log('proppy props', props);*/
     let values = getFormValues(context.modelForm.form)(state);
-    console.log('values', values);
     return {
         ...ownProps,
         ...context,
