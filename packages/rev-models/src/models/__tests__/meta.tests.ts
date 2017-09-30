@@ -74,21 +74,21 @@ describe('initialiseMeta()', () => {
         }).to.throw('Field name is not allowed');
     });
 
-    it('if meta.name is passed, it must match the model name', () => {
-        expect(() => {
-            testModelMeta = {
-                name: 'Flibble',
-                fields: []
-            };
-            initialiseMeta(testManager, TestModel, testModelMeta);
-        }).to.throw('Model name does not match meta.name');
-        expect(() => {
-            testModelMeta = {
-                name: 'TestModel',
-                fields: []
-            };
-            initialiseMeta(testManager, TestModel, testModelMeta);
-        }).to.not.throw();
+    it('if meta.name is not passed, the model name is used', () => {
+        testModelMeta = {
+            fields: []
+        };
+        testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
+        expect(testModelMetaRes.name).to.equal('TestModel');
+    });
+
+    it('if meta.name is passed, it is used instead of the model name', () => {
+        testModelMeta = {
+            name: 'UserLogin',
+            fields: []
+        };
+        testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
+        expect(testModelMetaRes.name).to.equal('UserLogin');
     });
 
     it('should set up meta.backend ("default" if not defined)', () => {

@@ -70,14 +70,7 @@ export function initialiseMeta<T extends IModel>(manager: ModelManager, model: n
     }
 
     // Populate default metadata
-    if (meta.name) {
-        if (model.name != meta.name) {
-            throw new Error('MetadataError: Model name does not match meta.name. To register the model under a different name you should rename its constructor.');
-        }
-    }
-    else {
-        meta.name = model.name;
-    }
+    meta.name = meta.name ? meta.name : model.name;
     meta.label = meta.label ? meta.label : meta.name;
     meta.backend = meta.backend ? meta.backend : 'default';
     meta.stored = (meta.stored === undefined) ? true : meta.stored ? true : false;
