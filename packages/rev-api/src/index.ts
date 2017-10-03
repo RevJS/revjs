@@ -1,4 +1,3 @@
 
-export { IApiDefinition } from './api/definition';
-
+export { IApiMeta } from './api/meta';
 export { ModelApiManager } from './api/manager';

@@ -1,10 +1,8 @@
 
-import { ModelManager, IModel } from 'rev-models';
-import { IApiMeta, initialiseApiMeta } from '../api/meta';
+import { ModelManager } from 'rev-models';
+import { IApiMeta, checkApiMeta } from '../api/meta';
 import { getGraphQLSchema } from '../graphql/schema';
 import { GraphQLSchema } from 'graphql';
-
-import { IApiDefinition } from '../api/definition';
 
 export class ModelApiManager {
 
@@ -29,10 +27,10 @@ export class ModelApiManager {
         return (modelName && (modelName in this._apiMeta));
     }
 
-    register<T extends IModel>(apiDefinition: IApiDefinition<T>) {
+    register(apiMeta: IApiMeta) {
         // Add api meta to the registry if valid
-        let apiMeta = initialiseApiMeta(this, apiDefinition);
-        this._apiMeta[apiDefinition.model.name] = apiMeta;
+        checkApiMeta(this, apiMeta);
+        this._apiMeta[apiMeta.model] = apiMeta;
     }
 
     getModelNames(): string[] {

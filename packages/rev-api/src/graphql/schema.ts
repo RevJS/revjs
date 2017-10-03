@@ -4,7 +4,7 @@ import { IModelOperationResult } from 'rev-models/lib/operations/operationresult
 import {
     GraphQLObjectType,
     GraphQLNonNull,
-    // GraphQLString,
+    GraphQLString,
     GraphQLInt,
     // GraphQLBoolean,
     // GraphQLList,
@@ -14,8 +14,6 @@ import {
 import * as GraphQLJSON from 'graphql-type-json';
 
 import { DummyModelType } from './types';
-import { GraphQLString } from 'graphql';
-
 
 export function getGraphQLSchema(manager: ModelApiManager): GraphQLSchema {
 

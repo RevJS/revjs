@@ -44,6 +44,6 @@ export function createApiRegistry() {
     modelRegistry.register(TestModel);
 
     let apiRegistry = new ModelApiManager(modelRegistry);
-    apiRegistry.register({ model: TestModel, operations: ['create', 'update', 'remove', 'read'] });
+    apiRegistry.register({ model: 'TestModel', operations: ['create', 'update', 'remove', 'read'] });
     return apiRegistry;
 }

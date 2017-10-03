@@ -1,38 +1,53 @@
 
 import * as rev from 'rev-models';
-import { ModelApiManager } from '../index';
+import { ApiOperations, ApiMethod } from '../decorators/decorators';
 
-import { Person, models } from './test_model';
+@ApiOperations(['read'])
+export class Person {
 
-// EXAMPLE:
-// import * as rev from 'rev-models';
-// import * as api from 'rev-api';
+    @rev.TextField({label: 'Name'})
+        name: string;
+    @rev.IntegerField({label: 'Age', required: false })
+        age: number;
+    @rev.EmailField({label: 'Email'})
+        email: string;
 
+    @ApiMethod()
+    unsubscribe(ctx: rev.IMethodContext<any>) {
+        console.log('Unsubscribe requested for', this.email);
+        return 'Unsubscribed';
+    }
+
+    @ApiMethod({ validateModel: false })
+    randomMember(ctx: rev.IMethodContext<any>) {
+        console.log('Getting a random member named', ctx.args.name);
+        return {
+            first_name: 'Bob',
+            age: 21
+        };
+    }
+}
+
+console.log('test', (Person.prototype as any).__apiMethods);
+console.log('test2', (Person.prototype as any).__apiOperations);
+
+export const models: rev.ModelManager = new rev.ModelManager();
+models.registerBackend('default', new rev.InMemoryBackend());
+models.register(Person);
+/*
 let api = new ModelApiManager(models);
 
 api.register({
-    model: Person,
+    model: 'Person',
     operations: ['create', 'read', 'update', 'remove'],
-    methods: {
-        unsubscribe: {
-           args: ['email'],
-           handler: async (context, email) => {
-               console.log('Unsubscribe requested for', email);
-               return 'Unsubscribed';
-           }
-        },
-        randomMember: {
+    methods: ['unsubscribe',
+        {
+            name: 'randomMember',
             args: [
-                new rev.fields.TextField('name'),
-                new rev.fields.IntegerField('minAge', {minValue: 16})
+                new rev.fields.TextField('name')
             ],
-            handler: async (context, name) => {
-               console.log('Getting a random member named', name);
-               return {
-                   first_name: 'Bob',
-                   age: 21
-               };
-           }
+            validateModel: false
         }
-    }
+    ]
 });
+*/

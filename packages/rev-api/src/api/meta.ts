@@ -1,21 +1,22 @@
 
-import { IModel } from 'rev-models';
 import { fields } from 'rev-models';
-import { IApiMethod } from './method';
-import { IApiDefinition } from './definition';
 import { ModelApiManager } from '../api/manager';
 import { STANDARD_OPERATIONS } from 'rev-models/lib/operations';
 
-export interface IApiMeta {
-    operations: string[];
-    methods: {
-        [name: string]: IApiMethod;
-    };
+export interface IApiMethodMeta {
+    args?: fields.Field[];
+    validateModel?: boolean;
 }
 
-export function initialiseApiMeta<T extends IModel>(
+export interface IApiMeta {
+    model: string;
+    operations?: string[];
+    methods?: Array<string | IApiMethodMeta>;
+}
+
+export function checkApiMeta(
         apiManager: ModelApiManager,
-        apiMeta: IApiDefinition<T>): IApiMeta {
+        apiMeta: IApiMeta) {
 
     // Check API Metadata
     if (!apiMeta || !apiMeta.model) {
@@ -32,52 +33,50 @@ export function initialiseApiMeta<T extends IModel>(
             }
         }
     }
-    else {
-        apiMeta.operations = [];
-    }
 
     if (apiMeta.methods) {
-        if (typeof apiMeta.methods != 'object') {
-            throw new Error(`ApiMetadataError: API metadata 'methods' must be an object.`);
+        if (!(apiMeta.methods instanceof Array)) {
+            throw new Error(`ApiMetadataError: API metadata 'methods' must be an array.`);
         }
     }
-    else {
-        apiMeta.methods = {};
+
+    // Check if model already registered
+    if (apiManager.isRegistered(apiMeta.model)) {
+        throw new Error(`ApiManagerError: Model '${apiMeta.model}' already has a registered API.`);
     }
 
     // Load model metadata
     let modelMeta = apiManager.modelManager.getModelMeta(apiMeta.model);
-    if (apiManager.isRegistered(modelMeta.name)) {
-        throw new Error(`ApiManagerError: Model '${modelMeta.name}' already has a registered API.`);
-    }
 
     // Configure API methods
-    for (const methodName in apiMeta.methods) {
-        const method = apiMeta.methods[methodName];
-        if (!method || typeof method != 'object') {
-            throw new Error(`ApiMetadataError: Invalid method definition for '${methodName}'.`);
+    for (const methodEntry in apiMeta.methods) {
+        let method: IApiMethodMeta;
+        if (typeof methodEntry == 'string') {
+            method = {
+                name: methodEntry
+            };
         }
-        if (!method.args || !method.handler
-                || typeof method.args != 'object' || !(method.args instanceof Array)
-                || typeof method.handler != 'function') {
-            throw new Error('ApiMetadataError: Custom API methods must define an args array and a handler function');
+        else {
+            method = methodEntry;
         }
-        // Check and convert method args to an array of Fields
-        for (let i = 0; i < method.args.length; i++) {
-            let arg = method.args[i];
-            if (typeof arg == 'string') {
-                if (!(arg in modelMeta.fieldsByName)) {
-                    throw new Error(`ApiMetadataError: Field '${arg}' does not exist in model '${modelMeta.name}'.`);
-                }
-                else {
-                    method.args[i] = modelMeta.fieldsByName[arg];
-                }
+
+        if (!method || typeof method != 'object' || !method.name) {
+            throw new Error('ApiMetadataError: Invalid method definition found.');
+        }
+
+        if (typeof modelMeta.ctor.prototype[method.name] != 'function') {
+            throw new Error(`ApiMetadataError: ${modelMeta.name}.${method.name} is not a function.`);
+        }
+
+        if (method.args) {
+            if (!(method.args instanceof Array)) {
+                throw new Error('ApiMetadataError: Method args property must be an array of Field objects.');
             }
-            else if (!(arg instanceof fields.Field)) {
-                throw new Error('ApiMetadataError: API method args must either be an instance of a Field or a string matching a field on the corresponding model.');
+            for (let arg of method.args) {
+                if (!(arg instanceof fields.Field)) {
+                    throw new Error('ApiMetadataError: API method args must be an instance of Field.');
+                }
             }
         }
     }
-
-    return apiMeta as IApiMeta;
 }
