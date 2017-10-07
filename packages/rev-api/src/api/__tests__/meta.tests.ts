@@ -151,10 +151,20 @@ describe('initialiseApiMeta()', () => {
 
     describe('api methods', () => {
 
+        it('throws an error when method name is reserved', () => {
+            expect(() => {
+                initialiseApiMeta(apiManager, TestModel, {
+                    methods: {
+                        create: {}
+                    }
+                });
+            }).to.throw(`is a reserved name`);
+        });
+
         it('throws an error when method meta is not an object', () => {
             expect(() => {
                 initialiseApiMeta(apiManager, TestModel, {
-                    methods: [ 'testMethod1'] as any
+                    methods: [ 'testMethod1' ] as any
                 });
             }).to.throw(`Invalid method definition found`);
         });

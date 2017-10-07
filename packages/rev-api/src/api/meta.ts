@@ -65,6 +65,11 @@ export function initialiseApiMeta<T extends IModel>(
 
     // Configure API methods
     for (const methodName of Object.keys(apiMeta.methods)) {
+
+        if (STANDARD_OPERATIONS.indexOf(methodName) > -1) {
+            throw new Error(`ApiMetadataError: API method name '${methodName}' is a reserved name.`);
+        }
+
         let methodMeta = apiMeta.methods[methodName];
 
         if (!methodMeta || typeof methodMeta != 'object') {
