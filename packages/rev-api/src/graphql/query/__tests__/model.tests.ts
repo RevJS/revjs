@@ -1,5 +1,5 @@
 
-import * as models from './models.fixture';
+import * as models from '../../__tests__/models.fixture';
 
 import { expect } from 'chai';
 import { GraphQLObjectTypeConfig } from 'graphql';

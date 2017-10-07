@@ -1,4 +1,4 @@
-import { ModelApiManager } from '../api/manager';
+import { ModelApiManager } from '../../api/manager';
 import { GraphQLString, GraphQLObjectTypeConfig, GraphQLObjectType } from 'graphql';
 import { getModelConfig } from './model';
 import * as GraphQLJSON from 'graphql-type-json';

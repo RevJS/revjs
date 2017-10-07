@@ -1,6 +1,6 @@
 
-import * as models from './models.fixture';
-import { ModelApiManager } from '../../api/manager';
+import * as models from '../../__tests__/models.fixture';
+import { ModelApiManager } from '../../../api/manager';
 
 import { expect } from 'chai';
 import { getQueryConfig } from '../query';

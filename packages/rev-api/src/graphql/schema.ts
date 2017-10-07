@@ -3,8 +3,8 @@ import { ModelApiManager } from '../api/manager';
 import { GraphQLObjectType, GraphQLSchema } from 'graphql';
 
 import { GraphQLSchemaConfig } from 'graphql/type/schema';
-import { getQueryConfig } from './query';
-import { getMutationConfig } from './mutation';
+import { getQueryConfig } from './query/query';
+import { getMutationConfig } from './mutation/mutation';
 
 export function getGraphQLSchema(manager: ModelApiManager): GraphQLSchema {
 
