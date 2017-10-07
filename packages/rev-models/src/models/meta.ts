@@ -77,6 +77,11 @@ export function initialiseMeta<T extends IModel>(manager: ModelManager, model: n
     meta.ctor = model;
     meta.fieldsByName = {};
 
+    // Check model name
+    if (manager.isRegistered(meta.name)) {
+        throw new Error(`MetadataError: Model '${meta.name}' has already been registered.`);
+    }
+
     // Validate specified back end
     let backends = manager.getBackendNames();
     if (backends.indexOf(meta.backend) < 0) {

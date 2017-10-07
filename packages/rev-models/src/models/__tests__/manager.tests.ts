@@ -103,17 +103,16 @@ describe('ModelManager', () => {
             }).to.throw('ModelError');
         });
 
-        it('throws an error if model already exists', () => {
-            testReg.register(TestModel, testMeta);
-            expect(() => {
-                testReg.register(TestModel, testMeta);
-            }).to.throw('has already been registered');
-        });
-
         it('should initialise metadata', () => {
             testReg.register(TestModel, testMeta);
             let meta = testReg.getModelMeta('TestModel');
             expect(meta.fieldsByName).to.be.an('object');
+        });
+
+        it('registers model using the name from metadata', () => {
+            testMeta.name = 'TestModelAltName';
+            testReg.register(TestModel, testMeta);
+            expect(testReg.getModelMeta('TestModelAltName').ctor).to.equal(TestModel);
         });
 
         it('throws an error if metadata cannot be initialised', () => {

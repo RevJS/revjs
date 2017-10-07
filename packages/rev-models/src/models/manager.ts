@@ -87,16 +87,12 @@ export class ModelManager {
 
         // Check model constructor
         checkIsModelConstructor(model);
-        let modelName = model.name;
-        if (this.isRegistered(modelName)) {
-            throw new Error(`ModelManagerError: Model '${modelName}' has already been registered.`);
-        }
 
         // Initialise model metadata
         let modelMeta = initialiseMeta(this, model, meta);
 
         // Add prototype and metadata to the registry
-        this._models[modelName] = modelMeta;
+        this._models[modelMeta.name] = modelMeta;
     }
 
     /**

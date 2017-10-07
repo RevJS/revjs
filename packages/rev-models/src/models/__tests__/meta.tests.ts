@@ -27,7 +27,8 @@ describe('initialiseMeta()', () => {
 
     beforeEach(() => {
         testManager = {
-            getBackendNames: () => ['default', 'main_db']
+            getBackendNames: () => ['default', 'main_db'],
+            isRegistered: () => false
         } as any;
         testModelMeta = {
             fields: [
@@ -89,6 +90,13 @@ describe('initialiseMeta()', () => {
         };
         testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
         expect(testModelMetaRes.name).to.equal('UserLogin');
+    });
+
+    it('throws an error if model name is already registered', () => {
+        testManager.isRegistered = () => true;
+        expect(() => {
+            testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
+        }).to.throw('has already been registered');
     });
 
     it('should set up meta.backend ("default" if not defined)', () => {
@@ -165,7 +173,8 @@ describe('initialiseMeta() - with decorators', () => {
 
     beforeEach(() => {
         testManager = {
-            getBackendNames: () => ['default', 'main_db']
+            getBackendNames: () => ['default', 'main_db'],
+            isRegistered: () => false
         } as any;
     });
 
