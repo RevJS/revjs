@@ -10,6 +10,8 @@ export class User {
         name: string = 'A Test Model';
     @rev.DateField()
         date_registered: Date = new Date();
+    
+    userMethod1() {}
 }
 modelManager.register(User);
 
@@ -24,6 +26,8 @@ export class Post {
         published: boolean;
     @rev.DateTimeField()
         post_date: Date;
+
+    postMethod1() {}
 }
 modelManager.register(Post);
 
