@@ -2,7 +2,7 @@
 import * as Hapi from 'hapi';
 import * as rev from 'rev-models';
 import { ModelManager, InMemoryBackend } from 'rev-models';
-import { ModelApiManager } from 'rev-api';
+import { ModelApiManager, ApiOperations, ApiMethod } from 'rev-api';
 
 export interface IServerOptions {
     addPlugins?: any;
@@ -30,6 +30,7 @@ export function createServer(options: IServerOptions): Promise<Hapi.Server> {
 
 export function createApiRegistry() {
 
+    @ApiOperations(['create', 'update', 'remove', 'read'])
     class TestModel {
         @rev.IntegerField()
             id: number = 1;
@@ -37,6 +38,9 @@ export function createApiRegistry() {
             name: string = 'A Test Model';
         @rev.DateField()
             date: Date = new Date();
+
+        @ApiMethod()
+        testMethod() {}
     }
 
     let modelRegistry = new ModelManager();
@@ -44,6 +48,6 @@ export function createApiRegistry() {
     modelRegistry.register(TestModel);
 
     let apiRegistry = new ModelApiManager(modelRegistry);
-    apiRegistry.register({ model: 'TestModel', operations: ['create', 'update', 'remove', 'read'] });
+    apiRegistry.register(TestModel);
     return apiRegistry;
 }
