@@ -1,5 +1,5 @@
 
-import { fields } from 'rev-models';
+import { fields, IModel } from 'rev-models';
 import { ModelApiManager } from '../api/manager';
 import { STANDARD_OPERATIONS } from 'rev-models/lib/operations';
 
@@ -9,18 +9,41 @@ export interface IApiMethodMeta {
 }
 
 export interface IApiMeta {
-    model: string;
+    model?: string;
     operations?: string[];
-    methods?: Array<string | IApiMethodMeta>;
+    methods?: {
+        [methodName: string]: IApiMethodMeta;
+    };
 }
 
-export function checkApiMeta(
+export function initialiseApiMeta<T extends IModel>(
         apiManager: ModelApiManager,
+        model: T,
         apiMeta: IApiMeta) {
 
     // Check API Metadata
-    if (!apiMeta || !apiMeta.model) {
-        throw new Error(`ApiMetadataError: API metadata must include the 'model' key.`);
+    if (!apiMeta) { apiMeta = {}; }
+    if (!apiMeta.operations) { apiMeta.operations = []; }
+    if (!apiMeta.methods) { apiMeta.methods = {}; }
+
+    let proto = model.prototype;
+    if (proto.__apiOperations) {
+        apiMeta.operations.push.apply(apiMeta.operations, proto.__apiOperations);
+    }
+    if (proto.__apiMethods) {
+        Object.assign(apiMeta.methods, proto.__apiMethods);
+    }
+
+    apiMeta.model = apiMeta.model || model.name;
+
+    // Check if model is registered
+    if (!apiManager.modelManager.isRegistered(apiMeta.model)) {
+        throw new Error(`ApiManagerError: Model '${apiMeta.model}' is not registered with the model manager.`);
+    }
+
+    // Check if model API already registered
+    if (apiManager.isRegistered(apiMeta.model)) {
+        throw new Error(`ApiManagerError: Model '${apiMeta.model}' already has a registered API.`);
     }
 
     if (apiMeta.operations) {
@@ -35,48 +58,34 @@ export function checkApiMeta(
     }
 
     if (apiMeta.methods) {
-        if (!(apiMeta.methods instanceof Array)) {
-            throw new Error(`ApiMetadataError: API metadata 'methods' must be an array.`);
+        if (typeof apiMeta.methods != 'object') {
+            throw new Error(`ApiMetadataError: API metadata 'methods' must be an object.`);
         }
     }
-
-    // Check if model already registered
-    if (apiManager.isRegistered(apiMeta.model)) {
-        throw new Error(`ApiManagerError: Model '${apiMeta.model}' already has a registered API.`);
-    }
-
-    // Load model metadata
-    let modelMeta = apiManager.modelManager.getModelMeta(apiMeta.model);
 
     // Configure API methods
-    for (const methodEntry in apiMeta.methods) {
-        let method: IApiMethodMeta;
-        if (typeof methodEntry == 'string') {
-            method = {
-                name: methodEntry
-            };
-        }
-        else {
-            method = methodEntry;
-        }
+    for (const methodName of Object.keys(apiMeta.methods)) {
+        let methodMeta = apiMeta.methods[methodName];
 
-        if (!method || typeof method != 'object' || !method.name) {
+        if (!methodMeta || typeof methodMeta != 'object') {
             throw new Error('ApiMetadataError: Invalid method definition found.');
         }
 
-        if (typeof modelMeta.ctor.prototype[method.name] != 'function') {
-            throw new Error(`ApiMetadataError: ${modelMeta.name}.${method.name} is not a function.`);
+        if (typeof model.prototype[methodName] != 'function') {
+            throw new Error(`ApiMetadataError: ${apiMeta.model}.${methodName} is not a function.`);
         }
 
-        if (method.args) {
-            if (!(method.args instanceof Array)) {
+        if (methodMeta.args) {
+            if (!(methodMeta.args instanceof Array)) {
                 throw new Error('ApiMetadataError: Method args property must be an array of Field objects.');
             }
-            for (let arg of method.args) {
+            for (let arg of methodMeta.args) {
                 if (!(arg instanceof fields.Field)) {
                     throw new Error('ApiMetadataError: API method args must be an instance of Field.');
                 }
             }
         }
     }
+
+    return apiMeta;
 }

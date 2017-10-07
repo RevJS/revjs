@@ -1,6 +1,7 @@
 
-import { ModelManager } from 'rev-models';
-import { IApiMeta, checkApiMeta } from '../api/meta';
+import { ModelManager, IModel } from 'rev-models';
+import { checkIsModelConstructor } from 'rev-models/lib/models/utils';
+import { IApiMeta, initialiseApiMeta } from '../api/meta';
 import { getGraphQLSchema } from '../graphql/schema';
 import { GraphQLSchema } from 'graphql';
 
@@ -27,9 +28,10 @@ export class ModelApiManager {
         return (modelName && (modelName in this._apiMeta));
     }
 
-    register(apiMeta: IApiMeta) {
+    register<T extends IModel>(model: new(...args: any[]) => T, apiMeta?: IApiMeta) {
         // Add api meta to the registry if valid
-        checkApiMeta(this, apiMeta);
+        checkIsModelConstructor(model);
+        apiMeta = initialiseApiMeta(this, model, apiMeta);
         this._apiMeta[apiMeta.model] = apiMeta;
     }
 

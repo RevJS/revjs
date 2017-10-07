@@ -1,6 +1,7 @@
 
 import * as rev from 'rev-models';
 import { ApiOperations, ApiMethod } from '../decorators/decorators';
+import { ModelApiManager } from '../index';
 
 @ApiOperations(['read'])
 export class Person {
@@ -11,43 +12,30 @@ export class Person {
         age: number;
     @rev.EmailField({label: 'Email'})
         email: string;
+    @rev.BooleanField()
+        subscribed: boolean;
 
     @ApiMethod()
     unsubscribe(ctx: rev.IMethodContext<any>) {
-        console.log('Unsubscribe requested for', this.email);
-        return 'Unsubscribed';
+        this.subscribed = false;
+        ctx.manager.update(this);
     }
 
     @ApiMethod({ validateModel: false })
     randomMember(ctx: rev.IMethodContext<any>) {
-        console.log('Getting a random member named', ctx.args.name);
+        console.log('Generating a member named', ctx.args.name);
         return {
-            first_name: 'Bob',
+            name: ctx.args.name,
             age: 21
         };
     }
 }
 
-console.log('test', (Person.prototype as any).__apiMethods);
-console.log('test2', (Person.prototype as any).__apiOperations);
-
-export const models: rev.ModelManager = new rev.ModelManager();
+// Register Model
+const models: rev.ModelManager = new rev.ModelManager();
 models.registerBackend('default', new rev.InMemoryBackend());
 models.register(Person);
-/*
-let api = new ModelApiManager(models);
 
-api.register({
-    model: 'Person',
-    operations: ['create', 'read', 'update', 'remove'],
-    methods: ['unsubscribe',
-        {
-            name: 'randomMember',
-            args: [
-                new rev.fields.TextField('name')
-            ],
-            validateModel: false
-        }
-    ]
-});
-*/
+// Register Model API
+let api = new ModelApiManager(models);
+api.register(Person);

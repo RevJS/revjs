@@ -4,21 +4,28 @@ import * as rev from 'rev-models';
 import rewire = require('rewire');
 import * as sinon from 'sinon';
 
-import { IApiDefinition } from '../../api/definition';
-
 import { expect } from 'chai';
 import { ModelApiManager } from '../manager';
+import { ApiOperations, ApiMethod } from '../../decorators/decorators';
 
+const testModelOperations = ['read', 'create'];
+const testMethodMeta = { validateModel: false };
+
+@ApiOperations(testModelOperations)
 class TestModel {
+
     @rev.IntegerField()
         id: number = 1;
     @rev.TextField()
         name: string = 'A Test Model';
     @rev.DateField()
         date: Date = new Date();
-}
 
-let apiMeta: IApiDefinition<TestModel>;
+    @ApiMethod(testMethodMeta)
+    testMethod() {
+        // do stuff
+    }
+}
 
 describe('ModelApiManager', () => {
     let models: rev.ModelManager;
@@ -28,10 +35,6 @@ describe('ModelApiManager', () => {
         models = new rev.ModelManager();
         models.registerBackend('default', new rev.InMemoryBackend());
         testApi = new ModelApiManager(models);
-        apiMeta = {
-            model: TestModel,
-            operations: [ 'read' ]
-        };
     });
 
     describe('constructor()', () => {
@@ -59,7 +62,7 @@ describe('ModelApiManager', () => {
 
         it('returns true when a model is registered', () => {
             models.register(TestModel);
-            testApi.register(apiMeta);
+            testApi.register(TestModel);
             expect(testApi.isRegistered('TestModel')).to.equal(true);
         });
 
@@ -77,34 +80,40 @@ describe('ModelApiManager', () => {
 
         it('adds a valid api to the registry', () => {
             models.register(TestModel);
-            testApi.register(apiMeta);
-            expect(testApi.getApiMeta('TestModel')).to.equal(apiMeta);
+            testApi.register(TestModel, { model: 'TestModel' });
+            expect(testApi.getApiMeta('TestModel')).to.deep.equal({
+                model: 'TestModel',
+                operations: testModelOperations,
+                methods: {
+                    testMethod: testMethodMeta
+                }
+            });
         });
 
-        it('rejects if api meta does not include a model constructor', () => {
+        it('rejects if passed model is not a model constructor', () => {
             expect(() => {
                 testApi.register({} as any);
-            }).to.throw('ApiMetadataError');
+            }).to.throw('Supplied model is not a model constructor');
         });
 
         it('throws an error if model has not been registered', () => {
             expect(() => {
-                testApi.register(apiMeta);
+                testApi.register(TestModel);
             }).to.throw(`ManagerError`);
         });
 
         it('throws an error if model already has an api registered', () => {
             models.register(TestModel);
-            testApi.register(apiMeta);
+            testApi.register(TestModel);
             expect(() => {
-                testApi.register(apiMeta);
+                testApi.register(TestModel);
             }).to.throw(`Model 'TestModel' already has a registered API`);
         });
 
         it('throws an error if api metadata is invalid', () => {
             models.register(TestModel);
             expect(() => {
-                testApi.register({} as any);
+                testApi.register(TestModel, { operations: ['flibble']});
             }).to.throw(`ApiMetadataError`);
         });
 
@@ -118,7 +127,7 @@ describe('ModelApiManager', () => {
 
         it('returns list of model names that have APIs registered', () => {
             models.register(TestModel);
-            testApi.register(apiMeta);
+            testApi.register(TestModel);
             expect(testApi.getModelNames()).to.deep.equal(['TestModel']);
         });
 
@@ -131,22 +140,24 @@ describe('ModelApiManager', () => {
         });
 
         it('returns list of model names that have the specified method registered', () => {
-            apiMeta = {
-                model: TestModel,
-                operations: [ 'read' ]
-            };
-            models.register(TestModel);
-            testApi.register(apiMeta);
-            expect(testApi.getModelNamesByOperation('read')).to.deep.equal(['TestModel']);
+            @ApiOperations(['read'])
+            class TestModel2 {
+                @rev.TextField()
+                name: string;
+            }
+            models.register(TestModel2);
+            testApi.register(TestModel2);
+            expect(testApi.getModelNamesByOperation('read')).to.deep.equal(['TestModel2']);
         });
 
         it('does not return models that do not have the specified method registered', () => {
-            apiMeta = {
-                model: TestModel,
-                operations: [ 'create' ]
-            };
-            models.register(TestModel);
-            testApi.register(apiMeta);
+            @ApiOperations(['create'])
+            class TestModel2 {
+                @rev.TextField()
+                name: string;
+            }
+            models.register(TestModel2);
+            testApi.register(TestModel2);
             expect(testApi.getModelNamesByOperation('read')).to.deep.equal([]);
         });
 
@@ -156,8 +167,14 @@ describe('ModelApiManager', () => {
 
         it('should return requested api meta', () => {
             models.register(TestModel);
-            testApi.register(apiMeta);
-            expect(testApi.getApiMeta('TestModel')).to.equal(apiMeta);
+            testApi.register(TestModel);
+            expect(testApi.getApiMeta('TestModel')).to.deep.equal({
+                model: 'TestModel',
+                operations: testModelOperations,
+                methods: {
+                    testMethod: testMethodMeta
+                }
+            });
         });
 
         it('should throw an error if the model does not have an api defined', () => {
