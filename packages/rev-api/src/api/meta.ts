@@ -3,6 +3,8 @@ import { fields, IModel } from 'rev-models';
 import { ModelApiManager } from '../api/manager';
 import { STANDARD_OPERATIONS } from 'rev-models/lib/operations';
 
+const RESERVED_ARG_NAMES = ['model'];
+
 export interface IApiMethodMeta {
     args?: fields.Field[];
     validateModel?: boolean;
@@ -87,6 +89,9 @@ export function initialiseApiMeta<T extends IModel>(
             for (let arg of methodMeta.args) {
                 if (!(arg instanceof fields.Field)) {
                     throw new Error('ApiMetadataError: API method args must be an instance of Field.');
+                }
+                else if (RESERVED_ARG_NAMES.indexOf(arg.name) > -1) {
+                    throw new Error(`ApiMetadataError: API method arg name '${arg.name}' is reserved.`);
                 }
             }
         }

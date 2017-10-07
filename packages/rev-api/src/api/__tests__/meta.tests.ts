@@ -232,6 +232,18 @@ describe('initialiseApiMeta()', () => {
             }).to.throw(`API method args must be an instance of Field`);
         });
 
+        it('throws an error when method arg name is reserved', () => {
+            let reservedField = new f.TextField('model');
+            expect(() => {
+                initialiseApiMeta(apiManager, TestModel, {
+                    methods: {
+                        testMethod: {
+                            args: [ reservedField ]
+                        }
+                    }
+                });
+            }).to.throw(`arg name 'model' is reserved`);
+        });
     });
 
     describe('general', () => {
