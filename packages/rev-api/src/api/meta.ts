@@ -87,5 +87,10 @@ export function initialiseApiMeta<T extends IModel>(
         }
     }
 
+    if (apiMeta.operations.length == 0
+        && Object.keys(apiMeta.methods).length == 0) {
+            throw new Error(`ApiMetadataError: No operations or methods defined for ${apiMeta.model}.`);
+    }
+
     return apiMeta;
 }

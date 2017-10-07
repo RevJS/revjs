@@ -1,317 +1,235 @@
 import * as rev from 'rev-models';
 import * as f from 'rev-models/lib/fields';
-
-import { initialiseApiMeta, IApiMeta } from '../meta';
+import { initialiseApiMeta } from '../meta';
 
 import { expect } from 'chai';
 import { ModelApiManager } from '../../api/manager';
-import { IApiDefinition } from '../definition';
+import { ApiOperations, ApiMethod } from '../../decorators/decorators';
 
-class TestModel {
-    id: number = 1;
-    name: string = 'A Test Model';
-    date: Date = new Date();
+const testDecoratedModelOperations = ['read', 'create'];
+const testDecoratedMethodMeta = { validateModel: false };
+
+@ApiOperations(testDecoratedModelOperations)
+class TestDecoratedModel {
+
+    @rev.TextField()
+        name: string = 'A Test Model';
+
+    @ApiMethod(testDecoratedMethodMeta)
+    testMethod() {}
+    testMethod2() {}
 }
 
-let idField = new f.IntegerField('id');
-let nameField = new f.TextField('name');
-let dateField = new f.DateField('date');
+class TestModel {
 
-let testMeta: rev.IModelMeta<TestModel> = {
-    fields: [
-        idField,
-        nameField,
-        dateField
-    ]
-};
+    @rev.IntegerField()
+        id: number = 1;
+    @rev.TextField()
+        name: string = 'A Test Model';
+    @rev.DateField()
+        date: Date = new Date();
 
-class UnRegModel {}
+    testMethod() {}
+}
+
+// class UnRegModel {}
 
 let models: rev.ModelManager;
-let apiReg: ModelApiManager;
+let apiManager: ModelApiManager;
 
-let apiMetaDef: IApiDefinition<TestModel>;
-let apiMeta: IApiMeta;
-
-describe('initialiseApiMeta() - system methods', () => {
+describe('initialiseApiMeta()', () => {
 
     beforeEach(() => {
         models = new rev.ModelManager();
         models.registerBackend('default', new rev.InMemoryBackend());
-        models.register(TestModel, testMeta);
-        apiReg = new ModelApiManager(models);
-        testMeta = models.getModelMeta(TestModel);
+        models.register(TestDecoratedModel);
+        models.register(TestModel);
+        apiManager = new ModelApiManager(models);
     });
 
-    describe('operations', () => {
+    describe('decorator metadata', () => {
 
-        it('does not throw if api metadata has no operations or methods', () => {
-            apiMetaDef = {
-                model: TestModel
-            };
-            expect(() => {
-                initialiseApiMeta(apiReg, apiMetaDef);
-            }).to.not.throw();
+        it('adds apiMeta.operations from @ApiOperations decorator', () => {
+            let meta = initialiseApiMeta(apiManager, TestDecoratedModel, undefined);
+            expect(meta.operations).to.deep.equal(testDecoratedModelOperations);
         });
 
-        it('does not throw if api metadata has an empty list of operations', () => {
-            apiMetaDef = {
-                model: TestModel,
-                operations: []
-            };
-            expect(() => {
-                initialiseApiMeta(apiReg, apiMetaDef);
-            }).to.not.throw();
-        });
-
-        it('does not throw if api metadata has a valid list of methods', () => {
-            apiMetaDef = {
-                model: TestModel,
-                operations: [ 'create', 'read' ]
-            };
-            expect(() => {
-                initialiseApiMeta(apiReg, apiMetaDef);
-            }).to.not.throw();
-        });
-
-        it('returns apiMeta as expected', () => {
-            apiMetaDef = {
-                model: TestModel,
-                operations: [ 'create', 'update' ]
-            };
-            apiMeta = initialiseApiMeta(apiReg, apiMetaDef);
-            expect(apiMeta).to.deep.equal({
-                model: TestModel,
-                operations: [ 'create', 'update' ],
-                methods: {}
+        it('adds apiMeta methods from @ApiMethod decorator', () => {
+            let meta = initialiseApiMeta(apiManager, TestDecoratedModel, undefined);
+            expect(meta.methods).to.deep.equal({
+                testMethod: testDecoratedMethodMeta
             });
         });
 
-        it('throws an error if model key is missing', () => {
-            apiMetaDef = {} as any;
-            expect(() => {
-                initialiseApiMeta(apiReg, null);
-            }).to.throw(`API metadata must include the 'model' key`);
-            expect(() => {
-                initialiseApiMeta(apiReg, apiMetaDef);
-            }).to.throw(`API metadata must include the 'model' key`);
+        it('merges operations passed as meta with decorator meta', () => {
+            let meta = initialiseApiMeta(apiManager, TestDecoratedModel, {
+                operations: ['remove']
+            });
+            expect(meta.operations).to.deep.equal([
+                'remove', 'read', 'create'
+            ]);
         });
 
-        it('throws an error if model is not registered', () => {
-            apiMetaDef = {
-                model: UnRegModel,
-                operations: []
-            } as any;
-            expect(() => {
-                initialiseApiMeta(apiReg, apiMetaDef);
-            }).to.throw('ManagerError');
+        it('merges methods passed as meta with decorator meta', () => {
+            let meta = initialiseApiMeta(apiManager, TestDecoratedModel, {
+                methods: {
+                    testMethod2: { validateModel: true }
+                }
+            });
+            expect(meta.methods).to.deep.equal({
+                testMethod: { validateModel: false },
+                testMethod2: { validateModel: true }
+            });
         });
 
-        it('throws an error if operations array contains invalid methods', () => {
-            apiMetaDef = {
-                model: TestModel,
-                operations: [ 'create', 'read', 'destroy', 'update' ]
-            };
+    });
+
+    describe('model name', () => {
+
+        it('gets set to class name if not passed in meta', () => {
+            let meta = initialiseApiMeta(apiManager, TestModel, {
+                operations: ['read']
+            });
+            expect(meta.model).to.equal('TestModel');
+        });
+
+        it('gets set to meta.model if set instead', () => {
+            let meta = initialiseApiMeta(apiManager, TestModel, {
+                model: 'TestDecoratedModel',
+                operations: ['read']
+            });
+            expect(meta.model).to.equal('TestDecoratedModel');
+        });
+
+        it('throws if model name is not registered with model manager', () => {
             expect(() => {
-                initialiseApiMeta(apiReg, apiMetaDef);
+                initialiseApiMeta(apiManager, TestModel, {
+                    model: 'Blah',
+                    operations: ['read']
+                });
+            }).to.throw(`Model 'Blah' is not registered with the model manager`);
+        });
+
+        it('throws if model name is already registered with the api manager', () => {
+            apiManager.register(TestModel, { operations: ['read'] });
+            expect(() => {
+                initialiseApiMeta(apiManager, TestModel, {
+                    operations: ['read']
+                });
+            }).to.throw(`Model 'TestModel' already has a registered API`);
+        });
+
+    });
+
+    describe('api operations', () => {
+
+        it('returns meta when valid operations are specified', () => {
+            let validOps = ['create', 'update', 'read', 'remove'];
+            let meta = initialiseApiMeta(apiManager, TestModel, {
+                operations: validOps
+            });
+            expect(meta.operations).to.deep.equal(validOps);
+        });
+
+        it('throws an error if operations is not an array', () => {
+            expect(() => {
+                initialiseApiMeta(apiManager, TestModel, {
+                    operations: 'all of them bru!' as any
+                });
+            }).to.throw(`API metadata 'operations' must be an array`);
+        });
+
+        it('throws an error if operations array contains invalid names', () => {
+            expect(() => {
+                initialiseApiMeta(apiManager, TestModel, {
+                    operations: [ 'create', 'read', 'destroy', 'update' ]
+                });
             }).to.throw(`Invalid operation name 'destroy'`);
         });
 
     });
 
-    describe('custom methods', () => {
+    describe('api methods', () => {
 
-        it('does not throw if api metadata has an empty dict of methods', () => {
-            apiMetaDef = {
-                model: TestModel,
-                methods: {}
-            };
+        it('throws an error when method meta is not an object', () => {
             expect(() => {
-                initialiseApiMeta(apiReg, apiMetaDef);
-            }).to.not.throw();
+                initialiseApiMeta(apiManager, TestModel, {
+                    methods: [ 'testMethod1'] as any
+                });
+            }).to.throw(`Invalid method definition found`);
         });
 
-        it('does not throw if api metadata defines a method with no args', () => {
-            apiMetaDef = {
-                model: TestModel,
-                methods: {
-                    testMethod: {
-                        args: [],
-                        handler: (() => {}) as any
+        it('throws an error when method does not exist on model', () => {
+            expect(() => {
+                initialiseApiMeta(apiManager, TestModel, {
+                    methods: {
+                        flibble: {}
                     }
-                }
-            };
+                });
+            }).to.throw(`TestModel.flibble is not a function`);
+        });
+
+        it('api metadata can define method with no additional args', () => {
             expect(() => {
-                initialiseApiMeta(apiReg, apiMetaDef);
+                initialiseApiMeta(apiManager, TestModel, {
+                    methods: {
+                        testMethod: {
+                            args: []
+                        }
+                    }
+                });
             }).to.not.throw();
         });
 
-        it('sets up metadata for a method with one Field arg', () => {
+        it('returns expected metadata for a method with args', () => {
             let testField = new f.TextField('arg1');
-            apiMetaDef = {
-                model: TestModel,
-                methods: {
-                    testMethod: {
-                        args: [
-                            testField
-                        ],
-                        handler: (() => {}) as any
-                    }
-                }
-            };
-            apiMeta = initialiseApiMeta(apiReg, apiMetaDef);
-            expect(apiMetaDef.methods).to.be.an('object');
-            expect(apiMetaDef.methods).to.have.property('testMethod');
-            let method = apiMeta.methods.testMethod;
-            expect(method.args).to.have.length(1);
-            expect(method.args[0]).to.equal(testField);
-        });
-
-        it('sets up metadata for a method with two Field args', () => {
-            let testField1 = new f.TextField('arg1');
             let testField2 = new f.IntegerField('arg2');
-            apiMetaDef = {
-                model: TestModel,
+            let meta = initialiseApiMeta(apiManager, TestModel, {
                 methods: {
                     testMethod: {
-                        args: [
-                            testField1,
-                            testField2
-                        ],
-                        handler: (() => {}) as any
+                        args: [ testField, testField2 ]
                     }
                 }
-            };
-            apiMeta = initialiseApiMeta(apiReg, apiMetaDef);
-            expect(apiMetaDef.methods).to.be.an('object');
-            expect(apiMetaDef.methods).to.have.property('testMethod');
-            let method = apiMeta.methods.testMethod;
-            expect(method.args).to.have.length(2);
-            expect(method.args[0]).to.equal(testField1);
-            expect(method.args[1]).to.equal(testField2);
-        });
-
-        it('sets up metadata for a method with one field-name arg', () => {
-            apiMetaDef = {
-                model: TestModel,
-                methods: {
-                    testMethod: {
-                        args: ['name'],
-                        handler: (() => {}) as any
-                    }
+            });
+            expect(meta.methods).to.deep.equal({
+                testMethod: {
+                    args: [ testField, testField2 ]
                 }
-            };
-            apiMeta = initialiseApiMeta(apiReg, apiMetaDef);
-            expect(apiMetaDef.methods).to.be.an('object');
-            expect(apiMetaDef.methods).to.have.property('testMethod');
-            let method = apiMeta.methods.testMethod;
-            expect(method.args).to.have.length(1);
-            expect(method.args[0]).to.equal(nameField);
+            });
         });
 
-        it('sets up metadata for a method with two field-name args', () => {
-            apiMetaDef = {
-                model: TestModel,
-                methods: {
-                    testMethod: {
-                        args: ['name', 'date'],
-                        handler: (() => {}) as any
-                    }
-                }
-            };
-            apiMeta = initialiseApiMeta(apiReg, apiMetaDef);
-            expect(apiMetaDef.methods).to.be.an('object');
-            expect(apiMetaDef.methods).to.have.property('testMethod');
-            let method = apiMeta.methods.testMethod;
-            expect(method.args).to.have.length(2);
-            expect(method.args[0]).to.equal(nameField);
-            expect(method.args[1]).to.equal(dateField);
-        });
-
-        it('sets up metadata for a method with mixed args', () => {
-            let testField = new f.TextField('arg1');
-            apiMetaDef = {
-                model: TestModel,
-                methods: {
-                    testMethod: {
-                        args: [
-                            'date',
-                            testField
-                        ],
-                        handler: (() => {}) as any
-                    }
-                }
-            };
-            apiMeta = initialiseApiMeta(apiReg, apiMetaDef);
-            expect(apiMetaDef.methods).to.be.an('object');
-            expect(apiMetaDef.methods).to.have.property('testMethod');
-            let method = apiMeta.methods.testMethod;
-            expect(method.args).to.have.length(2);
-            expect(method.args[0]).to.equal(dateField);
-            expect(method.args[1]).to.equal(testField);
-        });
-
-        it('throws an error if methods key is not an object', () => {
+        it('throws an error when method.args is not an array', () => {
             expect(() => {
-                initialiseApiMeta(apiReg, { model: TestModel, methods: 'some' } as any);
-            }).to.throw(`'methods' must be an object`);
-        });
-
-        it('throws an error when method definition is missing keys', () => {
-            apiMetaDef = {
-                model: TestModel,
-                methods: {
-                    testMethod: {} as any
-                }
-            };
-            expect(() => {
-                initialiseApiMeta(apiReg, apiMetaDef);
-            }).to.throw('API methods must define an args array and a handler function');
-        });
-
-        it('throws an error when method definition keys are invalid', () => {
-            apiMetaDef = {
-                model: TestModel,
-                methods: {
-                    testMethod: {
-                        args: { test: 'fail' } as any,
-                        handler: 'nah' as any
+                initialiseApiMeta(apiManager, TestModel, {
+                    methods: {
+                        testMethod: {
+                            args: 'flibble' as any
+                        }
                     }
-                }
-            };
-            expect(() => {
-                initialiseApiMeta(apiReg, apiMetaDef);
-            }).to.throw('API methods must define an args array and a handler function');
+                });
+            }).to.throw(`args property must be an array of Field objects`);
         });
 
-        it('throws an error when field name does not match the model', () => {
-            apiMetaDef = {
-                model: TestModel,
-                methods: {
-                    testMethod: {
-                        args: ['id', 'not_valid'],
-                        handler: (() => {}) as any
-                    }
-                }
-            };
+        it('throws an error when an invalid type is passed as a method arg', () => {
             expect(() => {
-                initialiseApiMeta(apiReg, apiMetaDef);
-            }).to.throw(`Field 'not_valid' does not exist in model`);
+                initialiseApiMeta(apiManager, TestModel, {
+                    methods: {
+                        testMethod: {
+                            args: [ 'flibble' as any ]
+                        }
+                    }
+                });
+            }).to.throw(`API method args must be an instance of Field`);
         });
 
-        it('throws an error when an invalid type is passed as an arg', () => {
-            apiMetaDef = {
-                model: TestModel,
-                methods: {
-                    testMethod: {
-                        args: ['id', new Date() as any, nameField],
-                        handler: (() => {}) as any
-                    }
-                }
-            };
+    });
+
+    describe('general', () => {
+
+        it('throws if apiMeta does not contain any operations or methods', () => {
             expect(() => {
-                initialiseApiMeta(apiReg, apiMetaDef);
-            }).to.throw(`must either be an instance of a Field or a string`);
+                initialiseApiMeta(apiManager, TestModel, {});
+            }).to.throw('No operations or methods defined for TestModel');
         });
 
     });
