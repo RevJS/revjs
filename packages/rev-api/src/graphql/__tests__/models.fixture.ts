@@ -28,6 +28,7 @@ export class Post {
         post_date: Date;
 
     postMethod1() {}
+    postMethod2() {}
 }
 modelManager.register(Post);
 
