@@ -8,6 +8,7 @@ import { expect } from 'chai';
 import { IApiMeta } from '../../../api/meta';
 import { getMethodResolver } from '../resolve_method';
 
+let smellyInstanceProps: any;
 let smellyArgs: any;
 
 export class User {
@@ -21,7 +22,16 @@ export class User {
     }
 
     getSmellyUser(ctx: IMethodContext<User>) {
+        // Record values for tests
+        smellyInstanceProps = {
+            id: this.id,
+            name: this.name
+        };
+        if (this['extra_prop']) {
+            smellyInstanceProps.extra_prop = this['extra_prop'];
+        }
         smellyArgs = arguments;
+        // Do the thing
         this.name = this.name + ' smells!';
         ctx.result.result = this;
     }
@@ -55,7 +65,7 @@ describe('getMethodResolver()', () => {
             apiMeta = {
                 methods: {
                     getSmellyUser: {
-                        modelArg: false,
+                        modelData: false,
                     }
                 }
             };
@@ -68,114 +78,12 @@ describe('getMethodResolver()', () => {
         return getMethodResolver(api, 'User', 'getSmellyUser');
     }
 
-    describe('meta.modelArg - when true', () => {
-
-        beforeEach(() => {
-            registerUserApi({
-                methods: {
-                    getSmellyUser: {
-                        modelArg: true,
-                    }
-                }
-            });
-        });
-
-        it('throws an error if model not set', () => {
-            let resolver = getResolver();
-            return resolver(undefined, undefined)
-            .then((res) => { throw new Error('did not throw'); })
-            .catch((res) => {
-                expect(res.message).to.contain('Argument "model" must be an object');
-            });
-        });
-
-        it('throws an error if model is not an object', () => {
-            let resolver = getResolver();
-            return resolver(undefined, { model: 'Not an object'})
-            .then((res) => { throw new Error('did not throw'); })
-            .catch((res) => {
-                expect(res.message).to.contain('Argument "model" must be an object');
-            });
-        });
-
-        it('returns an unsuccessful result if model fails validation', () => {
-            let resolver = getResolver();
-            let model: Partial<User> = {
-                id: 1,
-                name: ''
-            };
-            return resolver(undefined, { model: model})
-            .then((res) => {
-                // Top level method validation error
-                expect(res.success).to.be.false;
-                expect(res.operation.operation).to.equal('getSmellyUser');
-                expect(res.errors[0].code).to.equal('validation_error');
-                // Model validation error
-                let modelVResult = res.validation.fieldErrors['model'][0];
-                expect(modelVResult.code).to.equal('validation_error');
-                expect(modelVResult.validation.valid).to.be.false;
-                expect(modelVResult.validation.fieldErrors['name'][0].code).to.equal('string_empty');
-            });
-        });
-
-        it('returns successful result when model passes validation', () => {
-            let resolver = getResolver();
-            let model: Partial<User> = {
-                id: 1,
-                name: 'Bob'
-            };
-            return resolver(undefined, { model: model })
-            .then((res) => {
-                expect(res.success).to.be.true;
-            });
-        });
-
-    });
-
-    describe('meta.modelArg - when falsy', () => {
-
-        beforeEach(() => {
-            registerUserApi({
-                methods: {
-                    getSmellyUser: {
-                        modelArg: false,
-                    }
-                }
-            });
-        });
-
-        it('returns an successful result for an invalid model', () => {
-            let resolver = getResolver();
-            let model: Partial<User> = {
-                id: 'not_a_number' as any,
-                name: 'Jim'
-            };
-            return resolver(undefined, { model: model})
-            .then((res) => {
-                expect(res.success).to.be.true;
-            });
-        });
-
-        it('returns successful result when model is valid', () => {
-            let resolver = getResolver();
-            let model: Partial<User> = {
-                id: 1,
-                name: 'Bob'
-            };
-            return resolver(undefined, { model: model })
-            .then((res) => {
-                expect(res.success).to.be.true;
-            });
-        });
-
-    });
-
     describe('method calls and results - without method arguments', () => {
 
         beforeEach(() => {
             registerUserApi({ methods: {
                 getSmellyUser: {
-                    modelArg: true
+                    modelData: true
                 },
                 methodNoResult: {},
                 methodValueResult: {},
@@ -201,7 +109,7 @@ describe('getMethodResolver()', () => {
             });
         });
 
-        it('custom method called with expected IMethodContext arg', () => {
+        it('method received expected IMethodContext arg and model data', () => {
             let resolver = getResolver();
             return resolver(undefined, {
                 model: {
@@ -217,6 +125,42 @@ describe('getMethodResolver()', () => {
                 expect(smellyArgs[0].result).to.have.property('operation');
                 expect(smellyArgs[0].result.operation).to.have.property('operation', 'getSmellyUser');
                 expect(smellyArgs[0].args).to.deep.equal({});
+                expect(smellyInstanceProps).to.deep.equal({
+                    id: 23,
+                    name: 'Timothy'
+                });
+            });
+        });
+
+        it('method does not receive any extra fields passed for the model', () => {
+            let resolver = getResolver();
+            return resolver(undefined, {
+                model: {
+                    id: 12,
+                    name: 'Joe',
+                    extra_prop: 'Flibble'
+                }
+            })
+            .then((res) => {
+                expect(smellyInstanceProps).to.deep.equal({
+                    id: 12,
+                    name: 'Joe'
+                });
+            });
+        });
+
+        it('method can receive a partial set of model fields', () => {
+            let resolver = getResolver();
+            return resolver(undefined, {
+                model: {
+                    id: 12,
+                }
+            })
+            .then((res) => {
+                expect(smellyInstanceProps).to.deep.equal({
+                    id: 12,
+                    name: undefined
+                });
             });
         });
 
@@ -261,12 +205,18 @@ describe('getMethodResolver()', () => {
 
     });
 
+    /**
+     * validation
+     *  - model data not validated
+     *  - args validates
+     */
+
     describe('method calls - with method arguments', () => {
 
         beforeEach(() => {
             registerUserApi({ methods: {
                 getSmellyUser: {
-                    modelArg: true,
+                    modelData: true,
                     args: [
                         new fields.TextField('textArg'),
                         new fields.IntegerField('intArg', { required: false })
