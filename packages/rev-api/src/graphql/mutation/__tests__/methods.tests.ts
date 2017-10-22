@@ -74,4 +74,8 @@ describe('getModelMethodMutations()', () => {
         expect(config['Post_postMethod1'].args['arg2']).to.exist;
     });
 
+    it('methods should define a resolve function', () => {
+        expect(config['Post_postMethod1'].resolve).to.be.a('function');
+    });
+
 });

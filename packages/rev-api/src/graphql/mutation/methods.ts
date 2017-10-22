@@ -1,9 +1,9 @@
 import { IApiMeta } from '../../api/meta';
 import { GraphQLFieldConfigMap, GraphQLInputObjectType, GraphQLNonNull, GraphQLString } from 'graphql';
 import * as GraphQLJSON from 'graphql-type-json';
-import { IModelOperationResult } from 'rev-models';
 import { getModelInputConfig } from './model';
 import { ModelApiManager } from '../../api/manager';
+import { getMethodResolver } from './resolvers';
 
 export function getModelMethodMutations(manager: ModelApiManager, meta: IApiMeta): GraphQLFieldConfigMap<any, any> {
     let fields = {};
@@ -24,12 +24,7 @@ export function getModelMethodMutations(manager: ModelApiManager, meta: IApiMeta
             args: {
                 model: { type: modelType }
             },
-            resolve: (value: any, args: any): IModelOperationResult<any, any> => {
-                return {
-                    operation: { operation: methodName },
-                    success: true
-                };
-            }
+            resolve: getMethodResolver(methodName, methodMeta)
         };
 
         if (methodMeta.args && methodMeta.args.length > 0) {
