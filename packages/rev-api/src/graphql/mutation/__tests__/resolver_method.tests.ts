@@ -1,6 +1,6 @@
 
 import { IntegerField, TextField, ModelOperationResult,
-    ModelManager, IMethodContext, InMemoryBackend
+    ModelManager, IMethodContext, InMemoryBackend, fields
 } from 'rev-models';
 import { ModelApiManager } from '../../../api/manager';
 
@@ -28,12 +28,15 @@ export class User {
 
     methodNoResult() {}
     methodValueResult() {
-        return 'test';
+        return 'testValueResult';
     }
     methodOperationResult() {
         return new ModelOperationResult({
-            operation: 'custom_result'
+            operation: 'customOperation'
         });
+    }
+    methodWithError() {
+        throw new Error('Oh noes!!!');
     }
 }
 
@@ -162,23 +165,117 @@ describe('getMethodResolver()', () => {
 
     });
 
-    describe('method calls and results', () => {
+    describe('method calls and results - without method arguments', () => {
 
         beforeEach(() => {
             registerUserApi({ methods: {
                 getSmellyUser: {},
                 methodNoResult: {},
                 methodValueResult: {},
-                methodOperationResult: {}
+                methodOperationResult: {},
+                methodWithError: {}
             }});
         });
 
         it('runs the custom method and returns expected result', () => {
             let resolver = getResolver();
-            return resolver(undefined, { model: {
-                id: 23,
-                name: 'Timothy'
-            }})
+            return resolver(undefined, {
+                model: {
+                    id: 23,
+                    name: 'Timothy'
+                }
+            })
+            .then((res) => {
+                expect(res.success).to.be.true;
+                expect(res.result).to.deep.equal(new User({
+                    id: 23,
+                    name: 'Timothy smells!'
+                }));
+            });
+        });
+
+        it('custom method called with expected IMethodContext arg', () => {
+            let resolver = getResolver();
+            return resolver(undefined, {
+                model: {
+                    id: 23,
+                    name: 'Timothy'
+                },
+                extraArg: 'test'
+            })
+            .then((res) => {
+                expect(smellyArgs).to.have.length(1);
+                expect(smellyArgs[0]).to.have.property('manager', models);
+                expect(smellyArgs[0]).to.have.property('result');
+                expect(smellyArgs[0].result).to.have.property('operation');
+                expect(smellyArgs[0].result.operation).to.have.property('operation', 'getSmellyUser');
+                expect(smellyArgs[0].args).to.deep.equal({});
+            });
+        });
+
+        it('method that returns no result still responds with a successful ModelOperationResult', () => {
+            let resolver = getMethodResolver(api, 'User', 'methodNoResult');
+            return resolver(undefined, {})
+            .then((res) => {
+                expect(res).to.be.instanceof(ModelOperationResult);
+                expect(res.success).to.be.true;
+                expect(res.result).to.be.undefined;
+            });
+        });
+
+        it('method that returns a value has it wrapped in a ModelOperationResult', () => {
+            let resolver = getMethodResolver(api, 'User', 'methodValueResult');
+            return resolver(undefined, {})
+            .then((res) => {
+                expect(res).to.be.instanceof(ModelOperationResult);
+                expect(res.success).to.be.true;
+                expect(res.result).to.equal('testValueResult');
+            });
+        });
+
+        it('method that returns a ModelOperationResult returns it directly', () => {
+            let resolver = getMethodResolver(api, 'User', 'methodOperationResult');
+            return resolver(undefined, {})
+            .then((res) => {
+                expect(res).to.be.instanceof(ModelOperationResult);
+                expect(res.success).to.be.true;
+                expect(res.operation.operation).to.equal('customOperation');
+            });
+        });
+
+        it('method that throws an error has it bubbled up', () => {
+            let resolver = getMethodResolver(api, 'User', 'methodWithError');
+            return resolver(undefined, {})
+            .then((res) => { throw new Error('expected to throw'); })
+            .catch((err) => {
+                expect(err.message).to.equal('Oh noes!!!');
+            });
+        });
+
+    });
+
+    describe('method calls - with method arguments', () => {
+
+        beforeEach(() => {
+            registerUserApi({ methods: {
+                getSmellyUser: {
+                    args: [
+                        new fields.TextField('textArg'),
+                        new fields.IntegerField('intArg', { required: false })
+                    ]
+                }
+            }});
+        });
+
+        it('runs the custom method and returns expected result', () => {
+            let resolver = getResolver();
+            return resolver(undefined, {
+                model: {
+                    id: 23,
+                    name: 'Timothy'
+                },
+                textArg: 'test'
+            })
             .then((res) => {
                 expect(res.success).to.be.true;
                 expect(res.result).to.deep.equal(new User({
@@ -191,17 +288,23 @@ describe('getMethodResolver()', () => {
 
         it('custom method called with appropriate IMethodContext arg', () => {
             let resolver = getResolver();
-            return resolver(undefined, { model: {
-                id: 23,
-                name: 'Timothy'
-            }})
+            return resolver(undefined, {
+                model: {
+                    id: 23,
+                    name: 'Timothy'
+                },
+                textArg: 'test'
+            })
             .then((res) => {
                 expect(smellyArgs).to.have.length(1);
                 expect(smellyArgs[0]).to.have.property('manager', models);
                 expect(smellyArgs[0]).to.have.property('result');
                 expect(smellyArgs[0].result).to.have.property('operation');
                 expect(smellyArgs[0].result.operation).to.have.property('operation', 'getSmellyUser');
-                expect(smellyArgs[0]).to.have.property('args', {});
+                expect(smellyArgs[0].args).to.deep.equal({
+                    textArg: 'test',
+                    intArg: undefined
+                });
             });
 
         });

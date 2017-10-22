@@ -2,6 +2,7 @@
 import { IModelOperationResult, ModelOperationResult } from 'rev-models';
 import { ModelApiManager } from '../../api/manager';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
+import { IApiMethodMeta } from '../../../lib/api/meta';
 
 export function getMethodResolver(manager: ModelApiManager, modelName: string, methodName: string) {
     let models = manager.modelManager;
@@ -21,7 +22,6 @@ export function getMethodResolver(manager: ModelApiManager, modelName: string, m
                 }
                 return models.validate(instance);
             }
-            return null;
         })
         .then((res: ModelValidationResult) => {
             if (res && !res.valid) {
@@ -31,7 +31,20 @@ export function getMethodResolver(manager: ModelApiManager, modelName: string, m
                 result.createValidationError(res);
                 return result;
             }
-            return models.exec(instance, methodName, args);
+            else {
+                let methodArgData = getMethodArgData(methodMeta, args);
+                return models.exec(instance, methodName, methodArgData);
+            }
         });
     };
+}
+
+function getMethodArgData(meta: IApiMethodMeta, args: any) {
+    let argsModel = {};
+    if (meta.args) {
+        for (let field of meta.args) {
+            argsModel[field.name] = args[field.name];
+        }
+    }
+    return argsModel;
 }
