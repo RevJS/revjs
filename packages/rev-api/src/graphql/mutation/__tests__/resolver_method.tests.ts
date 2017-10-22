@@ -68,7 +68,7 @@ describe('getMethodResolver()', () => {
         return getMethodResolver(api, 'User', 'getSmellyUser');
     }
 
-    describe('meta.validateModel - when truthy', () => {
+    describe('meta.modelArg - when true', () => {
 
         beforeEach(() => {
             registerUserApi({
@@ -106,10 +106,15 @@ describe('getMethodResolver()', () => {
             };
             return resolver(undefined, { model: model})
             .then((res) => {
+                // Top level method validation error
                 expect(res.success).to.be.false;
                 expect(res.operation.operation).to.equal('getSmellyUser');
                 expect(res.errors[0].code).to.equal('validation_error');
-                expect(res.validation.fieldErrors['name'][0].code).to.equal('string_empty');
+                // Model validation error
+                let modelVResult = res.validation.fieldErrors['model'][0];
+                expect(modelVResult.code).to.equal('validation_error');
+                expect(modelVResult.validation.valid).to.be.false;
+                expect(modelVResult.validation.fieldErrors['name'][0].code).to.equal('string_empty');
             });
         });
 
@@ -127,7 +132,7 @@ describe('getMethodResolver()', () => {
 
     });
 
-    describe('meta.validateModel - when falsy', () => {
+    describe('meta.modelArg - when falsy', () => {
 
         beforeEach(() => {
             registerUserApi({
@@ -169,7 +174,9 @@ describe('getMethodResolver()', () => {
 
         beforeEach(() => {
             registerUserApi({ methods: {
-                getSmellyUser: {},
+                getSmellyUser: {
+                    modelArg: true
+                },
                 methodNoResult: {},
                 methodValueResult: {},
                 methodOperationResult: {},
@@ -259,6 +266,7 @@ describe('getMethodResolver()', () => {
         beforeEach(() => {
             registerUserApi({ methods: {
                 getSmellyUser: {
+                    modelArg: true,
                     args: [
                         new fields.TextField('textArg'),
                         new fields.IntegerField('intArg', { required: false })
