@@ -8,11 +8,17 @@ import { hydrate } from '../hydrate';
 
 class TestModel {
     @d.TextField()
-        name: string = 'Sharon';
+        name: string;
     @d.IntegerField()
-        age: number = 22;
+        age: number;
     
     testMethod() {}
+
+    constructor(data?: any) {
+        if (data) {
+            Object.assign(this, data);
+        }
+    }
 }
 
 let mockBackend: MockBackend;
@@ -32,32 +38,39 @@ describe('rev.operations.hydrate()', () => {
             name: 'Bob',
             age: 35
         });
-        expect(res.name).to.equal('Bob');
-        expect(res.age).to.equal(35);
-        expect(res.testMethod).to.be.a('function');
+        expect(res).to.deep.equal(new TestModel({
+            name: 'Bob',
+            age: 35
+        }));
     });
 
     it('does not need all values to be passed', () => {
         let res = hydrate(manager, TestModel, {
             age: 35
         });
-        expect(res.name).to.equal('Sharon');
-        expect(res.age).to.equal(35);
-        expect(res.testMethod).to.be.a('function');
+        expect(res).to.deep.equal(new TestModel({
+            age: 35
+        }));
+    });
+
+    it('ignores fields not present in model', () => {
+        let res = hydrate(manager, TestModel, {
+            extra_data: true,
+            age: 35
+        });
+        expect(res).to.deep.equal(new TestModel({
+            age: 35
+        }));
     });
 
     it('ignores non-object data', () => {
         let res = hydrate(manager, TestModel, 'flibble');
-        expect(res.name).to.equal('Sharon');
-        expect(res.age).to.equal(22);
-        expect(res.testMethod).to.be.a('function');
+        expect(res).to.deep.equal(new TestModel());
     });
 
     it('returns a plain instance if data is not defined', () => {
         let res = hydrate(manager, TestModel, undefined);
-        expect(res.name).to.equal('Sharon');
-        expect(res.age).to.equal(22);
-        expect(res.testMethod).to.be.a('function');
+        expect(res).to.deep.equal(new TestModel());
     });
 
 });
