@@ -189,6 +189,23 @@ describe('getMethodResolver()', () => {
 
         });
 
+        it('custom method called with appropriate IMethodContext arg', () => {
+            let resolver = getResolver();
+            return resolver(undefined, { model: {
+                id: 23,
+                name: 'Timothy'
+            }})
+            .then((res) => {
+                expect(smellyArgs).to.have.length(1);
+                expect(smellyArgs[0]).to.have.property('manager', models);
+                expect(smellyArgs[0]).to.have.property('result');
+                expect(smellyArgs[0].result).to.have.property('operation');
+                expect(smellyArgs[0].result.operation).to.have.property('operation', 'getSmellyUser');
+                expect(smellyArgs[0]).to.have.property('args', {});
+            });
+
+        });
+
     });
 
 });
