@@ -14,27 +14,24 @@ export function getMethodResolver(manager: ModelApiManager, modelName: string, m
         let instance = models.hydrate(modelMeta.ctor, modelData);
 
         return (Promise.resolve() as any) // TODO: How can we tidy this up (without async / await?)
-            .then(() => {
-                if (methodMeta.validateModel) {
-                    if (!args || !args.model || typeof args.model != 'object') {
-                        throw new Error('Argument "model" must be an object');
-                    }
-                    return models.validate(instance);
+        .then(() => {
+            if (methodMeta.validateModel) {
+                if (!args || !args.model || typeof args.model != 'object') {
+                    throw new Error('Argument "model" must be an object');
                 }
-                return null;
-            })
-            .then((res: ModelValidationResult) => {
-                if (res && !res.valid) {
-                    let result = new ModelOperationResult({
-                        operation: methodName
-                    });
-                    result.createValidationError(res);
-                    return result;
-                }
-                return {
-                    operation: { operation: methodName },
-                    success: true
-                };
-            });
+                return models.validate(instance);
+            }
+            return null;
+        })
+        .then((res: ModelValidationResult) => {
+            if (res && !res.valid) {
+                let result = new ModelOperationResult({
+                    operation: methodName
+                });
+                result.createValidationError(res);
+                return result;
+            }
+            return models.exec(instance, methodName, args);
+        });
     };
 }

@@ -1,5 +1,5 @@
 
-import { IntegerField, TextField,
+import { IntegerField, TextField, ModelOperationResult,
     ModelManager, IMethodContext, InMemoryBackend
 } from 'rev-models';
 import { ModelApiManager } from '../../../api/manager';
@@ -8,15 +8,32 @@ import { expect } from 'chai';
 import { IApiMeta } from '../../../api/meta';
 import { getMethodResolver } from '../resolve_method';
 
+let smellyArgs: any;
+
 export class User {
     @IntegerField()
         id: number;
     @TextField()
         name: string;
 
+    constructor(data?: any) {
+        if (data) { Object.assign(this, data); }
+    }
+
     getSmellyUser(ctx: IMethodContext<User>) {
+        smellyArgs = arguments;
         this.name = this.name + ' smells!';
         ctx.result.result = this;
+    }
+
+    methodNoResult() {}
+    methodValueResult() {
+        return 'test';
+    }
+    methodOperationResult() {
+        return new ModelOperationResult({
+            operation: 'custom_result'
+        });
     }
 }
 
@@ -123,7 +140,7 @@ describe('getMethodResolver()', () => {
             let resolver = getResolver();
             let model: Partial<User> = {
                 id: 'not_a_number' as any,
-                name: null
+                name: 'Jim'
             };
             return resolver(undefined, { model: model})
             .then((res) => {
@@ -141,6 +158,35 @@ describe('getMethodResolver()', () => {
             .then((res) => {
                 expect(res.success).to.be.true;
             });
+        });
+
+    });
+
+    describe('method calls and results', () => {
+
+        beforeEach(() => {
+            registerUserApi({ methods: {
+                getSmellyUser: {},
+                methodNoResult: {},
+                methodValueResult: {},
+                methodOperationResult: {}
+            }});
+        });
+
+        it('runs the custom method and returns expected result', () => {
+            let resolver = getResolver();
+            return resolver(undefined, { model: {
+                id: 23,
+                name: 'Timothy'
+            }})
+            .then((res) => {
+                expect(res.success).to.be.true;
+                expect(res.result).to.deep.equal(new User({
+                    id: 23,
+                    name: 'Timothy smells!'
+                }));
+            });
+
         });
 
     });
