@@ -26,7 +26,8 @@ describe('getModelMethodMutations()', () => {
                 },
                 postMethod2: {
                     modelArg: true,
-                }
+                },
+                postMethod3: {}
             }
         });
         meta = api.getApiMeta('Post');
@@ -34,9 +35,10 @@ describe('getModelMethodMutations()', () => {
     });
 
     it('should register all Post methods', () => {
-        expect(Object.keys(config)).to.have.length(2);
+        expect(Object.keys(config)).to.have.length(3);
         expect(config['Post_postMethod1']).to.exist;
         expect(config['Post_postMethod2']).to.exist;
+        expect(config['Post_postMethod3']).to.exist;
     });
 
     it('methods with modelArg=true should have a required model parameter', () => {
@@ -56,14 +58,17 @@ describe('getModelMethodMutations()', () => {
         expect(config['Post_postMethod2'].type.toString()).to.equal('JSON');
     });
 
-    it('methods that do not require args should only have the "model" arg', () => {
+    it('methods that do not require args should not register args', () => {
+        expect(Object.keys(config['Post_postMethod3'].args)).to.have.length(0);
+    });
+
+    it('methods that only require the "model" arg should register as expected', () => {
         expect(Object.keys(config['Post_postMethod2'].args)).to.have.length(1);
         expect(config['Post_postMethod2'].args['model']).to.exist;
     });
 
-    it('methods that require args should have the "model" arg plus the additional args', () => {
-        expect(Object.keys(config['Post_postMethod1'].args)).to.have.length(3);
-        expect(config['Post_postMethod1'].args['model']).to.exist;
+    it('methods that only require custom args should register as expected', () => {
+        expect(Object.keys(config['Post_postMethod1'].args)).to.have.length(2);
         expect(config['Post_postMethod1'].args['arg1']).to.exist;
         expect(config['Post_postMethod1'].args['arg2']).to.exist;
     });

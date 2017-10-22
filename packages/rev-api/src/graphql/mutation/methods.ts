@@ -1,5 +1,5 @@
 import { IApiMeta } from '../../api/meta';
-import { GraphQLFieldConfigMap, GraphQLInputObjectType, GraphQLNonNull, GraphQLString } from 'graphql';
+import { GraphQLFieldConfigMap, GraphQLInputObjectType, GraphQLNonNull, GraphQLString, GraphQLFieldConfigArgumentMap } from 'graphql';
 import * as GraphQLJSON from 'graphql-type-json';
 import { getModelInputConfig } from './model';
 import { ModelApiManager } from '../../api/manager';
@@ -12,30 +12,28 @@ export function getModelMethodMutations(manager: ModelApiManager, meta: IApiMeta
         let mutationName = meta.model + '_' + methodName;
         let methodMeta = meta.methods[methodName];
 
-        let modelTypeConfig = getModelInputConfig(manager.modelManager.getModelMeta(meta.model));
-        let modelType: any = new GraphQLInputObjectType(modelTypeConfig);
+        let argsConfig: GraphQLFieldConfigArgumentMap = {};
 
         if (methodMeta.modelArg) {
-            modelType = new GraphQLNonNull(modelType);
+            let modelTypeConfig = getModelInputConfig(manager.modelManager.getModelMeta(meta.model));
+            argsConfig['model'] = {
+                type: new GraphQLNonNull(new GraphQLInputObjectType(modelTypeConfig))
+            };
         }
 
-        let config = {
-            type: GraphQLJSON,
-            args: {
-                model: { type: modelType }
-            },
-            resolve: getMethodResolver(manager, meta.model, methodName)
-        };
-
-        if (methodMeta.args && methodMeta.args.length > 0) {
-            for (let field of methodMeta.args) {
-                config.args[field.name] = {
-                    type: GraphQLString
+        if (methodMeta.args) {
+            for (let arg of methodMeta.args) {
+                argsConfig[arg.name] = {
+                    type: new GraphQLNonNull(GraphQLString)
                 };
             }
         }
 
-        fields[mutationName] = config;
+        fields[mutationName] = {
+            type: GraphQLJSON,
+            args: argsConfig,
+            resolve: getMethodResolver(manager, meta.model, methodName)
+        };
     }
 
     return fields;

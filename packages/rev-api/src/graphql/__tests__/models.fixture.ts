@@ -29,6 +29,7 @@ export class Post {
 
     postMethod1() {}
     postMethod2() {}
+    postMethod3() {}
 }
 modelManager.register(Post);
 
