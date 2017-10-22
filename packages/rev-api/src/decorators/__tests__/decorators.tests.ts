@@ -69,10 +69,10 @@ describe('Api Decorators', () => {
         it('registers the decorated method with passed meta', () => {
             class MyClass {
                 test: string;
-                @ApiMethod({ modelArg: true })
+                @ApiMethod({ modelData: true })
                 test_method() {}
             }
-            expectApiMethod(MyClass, 'test_method', { modelArg: true });
+            expectApiMethod(MyClass, 'test_method', { modelData: true });
         });
 
         it('throws if decorated item is not a method', () => {

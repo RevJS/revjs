@@ -7,7 +7,7 @@ const RESERVED_ARG_NAMES = ['model'];
 
 export interface IApiMethodMeta {
     args?: fields.Field[];
-    modelArg?: boolean;
+    modelData?: boolean;
 }
 
 export interface IApiMeta {

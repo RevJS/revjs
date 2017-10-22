@@ -18,14 +18,14 @@ describe('getModelMethodMutations()', () => {
         api.register(models.Post, {
             methods: {
                 postMethod1: {
-                    modelArg: false,
+                    modelData: false,
                     args: [
                         new fields.TextField('arg1'),
                         new fields.IntegerField('arg2')
                     ]
                 },
                 postMethod2: {
-                    modelArg: true,
+                    modelData: true,
                 },
                 postMethod3: {}
             }
@@ -41,11 +41,11 @@ describe('getModelMethodMutations()', () => {
         expect(config['Post_postMethod3']).to.exist;
     });
 
-    it('methods with modelArg=true should have a required model parameter', () => {
+    it('methods with modelData=true should have a required model parameter', () => {
         expect(config['Post_postMethod2'].args['model'].type.toString().endsWith('!')).to.be.true;
     });
 
-    it('methods with modelArg=false should not have a model parameter', () => {
+    it('methods with modelData=false should not have a model parameter', () => {
         expect(config['Post_postMethod1'].args['model']).not.to.exist;
     });
 

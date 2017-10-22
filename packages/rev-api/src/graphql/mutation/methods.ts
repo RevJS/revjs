@@ -14,7 +14,7 @@ export function getModelMethodMutations(manager: ModelApiManager, meta: IApiMeta
 
         let argsConfig: GraphQLFieldConfigArgumentMap = {};
 
-        if (methodMeta.modelArg) {
+        if (methodMeta.modelData) {
             let modelTypeConfig = getModelInputConfig(manager.modelManager.getModelMeta(meta.model));
             argsConfig['model'] = {
                 type: new GraphQLNonNull(new GraphQLInputObjectType(modelTypeConfig))
