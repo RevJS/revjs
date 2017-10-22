@@ -109,16 +109,17 @@ describe('ModelManager', () => {
             expect(meta.fieldsByName).to.be.an('object');
         });
 
-        it('registers model using the name from metadata', () => {
-            testMeta.name = 'TestModelAltName';
-            testReg.register(TestModel, testMeta);
-            expect(testReg.getModelMeta('TestModelAltName').ctor).to.equal(TestModel);
-        });
-
         it('throws an error if metadata cannot be initialised', () => {
             expect(() => {
                 testReg.register(EmptyModel);
             }).to.throw('MetadataError');
+        });
+
+        it('throws an error if model already exists', () => {
+            testReg.register(TestModel, testMeta);
+            expect(() => {
+                testReg.register(TestModel, testMeta);
+            }).to.throw('has already been registered');
         });
 
     });

@@ -78,8 +78,8 @@ export function initialiseMeta<T extends IModel>(manager: ModelManager, model: n
     meta.fieldsByName = {};
 
     // Check model name
-    if (manager.isRegistered(meta.name)) {
-        throw new Error(`MetadataError: Model '${meta.name}' has already been registered.`);
+    if (model.name != meta.name) {
+        throw new Error('MetadataError: Model name does not match meta.name.');
     }
 
     // Validate specified back end

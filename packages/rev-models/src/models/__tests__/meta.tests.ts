@@ -83,20 +83,21 @@ describe('initialiseMeta()', () => {
         expect(testModelMetaRes.name).to.equal('TestModel');
     });
 
-    it('if meta.name is passed, it is used instead of the model name', () => {
-        testModelMeta = {
-            name: 'UserLogin',
-            fields: []
-        };
-        testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
-        expect(testModelMetaRes.name).to.equal('UserLogin');
-    });
-
-    it('throws an error if model name is already registered', () => {
-        testManager.isRegistered = () => true;
+    it('if meta.name is passed, it must match the model name', () => {
         expect(() => {
-            testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
-        }).to.throw('has already been registered');
+            testModelMeta = {
+                name: 'Flibble',
+                fields: []
+            };
+            initialiseMeta(testManager, TestModel, testModelMeta);
+        }).to.throw('Model name does not match meta.name');
+        expect(() => {
+            testModelMeta = {
+                name: 'TestModel',
+                fields: []
+            };
+            initialiseMeta(testManager, TestModel, testModelMeta);
+        }).to.not.throw();
     });
 
     it('should set up meta.backend ("default" if not defined)', () => {

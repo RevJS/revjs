@@ -92,6 +92,11 @@ export class ModelManager {
         // Initialise model metadata
         let modelMeta = initialiseMeta(this, model, meta);
 
+        // Check for duplicates
+        if (modelMeta.name in this._models) {
+            throw new Error(`ModelManagerError: Model '${modelMeta.name}' has already been registered.`);
+        }
+
         // Add prototype and metadata to the registry
         this._models[modelMeta.name] = modelMeta;
     }
