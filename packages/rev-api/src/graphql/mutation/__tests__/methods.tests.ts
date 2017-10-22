@@ -18,14 +18,14 @@ describe('getModelMethodMutations()', () => {
         api.register(models.Post, {
             methods: {
                 postMethod1: {
-                    validateModel: false,
+                    modelArg: false,
                     args: [
                         new fields.TextField('arg1'),
                         new fields.IntegerField('arg2')
                     ]
                 },
                 postMethod2: {
-                    validateModel: true,
+                    modelArg: true,
                 }
             }
         });
@@ -39,22 +39,16 @@ describe('getModelMethodMutations()', () => {
         expect(config['Post_postMethod2']).to.exist;
     });
 
-    it('all method mutations should take a "model" arg.', () => {
-        expect(config['Post_postMethod1'].args['model']).to.exist;
-        expect(config['Post_postMethod2'].args['model']).to.exist;
-    });
-
-    it('all method "model" args should be of the Model_input type.', () => {
-        expect(config['Post_postMethod1'].args['model'].type.toString()).to.contain('Post_input');
-        expect(config['Post_postMethod2'].args['model'].type.toString()).to.contain('Post_input');
-    });
-
-    it('methods with validateModel=true should require the model parameter to be set', () => {
+    it('methods with modelArg=true should have a required model parameter', () => {
         expect(config['Post_postMethod2'].args['model'].type.toString().endsWith('!')).to.be.true;
     });
 
-    it('methods with validateModel=false do not require the model parameter to be set', () => {
-        expect(config['Post_postMethod1'].args['model'].type.toString().endsWith('!')).to.be.false;
+    it('methods with modelArg=false should not have a model parameter', () => {
+        expect(config['Post_postMethod1'].args['model']).not.to.exist;
+    });
+
+    it('method "model" args should be of the Model_input type.', () => {
+        expect(config['Post_postMethod2'].args['model'].type.toString()).to.contain('Post_input');
     });
 
     it('all methods should have a return type of JSON', () => {

@@ -38,7 +38,7 @@ export function getMethodResolver(manager: ModelApiManager, modelName: string, m
 }
 
 function validateMethodModelData(models: ModelManager, meta: IApiMethodMeta, instance: any, args: any): Promise<ModelValidationResult> {
-    if (meta.validateModel) {
+    if (meta.modelArg) {
         if (!args || !args.model || typeof args.model != 'object') {
             throw new Error('Argument "model" must be an object');
         }

@@ -7,7 +7,7 @@ import { ModelApiManager } from '../../api/manager';
 import { ApiOperations, ApiMethod } from '../../decorators/decorators';
 
 const testDecoratedModelOperations = ['read', 'create'];
-const testDecoratedMethodMeta = { validateModel: false };
+const testDecoratedMethodMeta = { modelArg: false };
 
 @ApiOperations(testDecoratedModelOperations)
 class TestDecoratedModel {
@@ -73,12 +73,12 @@ describe('initialiseApiMeta()', () => {
         it('merges methods passed as meta with decorator meta', () => {
             let meta = initialiseApiMeta(apiManager, TestDecoratedModel, {
                 methods: {
-                    testMethod2: { validateModel: true }
+                    testMethod2: { modelArg: true }
                 }
             });
             expect(meta.methods).to.deep.equal({
-                testMethod: { validateModel: false },
-                testMethod2: { validateModel: true }
+                testMethod: { modelArg: false },
+                testMethod2: { modelArg: true }
             });
         });
 

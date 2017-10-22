@@ -21,7 +21,7 @@ export class Person {
         ctx.manager.update(this);
     }
 
-    @ApiMethod({ validateModel: false })
+    @ApiMethod({ modelArg: false })
     randomMember(ctx: rev.IMethodContext<any>) {
         console.log('Generating a member named', ctx.args.name);
         return {

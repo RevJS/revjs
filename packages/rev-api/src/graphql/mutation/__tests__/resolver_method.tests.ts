@@ -55,7 +55,7 @@ describe('getMethodResolver()', () => {
             apiMeta = {
                 methods: {
                     getSmellyUser: {
-                        validateModel: false,
+                        modelArg: false,
                     }
                 }
             };
@@ -74,7 +74,7 @@ describe('getMethodResolver()', () => {
             registerUserApi({
                 methods: {
                     getSmellyUser: {
-                        validateModel: true,
+                        modelArg: true,
                     }
                 }
             });
@@ -133,7 +133,7 @@ describe('getMethodResolver()', () => {
             registerUserApi({
                 methods: {
                     getSmellyUser: {
-                        validateModel: false,
+                        modelArg: false,
                     }
                 }
             });

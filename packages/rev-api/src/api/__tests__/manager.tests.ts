@@ -9,7 +9,7 @@ import { ModelApiManager } from '../manager';
 import { ApiOperations, ApiMethod } from '../../decorators/decorators';
 
 const testModelOperations = ['read', 'create'];
-const testMethodMeta = { validateModel: false };
+const testMethodMeta = { modelArg: false };
 
 @ApiOperations(testModelOperations)
 class TestModel {
