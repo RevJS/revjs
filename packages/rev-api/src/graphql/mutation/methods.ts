@@ -3,7 +3,7 @@ import { GraphQLFieldConfigMap, GraphQLInputObjectType, GraphQLNonNull, GraphQLS
 import * as GraphQLJSON from 'graphql-type-json';
 import { getModelInputConfig } from './model';
 import { ModelApiManager } from '../../api/manager';
-import { getMethodResolver } from './resolvers';
+import { getMethodResolver } from './resolve_method';
 
 export function getModelMethodMutations(manager: ModelApiManager, meta: IApiMeta): GraphQLFieldConfigMap<any, any> {
     let fields = {};
@@ -24,7 +24,7 @@ export function getModelMethodMutations(manager: ModelApiManager, meta: IApiMeta
             args: {
                 model: { type: modelType }
             },
-            resolve: getMethodResolver(methodName, methodMeta)
+            resolve: getMethodResolver(manager, meta.model, methodName)
         };
 
         if (methodMeta.args && methodMeta.args.length > 0) {
