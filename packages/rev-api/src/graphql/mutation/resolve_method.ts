@@ -15,8 +15,9 @@ export function getMethodResolver(manager: ModelApiManager, modelName: string, m
 
         let modelData = args ? args.model : undefined;
         let instance = models.hydrate(modelMeta.ctor, modelData);
+        let execArgs = getMethodExecArgs(methodMeta, args);
 
-        return validateMethodArgs(models, methodMeta, args)
+        return validateMethodArgs(models, methodMeta, execArgs)
         .then((res) => {
             if (!res.valid) {
                 let result = new ModelOperationResult({
@@ -26,7 +27,6 @@ export function getMethodResolver(manager: ModelApiManager, modelName: string, m
                 return result;
             }
             else {
-                let execArgs = getMethodExecArgs(methodMeta, args);
                 return models.exec(instance, methodName, execArgs);
             }
         });
@@ -34,13 +34,13 @@ export function getMethodResolver(manager: ModelApiManager, modelName: string, m
 }
 
 function getMethodExecArgs(meta: IApiMethodMeta, args: any) {
-    let argsModel = {};
-    if (meta.args) {
+    let argsData = {};
+    if (meta.args && args && typeof args == 'object') {
         for (let field of meta.args) {
-            argsModel[field.name] = args[field.name];
+            argsData[field.name] = args[field.name];
         }
     }
-    return argsModel;
+    return argsData;
 }
 
 function validateMethodArgs(models: ModelManager, methodMeta: IApiMethodMeta, args: any): Promise<ModelValidationResult> {
