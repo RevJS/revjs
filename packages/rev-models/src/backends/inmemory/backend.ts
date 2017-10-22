@@ -114,8 +114,7 @@ export class InMemoryBackend implements IBackend {
             result.results = [];
             for (let record of modelStorage) {
                 if (query.testRecord(record)) {
-                    let modelInstance = new model();
-                    Object.assign(modelInstance, record);
+                    let modelInstance = manager.hydrate(model, record);
                     result.results.push(modelInstance);
                 }
             }

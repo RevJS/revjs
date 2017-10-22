@@ -12,6 +12,7 @@ import { ModelOperationResult } from '../operations/operationresult';
 import { validate, IValidationOptions } from '../operations/validate';
 import { ModelValidationResult } from '../validation/validationresult';
 import { IExecOptions, exec, IExecArgs } from '../operations/exec';
+import { hydrate } from '../operations/hydrate';
 
 /**
  * A **Model Manager** has the following responsibilities:
@@ -308,6 +309,21 @@ export class ModelManager {
      */
     exec<R>(model: IModel, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, any>> {
         return exec(this, model, method, argObj, options);
+    }
+
+    /**
+     * Returns a model instance based on its class and a javascript object
+     * containing its data.
+     *
+     * This method is mainly used by backends for instantiating Model objects
+     * based on data from a database or API.
+     *
+     * @param model The Class constructor of the model to read
+     * @param data Any object containing the properties to be added to the model
+     * instance
+     */
+    hydrate<T extends IModel>(model: new() => T, data: any): T {
+        return hydrate(this, model, data);
     }
 
 }

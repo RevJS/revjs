@@ -288,6 +288,10 @@ describe('ModelManager', () => {
             expect(testReg.validate).to.be.a('function');
         });
 
+        it('contains hydrate() function', () => {
+            expect(testReg.hydrate).to.be.a('function');
+        });
+
     });
 
 });
