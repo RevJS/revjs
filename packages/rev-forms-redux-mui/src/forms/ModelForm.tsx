@@ -3,30 +3,32 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { reduxForm, ConfigProps, DecoratedComponentClass } from 'redux-form';
+import { reduxForm, ConfigProps, DecoratedComponentClass, InjectedFormProps } from 'redux-form';
 export { ConfigProps, DecoratedComponentClass };
 
-export interface IModelFormProps {
+export interface IModelFormCustomProps {
     model: string;
     form: string;  // picked up by redux-form and used as form name in state
 }
 
 export interface IModelFormMeta {
-    form: string;
     model: string;
+    form: string;
 }
 
 export interface IModelFormContext {
     modelForm: IModelFormMeta;
 }
 
-export class ModelFormC extends React.Component<IModelFormProps> {
+export type IModelFormInjectedProps = InjectedFormProps<any, IModelFormCustomProps>;
+
+export class ModelFormC extends React.Component<IModelFormCustomProps & IModelFormInjectedProps> {
 
     static contextTypes = {
         modelManager: PropTypes.object
     };
 
-    constructor(props: IModelFormProps, context: IModelProviderContext) {
+    constructor(props: IModelFormCustomProps & IModelFormInjectedProps, context: IModelProviderContext) {
         if (!props.form) {
             throw new Error('ModelForm Error: the "form" prop must be specified');
         }
@@ -61,12 +63,4 @@ export class ModelFormC extends React.Component<IModelFormProps> {
     }
 }
 
-export const ModelForm = reduxForm({})(ModelFormC as any);
-
-/*
-// import RaisedButton from 'material-ui/RaisedButton';
-import { ModelRegistry } from 'rev-models';
-<Field name="testField" component={TextField} />
-
-<RaisedButton label="Log In" primary={true} style={{marginTop: 15}} />
-*/
+export const ModelForm = reduxForm<any, IModelFormCustomProps>({})(ModelFormC);
