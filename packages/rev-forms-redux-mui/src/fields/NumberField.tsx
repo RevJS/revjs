@@ -3,10 +3,9 @@ import * as React from 'react';
 
 import MUITextField from 'material-ui/TextField';
 
-import { IModelFieldTypeProps } from './types';
+import { IModelFieldComponentProps } from './types';
 
-export default function NumberField(props: IModelFieldTypeProps) {
-
+export const NumberField: React.StatelessComponent<IModelFieldComponentProps> = (props) => {
     return (
         <MUITextField
             name={props.field.name}
@@ -19,4 +18,4 @@ export default function NumberField(props: IModelFieldTypeProps) {
             fullWidth={true}
         />
     );
-}
+};

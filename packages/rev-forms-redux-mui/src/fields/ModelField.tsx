@@ -1,30 +1,33 @@
 
 import * as React from 'react';
-import { Field } from 'redux-form';
+import * as PropTypes from 'prop-types';
+import { Field, GenericField } from 'redux-form';
 import { ModelManager } from 'rev-models';
 import * as fields from 'rev-models/lib/fields';
-import { IModelFieldComponentProps } from './types';
 
-import TextField from './TextField';
-import BooleanField from './BooleanField';
-import DateField from './DateField';
-import NumberField from './NumberField';
-import SelectionField from './SelectionField';
+import { TextField } from './TextField';
+import { BooleanField } from './BooleanField';
+import { DateField } from './DateField';
+import { NumberField } from './NumberField';
+import { SelectionField } from './SelectionField';
 import { IModelProviderContext } from '../provider/ModelProvider';
 import { IModelFormContext } from '../forms/ModelForm';
+import { IModelFieldCustomProps } from './types';
 
 export interface IModelFieldProps {
     name: string;
 }
 
-export class ModelField extends React.Component<IModelFieldProps, void> {
+const ModelFieldWrapper = Field as new () => GenericField<IModelFieldCustomProps>;
+
+export class ModelField extends React.Component<IModelFieldProps> {
 
     static contextTypes = {
-        modelManager: React.PropTypes.object,
-        modelForm: React.PropTypes.object
+        modelManager: PropTypes.object,
+        modelForm: PropTypes.object
     };
 
-    fieldComponentProps: IModelFieldComponentProps = {} as any;
+    modelFieldProps: IModelFieldCustomProps = {} as any;
 
     constructor(props: IModelFieldProps, context: IModelProviderContext & IModelFormContext) {
         super(props);
@@ -33,39 +36,49 @@ export class ModelField extends React.Component<IModelFieldProps, void> {
         if (!modelFormMeta) {
             throw new Error('ModelField Error: must be nested inside a ModelForm.');
         }
-        this.fieldComponentProps.modelMeta = modelManager.getModelMeta(modelFormMeta.model);
-        if (!(props.name in this.fieldComponentProps.modelMeta.fieldsByName)) {
+        this.modelFieldProps.modelMeta = modelManager.getModelMeta(modelFormMeta.model);
+        if (!(props.name in this.modelFieldProps.modelMeta.fieldsByName)) {
             throw new Error(`ModelField Error: Model '${modelFormMeta.model}' does not have a field called '${props.name}'.`);
         }
-        this.fieldComponentProps.field = this.fieldComponentProps.modelMeta.fieldsByName[props.name];
+        this.modelFieldProps.field = this.modelFieldProps.modelMeta.fieldsByName[props.name];
     }
 
     render() {
         // TODO: Put these in an object so they can be replaced
 
-        if (this.fieldComponentProps.field instanceof fields.TextField) {
+        if (this.modelFieldProps.field instanceof fields.TextField) {
             return (
-                <Field name={this.props.name} component={TextField} props={this.fieldComponentProps} />
+                <ModelFieldWrapper name={this.props.name} component={TextField}
+                    modelMeta={this.modelFieldProps.modelMeta}
+                    field={this.modelFieldProps.field} />
             );
         }
-        else if (this.fieldComponentProps.field instanceof fields.NumberField) {
+        else if (this.modelFieldProps.field instanceof fields.NumberField) {
             return (
-                <Field name={this.props.name} component={NumberField} props={this.fieldComponentProps} />
+                <ModelFieldWrapper name={this.props.name} component={NumberField}
+                    modelMeta={this.modelFieldProps.modelMeta}
+                    field={this.modelFieldProps.field} />
             );
         }
-        else if (this.fieldComponentProps.field instanceof fields.BooleanField) {
+        else if (this.modelFieldProps.field instanceof fields.BooleanField) {
             return (
-                <Field name={this.props.name} component={BooleanField} props={this.fieldComponentProps} />
+                <ModelFieldWrapper name={this.props.name} component={BooleanField}
+                    modelMeta={this.modelFieldProps.modelMeta}
+                    field={this.modelFieldProps.field} />
             );
         }
-        else if (this.fieldComponentProps.field instanceof fields.SelectionField) {
+        else if (this.modelFieldProps.field instanceof fields.SelectionField) {
             return (
-                <Field name={this.props.name} component={SelectionField} props={this.fieldComponentProps} />
+                <ModelFieldWrapper name={this.props.name} component={SelectionField}
+                    modelMeta={this.modelFieldProps.modelMeta}
+                    field={this.modelFieldProps.field} />
             );
         }
-        else if (this.fieldComponentProps.field instanceof fields.DateField) {
+        else if (this.modelFieldProps.field instanceof fields.DateField) {
             return (
-                <Field name={this.props.name} component={DateField} props={this.fieldComponentProps} />
+                <ModelFieldWrapper name={this.props.name} component={DateField}
+                    modelMeta={this.modelFieldProps.modelMeta}
+                    field={this.modelFieldProps.field} />
             );
         }
     }

@@ -1,8 +1,10 @@
 
 import * as React from 'react';
+import * as PropTypes from 'prop-types';
 
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { reduxForm } from 'redux-form';
+import { reduxForm, ConfigProps, DecoratedComponentClass } from 'redux-form';
+export { ConfigProps, DecoratedComponentClass };
 
 export interface IModelFormProps {
     model: string;
@@ -18,10 +20,10 @@ export interface IModelFormContext {
     modelForm: IModelFormMeta;
 }
 
-export class ModelFormC extends React.Component<IModelFormProps, void> {
+export class ModelFormC extends React.Component<IModelFormProps> {
 
     static contextTypes = {
-        modelManager: React.PropTypes.object
+        modelManager: PropTypes.object
     };
 
     constructor(props: IModelFormProps, context: IModelProviderContext) {
@@ -46,7 +48,7 @@ export class ModelFormC extends React.Component<IModelFormProps, void> {
     }
 
     static childContextTypes = {
-        modelForm: React.PropTypes.object
+        modelForm: PropTypes.object
     };
 
     getChildContext(): IModelFormContext {

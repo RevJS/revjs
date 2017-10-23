@@ -3,9 +3,9 @@ import * as React from 'react';
 
 import MUICheckbox from 'material-ui/Checkbox';
 
-import { IModelFieldTypeProps } from './types';
+import { IModelFieldComponentProps } from './types';
 
-export default function BooleanField(props: IModelFieldTypeProps) {
+export const BooleanField: React.StatelessComponent<IModelFieldComponentProps> = (props) => {
 
     const onCheck = (event: any, isInputChecked: boolean) => {
         props.input.onChange(isInputChecked);
@@ -35,4 +35,4 @@ export default function BooleanField(props: IModelFieldTypeProps) {
             labelStyle={styles.label}
         />
     );
-}
+};

@@ -1,5 +1,6 @@
 
 import * as React from 'react';
+import * as PropTypes from 'prop-types';
 
 import RaisedButton from 'material-ui/RaisedButton';
 import { IModelFormMeta } from '../forms/ModelForm';
@@ -21,11 +22,11 @@ export interface IModelActionContext {
     modelManager: ModelManager;
 }
 
-export class ModelActionC extends React.Component<IModelActionProps, void> {
+export class ModelActionC extends React.Component<IModelActionProps> {
 
     static contextTypes = {
-        modelForm: React.PropTypes.object,
-        modelManager: React.PropTypes.object
+        modelForm: PropTypes.object,
+        modelManager: PropTypes.object
     };
 
     constructor(props: IModelActionProps, context: IModelActionContext) {
@@ -72,4 +73,4 @@ function mapStateToProps(state: any, ownProps: IModelActionProps, context: any):
     };
 }
 
-export const ModelAction = connectWithContext(mapStateToProps, null, { modelForm: React.PropTypes.object })(ModelActionC);
+export const ModelAction = connectWithContext(mapStateToProps, null, { modelForm: PropTypes.object })(ModelActionC);

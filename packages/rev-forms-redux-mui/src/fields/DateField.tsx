@@ -3,9 +3,9 @@ import * as React from 'react';
 
 import MUIDatePicker from 'material-ui/DatePicker';
 
-import { IModelFieldTypeProps } from './types';
+import { IModelFieldComponentProps } from './types';
 
-export default function DateField(props: IModelFieldTypeProps) {
+export const DateField: React.StatelessComponent<IModelFieldComponentProps> = (props) => {
 
     const onChange = (event: null, date: any) => {
         props.input.onChange(date);
@@ -20,9 +20,9 @@ export default function DateField(props: IModelFieldTypeProps) {
             value={value}
             onChange={onChange}
             onFocus={props.input.onFocus}
-            onDismiss={props.input.onBlur}
+            onDismiss={props.input.onBlur as any}
             autoOk={true}
             fullWidth={true}
         />
     );
-}
+};

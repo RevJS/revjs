@@ -15,19 +15,21 @@
   "license": "MIT",
   "typings": "lib/index.d.ts",
   "dependencies": {
-    "rev-models": "^0.0.1",
-    "rev-forms": "^0.0.1",
     "material-ui": "^0.16.0",
-    "react": "^15.0.0",
+    "prop-types": "^15.6.0",
+    "react": "^16.0.0",
     "react-redux": "^5.0.0",
     "redux": "^3.0.0",
-    "redux-form": "^6.0.0"
+    "redux-form": "^7.0.0",
+    "rev-forms": "^0.0.1",
+    "rev-models": "^0.0.1"
   },
   "devDependencies": {
-    "@types/material-ui": "^0.17.10",
-    "@types/react": "^15.0.26",
-    "@types/react-redux": "^4.4.45",
-    "@types/redux-form": "^6.6.2",
+    "@types/material-ui": "^0.18.0",
+    "@types/prop-types": "^15.5.2",
+    "@types/react": "^16.0.0",
+    "@types/react-redux": "^5.0.0",
+    "@types/redux-form": "^7.0.0",
     "run-bin": "^1.0.0"
   }
 }

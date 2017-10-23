@@ -3,15 +3,17 @@ import * as React from 'react';
 
 import MUITextField from 'material-ui/TextField';
 
-import { IModelFieldTypeProps } from './types';
+import { IModelFieldComponentProps } from './types';
 import * as fields from 'rev-models/lib/fields';
 
-export default function TextField(props: IModelFieldTypeProps) {
+export const TextField: React.StatelessComponent<IModelFieldComponentProps> = (props) => {
 
     let type = 'text';
+
     if (props.field instanceof fields.PasswordField) {
         type = 'password';
     }
+
     return (
         <MUITextField
             name={props.field.name}
@@ -24,4 +26,4 @@ export default function TextField(props: IModelFieldTypeProps) {
             fullWidth={true}
         />
     );
-}
+};

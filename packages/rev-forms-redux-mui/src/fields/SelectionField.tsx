@@ -4,10 +4,10 @@ import * as React from 'react';
 import MUISelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 
-import { IModelFieldTypeProps } from './types';
+import { IModelFieldComponentProps } from './types';
 import * as fields from 'rev-models/lib/fields';
 
-export default function SelectionField(props: IModelFieldTypeProps) {
+export const SelectionField: React.StatelessComponent<IModelFieldComponentProps> = (props) => {
 
     let MUISelect: any = MUISelectField;
     let field = props.field as fields.SelectionField;
@@ -37,4 +37,4 @@ export default function SelectionField(props: IModelFieldTypeProps) {
         )}
         </MUISelect>
     );
-}
+};
