@@ -18,7 +18,7 @@ export interface IModelFormContext {
     modelForm: ModelForm;
 }
 
-export class ModelForm extends React.Component<IModelFormProps> {
+export class ModelForm extends React.Component<IModelFormProps, IModelFormState> {
 
     static contextTypes = {
         modelManager: PropTypes.object
@@ -32,6 +32,7 @@ export class ModelForm extends React.Component<IModelFormProps> {
             throw new Error(`ModelForm Error: Model '${props.model}' is not registered.`);
         }
         super(props);
+        this.state = { formValues: {} };
     }
 
     render() {
@@ -42,8 +43,11 @@ export class ModelForm extends React.Component<IModelFormProps> {
         );
     }
 
-    registerField(fieldName: string) {
-        console.log('registered field', fieldName);
+    updateFieldValue(fieldName: string, value: string) {
+        console.log('updating', fieldName, 'value:', value);
+        this.setState({
+            formValues: { ...this.state.formValues, [fieldName]: value}
+        });
     }
 
     static childContextTypes = {

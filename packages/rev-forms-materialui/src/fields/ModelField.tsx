@@ -38,10 +38,11 @@ export class ModelField extends React.Component<IModelFieldProps> {
             throw new Error(`ModelField Error: Model '${modelForm.props.model}' does not have a field called '${props.name}'.`);
         }
         this.modelFieldProps.field = this.modelFieldProps.modelMeta.fieldsByName[props.name];
+        this.modelFieldProps.value = modelForm.state.formValues[props.name];
         this.modelFieldProps.onFocus = () => null;
         this.modelFieldProps.onBlur = () => null;
         this.modelFieldProps.onChange = (value: any) => {
-            console.log('onChange', value);
+            modelForm.updateFieldValue(props.name, value);
         };
     }
 
