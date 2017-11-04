@@ -1,7 +1,6 @@
 
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import { Field, GenericField } from 'redux-form';
 import { ModelManager } from 'rev-models';
 import * as fields from 'rev-models/lib/fields';
 
@@ -12,13 +11,11 @@ import { NumberField } from './NumberField';
 import { SelectionField } from './SelectionField';
 import { IModelProviderContext } from '../provider/ModelProvider';
 import { IModelFormContext } from '../forms/ModelForm';
-import { IModelFieldCustomProps } from './types';
+import { IModelFieldComponentProps } from './types';
 
 export interface IModelFieldProps {
     name: string;
 }
-
-const ModelFieldWrapper = Field as new () => GenericField<IModelFieldCustomProps>;
 
 export class ModelField extends React.Component<IModelFieldProps> {
 
@@ -27,20 +24,25 @@ export class ModelField extends React.Component<IModelFieldProps> {
         modelForm: PropTypes.object
     };
 
-    modelFieldProps: IModelFieldCustomProps = {} as any;
+    modelFieldProps: IModelFieldComponentProps = {} as any;
 
     constructor(props: IModelFieldProps, context: IModelProviderContext & IModelFormContext) {
         super(props);
         let modelManager: ModelManager = context.modelManager;
-        let modelFormMeta = context.modelForm;
-        if (!modelFormMeta) {
+        let modelForm = context.modelForm;
+        if (!modelForm) {
             throw new Error('ModelField Error: must be nested inside a ModelForm.');
         }
-        this.modelFieldProps.modelMeta = modelManager.getModelMeta(modelFormMeta.model);
+        this.modelFieldProps.modelMeta = modelManager.getModelMeta(modelForm.props.model);
         if (!(props.name in this.modelFieldProps.modelMeta.fieldsByName)) {
-            throw new Error(`ModelField Error: Model '${modelFormMeta.model}' does not have a field called '${props.name}'.`);
+            throw new Error(`ModelField Error: Model '${modelForm.props.model}' does not have a field called '${props.name}'.`);
         }
         this.modelFieldProps.field = this.modelFieldProps.modelMeta.fieldsByName[props.name];
+        this.modelFieldProps.onFocus = () => null;
+        this.modelFieldProps.onBlur = () => null;
+        this.modelFieldProps.onChange = (value: any) => {
+            console.log('onChange', value);
+        };
     }
 
     render() {
@@ -48,37 +50,27 @@ export class ModelField extends React.Component<IModelFieldProps> {
 
         if (this.modelFieldProps.field instanceof fields.TextField) {
             return (
-                <ModelFieldWrapper name={this.props.name} component={TextField}
-                    modelMeta={this.modelFieldProps.modelMeta}
-                    field={this.modelFieldProps.field} />
+                <TextField {...this.modelFieldProps} />
             );
         }
         else if (this.modelFieldProps.field instanceof fields.NumberField) {
             return (
-                <ModelFieldWrapper name={this.props.name} component={NumberField}
-                    modelMeta={this.modelFieldProps.modelMeta}
-                    field={this.modelFieldProps.field} />
+                <NumberField {...this.modelFieldProps} />
             );
         }
         else if (this.modelFieldProps.field instanceof fields.BooleanField) {
             return (
-                <ModelFieldWrapper name={this.props.name} component={BooleanField}
-                    modelMeta={this.modelFieldProps.modelMeta}
-                    field={this.modelFieldProps.field} />
+                <BooleanField {...this.modelFieldProps} />
             );
         }
         else if (this.modelFieldProps.field instanceof fields.SelectionField) {
             return (
-                <ModelFieldWrapper name={this.props.name} component={SelectionField}
-                    modelMeta={this.modelFieldProps.modelMeta}
-                    field={this.modelFieldProps.field} />
+                <SelectionField {...this.modelFieldProps} />
             );
         }
         else if (this.modelFieldProps.field instanceof fields.DateField) {
             return (
-                <ModelFieldWrapper name={this.props.name} component={DateField}
-                    modelMeta={this.modelFieldProps.modelMeta}
-                    field={this.modelFieldProps.field} />
+                <DateField {...this.modelFieldProps} />
             );
         }
     }

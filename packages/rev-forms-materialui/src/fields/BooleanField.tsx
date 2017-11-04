@@ -2,16 +2,15 @@
 import * as React from 'react';
 
 import MUICheckbox from 'material-ui/Checkbox';
-
 import { IModelFieldComponentProps } from './types';
 
 export const BooleanField: React.StatelessComponent<IModelFieldComponentProps> = (props) => {
 
     const onCheck = (event: any, isInputChecked: boolean) => {
-        props.input.onChange(isInputChecked);
+        props.onChange(isInputChecked);
     };
 
-    let checked = props.input.value ? true : false;
+    let checked = props.value ? true : false;
 
     const styles = {
         checkbox: {
@@ -29,8 +28,8 @@ export const BooleanField: React.StatelessComponent<IModelFieldComponentProps> =
             label={props.field.options.label || props.field.name}
             checked={checked}
             onCheck={onCheck}
-            onFocus={props.input.onFocus}
-            onBlur={props.input.onBlur}
+            onFocus={props.onFocus}
+            onBlur={props.onBlur}
             style={styles.checkbox}
             labelStyle={styles.label}
         />

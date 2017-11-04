@@ -8,10 +8,10 @@ import { IModelFieldComponentProps } from './types';
 export const DateField: React.StatelessComponent<IModelFieldComponentProps> = (props) => {
 
     const onChange = (event: null, date: any) => {
-        props.input.onChange(date);
+        props.onChange(date);
     };
 
-    let value = props.input.value || null;
+    let value = props.value || null;
 
     return (
         <MUIDatePicker
@@ -19,8 +19,8 @@ export const DateField: React.StatelessComponent<IModelFieldComponentProps> = (p
             floatingLabelText={props.field.options.label || props.field.name}
             value={value}
             onChange={onChange}
-            onFocus={props.input.onFocus}
-            onDismiss={props.input.onBlur as any}
+            onFocus={props.onFocus}
+            onDismiss={props.onBlur}
             autoOk={true}
             fullWidth={true}
         />

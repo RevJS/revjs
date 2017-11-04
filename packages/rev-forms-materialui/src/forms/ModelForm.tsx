@@ -3,35 +3,28 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { reduxForm, ConfigProps, DecoratedComponentClass, InjectedFormProps } from 'redux-form';
-export { ConfigProps, DecoratedComponentClass };
 
-export interface IModelFormCustomProps {
+export interface IModelFormProps {
     model: string;
-    form: string;  // picked up by redux-form and used as form name in state
 }
 
-export interface IModelFormMeta {
-    model: string;
-    form: string;
+export interface IModelFormState {
+    formValues: {
+        [fieldName: string]: any
+    };
 }
 
 export interface IModelFormContext {
-    modelForm: IModelFormMeta;
+    modelForm: ModelForm;
 }
 
-export type IModelFormInjectedProps = InjectedFormProps<any, IModelFormCustomProps>;
-
-export class ModelFormC extends React.Component<IModelFormCustomProps & IModelFormInjectedProps> {
+export class ModelForm extends React.Component<IModelFormProps> {
 
     static contextTypes = {
         modelManager: PropTypes.object
     };
 
-    constructor(props: IModelFormCustomProps & IModelFormInjectedProps, context: IModelProviderContext) {
-        if (!props.form) {
-            throw new Error('ModelForm Error: the "form" prop must be specified');
-        }
+    constructor(props: IModelFormProps, context: IModelProviderContext) {
         if (!context.modelManager) {
             throw new Error('ModelForm Error: must be nested inside a ModelProvider.');
         }
@@ -49,18 +42,17 @@ export class ModelFormC extends React.Component<IModelFormCustomProps & IModelFo
         );
     }
 
+    registerField(fieldName: string) {
+        console.log('registered field', fieldName);
+    }
+
     static childContextTypes = {
         modelForm: PropTypes.object
     };
 
     getChildContext(): IModelFormContext {
         return {
-            modelForm: {
-                model: this.props.model,
-                form: this.props.form
-            }
+            modelForm: this
         };
     }
 }
-
-export const ModelForm = reduxForm<any, IModelFormCustomProps>({})(ModelFormC);

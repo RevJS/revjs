@@ -1,9 +1,10 @@
-import { WrappedFieldProps } from 'redux-form';
 import { IModelMeta, fields } from 'rev-models';
 
-export interface IModelFieldCustomProps  {
+export interface IModelFieldComponentProps  {
     modelMeta: IModelMeta<any>;
     field: fields.Field;
+    value: any;
+    onChange: (value: any) => void;
+    onFocus: () => void;
+    onBlur: () => void;
 }
-
-export type IModelFieldComponentProps = IModelFieldCustomProps & WrappedFieldProps;
