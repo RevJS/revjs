@@ -21,7 +21,7 @@
      "triple-equals": false,
      "one-line": [false, "check-catch", "check-finally", "check-else"],
      "only-arrow-functions": [false],
-     "quotemark": [true, "single"],
+     "quotemark": [true, "single", "jsx-double"],
      "forin": false,
      "variable-name": [false],
      "no-empty": false,

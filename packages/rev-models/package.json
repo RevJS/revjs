@@ -10,7 +10,8 @@
     "lint": "run-bin tslint ./src/**/*.ts",
     "test": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\"",
     "test-watch": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\" --watch",
-    "mocha": "run-bin mocha -r ts-node/register"
+    "mocha": "run-bin mocha -r ts-node/register",
+    "pack": "npm pack"
   },
   "author": "Russell Briggs <russ@paraflyer.net>",
   "license": "MIT",
