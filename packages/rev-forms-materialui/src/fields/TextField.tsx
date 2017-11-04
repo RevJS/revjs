@@ -14,12 +14,25 @@ export const TextField: React.StatelessComponent<IModelFieldComponentProps> = (p
         type = 'password';
     }
 
+    let errorText = '';
+    props.errors.forEach((err) => {
+        errorText += err.message + '. ';
+    });
+
+    const styles = {
+        errorStyle: {
+            textAlign: 'left'
+        }
+    };
+
     return (
         <MUITextField
             name={props.field.name}
             floatingLabelText={props.field.options.label || props.field.name}
             type={type}
             value={props.value}
+            errorText={errorText}
+            errorStyle={styles.errorStyle}
             onChange={(event, value) => props.onChange(value)}
             onFocus={props.onFocus}
             onBlur={props.onBlur}

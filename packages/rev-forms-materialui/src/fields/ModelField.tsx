@@ -11,6 +11,7 @@ import { SelectionField } from './SelectionField';
 import { IModelProviderContext } from '../provider/ModelProvider';
 import { IModelFormContext, ModelForm } from '../forms/ModelForm';
 import { IModelFieldComponentProps } from './types';
+import { IFieldError } from 'rev-models/lib/validation/validationresult';
 
 export interface IModelFieldProps {
     name: string;
@@ -50,12 +51,17 @@ export class ModelField extends React.Component<IModelFieldProps> {
     }
 
     render() {
-        // TODO: Put these in an object so they can be replaced
+
+        let fieldErrors: IFieldError[] = [];
+        if (this.modelField.name in this.modelForm.state.fieldErrors) {
+            fieldErrors = this.modelForm.state.fieldErrors[this.modelField.name];
+        }
 
         let modelFieldProps: IModelFieldComponentProps = {
             modelMeta: this.modelMeta,
             field: this.modelField,
-            value: this.modelForm.state.formValues[this.modelField.name],
+            value: this.modelForm.state.fieldValues[this.modelField.name],
+            errors: fieldErrors,
             onFocus: () => this.onFocus(),
             onBlur: () => this.onBlur(),
             onChange: (value) => this.onChange(value)

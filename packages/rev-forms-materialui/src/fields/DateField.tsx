@@ -9,11 +9,24 @@ export const DateField: React.StatelessComponent<IModelFieldComponentProps> = (p
 
     let value = props.value || null;
 
+    let errorText = '';
+    props.errors.forEach((err) => {
+        errorText += err.message + '. ';
+    });
+
+    const styles = {
+        errorStyle: {
+            textAlign: 'left'
+        }
+    };
+
     return (
         <MUIDatePicker
             name={props.field.name}
             floatingLabelText={props.field.options.label || props.field.name}
             value={value}
+            errorText={errorText}
+            errorStyle={styles.errorStyle}
             onChange={(event, newValue) => props.onChange(newValue)}
             onFocus={props.onFocus}
             onDismiss={props.onBlur}
