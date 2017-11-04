@@ -1,8 +1,7 @@
 
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import { ModelManager } from 'rev-models';
-import * as fields from 'rev-models/lib/fields';
+import { ModelManager, IModelMeta, fields } from 'rev-models';
 
 import { TextField } from './TextField';
 import { BooleanField } from './BooleanField';
@@ -10,7 +9,7 @@ import { DateField } from './DateField';
 import { NumberField } from './NumberField';
 import { SelectionField } from './SelectionField';
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { IModelFormContext } from '../forms/ModelForm';
+import { IModelFormContext, ModelForm } from '../forms/ModelForm';
 import { IModelFieldComponentProps } from './types';
 
 export interface IModelFieldProps {
@@ -24,54 +23,68 @@ export class ModelField extends React.Component<IModelFieldProps> {
         modelForm: PropTypes.object
     };
 
-    modelFieldProps: IModelFieldComponentProps = {} as any;
+    modelManager: ModelManager;
+    modelForm: ModelForm;
+    modelMeta: IModelMeta<any>;
+    modelField: fields.Field;
 
     constructor(props: IModelFieldProps, context: IModelProviderContext & IModelFormContext) {
         super(props);
-        let modelManager: ModelManager = context.modelManager;
-        let modelForm = context.modelForm;
-        if (!modelForm) {
+        this.modelManager = context.modelManager;
+        this.modelForm = context.modelForm;
+        if (!this.modelForm) {
             throw new Error('ModelField Error: must be nested inside a ModelForm.');
         }
-        this.modelFieldProps.modelMeta = modelManager.getModelMeta(modelForm.props.model);
-        if (!(props.name in this.modelFieldProps.modelMeta.fieldsByName)) {
-            throw new Error(`ModelField Error: Model '${modelForm.props.model}' does not have a field called '${props.name}'.`);
+        this.modelMeta = this.modelManager.getModelMeta(this.modelForm.props.model);
+        if (!(props.name in this.modelMeta.fieldsByName)) {
+            throw new Error(`ModelField Error: Model '${this.modelForm.props.model}' does not have a field called '${props.name}'.`);
         }
-        this.modelFieldProps.field = this.modelFieldProps.modelMeta.fieldsByName[props.name];
-        this.modelFieldProps.value = modelForm.state.formValues[props.name];
-        this.modelFieldProps.onFocus = () => null;
-        this.modelFieldProps.onBlur = () => null;
-        this.modelFieldProps.onChange = (value: any) => {
-            modelForm.updateFieldValue(props.name, value);
-        };
+        this.modelField = this.modelMeta.fieldsByName[props.name];
+    }
+
+    onFocus() {}
+    onBlur() {}
+
+    onChange(value: any) {
+        this.modelForm.updateFieldValue(this.modelField.name, value);
     }
 
     render() {
         // TODO: Put these in an object so they can be replaced
 
-        if (this.modelFieldProps.field instanceof fields.TextField) {
+        let modelFieldProps: IModelFieldComponentProps = {
+            modelMeta: this.modelMeta,
+            field: this.modelField,
+            value: this.modelForm.state.formValues[this.modelField.name],
+            onFocus: () => this.onFocus(),
+            onBlur: () => this.onBlur(),
+            onChange: (value) => this.onChange(value)
+        };
+
+
+        if (this.modelField instanceof fields.TextField) {
             return (
-                <TextField {...this.modelFieldProps} />
+                <TextField {...modelFieldProps} />
             );
         }
-        else if (this.modelFieldProps.field instanceof fields.NumberField) {
+        else if (this.modelField instanceof fields.NumberField) {
             return (
-                <NumberField {...this.modelFieldProps} />
+                <NumberField {...modelFieldProps} />
             );
         }
-        else if (this.modelFieldProps.field instanceof fields.BooleanField) {
+        else if (this.modelField instanceof fields.BooleanField) {
             return (
-                <BooleanField {...this.modelFieldProps} />
+                <BooleanField {...modelFieldProps} />
             );
         }
-        else if (this.modelFieldProps.field instanceof fields.SelectionField) {
+        else if (this.modelField instanceof fields.SelectionField) {
             return (
-                <SelectionField {...this.modelFieldProps} />
+                <SelectionField {...modelFieldProps} />
             );
         }
-        else if (this.modelFieldProps.field instanceof fields.DateField) {
+        else if (this.modelField instanceof fields.DateField) {
             return (
-                <DateField {...this.modelFieldProps} />
+                <DateField {...modelFieldProps} />
             );
         }
     }

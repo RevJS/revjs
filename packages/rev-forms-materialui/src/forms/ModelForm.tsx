@@ -44,7 +44,6 @@ export class ModelForm extends React.Component<IModelFormProps, IModelFormState>
     }
 
     updateFieldValue(fieldName: string, value: string) {
-        console.log('updating', fieldName, 'value:', value);
         this.setState({
             formValues: { ...this.state.formValues, [fieldName]: value}
         });

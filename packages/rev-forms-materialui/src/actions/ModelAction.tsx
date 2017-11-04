@@ -27,23 +27,27 @@ export class ModelAction extends React.Component<IModelActionProps> {
         modelManager: PropTypes.object
     };
 
+    modelForm: ModelForm;
+    modelManager: ModelManager;
+
     constructor(props: IModelActionProps, context: IModelActionContext) {
-        if (!context.modelForm) {
+        super(props);
+        this.modelForm = context.modelForm;
+        if (!this.modelForm) {
             throw new Error('ModelAction Error: must be nested inside a ModelForm');
         }
-        if (!context.modelManager) {
+        this.modelManager = context.modelManager;
+        if (!this.modelManager) {
             throw new Error('ModelAction Error: must be nested inside a ModelProvider.');
         }
-        super(props);
     }
 
     onAction() {
         console.log('onAction', this);
-        let ctx: IModelActionContext = this.context;
-        let modelMeta = ctx.modelManager.getModelMeta(ctx.modelForm.props.model);
-        let model = new modelMeta.ctor();
-        Object.assign(model, this.props.values);
-        ctx.modelManager.exec(model, this.props.method, this.props.args, this.props.options)
+        let modelMeta = this.modelManager.getModelMeta(this.modelForm.props.model);
+        let model = this.modelManager.hydrate(modelMeta.ctor, this.modelForm.state.formValues);
+        console.log(model);
+        this.modelManager.exec(model, this.props.method, this.props.args, this.props.options)
         .then((res) => {
             console.log('exec result', res);
         })
