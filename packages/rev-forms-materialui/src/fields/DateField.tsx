@@ -7,10 +7,6 @@ import { IModelFieldComponentProps } from './types';
 
 export const DateField: React.StatelessComponent<IModelFieldComponentProps> = (props) => {
 
-    const onChange = (event: null, date: any) => {
-        props.onChange(date);
-    };
-
     let value = props.value || null;
 
     return (
@@ -18,7 +14,7 @@ export const DateField: React.StatelessComponent<IModelFieldComponentProps> = (p
             name={props.field.name}
             floatingLabelText={props.field.options.label || props.field.name}
             value={value}
-            onChange={onChange}
+            onChange={(event, newValue) => props.onChange(newValue)}
             onFocus={props.onFocus}
             onDismiss={props.onBlur}
             autoOk={true}

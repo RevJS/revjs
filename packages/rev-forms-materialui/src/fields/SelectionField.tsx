@@ -18,16 +18,12 @@ export const SelectionField: React.StatelessComponent<IModelFieldComponentProps>
         }
     };
 
-    let onChange = (e: any, key: any, val: any) => {
-        props.onChange(val);
-    };
-
     return (
         <MUISelect
             name={props.field.name}
             floatingLabelText={props.field.options.label || props.field.name}
             value={props.value}
-            onChange={onChange}
+            onChange={(event: any, key: any, value: any) => props.onChange(value)}
             onFocus={props.onFocus}
             onBlur={props.onBlur}
             style={styles.select}

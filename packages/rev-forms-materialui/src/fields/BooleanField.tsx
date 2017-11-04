@@ -6,10 +6,6 @@ import { IModelFieldComponentProps } from './types';
 
 export const BooleanField: React.StatelessComponent<IModelFieldComponentProps> = (props) => {
 
-    const onCheck = (event: any, isInputChecked: boolean) => {
-        props.onChange(isInputChecked);
-    };
-
     let checked = props.value ? true : false;
 
     const styles = {
@@ -27,7 +23,7 @@ export const BooleanField: React.StatelessComponent<IModelFieldComponentProps> =
             name={props.field.name}
             label={props.field.options.label || props.field.name}
             checked={checked}
-            onCheck={onCheck}
+            onCheck={(event, value) => props.onChange(value)}
             onFocus={props.onFocus}
             onBlur={props.onBlur}
             style={styles.checkbox}

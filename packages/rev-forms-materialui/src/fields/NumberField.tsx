@@ -12,7 +12,7 @@ export const NumberField: React.StatelessComponent<IModelFieldComponentProps> = 
             floatingLabelText={props.field.options.label || props.field.name}
             type="text"
             value={props.value}
-            onChange={props.onChange}
+            onChange={(event, value) => props.onChange(value)}
             onFocus={props.onFocus}
             onBlur={props.onBlur}
             fullWidth={true}
