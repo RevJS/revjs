@@ -7,6 +7,7 @@ import { ModelValidationResult } from './validationresult';
 import { IValidationOptions } from '../operations/validate';
 import { TextField, NumberField, SelectionField } from '../fields/index';
 import { ModelManager } from '../models/manager';
+import { RecordField } from '../fields/recordfields';
 
 export type IFieldValidator =
     <T extends IModel>(
@@ -252,6 +253,23 @@ export function dateTimeValidator<T extends IModel>(manager: ModelManager, model
                 msg.not_a_datetime(field.name),
                 'not_a_datetime'
             );
+        }
+    }
+}
+
+export function recordClassValidator<T extends IModel>(manager: ModelManager, model: T, field: RecordField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (isSet(model[field.name])) {
+        let val = model[field.name];
+        if (typeof val != 'object'
+            || !val.constructor
+            || !val.constructor.name
+            || val.constructor.name != field.options.model.name) {
+
+                result.addFieldError(
+                    field.name,
+                    msg.invalid_record_class(field.name),
+                    'invalid_record_class'
+                );
         }
     }
 }
