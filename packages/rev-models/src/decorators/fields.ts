@@ -3,6 +3,7 @@ import { ITextFieldOptions } from '../fields/textfields';
 import { INumberFieldOptions } from '../fields/numberfields';
 import { IFieldOptions } from '../fields/field';
 import { ISelectionFieldOptions } from '../fields/selectionfields';
+import { IRecordFieldOptions } from '../fields';
 
 /* RevModel Field Decorators */
 
@@ -104,5 +105,14 @@ export function DateTimeField(options?: IFieldOptions)
 {
     return function(target: any, propName: string) {
         addFieldMeta(target, propName, new fld.DateTimeField(propName, options));
+    };
+}
+
+// Record Fields
+
+export function RecordField(options: IRecordFieldOptions)
+{
+    return function(target: any, propName: string) {
+        addFieldMeta(target, propName, new fld.RecordField(propName, options));
     };
 }

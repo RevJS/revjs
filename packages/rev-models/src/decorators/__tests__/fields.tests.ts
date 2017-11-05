@@ -128,4 +128,16 @@ describe('rev.decorators.fields', () => {
 
     });
 
+    describe('Selection Fields', () => {
+        class TestRelatedModel {}
+        
+        it('ReccordField', () => {
+            class MyClass {
+                @d.RecordField({ model: TestRelatedModel })
+                    test: string;
+            }
+            expectFieldMeta(MyClass, 'test', f.RecordField);
+        });
+
+    });
 });
