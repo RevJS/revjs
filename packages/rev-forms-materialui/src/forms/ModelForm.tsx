@@ -56,7 +56,7 @@ export class ModelForm extends React.Component<IModelFormProps, IModelFormState>
 
     render() {
         return (
-            <form>
+            <form onSubmit={(e) => e.preventDefault()}>
                 {this.props.children}
             </form>
         );

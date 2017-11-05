@@ -7,16 +7,17 @@ import { IExecArgs, IExecOptions } from 'rev-models/lib/operations/exec';
 import { ModelManager } from 'rev-models';
 import { ModelForm } from '../forms/ModelForm';
 
-export type FormActionType = 'post' | 'method'
+export type FormActionType = 'post' | 'method';
 const defaultActionType: FormActionType = 'method';
 
 export interface IFormActionProps {
     label: string;
-    type?: FormActionType,
+    type?: FormActionType;
     method?: string;
     args?: IExecArgs;
     url?: string;
     options?: IExecOptions;
+    default?: boolean;
     onSuccess?: (result: Response) => void;
     onFailure?: (error: Error) => void;
 }
@@ -106,8 +107,11 @@ export class FormAction extends React.Component<IFormActionProps> {
     }
 
     render() {
+        let type = this.props.default ? 'submit' : 'button';
         return (
-            <RaisedButton label={this.props.label}
+            <RaisedButton
+                type={type}
+                label={this.props.label}
                 onClick={this.onAction.bind(this)}
                 primary={true} style={{ margin: 12 }} />
         );
