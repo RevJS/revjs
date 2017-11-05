@@ -1012,7 +1012,7 @@ describe('rev.fields.validators', () => {
 
     });
 
-    describe.only('recordClassValidator()', () => {
+    describe('recordClassValidator()', () => {
 
         it('returns valid = true when record is not defined', () => {
             let test = new TestModel();

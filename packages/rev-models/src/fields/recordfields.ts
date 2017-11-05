@@ -1,6 +1,6 @@
 
 import { Field, IFieldOptions } from './field';
-// import * as validators from '../validation/validators';
+import * as validators from '../validation/validators';
 import { IModel } from '../models/model';
 import { checkIsModelConstructor } from '../models/utils';
 
@@ -18,7 +18,7 @@ export class RecordField extends Field {
 
         checkIsModelConstructor(options.model);
 
-        // todo - add model instance validation
+        this.validators.push(validators.recordClassValidator);
 
     }
 }
