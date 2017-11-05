@@ -62,11 +62,11 @@ export class ModelField extends React.Component<IModelFieldProps> {
             field: this.modelField,
             value: this.modelForm.state.fieldValues[this.modelField.name],
             errors: fieldErrors,
+            disabled: this.modelForm.state.disabled,
             onFocus: () => this.onFocus(),
             onBlur: () => this.onBlur(),
             onChange: (value) => this.onChange(value)
         };
-
 
         if (this.modelField instanceof fields.TextField) {
             return (

@@ -23,6 +23,7 @@ export const BooleanField: React.StatelessComponent<IModelFieldComponentProps> =
             name={props.field.name}
             label={props.field.options.label || props.field.name}
             checked={checked}
+            disabled={props.disabled}
             onCheck={(event, value) => props.onChange(value)}
             onFocus={props.onFocus}
             onBlur={props.onBlur}

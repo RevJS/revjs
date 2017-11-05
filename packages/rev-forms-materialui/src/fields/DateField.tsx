@@ -27,6 +27,7 @@ export const DateField: React.StatelessComponent<IModelFieldComponentProps> = (p
             value={value}
             errorText={errorText}
             errorStyle={styles.errorStyle}
+            disabled={props.disabled}
             onChange={(event, newValue) => props.onChange(newValue)}
             onFocus={props.onFocus}
             onDismiss={props.onBlur}

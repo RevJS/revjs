@@ -6,6 +6,7 @@ export interface IModelFieldComponentProps  {
     field: fields.Field;
     value: any;
     errors: IFieldError[];
+    disabled: boolean;
     onChange: (value: any) => void;
     onFocus: () => void;
     onBlur: () => void;

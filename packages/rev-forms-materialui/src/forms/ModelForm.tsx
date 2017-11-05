@@ -15,6 +15,7 @@ export interface IModelFormState {
         [fieldName: string]: any
     };
     valid: boolean;
+    disabled: boolean;
     fieldErrors: {
         [fieldName: string]: IFieldError[]
     };
@@ -46,6 +47,7 @@ export class ModelForm extends React.Component<IModelFormProps, IModelFormState>
         this.modelMeta = this.modelManager.getModelMeta(this.props.model);
         this.state = {
             valid: false,
+            disabled: false,
             fieldValues: {},
             fieldErrors: {},
             modelErrors: []
@@ -81,6 +83,12 @@ export class ModelForm extends React.Component<IModelFormProps, IModelFormState>
     async validate() {
         const model = this.modelManager.hydrate(this.modelMeta.ctor, this.state.fieldValues);
         return this.modelManager.validate(model);
+    }
+
+    disable(isDisabled: boolean) {
+        this.setState({
+            disabled: isDisabled
+        });
     }
 
     static childContextTypes = {

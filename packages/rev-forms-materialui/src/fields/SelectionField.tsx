@@ -23,6 +23,7 @@ export const SelectionField: React.StatelessComponent<IModelFieldComponentProps>
             name={props.field.name}
             floatingLabelText={props.field.options.label || props.field.name}
             value={props.value}
+            disabled={props.disabled}
             onChange={(event: any, key: any, value: any) => props.onChange(value)}
             onFocus={props.onFocus}
             onBlur={props.onBlur}

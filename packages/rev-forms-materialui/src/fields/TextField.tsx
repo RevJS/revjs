@@ -33,6 +33,7 @@ export const TextField: React.StatelessComponent<IModelFieldComponentProps> = (p
             value={props.value}
             errorText={errorText}
             errorStyle={styles.errorStyle}
+            disabled={props.disabled}
             onChange={(event, value) => props.onChange(value)}
             onFocus={props.onFocus}
             onBlur={props.onBlur}

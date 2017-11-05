@@ -7,12 +7,12 @@ import { IExecArgs, IExecOptions } from 'rev-models/lib/operations/exec';
 import { ModelManager } from 'rev-models';
 import { ModelForm } from '../forms/ModelForm';
 
-export type ModelActionType = 'post' | 'method'
-const defaultActionType: ModelActionType = 'method';
+export type FormActionType = 'post' | 'method'
+const defaultActionType: FormActionType = 'method';
 
-export interface IModelActionProps {
+export interface IFormActionProps {
     label: string;
-    type?: ModelActionType,
+    type?: FormActionType,
     method?: string;
     args?: IExecArgs;
     url?: string;
@@ -21,12 +21,12 @@ export interface IModelActionProps {
     onFailure?: (error: Error) => void;
 }
 
-export interface IModelActionContext {
+export interface IFormActionContext {
     modelForm: ModelForm;
     modelManager: ModelManager;
 }
 
-export class ModelAction extends React.Component<IModelActionProps> {
+export class FormAction extends React.Component<IFormActionProps> {
 
     static contextTypes = {
         modelForm: PropTypes.object,
@@ -36,7 +36,7 @@ export class ModelAction extends React.Component<IModelActionProps> {
     modelForm: ModelForm;
     modelManager: ModelManager;
 
-    constructor(props: IModelActionProps, context: IModelActionContext) {
+    constructor(props: IFormActionProps, context: IFormActionContext) {
         super(props);
         this.modelForm = context.modelForm;
         if (!this.modelForm) {
@@ -61,7 +61,8 @@ export class ModelAction extends React.Component<IModelActionProps> {
                 if (!this.props.url) {
                     throw new Error('ModelAction Error: you must specify the url property when type is "post"')
                 }
-                fetch(this.props.url, {
+                this.modelForm.disable(true);
+                return fetch(this.props.url, {
                     method: 'post',
                     headers: {
                         'Accept': 'application/json',
@@ -75,11 +76,13 @@ export class ModelAction extends React.Component<IModelActionProps> {
                         throw new Error('Got status ' + res.status);
                     }
                     if (this.props.onSuccess) {
+                        this.modelForm.disable(false);
                         this.props.onSuccess(res);
                     }
                 })
                 .catch((err) => {
                     if (this.props.onFailure) {
+                        this.modelForm.disable(false);
                         this.props.onFailure(err);
                     }
                 });
@@ -88,11 +91,14 @@ export class ModelAction extends React.Component<IModelActionProps> {
                 let modelMeta = this.modelManager.getModelMeta(this.modelForm.props.model);
                 let model = this.modelManager.hydrate(modelMeta.ctor, this.modelForm.state.fieldValues);
                 console.log(model);
-                this.modelManager.exec(model, this.props.method, this.props.args, this.props.options)
+                this.modelForm.disable(true);
+                return this.modelManager.exec(model, this.props.method, this.props.args, this.props.options)
                 .then((res) => {
+                    this.modelForm.disable(false);
                     console.log('exec result', res);
                 })
                 .catch((err) => {
+                    this.modelForm.disable(false);
                     console.log('exec failure', err);
                 });
             }
