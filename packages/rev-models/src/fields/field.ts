@@ -1,7 +1,6 @@
 import { isSet } from '../utils';
 
 import * as validators from '../validation/validators';
-import { IFieldValidator, IAsyncFieldValidator } from '../validation/validators';
 import { IModel } from '../models/model';
 import { IModelOperation } from '../operations/operation';
 import { ModelValidationResult } from '../validation/validationresult';
@@ -31,8 +30,8 @@ export function getOptions(options?: IFieldOptions): IFieldOptions {
 }
 
 export class Field {
-    validators: IFieldValidator[];
-    asyncValidators: IAsyncFieldValidator[];
+    validators: validators.IFieldValidator[];
+    asyncValidators: validators.IAsyncFieldValidator[];
 
     constructor(public name: string, public options?: IFieldOptions) {
         if (!name || typeof name != 'string') {
