@@ -116,3 +116,10 @@ export function RecordField(options: IRecordFieldOptions)
         addFieldMeta(target, propName, new fld.RecordField(propName, options));
     };
 }
+
+export function RecordListField(options: IRecordFieldOptions)
+{
+    return function(target: any, propName: string) {
+        addFieldMeta(target, propName, new fld.RecordListField(propName, options));
+    };
+}

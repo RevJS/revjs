@@ -22,3 +22,18 @@ export class RecordField extends Field {
 
     }
 }
+
+export class RecordListField extends Field {
+    options: IRecordFieldOptions;
+
+    constructor(
+            name: string,
+            options: IRecordFieldOptions) {
+        super(name, options);
+
+        checkIsModelConstructor(options.model);
+
+        this.validators.push(validators.recordListClassValidator);
+
+    }
+}

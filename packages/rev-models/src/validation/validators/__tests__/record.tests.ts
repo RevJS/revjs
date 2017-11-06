@@ -15,6 +15,7 @@ class TestModel {
     id: any;
     name: any;
     record: any;
+    recordList: any;
 }
 
 class TestRelatedModel {}
@@ -27,6 +28,7 @@ let nameField = new fld.TextField('name', {
     regEx: /^abc\d.$/  // abc[number][anything]
 });
 let recordField = new fld.RecordField('record', { model: TestRelatedModel });
+let recordListField = new fld.RecordField('recordList', { model: TestRelatedModel });
 
 let manager = new ModelManager();
 manager.registerBackend('default', new InMemoryBackend());
@@ -84,6 +86,72 @@ describe('rev.fields.validators.record', () => {
             test.record = 222;
             vld.recordClassValidator(manager, test, recordField, op, vResult, opts);
             expectValidationFailure('invalid_record_class', recordField.name, msg.invalid_record_class(recordField.name), vResult);
+        });
+
+    });
+
+    describe('recordListClassValidator()', () => {
+
+        it('returns valid = true when record is not defined', () => {
+            let test = new TestModel();
+            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when record is null', () => {
+            let test = new TestModel();
+            test.recordList = null;
+            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
+            expectValidationFailure('invalid_record_list_data', recordListField.name, msg.invalid_record_list_data(recordListField.name), vResult);
+        });
+
+        it('returns valid = true when the value is an empty array', () => {
+            let test = new TestModel();
+            test.recordList = [];
+            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when array has an instance of the correct class', () => {
+            let test = new TestModel();
+            test.recordList = [new TestRelatedModel()];
+            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when field is just an instance of the correct class', () => {
+            let test = new TestModel();
+            test.recordList = new TestRelatedModel();
+            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
+            expectValidationFailure('invalid_record_list_data', recordListField.name, msg.invalid_record_list_data(recordListField.name), vResult);
+        });
+
+        it('returns valid = false when array has an instance of the wrong class', () => {
+            let test = new TestModel();
+            test.recordList = [new TestUnrelatedModel()];
+            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
+            expectValidationFailure('invalid_record_list_class', recordListField.name, msg.invalid_record_list_class(recordListField.name), vResult);
+        });
+
+        it('returns valid = false when array has a correct class and an invalid class instance', () => {
+            let test = new TestModel();
+            test.recordList = [new TestRelatedModel(), new TestUnrelatedModel()];
+            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
+            expectValidationFailure('invalid_record_list_class', recordListField.name, msg.invalid_record_list_class(recordListField.name), vResult);
+        });
+
+        it('returns valid = false when the value is not an array', () => {
+            let test = new TestModel();
+            test.recordList = {};
+            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
+            expectValidationFailure('invalid_record_list_data', recordListField.name, msg.invalid_record_list_data(recordListField.name), vResult);
+        });
+
+        it('returns valid = false when the array contains a value that is not an object', () => {
+            let test = new TestModel();
+            test.recordList = [222];
+            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
+            expectValidationFailure('invalid_record_list_class', recordListField.name, msg.invalid_record_list_class(recordListField.name), vResult);
         });
 
     });

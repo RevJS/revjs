@@ -139,5 +139,13 @@ describe('rev.decorators.fields', () => {
             expectFieldMeta(MyClass, 'test', f.RecordField);
         });
 
+        it('ReccordListField', () => {
+            class MyClass {
+                @d.RecordListField({ model: TestRelatedModel })
+                    test: string;
+            }
+            expectFieldMeta(MyClass, 'test', f.RecordListField);
+        });
+
     });
 });

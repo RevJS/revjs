@@ -19,5 +19,7 @@ export let VALIDATION_MESSAGES = {
     list_empty: (label: string) => `${label} is a required field`,
     selection_not_an_array: (label: string) => `${label} should be a list of selections`,
     extra_field: (name: string) => `Field '${name}' does not exist in model metadata`,
-    invalid_record_class: (label: string) => `Invalid record class for ${label}`
+    invalid_record_class: (label: string) => `Invalid record class for ${label}`,
+    invalid_record_list_data: (label: string) => `${label} must be a list of records`,
+    invalid_record_list_class: (label: string) => `One or more records in ${label} has the wrong class.`
 };
