@@ -1,28 +1,14 @@
 
-import { IModel, IModelMeta } from '../models/types';
-import { ModelOperationResult, IOperationMeta } from './operationresult';
+import { IModel, IModelMeta, IModelManager, IReadOptions, IReadMeta } from '../models/types';
+import { ModelOperationResult } from './operationresult';
 import { IModelOperation } from './operation';
-import { ModelManager } from '../models/manager';
-
-export interface IReadOptions {
-    order_by?: string[];
-    limit?: number;
-    offset?: number;
-}
-
-export interface IReadMeta extends IOperationMeta {
-    order_by?: string[];
-    limit: number;
-    offset: number;
-    total_count: number;
-}
 
 export const DEFAULT_READ_OPTIONS: IReadOptions = {
     limit: 20,
     offset: 0
 };
 
-export function read<T extends IModel>(manager: ModelManager, model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+export function read<T extends IModel>(manager: IModelManager, model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
     return new Promise((resolve, reject) => {
 
         let meta = manager.getModelMeta(model) as IModelMeta<T>;

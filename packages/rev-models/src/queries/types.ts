@@ -1,6 +1,5 @@
 
-import { IModel } from '../models/types';
-import { ModelManager } from '../models/manager';
+import { IModel, IModelManager } from '../models/types';
 
 export interface IQueryNode<T extends IModel> {
     operator: string;
@@ -18,7 +17,7 @@ export interface IOperatorRegister {
 }
 
 export interface IQueryParser {
-    manager: ModelManager;
+    manager: IModelManager;
     CONJUNCTION_OPERATORS: IOperatorRegister;
     FIELD_OPERATORS: IOperatorRegister;
 

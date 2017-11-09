@@ -4,15 +4,16 @@ import { IModel, ModelCtor, IModelMeta } from '../models/types';
 import { checkIsModelConstructor } from '../models/utils';
 import { IBackend } from '../backends/backend';
 import { IModelOperation } from '../operations/operation';
-import { create, ICreateOptions, ICreateMeta } from '../operations/create';
-import { update, IUpdateOptions, IUpdateMeta } from '../operations/update';
-import { remove, IRemoveOptions, IRemoveMeta } from '../operations/remove';
-import { read, IReadOptions, IReadMeta } from '../operations/read';
+import { create } from '../operations/create';
+import { update } from '../operations/update';
+import { remove } from '../operations/remove';
+import { read } from '../operations/read';
+import { exec } from '../operations/exec';
 import { ModelOperationResult } from '../operations/operationresult';
 import { validate, IValidationOptions } from '../operations/validate';
 import { ModelValidationResult } from '../validation/validationresult';
-import { IExecOptions, exec, IExecArgs } from '../operations/exec';
 import { hydrate } from '../operations/hydrate';
+import { IModelManager, ICreateOptions, ICreateMeta, IUpdateOptions, IUpdateMeta, IRemoveOptions, IRemoveMeta, IReadOptions, IReadMeta, IExecArgs, IExecOptions } from './types';
 
 /**
  * A **Model Manager** has the following responsibilities:
@@ -27,7 +28,7 @@ import { hydrate } from '../operations/hydrate';
  * [[include:examples/01_defining_a_model_manager.ts]]
  * ```
  */
-export class ModelManager {
+export class ModelManager implements IModelManager {
 
     private _models: { [modelName: string]: IModelMeta<any> };
     private _backends: { [backendName: string]: IBackend };

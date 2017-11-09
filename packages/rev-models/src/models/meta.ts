@@ -1,7 +1,6 @@
 
 import { Field } from '../fields/field';
-import { IModel, IModelMeta } from './types';
-import { ModelManager } from './manager';
+import { IModel, IModelMeta, IModelManager } from './types';
 
 export const DISALLOWED_FIELD_NAMES = [
     'validate',
@@ -27,7 +26,7 @@ function populateMetaFromClassFields<T extends IModel>(model: new(...args: any[]
     }
 }
 
-export function initialiseMeta<T extends IModel>(manager: ModelManager, model: new(...args: any[]) => T, meta?: IModelMeta<T>): IModelMeta<T> {
+export function initialiseMeta<T extends IModel>(manager: IModelManager, model: new(...args: any[]) => T, meta?: IModelMeta<T>): IModelMeta<T> {
 
     if (!meta) {
         meta = {};

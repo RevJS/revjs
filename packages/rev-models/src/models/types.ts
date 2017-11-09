@@ -2,12 +2,7 @@
 import { IValidationContext, IValidationOptions } from '../operations/validate';
 import { Field } from '../fields/field';
 import { IBackend } from '../backends';
-import { IModelOperationResult } from '../operations/operationresult';
-import { ICreateOptions, ICreateMeta } from '../operations/create';
-import { IUpdateOptions, IUpdateMeta } from '../operations/update';
-import { IRemoveOptions, IRemoveMeta } from '../operations/remove';
-import { IReadOptions, IReadMeta } from '../operations/read';
-import { IExecArgs, IExecOptions } from '../operations/exec';
+import { IModelOperationResult, IOperationMeta } from '../operations/operationresult';
 import { ModelValidationResult } from '../validation/validationresult';
 
 export interface IModel {
@@ -31,9 +26,60 @@ export interface IModelMeta<T> {
 
 export type ModelCtor = new(...args: any[]) => IModel;
 
+export interface ICreateOptions {
+    validation?: IValidationOptions;
+}
+
+export interface ICreateMeta extends IOperationMeta {
+    // For future use
+}
+
+export interface IUpdateOptions {
+    where?: object;
+    fields?: string[];
+    validation?: IValidationOptions;
+}
+
+export interface IUpdateMeta extends IOperationMeta {
+    total_count: number;
+}
+
+export interface IRemoveOptions {
+    where?: object;
+}
+
+export interface IRemoveMeta extends IOperationMeta {
+    total_count: number;
+}
+
+export interface IReadOptions {
+    order_by?: string[];
+    limit?: number;
+    offset?: number;
+}
+
+export interface IReadMeta extends IOperationMeta {
+    order_by?: string[];
+    limit: number;
+    offset: number;
+    total_count: number;
+}
+
+export interface IExecArgs {
+    [key: string]: any;
+}
+
+export interface IExecOptions {
+    // For future use
+}
+
+export interface IExecMeta extends IOperationMeta {
+    // For future use
+}
+
 export interface IModelManager {
     isRegistered: (modelName: string) => boolean;
-    register: <T extends IModel>(model: new(...args: any[]) => T, meta?: IModelMeta<T>) => void;
+    register: <T extends IModel>(model: new(...args: any[]) => any, meta?: IModelMeta<T>) => void;
     getModelNames: () => string[];
     getModelMeta: (model: string | ModelCtor | IModel) => IModelMeta<any>;
 

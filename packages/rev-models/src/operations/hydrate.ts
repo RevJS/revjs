@@ -1,8 +1,7 @@
 
-import { IModel } from '../models/types';
-import { ModelManager } from '../models/manager';
+import { IModel, IModelManager } from '../models/types';
 
-export function hydrate<T extends IModel>(manager: ModelManager, model: new() => T, data: any): T {
+export function hydrate<T extends IModel>(manager: IModelManager, model: new() => T, data: any): T {
 
     let meta = manager.getModelMeta(model);
     let instance = new model();

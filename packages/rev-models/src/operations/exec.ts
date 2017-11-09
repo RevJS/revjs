@@ -1,24 +1,11 @@
 
-import { IModel } from '../models/types';
-import { ModelOperationResult, IOperationMeta } from './operationresult';
-import { ModelManager } from '../models/manager';
+import { IModel, IModelManager, IExecOptions, IExecMeta, IExecArgs } from '../models/types';
+import { ModelOperationResult } from './operationresult';
 import { IModelOperation } from './operation';
 import { isSet } from '../utils/index';
 
-export interface IExecOptions {
-    // For future use
-}
-
-export interface IExecMeta extends IOperationMeta {
-    // For future use
-}
-
-export interface IExecArgs {
-    [key: string]: any;
-}
-
 export interface IMethodContext<T> {
-    manager: ModelManager;
+    manager: IModelManager;
     args: IExecArgs;
     result: ModelOperationResult<T, IExecMeta>;
     options?: IExecOptions;
@@ -28,7 +15,7 @@ export const DEFAULT_EXEC_OPTIONS: IExecOptions = {
     // For future use
 };
 
-export function exec<R>(manager: ModelManager, model: IModel, method: string, args?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
+export function exec<R>(manager: IModelManager, model: IModel, method: string, args?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
     return new Promise((resolve, reject) => {
 
         if (typeof model != 'object') {

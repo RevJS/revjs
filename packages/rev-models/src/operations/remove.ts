@@ -1,21 +1,12 @@
 
-import { IModel } from '../models/types';
-import { ModelOperationResult, IOperationMeta } from './operationresult';
+import { IModel, IModelManager, IRemoveOptions, IRemoveMeta } from '../models/types';
+import { ModelOperationResult } from './operationresult';
 import { IModelOperation } from './operation';
-import { ModelManager } from '../models/manager';
 import { getModelPrimaryKeyQuery } from './utils';
-
-export interface IRemoveOptions {
-    where?: object;
-}
-
-export interface IRemoveMeta extends IOperationMeta {
-    total_count: number;
-}
 
 export const DEFAULT_REMOVE_OPTIONS: IRemoveOptions = {};
 
-export function remove<T extends IModel>(manager: ModelManager, model: T, options?: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+export function remove<T extends IModel>(manager: IModelManager, model: T, options?: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
     return new Promise((resolve, reject) => {
 
         let meta = manager.getModelMeta(model);

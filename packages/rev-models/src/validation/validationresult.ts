@@ -11,7 +11,16 @@ export interface IModelError {
     [key: string]: any;
 }
 
-export class ModelValidationResult {
+export interface IModelValidationResult {
+    valid: boolean;
+    fieldErrors: {
+        [fieldName: string]: IFieldError[]
+    };
+    modelErrors: IModelError[];
+    validationFinished: boolean;
+}
+
+export class ModelValidationResult implements IModelValidationResult {
     valid: boolean;
     fieldErrors: {
         [fieldName: string]: IFieldError[]

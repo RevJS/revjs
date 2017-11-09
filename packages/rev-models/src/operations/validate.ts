@@ -1,21 +1,20 @@
-import { IModel } from '../models/types';
+import { IModel, IModelManager } from '../models/types';
 import { IModelOperation } from './operation';
 import { ModelValidationResult } from '../validation/validationresult';
 import { VALIDATION_MESSAGES as msg } from '../validation/validationmsg';
-import { ModelManager } from '../models/manager';
 
 export interface IValidationOptions {
     timeout?: number;
 }
 
 export interface IValidationContext {
-    manager: ModelManager;
+    manager: IModelManager;
     operation: IModelOperation;
     result: ModelValidationResult;
     options?: IValidationOptions;
 }
 
-export function validate<T extends IModel>(manager: ModelManager, model: T, operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
+export function validate<T extends IModel>(manager: IModelManager, model: T, operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
     return new Promise((resolve, reject) => {
 
         let meta = manager.getModelMeta(model);

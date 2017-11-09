@@ -1,5 +1,5 @@
 
-export function sortRecords(records: Array<object>, order_by: string[]) {
+export function sortRecords(records: object[], order_by: string[]) {
     return records.sort((r1, r2) => {
         for (let order_spec of order_by) {
             let tokens = order_spec.split(' ');

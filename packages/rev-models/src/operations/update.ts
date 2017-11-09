@@ -1,24 +1,13 @@
 
-import { IValidationOptions, validate } from './validate';
-import { IModel } from '../models/types';
-import { ModelOperationResult, IOperationMeta } from './operationresult';
+import { validate } from './validate';
+import { IModel, IModelManager, IUpdateOptions, IUpdateMeta } from '../models/types';
+import { ModelOperationResult } from './operationresult';
 import { IModelOperation } from './operation';
-import { ModelManager } from '../models/manager';
 import { getModelPrimaryKeyQuery } from './utils';
-
-export interface IUpdateOptions {
-    where?: object;
-    fields?: string[];
-    validation?: IValidationOptions;
-}
-
-export interface IUpdateMeta extends IOperationMeta {
-    total_count: number;
-}
 
 export const DEFAULT_UPDATE_OPTIONS: IUpdateOptions = {};
 
-export function update<T extends IModel>(manager: ModelManager, model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+export function update<T extends IModel>(manager: IModelManager, model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
     return new Promise((resolve, reject) => {
 
         if (typeof model != 'object') {

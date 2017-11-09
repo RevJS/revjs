@@ -1,17 +1,11 @@
 
 import { IBackend } from '../';
-import { IModel, IModelMeta } from '../../models/types';
+import { IModel, IModelMeta, IModelManager, ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IReadMeta, IReadOptions, IRemoveMeta, IRemoveOptions, IExecArgs, IExecMeta, IExecOptions } from '../../models/types';
 import { ModelOperationResult } from '../../operations/operationresult';
-import { ICreateOptions, ICreateMeta } from '../../operations/create';
-import { IUpdateOptions, IUpdateMeta } from '../../operations/update';
-import { IReadOptions, IReadMeta } from '../../operations/read';
-import { IRemoveOptions, IRemoveMeta } from '../../operations/remove';
 import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
 import { sortRecords } from './sort';
-import { ModelManager } from '../../models/manager';
 import { AutoNumberField } from '../../fields';
-import { IExecArgs, IExecOptions, IExecMeta } from '../../operations/exec';
 
 export class InMemoryBackend implements IBackend {
     _storage: {
@@ -27,7 +21,7 @@ export class InMemoryBackend implements IBackend {
         this._storage = {};
     }
 
-    load<T extends IModel>(manager: ModelManager, model: new(...args: any[]) => T, data: any[]): Promise<ModelOperationResult<T, null>> {
+    load<T extends IModel>(manager: IModelManager, model: new(...args: any[]) => T, data: any[]): Promise<ModelOperationResult<T, null>> {
         return new Promise<ModelOperationResult<T, null>>((resolve) => {
 
             let meta = manager.getModelMeta(model);
@@ -48,7 +42,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    create<T extends IModel>(manager: ModelManager, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
+    create<T extends IModel>(manager: IModelManager, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
         return new Promise<ModelOperationResult<T, ICreateMeta>>((resolve) => {
 
             let meta = manager.getModelMeta(model);
@@ -66,7 +60,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    update<T extends IModel>(manager: ModelManager, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+    update<T extends IModel>(manager: IModelManager, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
         return new Promise<ModelOperationResult<T, IUpdateMeta>>((resolve) => {
 
             if (!where) {
@@ -92,7 +86,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    read<T extends IModel>(manager: ModelManager, model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+    read<T extends IModel>(manager: IModelManager, model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
         return new Promise<ModelOperationResult<T, IReadMeta>>((resolve) => {
 
             let meta = manager.getModelMeta(model);
@@ -133,7 +127,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    remove<T extends IModel>(manager: ModelManager, model: T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+    remove<T extends IModel>(manager: IModelManager, model: T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
         return new Promise<ModelOperationResult<T, IRemoveMeta>>((resolve, reject) => {
 
             if (!where) {
@@ -163,7 +157,7 @@ export class InMemoryBackend implements IBackend {
         });
     }
 
-    exec<R>(manager: ModelManager, model: IModel, method: string, argObj: IExecArgs, result: ModelOperationResult<R, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
+    exec<R>(manager: IModelManager, model: IModel, method: string, argObj: IExecArgs, result: ModelOperationResult<R, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
         return Promise.reject(new Error('InMemoryBackend.exec() not supported'));
     }
 

@@ -1,11 +1,10 @@
 import { isSet } from '../utils';
 
 import * as validators from '../validation/validators';
-import { IModel } from '../models/types';
+import { IModel, IModelManager } from '../models/types';
 import { IModelOperation } from '../operations/operation';
 import { ModelValidationResult } from '../validation/validationresult';
 import { IValidationOptions } from '../operations/validate';
-import { ModelManager } from '../models/manager';
 
 export interface IFieldOptions {
     label?: string;
@@ -45,7 +44,7 @@ export class Field {
         }
     }
 
-    validate<T extends IModel>(manager: ModelManager, model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
+    validate<T extends IModel>(manager: IModelManager, model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
         let timeout = options && options.timeout ? options.timeout : 5000;
         return new Promise((resolve, reject) => {
             // Run synchronous validators

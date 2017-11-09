@@ -1,5 +1,4 @@
-import { IModel } from '../../models/types';
-import { ModelManager } from '../../models/manager';
+import { IModel, IModelManager } from '../../models/types';
 import { IModelOperation } from '../../operations/operation';
 import { isSet } from '../../utils/index';
 import { VALIDATION_MESSAGES as msg } from '../validationmsg';
@@ -7,7 +6,7 @@ import { ModelValidationResult } from '../validationresult';
 import { IValidationOptions } from '../../operations/validate';
 import { Field } from '../../fields';
 
-export function recordClassValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function recordClassValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         let val = model[field.name];
         if (typeof val != 'object'
@@ -24,7 +23,7 @@ export function recordClassValidator<T extends IModel>(manager: ModelManager, mo
     }
 }
 
-export function recordListClassValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function recordListClassValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof model[field.name] != 'undefined') {
         let fieldVal = model[field.name];
         if (!(fieldVal instanceof Array)) {

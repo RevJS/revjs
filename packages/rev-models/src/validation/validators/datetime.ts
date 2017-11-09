@@ -1,5 +1,4 @@
-import { IModel } from '../../models/types';
-import { ModelManager } from '../../models/manager';
+import { IModel, IModelManager } from '../../models/types';
 import { Field } from '../../fields/field';
 import { IModelOperation } from '../../operations/operation';
 import { isSet } from '../../utils/index';
@@ -11,7 +10,7 @@ let dateOnlyRegex = /^[0-9]{4}-[01][0-9]-[0-3][0-9]$/;
 let timeOnlyRegex = /^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/;
 let dateTimeRegex = /^[0-9]{4}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/;
 
-export function dateOnlyValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function dateOnlyValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         if (typeof model[field.name] == 'object' && model[field.name] instanceof Date) {
             return;
@@ -28,7 +27,7 @@ export function dateOnlyValidator<T extends IModel>(manager: ModelManager, model
     }
 }
 
-export function timeOnlyValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function timeOnlyValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         if (typeof model[field.name] == 'object' && model[field.name] instanceof Date) {
             return;
@@ -45,7 +44,7 @@ export function timeOnlyValidator<T extends IModel>(manager: ModelManager, model
     }
 }
 
-export function dateTimeValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function dateTimeValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         if (typeof model[field.name] == 'object' && model[field.name] instanceof Date) {
             return;

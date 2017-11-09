@@ -6,14 +6,13 @@ import { ValueListOperator } from './nodes/valuelist';
 
 import { IQueryParser, IQueryNode, IOperatorRegister } from './types';
 import { printObj } from '../utils/index';
-import { IModel } from '../models/types';
-import { ModelManager } from '../models/manager';
+import { IModel, IModelManager } from '../models/types';
 
 export class QueryParser implements IQueryParser {
     CONJUNCTION_OPERATORS: IOperatorRegister = {};
     FIELD_OPERATORS: IOperatorRegister = {};
 
-    constructor(public manager: ModelManager) {
+    constructor(public manager: IModelManager) {
 
         this.registerConjunctionOperators({
             $and: ConjunctionNode,
