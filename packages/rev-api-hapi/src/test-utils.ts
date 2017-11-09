@@ -1,7 +1,6 @@
 
 import * as Hapi from 'hapi';
 import * as rev from 'rev-models';
-import { ModelManager, InMemoryBackend } from 'rev-models';
 import { ModelApiManager, ApiOperations, ApiMethod } from 'rev-api';
 
 export interface IServerOptions {
@@ -43,8 +42,8 @@ export function createApiRegistry() {
         testMethod() {}
     }
 
-    let modelRegistry = new ModelManager();
-    modelRegistry.registerBackend('default', new InMemoryBackend());
+    let modelRegistry = new rev.ModelManager();
+    modelRegistry.registerBackend('default', new rev.InMemoryBackend());
     modelRegistry.register(TestModel);
 
     let apiRegistry = new ModelApiManager(modelRegistry);

@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
 import RaisedButton from 'material-ui/RaisedButton';
-import { IExecArgs, IExecOptions } from 'rev-models/lib/operations/exec';
+import { IExecArgs, IExecOptions } from 'rev-models/lib/models/types';
 import { ModelManager } from 'rev-models';
 import { ModelForm } from '../forms/ModelForm';
 
@@ -60,7 +60,7 @@ export class FormAction extends React.Component<IFormActionProps> {
         if (validationResult.valid) {
             if (actionType == 'post') {
                 if (!this.props.url) {
-                    throw new Error('ModelAction Error: you must specify the url property when type is "post"')
+                    throw new Error('ModelAction Error: you must specify the url property when type is "post"');
                 }
                 this.modelForm.disable(true);
                 return fetch(this.props.url, {

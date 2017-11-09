@@ -3,11 +3,7 @@ import { IModel, ModelManager } from 'rev-models';
 
 import { IBackend } from 'rev-models/lib/backends/backend';
 import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
-import { ICreateMeta, ICreateOptions } from 'rev-models/lib/operations/create';
-import { IUpdateMeta, IUpdateOptions } from 'rev-models/lib/operations/update';
-import { IRemoveMeta, IRemoveOptions } from 'rev-models/lib/operations/remove';
-import { IReadMeta, IReadOptions } from 'rev-models/lib/operations/read';
-import { IExecArgs, IExecMeta, IExecOptions } from 'rev-models/lib/operations/exec';
+import { ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IRemoveMeta, IRemoveOptions, IReadMeta, IReadOptions, IExecArgs, IExecMeta, IExecOptions } from 'rev-models/lib/models/types';
 
 export class ModelApiBackend implements IBackend {
 
