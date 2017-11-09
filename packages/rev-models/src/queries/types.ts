@@ -1,5 +1,5 @@
 
-import { IModel } from '../models/model';
+import { IModel } from '../models/types';
 import { ModelManager } from '../models/manager';
 
 export interface IQueryNode<T extends IModel> {

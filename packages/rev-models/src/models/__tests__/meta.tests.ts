@@ -1,9 +1,10 @@
 import { Field } from '../../fields/index';
-import { initialiseMeta, checkMetadataInitialised, IModelMeta } from '../meta';
+import { initialiseMeta, checkMetadataInitialised } from '../meta';
 import { expect } from 'chai';
 import { IntegerField, TextField, DateField } from '../../fields';
 import * as d from '../../decorators';
 import { ModelManager } from '../../models/manager';
+import { IModelMeta } from '../types';
 
 class TestModel {
     id: number = 1;

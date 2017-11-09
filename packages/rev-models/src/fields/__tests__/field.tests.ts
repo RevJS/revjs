@@ -4,8 +4,7 @@ import { requiredValidator } from '../../validation/validators';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { IModelOperation } from '../../operations/operation';
 import { ModelManager } from '../../models/manager';
-import { IModelMeta } from '../../../lib/models/meta';
-import { IModel } from '../../models/model';
+import { IModel, IModelMeta } from '../../models/types';
 
 function quickValidAsyncValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {

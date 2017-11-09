@@ -1,11 +1,9 @@
 
 import { Field, IFieldOptions } from './field';
 import * as validators from '../validation/validators';
-import { IModel } from '../models/model';
-import { checkIsModelConstructor } from '../models/utils';
 
 export interface IRecordFieldOptions extends IFieldOptions {
-    model: IModel;
+    model: string;
 }
 
 export class RecordField extends Field {
@@ -16,7 +14,9 @@ export class RecordField extends Field {
             options: IRecordFieldOptions) {
         super(name, options);
 
-        checkIsModelConstructor(options.model);
+        if (!options.model || typeof options.model != 'string') {
+            throw new Error('RecordFieldError: options.model must be a non-empty string');
+        }
 
         this.validators.push(validators.recordClassValidator);
 
@@ -31,7 +31,9 @@ export class RecordListField extends Field {
             options: IRecordFieldOptions) {
         super(name, options);
 
-        checkIsModelConstructor(options.model);
+        if (!options.model || typeof options.model != 'string') {
+            throw new Error('RecordFieldError: options.model must be a non-empty string');
+        }
 
         this.validators.push(validators.recordListClassValidator);
 

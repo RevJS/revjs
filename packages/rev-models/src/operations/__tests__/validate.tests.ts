@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as d from '../../decorators';
-import { IModelMeta } from '../../models/meta';
+import { IModelMeta } from '../../models/types';
 import { TextField } from '../../fields/';
 import { validate, IValidationContext } from '../validate';
 import { VALIDATION_MESSAGES as msg } from '../../validation/validationmsg';

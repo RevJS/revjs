@@ -1,19 +1,19 @@
-import { IModel } from '../../models/model';
+import { IModel } from '../../models/types';
 import { ModelManager } from '../../models/manager';
 import { IModelOperation } from '../../operations/operation';
 import { isSet } from '../../utils/index';
 import { VALIDATION_MESSAGES as msg } from '../validationmsg';
 import { ModelValidationResult } from '../validationresult';
 import { IValidationOptions } from '../../operations/validate';
-import { RecordField, RecordListField } from '../../fields/recordfields';
+import { Field } from '../../fields';
 
-export function recordClassValidator<T extends IModel>(manager: ModelManager, model: T, field: RecordField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function recordClassValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         let val = model[field.name];
         if (typeof val != 'object'
             || !val.constructor
             || !val.constructor.name
-            || val.constructor.name != field.options.model.name) {
+            || val.constructor.name != field.options.model) {
 
                 result.addFieldError(
                     field.name,
@@ -24,7 +24,7 @@ export function recordClassValidator<T extends IModel>(manager: ModelManager, mo
     }
 }
 
-export function recordListClassValidator<T extends IModel>(manager: ModelManager, model: T, field: RecordListField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function recordListClassValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof model[field.name] != 'undefined') {
         let fieldVal = model[field.name];
         if (!(fieldVal instanceof Array)) {
@@ -39,7 +39,7 @@ export function recordListClassValidator<T extends IModel>(manager: ModelManager
                 if (typeof val != 'object'
                     || !val.constructor
                     || !val.constructor.name
-                    || val.constructor.name != field.options.model.name) {
+                    || val.constructor.name != field.options.model) {
                         result.addFieldError(
                             field.name,
                             msg.invalid_record_list_class(field.name),

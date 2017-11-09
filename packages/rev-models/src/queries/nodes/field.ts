@@ -3,7 +3,7 @@ import { QueryNode } from './query';
 import { IQueryParser, IQueryNode } from '../types';
 import { isFieldValue } from '../utils';
 import { ValueOperator } from './value';
-import { IModel } from '../../models/model';
+import { IModel } from '../../models/types';
 
 export class FieldNode<T extends IModel> extends QueryNode<T> {
 

@@ -1,4 +1,4 @@
-import { IModel } from '../../models/model';
+import { IModel } from '../../models/types';
 import { ModelManager } from '../../models/manager';
 import { Field } from '../../fields/field';
 import { IModelOperation } from '../../operations/operation';

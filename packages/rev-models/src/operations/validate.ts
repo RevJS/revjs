@@ -1,4 +1,4 @@
-import { IModel } from '../models/model';
+import { IModel } from '../models/types';
 import { IModelOperation } from './operation';
 import { ModelValidationResult } from '../validation/validationresult';
 import { VALIDATION_MESSAGES as msg } from '../validation/validationmsg';

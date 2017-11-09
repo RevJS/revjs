@@ -1,8 +1,7 @@
 
 import { IBackend } from '../';
-import { IModelMeta } from '../../models/meta';
+import { IModel, IModelMeta } from '../../models/types';
 import { ModelOperationResult } from '../../operations/operationresult';
-import { IModel } from '../../models/model';
 import { ICreateOptions, ICreateMeta } from '../../operations/create';
 import { IUpdateOptions, IUpdateMeta } from '../../operations/update';
 import { IReadOptions, IReadMeta } from '../../operations/read';

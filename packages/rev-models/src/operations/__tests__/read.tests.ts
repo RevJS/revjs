@@ -7,7 +7,7 @@ import * as read from '../read';
 import { MockBackend } from './mock-backend';
 import { DEFAULT_READ_OPTIONS, validateOrderBy } from '../read';
 import { ModelManager } from '../../models/manager';
-import { IModelMeta } from '../../models/meta';
+import { IModelMeta } from '../../models/types';
 
 class TestModel {
     @d.TextField()

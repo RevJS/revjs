@@ -27,8 +27,8 @@ let nameField = new fld.TextField('name', {
     minValue: 'ddd', maxValue: 'jjj',
     regEx: /^abc\d.$/  // abc[number][anything]
 });
-let recordField = new fld.RecordField('record', { model: TestRelatedModel });
-let recordListField = new fld.RecordField('recordList', { model: TestRelatedModel });
+let recordField = new fld.RecordField('record', { model: 'TestRelatedModel' });
+let recordListField = new fld.RecordField('recordList', { model: 'TestRelatedModel' });
 
 let manager = new ModelManager();
 manager.registerBackend('default', new InMemoryBackend());

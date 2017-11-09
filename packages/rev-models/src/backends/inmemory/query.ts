@@ -1,6 +1,6 @@
 
 import { IQueryNode } from '../../queries/types';
-import { IModel } from '../../models/model';
+import { IModel } from '../../models/types';
 import { ConjunctionNode } from '../../queries/nodes/conjunction';
 import { FieldNode } from '../../queries/nodes/field';
 import { ValueOperator } from '../../queries/nodes/value';

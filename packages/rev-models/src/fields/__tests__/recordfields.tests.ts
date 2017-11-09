@@ -34,7 +34,7 @@ describe('rev.fields.recordfields', () => {
 
     describe('RecordField', () => {
         const testOpts: IRecordFieldOptions = {
-            model: TestRelatedModel
+            model: 'TestRelatedModel'
         };
 
         it('creates a field with properties as expected', () => {
@@ -45,29 +45,37 @@ describe('rev.fields.recordfields', () => {
             expect(test).is.instanceof(Field);
         });
 
-        it('throws if passed model is not a class constructor', () => {
+        it('throws if passed model is not a string', () => {
             expect(() => {
                 new RecordField('value', {
-                    model: 'not_a_class' as any
+                    model: 22 as any
                 });
-            }).to.throw('Supplied model is not a model constructor');
+            }).to.throw('options.model must be a non-empty string');
+        });
+
+        it('throws if passed model is an empty string', () => {
+            expect(() => {
+                new RecordField('value', {
+                    model: ''
+                });
+            }).to.throw('options.model must be a non-empty string');
         });
 
         it('adds the just the recordClassValidator if options.required is false', () => {
-            let test = new RecordField('value', {model: TestRelatedModel, required: false });
+            let test = new RecordField('value', {model: 'TestRelatedModel', required: false });
             expect(test.validators.length).to.equal(1);
             expect(test.validators[0]).to.equal(recordClassValidator);
         });
 
         it('adds the required validator if options.required is true', () => {
-            let test = new RecordField('value', {model: TestRelatedModel, required: true });
+            let test = new RecordField('value', {model: 'TestRelatedModel', required: true });
             expect(test.validators.length).to.equal(2);
             expect(test.validators[0]).to.equal(requiredValidator);
             expect(test.validators[1]).to.equal(recordClassValidator);
         });
 
         it('successfully validates a record', () => {
-            let test = new RecordField('value', {model: TestRelatedModel});
+            let test = new RecordField('value', {model: 'TestRelatedModel'});
             let model = new TestRelatedModel();
             model.name = 'fred';
             testModel.value = model;
@@ -76,28 +84,28 @@ describe('rev.fields.recordfields', () => {
         });
 
         it('successfully validates a null value if field not required', () => {
-            let test = new RecordField('value', {model: TestRelatedModel, required: false });
+            let test = new RecordField('value', {model: 'TestRelatedModel', required: false });
             testModel.value = null;
             return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('does not validate on null value if field is required', () => {
-            let test = new RecordField('value', {model: TestRelatedModel, required: true });
+            let test = new RecordField('value', {model: 'TestRelatedModel', required: true });
             testModel.value = null;
             return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate a record of the wrong class', () => {
-            let test = new RecordField('value', {model: TestRelatedModel});
+            let test = new RecordField('value', {model: 'TestRelatedModel'});
             testModel.value = new TestUnrelatedModel();
             return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate an array of models', () => {
-            let test = new RecordField('value', {model: TestRelatedModel});
+            let test = new RecordField('value', {model: 'TestRelatedModel'});
             testModel.value = [new TestRelatedModel()];
             return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });
@@ -107,7 +115,7 @@ describe('rev.fields.recordfields', () => {
 
     describe('RecordListField', () => {
         const testOpts: IRecordFieldOptions = {
-            model: TestRelatedModel
+            model: 'TestRelatedModel'
         };
 
         it('creates a field with properties as expected', () => {
@@ -118,29 +126,37 @@ describe('rev.fields.recordfields', () => {
             expect(test).is.instanceof(Field);
         });
 
-        it('throws if passed model is not a class constructor', () => {
+        it('throws if passed model is not a string', () => {
             expect(() => {
                 new RecordListField('value', {
-                    model: 'not_a_class' as any
+                    model: 22 as any
                 });
-            }).to.throw('Supplied model is not a model constructor');
+            }).to.throw('options.model must be a non-empty string');
+        });
+
+        it('throws if passed model is an empty string', () => {
+            expect(() => {
+                new RecordListField('value', {
+                    model: ''
+                });
+            }).to.throw('options.model must be a non-empty string');
         });
 
         it('adds the just the recordListClassValidator if options.required is false', () => {
-            let test = new RecordListField('value', {model: TestRelatedModel, required: false });
+            let test = new RecordListField('value', {model: 'TestRelatedModel', required: false });
             expect(test.validators.length).to.equal(1);
             expect(test.validators[0]).to.equal(recordListClassValidator);
         });
 
         it('adds the required validator if options.required is true', () => {
-            let test = new RecordListField('value', {model: TestRelatedModel, required: true });
+            let test = new RecordListField('value', {model: 'TestRelatedModel', required: true });
             expect(test.validators.length).to.equal(2);
             expect(test.validators[0]).to.equal(requiredValidator);
             expect(test.validators[1]).to.equal(recordListClassValidator);
         });
 
         it('successfully validates a record', () => {
-            let test = new RecordListField('value', {model: TestRelatedModel});
+            let test = new RecordListField('value', {model: 'TestRelatedModel'});
             let model1 = new TestRelatedModel();
             let model2 = new TestRelatedModel();
             model1.name = 'Fred';
@@ -151,28 +167,28 @@ describe('rev.fields.recordfields', () => {
         });
 
         it('successfully validates an undefined value if field not required', () => {
-            let test = new RecordListField('value', {model: TestRelatedModel, required: false });
+            let test = new RecordListField('value', {model: 'TestRelatedModel', required: false });
             testModel.value = undefined;
             return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('does not validate an undefined value if field is required', () => {
-            let test = new RecordListField('value', {model: TestRelatedModel, required: true });
+            let test = new RecordListField('value', {model: 'TestRelatedModel', required: true });
             testModel.value = undefined;
             return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate a record of the wrong class', () => {
-            let test = new RecordListField('value', {model: TestRelatedModel});
+            let test = new RecordListField('value', {model: 'TestRelatedModel'});
             testModel.value = [new TestUnrelatedModel()];
             return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate a plain instance of a model', () => {
-            let test = new RecordListField('value', {model: TestRelatedModel});
+            let test = new RecordListField('value', {model: 'TestRelatedModel'});
             testModel.value = new TestRelatedModel();
             return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });

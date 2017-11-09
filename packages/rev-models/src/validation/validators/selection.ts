@@ -1,4 +1,4 @@
-import { IModel } from '../../models/model';
+import { IModel } from '../../models/types';
 import { ModelManager } from '../../models/manager';
 import { Field } from '../../fields/field';
 import { IModelOperation } from '../../operations/operation';
@@ -6,9 +6,8 @@ import { isSet } from '../../utils/index';
 import { VALIDATION_MESSAGES as msg } from '../validationmsg';
 import { ModelValidationResult } from '../validationresult';
 import { IValidationOptions } from '../../operations/validate';
-import { SelectionField } from '../../fields/selectionfields';
 
-export function singleSelectionValidator<T extends IModel>(manager: ModelManager, model: T, field: SelectionField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function singleSelectionValidator<T extends IModel>(manager: ModelManager, model: T, field: any, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         for (let opt of field.options.selection) {
             if (opt[0] == model[field.name]) {
@@ -34,7 +33,7 @@ export function listEmptyValidator<T extends IModel>(manager: ModelManager, mode
     }
 }
 
-export function multipleSelectionValidator<T extends IModel>(manager: ModelManager, model: T, field: SelectionField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function multipleSelectionValidator<T extends IModel>(manager: ModelManager, model: T, field: any, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         if (typeof model[field.name] != 'object' || !(model[field.name] instanceof Array)) {
             result.addFieldError(

@@ -1,5 +1,5 @@
 
-import { IModel } from '../models/model';
+import { IModel } from '../models/types';
 import { IValidationOptions, validate } from './validate';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { IModelOperation } from './operation';

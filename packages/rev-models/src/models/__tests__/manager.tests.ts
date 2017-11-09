@@ -5,7 +5,7 @@ import * as manager from '../manager';
 import * as d from '../../decorators';
 import { IBackend } from '../../backends/backend';
 import { InMemoryBackend } from '../../backends/inmemory/backend';
-import { IModelMeta } from '../../models/meta';
+import { IModelMeta } from '../../models/types';
 
 class TestModel {
     id: number = 1;

@@ -6,7 +6,7 @@ import { ValueListOperator } from './nodes/valuelist';
 
 import { IQueryParser, IQueryNode, IOperatorRegister } from './types';
 import { printObj } from '../utils/index';
-import { IModel } from '../models/model';
+import { IModel } from '../models/types';
 import { ModelManager } from '../models/manager';
 
 export class QueryParser implements IQueryParser {

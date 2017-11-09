@@ -1,6 +1,6 @@
 
 import { ModelOperationResult } from '../operations/operationresult';
-import { IModel } from '../models/model';
+import { IModel } from '../models/types';
 import { ICreateOptions, ICreateMeta } from '../operations/create';
 import { IUpdateOptions, IUpdateMeta } from '../operations/update';
 import { IReadOptions, IReadMeta } from '../operations/read';

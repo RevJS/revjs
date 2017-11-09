@@ -1,11 +1,10 @@
 import { VALIDATION_MESSAGES as msg } from '../validationmsg';
 import { isSet } from '../../utils';
-import { IModel } from '../../models/model';
+import { IModel } from '../../models/types';
 import { Field } from '../../fields/field';
 import { IModelOperation } from '../../operations/operation';
 import { ModelValidationResult } from '../validationresult';
 import { IValidationOptions } from '../../operations/validate';
-import { TextField, NumberField } from '../../fields/index';
 import { ModelManager } from '../../models/manager';
 
 export type IFieldValidator =
@@ -57,7 +56,7 @@ export function stringEmptyValidator<T extends IModel>(manager: ModelManager, mo
     }
 }
 
-export function regExValidator<T extends IModel>(manager: ModelManager, model: T, field: TextField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function regExValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof model[field.name] == 'string'
             && typeof field.options.regEx == 'object'
             && field.options.regEx instanceof RegExp
@@ -101,7 +100,7 @@ export function booleanValidator<T extends IModel>(manager: ModelManager, model:
     }
 }
 
-export function minStringLengthValidator<T extends IModel>(manager: ModelManager, model: T, field: TextField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function minStringLengthValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof model[field.name] == 'string'
             && model[field.name].length < field.options.minLength) {
         result.addFieldError(
@@ -112,7 +111,7 @@ export function minStringLengthValidator<T extends IModel>(manager: ModelManager
     }
 }
 
-export function maxStringLengthValidator<T extends IModel>(manager: ModelManager, model: T, field: TextField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function maxStringLengthValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof model[field.name] == 'string'
             && model[field.name].length > field.options.maxLength) {
         result.addFieldError(
@@ -123,7 +122,7 @@ export function maxStringLengthValidator<T extends IModel>(manager: ModelManager
     }
 }
 
-export function minValueValidator<T extends IModel>(manager: ModelManager, model: T, field: TextField | NumberField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function minValueValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])
             && model[field.name] < field.options.minValue) {
         result.addFieldError(
@@ -134,7 +133,7 @@ export function minValueValidator<T extends IModel>(manager: ModelManager, model
     }
 }
 
-export function maxValueValidator<T extends IModel>(manager: ModelManager, model: T, field: TextField | NumberField, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+export function maxValueValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])
             && model[field.name] > field.options.maxValue) {
         result.addFieldError(

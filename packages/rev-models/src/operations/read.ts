@@ -1,9 +1,8 @@
 
-import { IModel } from '../models/model';
+import { IModel, IModelMeta } from '../models/types';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { IModelOperation } from './operation';
 import { ModelManager } from '../models/manager';
-import { IModelMeta } from '../models/meta';
 
 export interface IReadOptions {
     order_by?: string[];

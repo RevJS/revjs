@@ -1,6 +1,6 @@
 
-import { initialiseMeta, IModelMeta } from '../models/meta';
-import { IModel, ModelCtor } from '../models/model';
+import { initialiseMeta } from '../models/meta';
+import { IModel, ModelCtor, IModelMeta } from '../models/types';
 import { checkIsModelConstructor } from '../models/utils';
 import { IBackend } from '../backends/backend';
 import { IModelOperation } from '../operations/operation';

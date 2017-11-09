@@ -1,5 +1,5 @@
 
-import { IModel } from '../models/model';
+import { IModel } from '../models/types';
 import { ModelOperationResult, IOperationMeta } from './operationresult';
 import { ModelManager } from '../models/manager';
 import { IModelOperation } from './operation';

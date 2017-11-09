@@ -1,5 +1,4 @@
-import { IModel } from '../models/model';
-import { IModelMeta } from '../models/meta';
+import { IModel, IModelMeta } from '../models/types';
 
 export function getModelPrimaryKeyQuery<T extends IModel>(model: T, meta: IModelMeta<T>) {
     if (!meta.primaryKey || meta.primaryKey.length == 0) {

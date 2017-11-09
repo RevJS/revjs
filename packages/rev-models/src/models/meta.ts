@@ -1,20 +1,7 @@
 
 import { Field } from '../fields/field';
-import { IModel } from './model';
+import { IModel, IModelMeta } from './types';
 import { ModelManager } from './manager';
-
-export interface IModelMeta<T> {
-    ctor?: new(...args: any[]) => T;
-    name?: string;
-    label?: string;
-    fields?: Field[];
-    fieldsByName?: {
-        [fieldName: string]: Field
-    };
-    primaryKey?: string[];
-    backend?: string;
-    stored?: boolean;
-}
 
 export const DISALLOWED_FIELD_NAMES = [
     'validate',

@@ -1,7 +1,7 @@
 import { isSet } from '../utils';
 
 import * as validators from '../validation/validators';
-import { IModel } from '../models/model';
+import { IModel } from '../models/types';
 import { IModelOperation } from '../operations/operation';
 import { ModelValidationResult } from '../validation/validationresult';
 import { IValidationOptions } from '../operations/validate';
@@ -33,7 +33,7 @@ export class Field {
     validators: validators.IFieldValidator[];
     asyncValidators: validators.IAsyncFieldValidator[];
 
-    constructor(public name: string, public options?: IFieldOptions) {
+    constructor(public name: string, public options?: any) {
         if (!name || typeof name != 'string') {
             throw new Error('FieldError: new fields must have a name');
         }
