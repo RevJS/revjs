@@ -6,8 +6,9 @@ import * as d from '../../decorators';
 import * as update from '../update';
 import { MockBackend } from './mock-backend';
 import { ModelValidationResult } from '../../validation/validationresult';
-import { DEFAULT_UPDATE_OPTIONS, IUpdateOptions } from '../update';
+import { DEFAULT_UPDATE_OPTIONS } from '../update';
 import { ModelManager } from '../../models/manager';
+import { IUpdateOptions } from '../../models/types';
 
 let GENDERS = [
     ['male', 'Male'],

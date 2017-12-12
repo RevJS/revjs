@@ -4,9 +4,9 @@ import { expect } from 'chai';
 import { ModelManager } from '../../../models/manager';
 import { InMemoryBackend } from '../backend';
 import { ModelOperationResult } from '../../../operations/operationresult';
-import { DEFAULT_CREATE_OPTIONS, ICreateMeta } from '../../../operations/create';
+import { DEFAULT_CREATE_OPTIONS } from '../../../operations/create';
 import * as d from '../../../decorators';
-import { IUpdateMeta } from '../../../operations/update';
+import { ICreateMeta, IUpdateMeta } from '../../../models/types';
 
 export class TestModel {
     @d.AutoNumberField({ primaryKey: true })

@@ -6,9 +6,10 @@ import * as sinon from 'sinon';
 import * as d from '../../decorators';
 import * as exec from '../exec';
 import { MockBackend } from './mock-backend';
-import { IExecOptions, IMethodContext } from '../exec';
+import { IMethodContext } from '../exec';
 import { ModelManager } from '../../models/manager';
 import { ModelOperationResult } from '../operationresult';
+import { IExecOptions } from '../../models/types';
 
 class TestModel {
     @d.TextField({ required: true })

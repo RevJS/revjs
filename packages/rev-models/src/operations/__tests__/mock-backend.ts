@@ -3,12 +3,11 @@ import * as sinon from 'sinon';
 import { IBackend } from '../../backends/backend';
 import { ModelManager } from '../../models/manager';
 import { ModelOperationResult } from '../operationresult';
-import { IModel } from '../../models/types';
-import { ICreateOptions, ICreateMeta } from '../create';
-import { IUpdateOptions, IUpdateMeta } from '../update';
-import { IRemoveOptions, IRemoveMeta } from '../remove';
-import { IReadOptions, IReadMeta } from '../read';
-import { IExecArgs, IExecMeta, IExecOptions } from '../exec';
+import {
+    IModel, ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions,
+    IRemoveMeta, IRemoveOptions, IReadMeta, IReadOptions,
+    IExecArgs, IExecMeta, IExecOptions
+} from '../../models/types';
 
 export class MockBackend implements IBackend {
     createStub = sinon.stub();

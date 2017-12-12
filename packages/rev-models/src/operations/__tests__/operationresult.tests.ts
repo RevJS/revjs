@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { IModelOperation } from '../operation';
 import { ModelOperationResult } from '../operationresult';
 import { ModelValidationResult } from '../../validation/validationresult';
-import { IReadMeta } from '../read';
+import { IReadMeta } from '../../models/types';
 
 describe('ModelOperationResult - constructor()', () => {
 

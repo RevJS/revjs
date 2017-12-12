@@ -5,7 +5,8 @@ import { ModelManager } from '../../../models/manager';
 import { InMemoryBackend } from '../backend';
 import { ModelOperationResult } from '../../../operations/operationresult';
 import { TestModel } from './testdata';
-import { DEFAULT_CREATE_OPTIONS, ICreateMeta } from '../../../operations/create';
+import { DEFAULT_CREATE_OPTIONS } from '../../../operations/create';
+import { ICreateMeta } from '../../../models/types';
 
 describe('rev.backends.inmemory', () => {
 

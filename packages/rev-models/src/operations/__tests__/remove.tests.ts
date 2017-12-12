@@ -5,8 +5,9 @@ import rewire = require('rewire');
 import * as d from '../../decorators';
 import * as remove from '../remove';
 import { MockBackend } from './mock-backend';
-import { DEFAULT_REMOVE_OPTIONS, IRemoveOptions } from '../remove';
+import { DEFAULT_REMOVE_OPTIONS } from '../remove';
 import { ModelManager } from '../../models/manager';
+import { IRemoveOptions } from '../../models/types';
 
 class TestModel {
     @d.TextField({ primaryKey: true })

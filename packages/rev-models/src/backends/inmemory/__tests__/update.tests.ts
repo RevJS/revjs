@@ -5,7 +5,7 @@ import { ModelManager } from '../../../models/manager';
 import { InMemoryBackend } from '../backend';
 import { ModelOperationResult } from '../../../operations/operationresult';
 import { TestModel, testData } from './testdata';
-import { IUpdateOptions, IUpdateMeta } from '../../../operations/update';
+import { IUpdateOptions, IUpdateMeta } from '../../../models/types';
 
 describe('rev.backends.inmemory', () => {
 

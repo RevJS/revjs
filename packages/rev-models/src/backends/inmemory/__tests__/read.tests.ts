@@ -5,7 +5,8 @@ import { ModelManager } from '../../../models/manager';
 import { InMemoryBackend } from '../backend';
 import { ModelOperationResult } from '../../../operations/operationresult';
 import { TestModel, testData } from './testdata';
-import { DEFAULT_READ_OPTIONS, IReadMeta } from '../../../operations/read';
+import { DEFAULT_READ_OPTIONS } from '../../../operations/read';
+import { IReadMeta } from '../../../models/types';
 
 function getReadOpts(options?: object) {
     return Object.assign({}, DEFAULT_READ_OPTIONS, options);

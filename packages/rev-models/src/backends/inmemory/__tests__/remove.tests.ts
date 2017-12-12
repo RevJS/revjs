@@ -5,7 +5,7 @@ import { ModelManager } from '../../../models/manager';
 import { InMemoryBackend } from '../backend';
 import { ModelOperationResult } from '../../../operations/operationresult';
 import { TestModel, testData } from './testdata';
-import { IRemoveOptions, IRemoveMeta } from '../../../operations/remove';
+import { IRemoveOptions, IRemoveMeta } from '../../../models/types';
 
 describe('rev.backends.inmemory', () => {
 
