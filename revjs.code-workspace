@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "packages/rev-models"
+		},
+		{
+			"path": "packages/rev-api"
+		},
+		{
+			"path": "packages/rev-api-client"
+		},
+		{
+			"path": "packages/rev-forms-materialui"
+		}
+	],
+	"settings": {}
+}
