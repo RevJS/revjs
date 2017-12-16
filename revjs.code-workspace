@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "packages/rev-forms-materialui"
+		},
+		{
+			"path": "."
 		}
 	],
 	"settings": {}
