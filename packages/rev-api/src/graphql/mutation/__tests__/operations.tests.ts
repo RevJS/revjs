@@ -15,7 +15,7 @@ describe('getModelOperationMutations()', () => {
         let config: GraphQLFieldConfigMap<any, any>;
 
         before(() => {
-            api = new ModelApiManager(models.modelManager);
+            api = new ModelApiManager(models.getModelManager());
             api.register(models.Post, { operations: ['create', 'read', 'update', 'remove'] });
             meta = api.getApiMeta('Post');
             config = getModelOperationMutations(api, meta);

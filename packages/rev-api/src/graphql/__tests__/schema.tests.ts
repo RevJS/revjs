@@ -11,7 +11,7 @@ describe('getGraphQLSchema()', () => {
         let api: ModelApiManager;
 
         before(() => {
-            api = new ModelApiManager(models.modelManager);
+            api = new ModelApiManager(models.getModelManager());
         });
 
         it('should register the root query type', () => {
@@ -39,7 +39,7 @@ describe('getGraphQLSchema()', () => {
         let api: ModelApiManager;
 
         before(() => {
-            api = new ModelApiManager(models.modelManager);
+            api = new ModelApiManager(models.getModelManager());
             api.register(models.User, { operations: ['read'] });
             api.register(models.Post, { operations: ['read'] });
         });
@@ -68,7 +68,7 @@ describe('getGraphQLSchema()', () => {
         let api: ModelApiManager;
 
         before(() => {
-            api = new ModelApiManager(models.modelManager);
+            api = new ModelApiManager(models.getModelManager());
             api.register(models.User, {
                 operations: ['read'],
                 methods: { userMethod1: {} }

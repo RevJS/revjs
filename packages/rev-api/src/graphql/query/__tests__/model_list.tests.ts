@@ -5,14 +5,14 @@ import * as models from '../../__tests__/models.fixture';
 import { graphql, GraphQLSchema } from 'graphql';
 import { getGraphQLSchema } from '../../schema';
 
-describe.only('GraphQL "query" type - model list', () => {
+describe('GraphQL "query" type - model list', () => {
 
     describe('When no models are registered', () => {
         let api: ModelApiManager;
         let schema: GraphQLSchema;
 
         before(() => {
-            api = new ModelApiManager(models.modelManager);
+            api = new ModelApiManager(models.getModelManager());
             schema = getGraphQLSchema(api);
         });
 
@@ -57,7 +57,7 @@ describe.only('GraphQL "query" type - model list', () => {
         let schema: GraphQLSchema;
 
         before(() => {
-            api = new ModelApiManager(models.modelManager);
+            api = new ModelApiManager(models.getModelManager());
             api.register(models.User, { operations: ['read'] });
             api.register(models.Post, { operations: ['read'] });
 
@@ -71,18 +71,28 @@ describe.only('GraphQL "query" type - model list', () => {
                         queryType {
                             fields {
                                 name,
-                                type { name }
+                                type {
+                                    kind,
+                                    ofType { name }
+                                }
                             }
                         }
                     }
                 }
             `;
             const result = await graphql(schema, query);
+            console.log(result.data.__schema.queryType.fields[0]);
             expect(result.data.__schema.queryType.fields).to.have.length(2);
             expect(result.data.__schema.queryType.fields[0].name).to.equal('User');
-            expect(result.data.__schema.queryType.fields[0].type.name).to.equal('User');
+            expect(result.data.__schema.queryType.fields[0].type).to.deep.equal({
+                kind: 'LIST',
+                ofType: { name: 'User' }
+            });
             expect(result.data.__schema.queryType.fields[1].name).to.equal('Post');
-            expect(result.data.__schema.queryType.fields[1].type.name).to.equal('Post');
+            expect(result.data.__schema.queryType.fields[1].type).to.deep.equal({
+                kind: 'LIST',
+                ofType: { name: 'Post' }
+            });
         });
 
     });
@@ -93,7 +103,7 @@ describe.only('GraphQL "query" type - model list', () => {
         let schema: GraphQLSchema;
 
         before(() => {
-            api = new ModelApiManager(models.modelManager);
+            api = new ModelApiManager(models.getModelManager());
             api.register(models.User, { operations: ['read'] });
             api.register(models.Post, { operations: ['create'] });
 
@@ -106,8 +116,7 @@ describe.only('GraphQL "query" type - model list', () => {
                     __schema {
                         queryType {
                             fields {
-                                name,
-                                type { name }
+                                name
                             }
                         }
                     }

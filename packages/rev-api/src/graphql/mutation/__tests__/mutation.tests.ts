@@ -11,7 +11,7 @@ describe('getMutationConfig()', () => {
         let api: ModelApiManager;
 
         before(() => {
-            api = new ModelApiManager(models.modelManager);
+            api = new ModelApiManager(models.getModelManager());
             api.register(models.User, { operations: ['read', 'update'] });
             api.register(models.Post, { operations: ['create', 'read', 'update', 'remove'] });
         });
@@ -44,7 +44,7 @@ describe('getMutationConfig()', () => {
         let api: ModelApiManager;
 
         before(() => {
-            api = new ModelApiManager(models.modelManager);
+            api = new ModelApiManager(models.getModelManager());
             api.register(models.User, { methods: { userMethod1: {} } });
             api.register(models.Post, { methods: { postMethod1: {} } });
         });
@@ -65,7 +65,7 @@ describe('getMutationConfig()', () => {
         let api: ModelApiManager;
 
         before(() => {
-            api = new ModelApiManager(models.modelManager);
+            api = new ModelApiManager(models.getModelManager());
             api.register(models.Post, {
                 operations: ['create', 'update'],
                 methods: {

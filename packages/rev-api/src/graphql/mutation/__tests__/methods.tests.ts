@@ -14,7 +14,7 @@ describe('getModelMethodMutations()', () => {
     let config: GraphQLFieldConfigMap<any, any>;
 
     before(() => {
-        api = new ModelApiManager(models.modelManager);
+        api = new ModelApiManager(models.getModelManager());
         api.register(models.Post, {
             methods: {
                 postMethod1: {

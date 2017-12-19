@@ -1,5 +1,5 @@
 import { ModelApiManager } from '../../api/manager';
-import { GraphQLString, GraphQLObjectTypeConfig, GraphQLObjectType } from 'graphql';
+import { GraphQLString, GraphQLObjectTypeConfig, GraphQLObjectType, GraphQLList } from 'graphql';
 import { getModelConfig } from './model';
 import * as GraphQLJSON from 'graphql-type-json';
 
@@ -23,12 +23,12 @@ export function getQueryConfig(manager: ModelApiManager): GraphQLObjectTypeConfi
         for (let modelName of readModels) {
             let modelConfig = getModelConfig(manager.modelManager.getModelMeta(modelName));
             queries.fields[modelName] = {
-                type: new GraphQLObjectType(modelConfig),
+                type: new GraphQLList(new GraphQLObjectType(modelConfig)),
                 args: {
                     where: { type: GraphQLJSON }
                 },
                 resolve(root: any, args: any, context: any) {
-                    return {};
+                    return [{}, {}];
                 }
             };
         }

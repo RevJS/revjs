@@ -1,10 +1,7 @@
 import {
-    ModelManager, InMemoryBackend, IModelMeta,
+    ModelManager, InMemoryBackend,
     IntegerField, TextField, DateField, BooleanField, DateTimeField
 } from 'rev-models';
-
-export const modelManager = new ModelManager();
-modelManager.registerBackend('default', new InMemoryBackend());
 
 export class User {
     @IntegerField()
@@ -16,7 +13,6 @@ export class User {
 
     userMethod1() {}
 }
-modelManager.register(User);
 
 export class Post {
     @IntegerField()
@@ -34,7 +30,11 @@ export class Post {
     postMethod2() {}
     postMethod3() {}
 }
-modelManager.register(Post);
 
-export const UserMeta: IModelMeta<any> = modelManager.getModelMeta('User');
-export const PostMeta: IModelMeta<any> = modelManager.getModelMeta('Post');
+export function getModelManager() {
+    const modelManager = new ModelManager();
+    modelManager.registerBackend('default', new InMemoryBackend());
+    modelManager.register(User);
+    modelManager.register(Post);
+    return modelManager;
+}
