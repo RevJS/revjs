@@ -30,8 +30,8 @@ let testRecords = [
     },
 ];
 
-function expectOrder(result: Array<object>, field: string, order: any[]) {
-    let vals: any[] = []
+function expectOrder(result: object[], field: string, order: any[]) {
+    let vals: any[] = [];
     for (let i = 0; i < order.length; i++) {
         vals.push(result[i][field]);
     }

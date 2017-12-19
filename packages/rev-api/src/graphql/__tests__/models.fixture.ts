@@ -1,30 +1,33 @@
-import * as rev from 'rev-models';
+import {
+    ModelManager, InMemoryBackend, IModelMeta,
+    IntegerField, TextField, DateField, BooleanField, DateTimeField
+} from 'rev-models';
 
-export const modelManager = new rev.ModelManager();
-modelManager.registerBackend('default', new rev.InMemoryBackend());
+export const modelManager = new ModelManager();
+modelManager.registerBackend('default', new InMemoryBackend());
 
 export class User {
-    @rev.IntegerField()
+    @IntegerField()
         id: number = 1;
-    @rev.TextField()
+    @TextField()
         name: string = 'A Test Model';
-    @rev.DateField()
+    @DateField()
         date_registered: Date = new Date();
-    
+
     userMethod1() {}
 }
 modelManager.register(User);
 
 export class Post {
-    @rev.IntegerField()
+    @IntegerField()
         id: number = 10;
-    @rev.TextField()
+    @TextField()
         title: string;
-    @rev.TextField()
+    @TextField()
         body: string;
-    @rev.BooleanField()
+    @BooleanField()
         published: boolean;
-    @rev.DateTimeField()
+    @DateTimeField()
         post_date: Date;
 
     postMethod1() {}
@@ -33,5 +36,5 @@ export class Post {
 }
 modelManager.register(Post);
 
-export const UserMeta = modelManager.getModelMeta('User');
-export const PostMeta = modelManager.getModelMeta('Post');
+export const UserMeta: IModelMeta<any> = modelManager.getModelMeta('User');
+export const PostMeta: IModelMeta<any> = modelManager.getModelMeta('Post');

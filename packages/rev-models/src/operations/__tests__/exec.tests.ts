@@ -6,7 +6,6 @@ import * as sinon from 'sinon';
 import * as d from '../../decorators';
 import * as exec from '../exec';
 import { MockBackend } from './mock-backend';
-import { IMethodContext } from '../exec';
 import { ModelManager } from '../../models/manager';
 import { ModelOperationResult } from '../operationresult';
 import { IExecOptions } from '../../models/types';
@@ -150,7 +149,7 @@ describe('rev.operations.exec()', () => {
         it('when a ModelOperationResult is returned, it is passed on', () => {
             let model = new TestModel();
             model.name = 'Joe';
-            model.testMethod = (mc: IMethodContext<any>) => {
+            model.testMethod = (mc: exec.IMethodContext<any>) => {
                 mc.result.addError('oh noes!');
                 mc.result.result = 'some custom result';
                 return mc.result;
@@ -207,7 +206,7 @@ describe('rev.operations.exec()', () => {
         it('when a ModelOperationResult is returned, it is passed on', () => {
             let model = new TestModel();
             model.name = 'Joe';
-            model.testMethod = (mc: IMethodContext<any>) => {
+            model.testMethod = (mc: exec.IMethodContext<any>) => {
                 mc.result.addError('oh noes!');
                 mc.result.result = 'some custom result';
                 return Promise.resolve(mc.result);

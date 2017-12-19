@@ -6,7 +6,6 @@ import * as d from '../../decorators';
 import * as update from '../update';
 import { MockBackend } from './mock-backend';
 import { ModelValidationResult } from '../../validation/validationresult';
-import { DEFAULT_UPDATE_OPTIONS } from '../update';
 import { ModelManager } from '../../models/manager';
 import { IUpdateOptions } from '../../models/types';
 
@@ -79,7 +78,7 @@ describe('rev.operations.update()', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        let testOpts = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
+        let testOpts = Object.assign({}, update.DEFAULT_UPDATE_OPTIONS, options);
         return rwUpdate.update(manager, model, options)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);

@@ -5,7 +5,6 @@ import rewire = require('rewire');
 import * as d from '../../decorators';
 import * as remove from '../remove';
 import { MockBackend } from './mock-backend';
-import { DEFAULT_REMOVE_OPTIONS } from '../remove';
 import { ModelManager } from '../../models/manager';
 import { IRemoveOptions } from '../../models/types';
 
@@ -66,7 +65,7 @@ describe('rev.operations.remove()', () => {
     it('calls backend.remove() with DEFAULT_REMOVE_OPTIONS if no options are set', () => {
         let model = new TestModel();
         Object.assign(model, { name: 'bob', age: 21 });
-        let testOpts = Object.assign({}, DEFAULT_REMOVE_OPTIONS, options);
+        let testOpts = Object.assign({}, remove.DEFAULT_REMOVE_OPTIONS, options);
         return rwRemove.remove(manager, model, options)
             .then((res) => {
                 expect(mockBackend.removeStub.callCount).to.equal(1);

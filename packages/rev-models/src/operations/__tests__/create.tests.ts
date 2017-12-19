@@ -6,7 +6,6 @@ import * as d from '../../decorators';
 import * as create from '../create';
 import { MockBackend } from './mock-backend';
 import { ModelValidationResult } from '../../validation/validationresult';
-import { DEFAULT_CREATE_OPTIONS } from '../create';
 import { ModelManager } from '../../models/manager';
 
 let GENDERS = [
@@ -68,7 +67,7 @@ describe('rev.operations.create()', () => {
                 expect(mockBackend.createStub.callCount).to.equal(1);
                 let readCall = mockBackend.createStub.getCall(0);
                 expect(readCall.args[1]).to.equal(model);
-                expect(readCall.args[3]).to.deep.equal(DEFAULT_CREATE_OPTIONS);
+                expect(readCall.args[3]).to.deep.equal(create.DEFAULT_CREATE_OPTIONS);
             });
     });
 

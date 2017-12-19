@@ -18,7 +18,7 @@ describe('validate()', () => {
             name: string;
         @d.DateField({ required: false })
             date: Date;
-        
+
         testMethod() {
             return true;
         }
@@ -43,7 +43,6 @@ describe('validate()', () => {
         TestModel.prototype.validate = () => undefined;
         TestModel.prototype.validateAsync = () => Promise.resolve();
     });
-
 
     it('should return a valid result if valid object is passed', () => {
 

@@ -5,7 +5,6 @@ import rewire = require('rewire');
 import * as d from '../../decorators';
 import * as read from '../read';
 import { MockBackend } from './mock-backend';
-import { DEFAULT_READ_OPTIONS, validateOrderBy } from '../read';
 import { ModelManager } from '../../models/manager';
 import { IModelMeta } from '../../models/types';
 
@@ -29,7 +28,7 @@ let rewired = rewire('../read');
 let rwRead: typeof read & typeof rewired = rewired as any;
 let mockBackend: MockBackend;
 let manager: ModelManager;
-let testMeta: IModelMeta<TestModel>
+let testMeta: IModelMeta<TestModel>;
 
 describe('rev.operations.read()', () => {
 
@@ -44,7 +43,7 @@ describe('rev.operations.read()', () => {
     });
 
     it('DEFAULT_READ_OPTIONS are as expected', () => {
-        expect(DEFAULT_READ_OPTIONS).to.deep.equal({
+        expect(read.DEFAULT_READ_OPTIONS).to.deep.equal({
             limit: 20,
             offset: 0
         });
@@ -83,7 +82,7 @@ describe('rev.operations.read()', () => {
                 let readCall = mockBackend.readStub.getCall(0);
                 expect(readCall.args[1]).to.equal(TestModel);
                 expect(readCall.args[2]).to.deep.equal({});
-                expect(readCall.args[4]).to.deep.equal(DEFAULT_READ_OPTIONS);
+                expect(readCall.args[4]).to.deep.equal(read.DEFAULT_READ_OPTIONS);
             });
     });
 
@@ -94,7 +93,7 @@ describe('rev.operations.read()', () => {
                 let readCall = mockBackend.readStub.getCall(0);
                 expect(readCall.args[1]).to.equal(TestModel);
                 expect(readCall.args[2]).to.deep.equal({});
-                expect(readCall.args[4].limit).to.equal(DEFAULT_READ_OPTIONS.limit);
+                expect(readCall.args[4].limit).to.equal(read.DEFAULT_READ_OPTIONS.limit);
                 expect(readCall.args[4].offset).to.equal(10);
             });
     });
@@ -154,61 +153,61 @@ describe('validateOrderBy()', () => {
 
     it('does no throw when order_by is a single field', () => {
         expect(() => {
-            validateOrderBy(TestModel, testMeta, ['name']);
+            read.validateOrderBy(TestModel, testMeta, ['name']);
         }).to.not.throw();
     });
 
     it('does no throw when order_by contains multiple fields', () => {
         expect(() => {
-            validateOrderBy(TestModel, testMeta, ['name', 'age']);
+            read.validateOrderBy(TestModel, testMeta, ['name', 'age']);
         }).to.not.throw();
     });
 
     it('does no throw when order_by specifies asc', () => {
         expect(() => {
-            validateOrderBy(TestModel, testMeta, ['name asc', 'age']);
+            read.validateOrderBy(TestModel, testMeta, ['name asc', 'age']);
         }).to.not.throw();
     });
 
     it('does no throw when order_by specifies desc', () => {
         expect(() => {
-            validateOrderBy(TestModel, testMeta, ['name', 'age desc']);
+            read.validateOrderBy(TestModel, testMeta, ['name', 'age desc']);
         }).to.not.throw();
     });
 
     it('throws when order_by is not an array', () => {
         expect(() => {
-            validateOrderBy(TestModel, testMeta, { name: -1 });
+            read.validateOrderBy(TestModel, testMeta, { name: -1 });
         }).to.throw('must be an array');
     });
 
     it('throws when order_by has no items', () => {
         expect(() => {
-            validateOrderBy(TestModel, testMeta, []);
+            read.validateOrderBy(TestModel, testMeta, []);
         }).to.throw('must be an array');
     });
 
     it('throws when order_by contains a non-string', () => {
         expect(() => {
-            validateOrderBy(TestModel, testMeta, ['name', 27]);
+            read.validateOrderBy(TestModel, testMeta, ['name', 27]);
         }).to.throw('array contains a non-string value');
     });
 
     it('throws when order_by entry has too many tokens', () => {
         expect(() => {
-            validateOrderBy(TestModel, testMeta, ['name asc desc', 'age']);
+            read.validateOrderBy(TestModel, testMeta, ['name asc desc', 'age']);
         }).to.throw('invalid entry');
     });
 
     it('throws when order_by entry has invalid tokens', () => {
         expect(() => {
-            validateOrderBy(TestModel, testMeta, ['name dasc', 'age']);
+            read.validateOrderBy(TestModel, testMeta, ['name dasc', 'age']);
         }).to.throw('invalid entry');
     });
 
     it('throws when order_by entry does not match a field name', () => {
         expect(() => {
-            validateOrderBy(TestModel, testMeta, ['name', 'star_sign']);
+            read.validateOrderBy(TestModel, testMeta, ['name', 'star_sign']);
         }).to.throw(`field 'star_sign' does not exist in model`);
     });
 

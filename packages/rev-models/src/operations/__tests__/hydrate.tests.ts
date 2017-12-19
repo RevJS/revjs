@@ -11,7 +11,7 @@ class TestModel {
         name: string;
     @d.IntegerField()
         age: number;
-    
+
     testMethod() {}
 
     constructor(data?: any) {
