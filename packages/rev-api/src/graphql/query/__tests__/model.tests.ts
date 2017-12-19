@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { GraphQLObjectTypeConfig } from 'graphql';
 import { getModelConfig } from '../model';
 
-describe('getModelGraphQLType()', () => {
+describe('getModelConfig()', () => {
     let config: GraphQLObjectTypeConfig<any, any>;
 
     before(() => {

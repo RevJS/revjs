@@ -8,7 +8,7 @@
     "build-watch": "run-bin tsc --watch",
     "build-docs": "run-bin typedoc --options ./typedoc.js",
     "test": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\"",
-    "test-watch": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\" --watch",
+    "test-watch": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\" --watch --watch-extensions ts,tsx",
     "mocha": "run-bin mocha -r ts-node/register",
     "pack": "npm pack"
   },
