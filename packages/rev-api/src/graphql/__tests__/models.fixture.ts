@@ -9,7 +9,7 @@ export class User {
     @TextField()
         name: string = 'A Test Model';
     @DateField()
-        date_registered: Date = new Date();
+        date_registered: string = '2017-12-01';
 
     constructor(data?: Partial<User>) {
         Object.assign(this, data);
@@ -28,7 +28,7 @@ export class Post {
     @BooleanField()
         published: boolean;
     @DateTimeField()
-        post_date: Date;
+        post_date: string;
 
     constructor(data?: Partial<Post>) {
         Object.assign(this, data);

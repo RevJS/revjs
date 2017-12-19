@@ -1,17 +1,17 @@
-import { GraphQLObjectTypeConfig, GraphQLString } from 'graphql';
-import { IModelMeta } from 'rev-models';
+import { GraphQLObjectTypeConfig } from 'graphql';
+import { getFieldResolver } from './resolve_field';
+import { ModelApiManager } from '../../api/manager';
 
-export function getModelConfig(meta: IModelMeta<any>): GraphQLObjectTypeConfig<any, any> {
+export function getModelConfig(manager: ModelApiManager, modelName: string): GraphQLObjectTypeConfig<any, any> {
+    let meta = manager.modelManager.getModelMeta(modelName);
     let config = {
-        name: meta.name,
+        name: modelName,
         fields: {}
     };
     for (let field of meta.fields) {
         config.fields[field.name] = {
-            type: GraphQLString,
-            resolve() {
-                return 'Test result';
-            }
+            type: manager.getGraphQLScalarType(field),
+            resolve: getFieldResolver(meta, field.name)
         };
     }
     return config;

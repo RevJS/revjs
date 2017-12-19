@@ -22,7 +22,7 @@ export function getQueryConfig(manager: ModelApiManager): GraphQLObjectTypeConfi
     }
     else {
         for (let modelName of readModels) {
-            let modelConfig = getModelConfig(manager.modelManager.getModelMeta(modelName));
+            let modelConfig = getModelConfig(manager, modelName);
             queries.fields[modelName] = {
                 type: new GraphQLList(new GraphQLObjectType(modelConfig)),
                 args: {
