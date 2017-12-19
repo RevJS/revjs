@@ -11,6 +11,10 @@ export class User {
     @DateField()
         date_registered: Date = new Date();
 
+    constructor(data?: Partial<User>) {
+        Object.assign(this, data);
+    }
+
     userMethod1() {}
 }
 
@@ -25,6 +29,10 @@ export class Post {
         published: boolean;
     @DateTimeField()
         post_date: Date;
+
+    constructor(data?: Partial<Post>) {
+        Object.assign(this, data);
+    }
 
     postMethod1() {}
     postMethod2() {}

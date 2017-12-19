@@ -2,6 +2,7 @@ import { ModelApiManager } from '../../api/manager';
 import { GraphQLString, GraphQLObjectTypeConfig, GraphQLObjectType, GraphQLList } from 'graphql';
 import { getModelConfig } from './model';
 import * as GraphQLJSON from 'graphql-type-json';
+import { getModelResolver } from './resolve_model';
 
 export function getQueryConfig(manager: ModelApiManager): GraphQLObjectTypeConfig<any, any> {
 
@@ -27,9 +28,7 @@ export function getQueryConfig(manager: ModelApiManager): GraphQLObjectTypeConfi
                 args: {
                     where: { type: GraphQLJSON }
                 },
-                resolve(root: any, args: any, context: any) {
-                    return [{}, {}];
-                }
+                resolve: getModelResolver(manager, modelName)
             };
         }
     }

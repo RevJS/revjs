@@ -81,7 +81,6 @@ describe('GraphQL "query" type - model list', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            console.log(result.data.__schema.queryType.fields[0]);
             expect(result.data.__schema.queryType.fields).to.have.length(2);
             expect(result.data.__schema.queryType.fields[0].name).to.equal('User');
             expect(result.data.__schema.queryType.fields[0].type).to.deep.equal({
