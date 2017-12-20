@@ -2,40 +2,27 @@ import { models } from './01_defining_a_model_manager';
 import { Person } from './02_defining_a_model';
 import { loadTestData } from './load_test_data';
 
-loadTestData(models)
-.then(() => {
+(async function() {
 
-    return models.read(Person);
+    await loadTestData(models);
 
-})
-.then((res) => {
-
-    console.log('Original Records:', res.results);
+    const origRecords = await models.read(Person);
+    console.log('Original Records:', origRecords.results);
 
     // Retrieve Jane Doe's record
-    return models.read(Person, {
+    const jane = await models.read(Person, {
         first_name: 'Jane',
         last_name: 'Doe'
     });
 
-})
-.then((res) => {
-
     // Remove Jane Doe's record
-    return models.remove(res.results[0]);
-
-})
-.then((res) => {
+    await models.remove(jane.results[0]);
 
     // Retrieve remaining records
-    return models.read(Person);
+    const newRecords = await models.read(Person);
+    console.log('Remaining Records:', newRecords.results);
 
-})
-.then((res) => {
-
-    console.log('Remaining Records:', res.results);
-
-});
+})();
 
 // It is also possible to remove multiple records using the 'where' option
 // for the remove() method. Documentation TODO

@@ -2,29 +2,25 @@ import { models } from './01_defining_a_model_manager';
 import { Person } from './02_defining_a_model';
 import { loadTestData } from './load_test_data';
 
-loadTestData(models)
+(async function() {
 
-.then(() => models.read(Person))
-.then((res) => {
-    console.log('All records:', res.results);
-})
+    await loadTestData(models);
 
-.then(() => models.read(Person, {}, { offset: 2, limit: 3 }))
-.then((res) => {
-    console.log('Last 3 records:', res.results);
-})
+    const allRecords = await models.read(Person);
+    console.log('All records:', allRecords.results);
 
-.then(() => models.read(Person, { newsletter: true }))
-.then((res) => {
-    console.log('Newsletter Subscribers Only:', res.results);
-})
+    const last3Records = await models.read(Person, {}, { offset: 2, limit: 3 });
+    console.log('Last 3 records:', last3Records.results);
 
-.then(() => models.read(Person, {
-                $or: [
-                    { age: { $lt: 21 }},
-                    { age: { $gt: 40 }}
-                ]
-}))
-.then((res) => {
-    console.log('Aged less than 21 or over 40:', res.results);
-});
+    const subscribers = await models.read(Person, { newsletter: true });
+    console.log('Newsletter Subscribers Only:', subscribers.results);
+
+    const agedPeople = await models.read(Person, {
+        $or: [
+            { age: { $lt: 21 }},
+            { age: { $gt: 40 }}
+        ]
+    });
+    console.log('Aged less than 21 or over 40:', agedPeople.results);
+
+})();
