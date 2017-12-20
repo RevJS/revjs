@@ -1,4 +1,4 @@
-import { ModelManager, InMemoryBackend } from 'rev-models';
+import { ModelManager, InMemoryBackend } from '../index';
 
 // Create an empty ModelManager
 const models = new ModelManager();

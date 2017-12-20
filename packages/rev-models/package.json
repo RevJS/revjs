@@ -9,6 +9,7 @@
     "build-docs": "run-bin typedoc --options ./typedoc.js",
     "test": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\"",
     "test-watch": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\" --watch --watch-extensions ts,tsx",
+    "ts-node": "run-bin ts-node",
     "mocha": "run-bin mocha -r ts-node/register",
     "pack": "npm pack"
   },

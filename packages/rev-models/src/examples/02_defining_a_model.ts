@@ -1,4 +1,4 @@
-import * as rev from 'rev-models';
+import * as rev from '../index';
 
 import { models } from './01_defining_a_model_manager';
 
