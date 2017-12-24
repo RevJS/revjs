@@ -6,6 +6,10 @@ export interface IRecordFieldOptions extends IFieldOptions {
     model: string;
 }
 
+export const DEFAULT_RECORDLIST_FIELD_OPTIONS: IFieldOptions = {
+    required: false
+};
+
 export class RecordField extends Field {
     options: IRecordFieldOptions;
 
@@ -29,7 +33,11 @@ export class RecordListField extends Field {
     constructor(
             name: string,
             options: IRecordFieldOptions) {
-        super(name, options);
+
+        // RecordListFields should not be required by default
+        const opts = Object.assign({}, DEFAULT_RECORDLIST_FIELD_OPTIONS, options);
+
+        super(name, opts);
 
         if (!options.model || typeof options.model != 'string') {
             throw new Error('RecordFieldError: options.model must be a non-empty string');

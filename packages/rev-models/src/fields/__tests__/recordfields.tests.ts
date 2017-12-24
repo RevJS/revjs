@@ -1,4 +1,4 @@
-import { RecordField, RecordListField, IRecordFieldOptions } from '../recordfields';
+import { RecordField, RecordListField, IRecordFieldOptions, DEFAULT_RECORDLIST_FIELD_OPTIONS } from '../recordfields';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { Field, DEFAULT_FIELD_OPTIONS } from '../field';
 import { requiredValidator, recordClassValidator, recordListClassValidator } from '../../validation/validators';
@@ -120,10 +120,19 @@ describe('rev.fields.recordfields', () => {
 
         it('creates a field with properties as expected', () => {
             let test = new RecordListField('value', testOpts);
+            let expectedOptions = Object.assign(
+                {}, DEFAULT_FIELD_OPTIONS, DEFAULT_RECORDLIST_FIELD_OPTIONS, testOpts);
+
             expect(test.name).to.equal('value');
-            expect(test.options).to.deep.equal(
-                Object.assign({}, DEFAULT_FIELD_OPTIONS, testOpts));
+            expect(test.options).to.deep.equal(expectedOptions);
+            console.log(test.options);
             expect(test).is.instanceof(Field);
+        });
+
+        it('does not add the required validator by default', () => {
+            let test = new RecordListField('value', testOpts);
+            expect(test.validators.length).to.equal(1);
+            expect(test.validators[0]).to.equal(recordListClassValidator);
         });
 
         it('throws if passed model is not a string', () => {

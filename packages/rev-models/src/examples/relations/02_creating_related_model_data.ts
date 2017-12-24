@@ -16,16 +16,17 @@ import { Company, Developer, Job } from './01_defining_related_models';
     });
     await models.create(company2);
 
-    // We don't currently support creation of records
-    // with lists of sub records
     const developer = new Developer({
         id: 1,
         name: 'Bob Dev'
     });
     await models.create(developer);
 
-    // Instead you should just create the related records
-    // directly, as shown below
+    /**
+     * To create record links, simply pass a reference to the record in the
+     * appropriate model field. RevJS will use the primary key of the linked
+     * record to create the link
+     */
     const job1 = new Job({
         developer: developer,
         company: company1,
