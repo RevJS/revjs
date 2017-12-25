@@ -52,9 +52,7 @@ export class InMemoryBackend implements IBackend {
             this._writeFields(manager, 'create', model, meta, record);
             modelStorage.push(record);
 
-            result.result = new meta.ctor();
-            Object.assign(result.result, record);
-
+            result.result = manager.hydrate(meta.ctor, record);
             resolve(result);
 
         });
@@ -187,7 +185,6 @@ export class InMemoryBackend implements IBackend {
         for (let fieldName of fieldList) {
 
             let field = meta.fieldsByName[fieldName];
-            // TODO: generic field -> backend value mapping
             if (field instanceof AutoNumberField) {
                 // deal with AutoNumberField special case
                 if (operation == 'create') {

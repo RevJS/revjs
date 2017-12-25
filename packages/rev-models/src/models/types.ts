@@ -56,6 +56,7 @@ export interface IReadOptions {
     order_by?: string[];
     limit?: number;
     offset?: number;
+    related?: string[];
 }
 
 export interface IReadMeta extends IOperationMeta {
