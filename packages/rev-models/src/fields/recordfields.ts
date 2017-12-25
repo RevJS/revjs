@@ -23,6 +23,7 @@ export class RecordField extends Field {
         }
 
         this.validators.push(validators.recordClassValidator);
+        this.validators.push(validators.recordPrimaryKeyValidator);
 
     }
 }

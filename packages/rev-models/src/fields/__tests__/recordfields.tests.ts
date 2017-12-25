@@ -1,23 +1,30 @@
 import { RecordField, RecordListField, IRecordFieldOptions, DEFAULT_RECORDLIST_FIELD_OPTIONS } from '../recordfields';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { Field, DEFAULT_FIELD_OPTIONS } from '../field';
-import { requiredValidator, recordClassValidator, recordListClassValidator } from '../../validation/validators';
+import { requiredValidator, recordClassValidator, recordListClassValidator, recordPrimaryKeyValidator } from '../../validation/validators';
 import { IModelOperation } from '../../operations/operation';
 
 import { expect } from 'chai';
 import { ModelManager } from '../../models/manager';
+import { InMemoryBackend } from '../../backends/inmemory/backend';
+import * as d from '../../decorators';
 
 class TestModel {
-    value: any;
+    @d.TextField()
+        value: any;
 }
 
 class TestRelatedModel {
-    name: string;
+    @d.TextField({ primaryKey: true })
+        name: string;
 }
 
 class TestUnrelatedModel {}
 
 let manager = new ModelManager();
+manager.registerBackend('default', new InMemoryBackend());
+manager.register(TestModel);
+manager.register(TestRelatedModel);
 
 describe('rev.fields.recordfields', () => {
     let testOp: IModelOperation = {
@@ -61,17 +68,19 @@ describe('rev.fields.recordfields', () => {
             }).to.throw('options.model must be a non-empty string');
         });
 
-        it('adds the just the recordClassValidator if options.required is false', () => {
+        it('adds the just the record validators if options.required is false', () => {
             let test = new RecordField('value', {model: 'TestRelatedModel', required: false });
-            expect(test.validators.length).to.equal(1);
+            expect(test.validators.length).to.equal(2);
             expect(test.validators[0]).to.equal(recordClassValidator);
+            expect(test.validators[1]).to.equal(recordPrimaryKeyValidator);
         });
 
         it('adds the required validator if options.required is true', () => {
             let test = new RecordField('value', {model: 'TestRelatedModel', required: true });
-            expect(test.validators.length).to.equal(2);
+            expect(test.validators.length).to.equal(3);
             expect(test.validators[0]).to.equal(requiredValidator);
             expect(test.validators[1]).to.equal(recordClassValidator);
+            expect(test.validators[2]).to.equal(recordPrimaryKeyValidator);
         });
 
         it('successfully validates a record', () => {
@@ -125,7 +134,6 @@ describe('rev.fields.recordfields', () => {
 
             expect(test.name).to.equal('value');
             expect(test.options).to.deep.equal(expectedOptions);
-            console.log(test.options);
             expect(test).is.instanceof(Field);
         });
 
