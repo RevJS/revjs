@@ -77,9 +77,11 @@ describe('rev.backends.inmemory', () => {
         it('update() - values provided for AutoNumberField are ignored', () => {
             let testData = [
                 {
+                    id: 1,
                     name: 'record 1',
                 },
                 {
+                    id: 2,
                     name: 'record 2',
                 }
             ];

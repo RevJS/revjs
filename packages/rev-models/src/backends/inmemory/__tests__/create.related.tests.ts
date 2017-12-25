@@ -94,6 +94,32 @@ describe('rev.backends.inmemory - create() related field tests', () => {
                 });
         });
 
+        it('does not store value for RelatedModelList fields', () => {
+            let developer1 = new Developer();
+            developer1.id = 1;
+            developer1.name = 'Test Developer';
+            let developer2 = new Developer();
+            developer2.id = 2;
+            developer2.name = 'Another Developer';
+            let model = new Company();
+            model.id = 1;
+            model.name = 'Bobs Builders Ltd';
+            model.developers = [developer1, developer2];
+            return backend.create(manager, model, companyCreateResult, DEFAULT_CREATE_OPTIONS)
+                .then((res) => {
+                    expect(backend._storage['Company']).to.deep.equal([
+                        {
+                            id: 1,
+                            name: 'Bobs Builders Ltd'
+                        }
+                    ]);
+                    expect(res.results).to.be.undefined;
+                    expect(res.result).to.be.instanceof(Company);
+                    expect(res.result).to.not.equal(model);
+                    expect(res.result.name).to.equal(model.name);
+                    expect(res.result.developers).to.be.undefined;
+                });
+        });
     });
 
 });

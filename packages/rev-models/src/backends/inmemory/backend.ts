@@ -32,10 +32,7 @@ export class InMemoryBackend implements IBackend {
                 throw new Error('load() data must be an array of objects');
             }
 
-            for (let srcData of data) {
-                // TODO: validate?
-                let record = {};
-                this._writeFields(manager, 'create', srcData, meta, record);
+            for (let record of data) {
                 modelStorage.push(record);
             }
             resolve();
@@ -192,7 +189,10 @@ export class InMemoryBackend implements IBackend {
                 }
             }
             else if (typeof model[fieldName] != 'undefined') {
-                target[fieldName] = field.toBackendValue(manager, field, model[fieldName]);
+                let value = field.toBackendValue(manager, field, model[fieldName]);
+                if (typeof value != 'undefined') {
+                    target[fieldName] = value;
+                }
             }
         }
     }
