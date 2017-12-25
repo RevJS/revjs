@@ -6,11 +6,15 @@ import { MockBackend } from './mock-backend';
 import { ModelManager } from '../../models/manager';
 import { hydrate } from '../hydrate';
 
+class TestRelatedModel {}
+
 class TestModel {
     @d.TextField()
         name: string;
     @d.IntegerField()
         age: number;
+    @d.RelatedModel({ model: 'TestRelatedModel' })
+        related: TestRelatedModel;
 
     testMethod() {}
 
@@ -49,6 +53,18 @@ describe('rev.operations.hydrate()', () => {
             age: 35
         });
         expect(res).to.deep.equal(new TestModel({
+            age: 35
+        }));
+    });
+
+    it('does not hydrate relational fields', () => {
+        let res = hydrate(manager, TestModel, {
+            name: 'Bob',
+            age: 35,
+            related: 112
+        });
+        expect(res).to.deep.equal(new TestModel({
+            name: 'Bob',
             age: 35
         }));
     });
