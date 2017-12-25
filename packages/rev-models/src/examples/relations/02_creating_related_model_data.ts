@@ -2,7 +2,7 @@
 import { models } from '../01_defining_a_model_manager';
 import { Company, Developer, Job } from './01_defining_related_models';
 
-(async function() {
+export async function createJobs() {
 
     const company1 = new Company({
         id: 1,
@@ -43,4 +43,4 @@ import { Company, Developer, Job } from './01_defining_related_models';
     });
     await models.create(job2);
 
-})();
+}

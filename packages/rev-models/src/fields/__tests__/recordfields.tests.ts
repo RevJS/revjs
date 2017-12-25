@@ -10,13 +10,22 @@ import { InMemoryBackend } from '../../backends/inmemory/backend';
 import * as d from '../../decorators';
 
 class TestModel {
-    @d.TextField()
+    @d.RecordField({ model: 'TestRelatedModel' })
         value: any;
+    @d.RecordField({ model: 'TestRelatedModelMultiKey' })
+        valueMulti: any;
 }
 
 class TestRelatedModel {
     @d.TextField({ primaryKey: true })
         name: string;
+}
+
+class TestRelatedModelMultiKey {
+    @d.TextField({ primaryKey: true })
+        id1: number;
+    @d.TextField({ primaryKey: true })
+        id2: number;
 }
 
 class TestUnrelatedModel {}
@@ -25,6 +34,7 @@ let manager = new ModelManager();
 manager.registerBackend('default', new InMemoryBackend());
 manager.register(TestModel);
 manager.register(TestRelatedModel);
+manager.register(TestRelatedModelMultiKey);
 
 describe('rev.fields.recordfields', () => {
     let testOp: IModelOperation = {
@@ -120,6 +130,74 @@ describe('rev.fields.recordfields', () => {
                 .then((res) => { expect(res.valid).to.be.false; });
         });
 
+    });
+
+    describe('RecordField.toBackendValue()', () => {
+
+        describe('Single-key linked records', () => {
+            const field = new RecordField('value', {model: 'TestRelatedModel'});
+
+            it('returns null if model field is not set', () => {
+                const record = new TestModel();
+                expect(field.toBackendValue(manager, record, field)).to.be.null;
+            });
+
+            it('returns null if model primary key field is not set', () => {
+                const record = new TestModel();
+                const linkedModel = new TestRelatedModel();
+                record.value = linkedModel;
+                expect(field.toBackendValue(manager, record, field)).to.be.null;
+            });
+
+            it('returns primary key value if model primary key field is set', () => {
+                const record = new TestModel();
+                const linkedModel = new TestRelatedModel();
+                linkedModel.name = 'key_value';
+                record.value = linkedModel;
+                expect(field.toBackendValue(manager, record, field)).to.equal('key_value');
+            });
+
+        });
+
+        describe('Multi-key linked records', () => {
+            const field = new RecordField('valueMulti', {model: 'TestRelatedModelMultiKey'});
+
+            it('returns null if model field is not set', () => {
+                const record = new TestModel();
+                expect(field.toBackendValue(manager, record, field)).to.be.null;
+            });
+
+            it('returns stringified array with all nulls if model primary key fields are not set', () => {
+                const record = new TestModel();
+                const linkedModel = new TestRelatedModelMultiKey();
+                record.valueMulti = linkedModel;
+                expect(field.toBackendValue(manager, record, field)).to.equal(
+                    JSON.stringify([null, null])
+                );
+            });
+
+            it('returns stringified array with nulls and values if some model primary key fields are set', () => {
+                const record = new TestModel();
+                const linkedModel = new TestRelatedModelMultiKey();
+                linkedModel.id2 = 12;
+                record.valueMulti = linkedModel;
+                expect(field.toBackendValue(manager, record, field)).to.equal(
+                    JSON.stringify([null, 12])
+                );
+            });
+
+            it('returns stringified array of primary key values if model primary key fields are set', () => {
+                const record = new TestModel();
+                const linkedModel = new TestRelatedModelMultiKey();
+                linkedModel.id1 = 24;
+                linkedModel.id2 = 48;
+                record.valueMulti = linkedModel;
+                expect(field.toBackendValue(manager, record, field)).to.equal(
+                    JSON.stringify([24, 48])
+                );
+            });
+
+        });
     });
 
     describe('RecordListField', () => {
