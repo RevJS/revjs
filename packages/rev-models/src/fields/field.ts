@@ -71,4 +71,8 @@ export class Field {
             }
         });
     }
+
+    toBackendValue<T extends IModel>(manager: IModelManager, model: T, field: Field) {
+        return model[field.name];
+    }
 }

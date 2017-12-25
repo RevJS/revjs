@@ -35,7 +35,7 @@ export class InMemoryBackend implements IBackend {
             for (let srcData of data) {
                 // TODO: validate?
                 let record = {};
-                this._writeFields('create', srcData, meta, record);
+                this._writeFields(manager, 'create', srcData, meta, record);
                 modelStorage.push(record);
             }
             resolve();
@@ -49,7 +49,7 @@ export class InMemoryBackend implements IBackend {
             let modelStorage = this._getModelStorage(meta);
 
             let record = {};
-            this._writeFields('create', model, meta, record);
+            this._writeFields(manager, 'create', model, meta, record);
             modelStorage.push(record);
 
             result.result = new meta.ctor();
@@ -76,7 +76,7 @@ export class InMemoryBackend implements IBackend {
             let updateCount = 0;
             for (let record of modelStorage) {
                 if (query.testRecord(record)) {
-                    this._writeFields('update', model, meta, record, options.fields);
+                    this._writeFields(manager, 'update', model, meta, record, options.fields);
                     updateCount++;
                 }
             }
@@ -182,20 +182,20 @@ export class InMemoryBackend implements IBackend {
         return ++this._sequences[meta.name][field];
     }
 
-    _writeFields<T extends IModel>(operation: string, model: T, meta: IModelMeta<any>, target: any, fields?: string[]): void {
+    _writeFields<T extends IModel>(manager: IModelManager, operation: string, model: T, meta: IModelMeta<any>, target: any, fields?: string[]): void {
         let fieldList = fields ? fields : Object.keys(meta.fieldsByName);
         for (let fieldName of fieldList) {
 
             let field = meta.fieldsByName[fieldName];
+            // TODO: generic field -> backend value mapping
             if (field instanceof AutoNumberField) {
                 // deal with AutoNumberField special case
-                // TODO: generic field -> backend value mapping
                 if (operation == 'create') {
                     target[fieldName] = this._getNextSequence(meta, fieldName);
                 }
             }
             else if (typeof model[fieldName] != 'undefined') {
-                target[fieldName] = model[fieldName];
+                target[fieldName] = field.toBackendValue(manager, model, field);
             }
         }
     }
