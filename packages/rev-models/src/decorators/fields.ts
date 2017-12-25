@@ -109,16 +109,16 @@ export function DateTimeField(options?: IFieldOptions)
 
 // Record Fields
 
-export function RecordField(options: fld.IRecordFieldOptions)
+export function RelatedModel(options: fld.IRelatedModelFieldOptions)
 {
     return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.RecordField(propName, options));
+        addFieldMeta(target, propName, new fld.RelatedModelField(propName, options));
     };
 }
 
-export function RecordListField(options: fld.IRecordFieldOptions)
+export function RelatedModelList(options: fld.IRelatedModelFieldOptions)
 {
     return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.RecordListField(propName, options));
+        addFieldMeta(target, propName, new fld.RelatedModelListField(propName, options));
     };
 }

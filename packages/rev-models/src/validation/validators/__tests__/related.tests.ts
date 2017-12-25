@@ -1,7 +1,7 @@
 
 import { expect } from 'chai';
 import * as d from '../../../decorators';
-import * as vld from '../record';
+import * as vld from '../related';
 import { VALIDATION_MESSAGES as msg } from '../../validationmsg';
 
 import { ModelValidationResult } from '../../validationresult';
@@ -16,12 +16,12 @@ class TestModel {
         id: any;
     @d.TextField()
         name: any;
-    @d.RecordField({ model: 'TestRelatedModel' })
-        record: any;
-    @d.RecordField({ model: 'TestRelatedModelMultiKey' })
-        recordMultiKey: any;
-    @d.RecordListField({ model: 'TestRelatedModel' })
-        recordList: any;
+    @d.RelatedModel({ model: 'TestRelatedModel' })
+        model: any;
+    @d.RelatedModel({ model: 'TestRelatedModelMultiKey' })
+        modelMultiKey: any;
+    @d.RelatedModelList({ model: 'TestRelatedModel' })
+        modelList: any;
 }
 
 class TestRelatedModel {
@@ -47,9 +47,9 @@ manager.register(TestRelatedModel);
 manager.register(TestRelatedModelMultiKey);
 
 const meta = manager.getModelMeta(TestModel);
-const recordField = meta.fieldsByName['record'];
-const recordMultiKeyField = meta.fieldsByName['recordMultiKey'];
-const recordListField = meta.fieldsByName['recordList'];
+const relatedModelField = meta.fieldsByName['model'];
+const relatedModelMultiKeyField = meta.fieldsByName['modelMultiKey'];
+const modelListField = meta.fieldsByName['modelList'];
 
 const op: IModelOperation = {
     operation: 'create'
@@ -58,88 +58,88 @@ const opts: IValidationOptions = {
     timeout: 200
 };
 
-describe('rev.fields.validators.record', () => {
+describe('rev.fields.validators.related', () => {
     let vResult: ModelValidationResult;
 
     beforeEach(() => {
         vResult = new ModelValidationResult();
     });
 
-    describe('recordClassValidator()', () => {
+    describe('modelClassValidator()', () => {
 
         it('returns valid = true when record is not defined', () => {
             let test = new TestModel();
-            vld.recordClassValidator(manager, test, recordField, op, vResult, opts);
+            vld.modelClassValidator(manager, test, relatedModelField, op, vResult, opts);
             expect(vResult.valid).to.equal(true);
         });
 
         it('returns valid = true when record is null', () => {
             let test = new TestModel();
-            test.record = null;
-            vld.recordClassValidator(manager, test, recordField, op, vResult, opts);
+            test.model = null;
+            vld.modelClassValidator(manager, test, relatedModelField, op, vResult, opts);
             expect(vResult.valid).to.equal(true);
         });
 
         it('returns valid = true when the value is an instance of the correct class', () => {
             let test = new TestModel();
-            test.record = new TestRelatedModel();
-            vld.recordClassValidator(manager, test, recordField, op, vResult, opts);
+            test.model = new TestRelatedModel();
+            vld.modelClassValidator(manager, test, relatedModelField, op, vResult, opts);
             expect(vResult.valid).to.equal(true);
         });
 
         it('returns valid = false when the value is not an instance of the correct class', () => {
             let test = new TestModel();
-            test.record = new TestUnrelatedModel();
-            vld.recordClassValidator(manager, test, recordField, op, vResult, opts);
-            expectValidationFailure('invalid_record_class', recordField.name, msg.invalid_record_class(recordField.name), vResult);
+            test.model = new TestUnrelatedModel();
+            vld.modelClassValidator(manager, test, relatedModelField, op, vResult, opts);
+            expectValidationFailure('invalid_model_class', relatedModelField.name, msg.invalid_model_class(relatedModelField.name), vResult);
         });
 
         it('returns valid = false when the value is not an object', () => {
             let test = new TestModel();
-            test.record = 222;
-            vld.recordClassValidator(manager, test, recordField, op, vResult, opts);
-            expectValidationFailure('invalid_record_class', recordField.name, msg.invalid_record_class(recordField.name), vResult);
+            test.model = 222;
+            vld.modelClassValidator(manager, test, relatedModelField, op, vResult, opts);
+            expectValidationFailure('invalid_model_class', relatedModelField.name, msg.invalid_model_class(relatedModelField.name), vResult);
         });
 
     });
 
-    describe('recordPrimaryKeyValidator()', () => {
+    describe('modelPrimaryKeyValidator()', () => {
 
         it('returns valid = true when record is not defined', () => {
             let test = new TestModel();
-            vld.recordPrimaryKeyValidator(manager, test, recordField, op, vResult, opts);
+            vld.modelPrimaryKeyValidator(manager, test, relatedModelField, op, vResult, opts);
             expect(vResult.valid).to.equal(true);
         });
 
         it('returns valid = true when record is null', () => {
             let test = new TestModel();
-            test.record = null;
-            vld.recordPrimaryKeyValidator(manager, test, recordField, op, vResult, opts);
+            test.model = null;
+            vld.modelPrimaryKeyValidator(manager, test, relatedModelField, op, vResult, opts);
             expect(vResult.valid).to.equal(true);
         });
 
         it('returns valid = false when record is missing primary key field', () => {
             let test = new TestModel();
-            test.record = {};
-            vld.recordPrimaryKeyValidator(manager, test, recordField, op, vResult, opts);
-            expectValidationFailure('missing_record_primary_key', recordField.name, msg.missing_record_primary_key(recordField.name), vResult);
+            test.model = {};
+            vld.modelPrimaryKeyValidator(manager, test, relatedModelField, op, vResult, opts);
+            expectValidationFailure('missing_model_primary_key', relatedModelField.name, msg.missing_model_primary_key(relatedModelField.name), vResult);
         });
 
-        it('returns valid = false when linked record primary key field is null', () => {
+        it('returns valid = false when linked model primary key field is null', () => {
             let test = new TestModel();
             let record = new TestRelatedModel();
             record.id = null;
-            test.record = record;
-            vld.recordPrimaryKeyValidator(manager, test, recordField, op, vResult, opts);
-            expectValidationFailure('missing_record_primary_key', recordField.name, msg.missing_record_primary_key(recordField.name), vResult);
+            test.model = record;
+            vld.modelPrimaryKeyValidator(manager, test, relatedModelField, op, vResult, opts);
+            expectValidationFailure('missing_model_primary_key', relatedModelField.name, msg.missing_model_primary_key(relatedModelField.name), vResult);
         });
 
         it('returns valid = true when record contains primary key field', () => {
             let test = new TestModel();
             let record = new TestRelatedModel();
             record.id = 7;
-            test.record = record;
-            vld.recordPrimaryKeyValidator(manager, test, recordField, op, vResult, opts);
+            test.model = record;
+            vld.modelPrimaryKeyValidator(manager, test, relatedModelField, op, vResult, opts);
             expect(vResult.valid).to.equal(true);
         });
 
@@ -148,17 +148,17 @@ describe('rev.fields.validators.record', () => {
             let record = new TestRelatedModelMultiKey();
             record.id = null;
             record.id2 = null;
-            test.recordMultiKey = record;
-            vld.recordPrimaryKeyValidator(manager, test, recordMultiKeyField, op, vResult, opts);
-            expectValidationFailure('missing_record_primary_key', recordMultiKeyField.name, msg.missing_record_primary_key(recordMultiKeyField.name), vResult);
+            test.modelMultiKey = record;
+            vld.modelPrimaryKeyValidator(manager, test, relatedModelMultiKeyField, op, vResult, opts);
+            expectValidationFailure('missing_model_primary_key', relatedModelMultiKeyField.name, msg.missing_model_primary_key(relatedModelMultiKeyField.name), vResult);
         });
 
         it('returns valid = true when multi-key linked record contains at least one primary key value', () => {
             let test = new TestModel();
             let record = new TestRelatedModelMultiKey();
             record.id2 = 7;
-            test.recordMultiKey = record;
-            vld.recordPrimaryKeyValidator(manager, test, recordMultiKeyField, op, vResult, opts);
+            test.modelMultiKey = record;
+            vld.modelPrimaryKeyValidator(manager, test, relatedModelMultiKeyField, op, vResult, opts);
             expect(vResult.valid).to.equal(true);
         });
 
@@ -167,75 +167,75 @@ describe('rev.fields.validators.record', () => {
             let record = new TestRelatedModelMultiKey();
             record.id = 2;
             record.id2 = 7;
-            test.recordMultiKey = record;
-            vld.recordPrimaryKeyValidator(manager, test, recordMultiKeyField, op, vResult, opts);
+            test.modelMultiKey = record;
+            vld.modelPrimaryKeyValidator(manager, test, relatedModelMultiKeyField, op, vResult, opts);
             expect(vResult.valid).to.equal(true);
         });
 
     });
 
-    describe('recordListClassValidator()', () => {
+    describe('modelListClassValidator()', () => {
 
         it('returns valid = true when record is not defined', () => {
             let test = new TestModel();
-            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
+            vld.modelListClassValidator(manager, test, modelListField, op, vResult, opts);
             expect(vResult.valid).to.equal(true);
         });
 
         it('returns valid = false when record is null', () => {
             let test = new TestModel();
-            test.recordList = null;
-            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
-            expectValidationFailure('invalid_record_list_data', recordListField.name, msg.invalid_record_list_data(recordListField.name), vResult);
+            test.modelList = null;
+            vld.modelListClassValidator(manager, test, modelListField, op, vResult, opts);
+            expectValidationFailure('invalid_model_list_data', modelListField.name, msg.invalid_model_list_data(modelListField.name), vResult);
         });
 
         it('returns valid = true when the value is an empty array', () => {
             let test = new TestModel();
-            test.recordList = [];
-            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
+            test.modelList = [];
+            vld.modelListClassValidator(manager, test, modelListField, op, vResult, opts);
             expect(vResult.valid).to.equal(true);
         });
 
         it('returns valid = true when array has an instance of the correct class', () => {
             let test = new TestModel();
-            test.recordList = [new TestRelatedModel()];
-            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
+            test.modelList = [new TestRelatedModel()];
+            vld.modelListClassValidator(manager, test, modelListField, op, vResult, opts);
             expect(vResult.valid).to.equal(true);
         });
 
         it('returns valid = false when field is just an instance of the correct class', () => {
             let test = new TestModel();
-            test.recordList = new TestRelatedModel();
-            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
-            expectValidationFailure('invalid_record_list_data', recordListField.name, msg.invalid_record_list_data(recordListField.name), vResult);
+            test.modelList = new TestRelatedModel();
+            vld.modelListClassValidator(manager, test, modelListField, op, vResult, opts);
+            expectValidationFailure('invalid_model_list_data', modelListField.name, msg.invalid_model_list_data(modelListField.name), vResult);
         });
 
         it('returns valid = false when array has an instance of the wrong class', () => {
             let test = new TestModel();
-            test.recordList = [new TestUnrelatedModel()];
-            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
-            expectValidationFailure('invalid_record_list_class', recordListField.name, msg.invalid_record_list_class(recordListField.name), vResult);
+            test.modelList = [new TestUnrelatedModel()];
+            vld.modelListClassValidator(manager, test, modelListField, op, vResult, opts);
+            expectValidationFailure('invalid_model_list_class', modelListField.name, msg.invalid_model_list_class(modelListField.name), vResult);
         });
 
         it('returns valid = false when array has a correct class and an invalid class instance', () => {
             let test = new TestModel();
-            test.recordList = [new TestRelatedModel(), new TestUnrelatedModel()];
-            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
-            expectValidationFailure('invalid_record_list_class', recordListField.name, msg.invalid_record_list_class(recordListField.name), vResult);
+            test.modelList = [new TestRelatedModel(), new TestUnrelatedModel()];
+            vld.modelListClassValidator(manager, test, modelListField, op, vResult, opts);
+            expectValidationFailure('invalid_model_list_class', modelListField.name, msg.invalid_model_list_class(modelListField.name), vResult);
         });
 
         it('returns valid = false when the value is not an array', () => {
             let test = new TestModel();
-            test.recordList = {};
-            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
-            expectValidationFailure('invalid_record_list_data', recordListField.name, msg.invalid_record_list_data(recordListField.name), vResult);
+            test.modelList = {};
+            vld.modelListClassValidator(manager, test, modelListField, op, vResult, opts);
+            expectValidationFailure('invalid_model_list_data', modelListField.name, msg.invalid_model_list_data(modelListField.name), vResult);
         });
 
         it('returns valid = false when the array contains a value that is not an object', () => {
             let test = new TestModel();
-            test.recordList = [222];
-            vld.recordListClassValidator(manager, test, recordListField, op, vResult, opts);
-            expectValidationFailure('invalid_record_list_class', recordListField.name, msg.invalid_record_list_class(recordListField.name), vResult);
+            test.modelList = [222];
+            vld.modelListClassValidator(manager, test, modelListField, op, vResult, opts);
+            expectValidationFailure('invalid_model_list_class', modelListField.name, msg.invalid_model_list_class(modelListField.name), vResult);
         });
 
     });

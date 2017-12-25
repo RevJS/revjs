@@ -23,16 +23,16 @@ export class Developer extends BaseModel<Developer> {
         id: number;
     @rev.TextField({label: 'Name'})
         name: string;
-    @rev.RecordListField({ model: 'Job' })
+    @rev.RelatedModelList({ model: 'Job' })
         jobs: Job[];
 
 }
 
 export class Job extends BaseModel<Job> {
 
-    @rev.RecordField({ model: 'Developer' })
+    @rev.RelatedModel({ model: 'Developer' })
         developer: Developer;
-    @rev.RecordField({ model: 'Company' })
+    @rev.RelatedModel({ model: 'Company' })
         company: Company;
     @rev.TextField()
         job_title: string;

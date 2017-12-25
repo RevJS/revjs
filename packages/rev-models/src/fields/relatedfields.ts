@@ -4,28 +4,30 @@ import * as validators from '../validation/validators';
 import { IModelManager } from '../models/types';
 import { isSet } from '../utils';
 
-export interface IRecordFieldOptions extends IFieldOptions {
+export interface IRelatedModelFieldOptions extends IFieldOptions {
     model: string;
 }
 
-export const DEFAULT_RECORDLIST_FIELD_OPTIONS: IFieldOptions = {
+export const DEFAULT_MODELLIST_FIELD_OPTIONS: IFieldOptions = {
     required: false
 };
 
-export class RecordField extends Field {
-    options: IRecordFieldOptions;
+export class RelatedModelFieldBase extends Field {}
+
+export class RelatedModelField extends RelatedModelFieldBase {
+    options: IRelatedModelFieldOptions;
 
     constructor(
             name: string,
-            options: IRecordFieldOptions) {
+            options: IRelatedModelFieldOptions) {
         super(name, options);
 
         if (!options.model || typeof options.model != 'string') {
-            throw new Error('RecordFieldError: options.model must be a non-empty string');
+            throw new Error('RelatedModelField Error: options.model must be a non-empty string');
         }
 
-        this.validators.push(validators.recordClassValidator);
-        this.validators.push(validators.recordPrimaryKeyValidator);
+        this.validators.push(validators.modelClassValidator);
+        this.validators.push(validators.modelPrimaryKeyValidator);
 
     }
 
@@ -47,23 +49,23 @@ export class RecordField extends Field {
     }
 }
 
-export class RecordListField extends Field {
-    options: IRecordFieldOptions;
+export class RelatedModelListField extends RelatedModelFieldBase {
+    options: IRelatedModelFieldOptions;
 
     constructor(
             name: string,
-            options: IRecordFieldOptions) {
+            options: IRelatedModelFieldOptions) {
 
         // RecordListFields should not be required by default
-        const opts = Object.assign({}, DEFAULT_RECORDLIST_FIELD_OPTIONS, options);
+        const opts = Object.assign({}, DEFAULT_MODELLIST_FIELD_OPTIONS, options);
 
         super(name, opts);
 
         if (!options.model || typeof options.model != 'string') {
-            throw new Error('RecordFieldError: options.model must be a non-empty string');
+            throw new Error('RelatedModelListField Error: options.model must be a non-empty string');
         }
 
-        this.validators.push(validators.recordListClassValidator);
+        this.validators.push(validators.modelListClassValidator);
 
     }
 

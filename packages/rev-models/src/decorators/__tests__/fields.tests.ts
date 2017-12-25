@@ -132,18 +132,18 @@ describe('rev.decorators.fields', () => {
 
         it('ReccordField', () => {
             class MyClass {
-                @d.RecordField({ model: 'TestRelatedModel' })
+                @d.RelatedModel({ model: 'TestRelatedModel' })
                     test: string;
             }
-            expectFieldMeta(MyClass, 'test', f.RecordField);
+            expectFieldMeta(MyClass, 'test', f.RelatedModelField);
         });
 
         it('ReccordListField', () => {
             class MyClass {
-                @d.RecordListField({ model: 'TestRelatedModel' })
+                @d.RelatedModelList({ model: 'TestRelatedModel' })
                     test: string;
             }
-            expectFieldMeta(MyClass, 'test', f.RecordListField);
+            expectFieldMeta(MyClass, 'test', f.RelatedModelListField);
         });
 
     });
