@@ -23,6 +23,29 @@ export function recordClassValidator<T extends IModel>(manager: IModelManager, m
     }
 }
 
+export function recordPrimaryKeyValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
+    if (isSet(model[field.name])) {
+        const meta = manager.getModelMeta(field.options.model);
+        if (!meta.primaryKey || meta.primaryKey.length == 0) {
+            result.addFieldError(
+                field.name,
+                msg.missing_record_primary_key(field.name),
+                'missing_record_primary_key'
+            );
+        }
+        else {
+            const pkValue = meta.primaryKey.find((pkName) => model[field.name][pkName]);
+            if (!pkValue) {
+                result.addFieldError(
+                    field.name,
+                    msg.missing_record_primary_key(field.name),
+                    'missing_record_primary_key'
+                );
+            }
+        }
+    }
+}
+
 export function recordListClassValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof model[field.name] != 'undefined') {
         let fieldVal = model[field.name];

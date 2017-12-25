@@ -1,6 +1,6 @@
 
 import { expect } from 'chai';
-import * as fld from '../../../fields';
+import * as d from '../../../decorators';
 import * as vld from '../record';
 import { VALIDATION_MESSAGES as msg } from '../../validationmsg';
 
@@ -12,36 +12,49 @@ import { InMemoryBackend } from '../../../backends/inmemory/backend';
 import { expectValidationFailure } from './utils';
 
 class TestModel {
-    id: any;
-    name: any;
-    record: any;
-    recordList: any;
+    @d.IntegerField()
+        id: any;
+    @d.TextField()
+        name: any;
+    @d.RecordField({ model: 'TestRelatedModel' })
+        record: any;
+    @d.RecordField({ model: 'TestRelatedModelMultiKey' })
+        recordMultiKey: any;
+    @d.RecordListField({ model: 'TestRelatedModel' })
+        recordList: any;
 }
 
-class TestRelatedModel {}
+class TestRelatedModel {
+    @d.IntegerField({ primaryKey: true})
+        id: number;
+    @d.TextField()
+        name: string;
+}
+class TestRelatedModelMultiKey {
+    @d.IntegerField({ primaryKey: true})
+        id: number;
+    @d.IntegerField({ primaryKey: true})
+        id2: number;
+    @d.TextField()
+        name: string;
+}
 class TestUnrelatedModel {}
 
-let idField = new fld.IntegerField('id');
-let nameField = new fld.TextField('name', {
-    minLength: 5, maxLength: 10,
-    minValue: 'ddd', maxValue: 'jjj',
-    regEx: /^abc\d.$/  // abc[number][anything]
-});
-let recordField = new fld.RecordField('record', { model: 'TestRelatedModel' });
-let recordListField = new fld.RecordField('recordList', { model: 'TestRelatedModel' });
-
-let manager = new ModelManager();
+const manager = new ModelManager();
 manager.registerBackend('default', new InMemoryBackend());
-manager.register(TestModel, {
-    fields: [
-        idField, nameField, recordField
-    ]
-});
+manager.register(TestModel);
+manager.register(TestRelatedModel);
+manager.register(TestRelatedModelMultiKey);
 
-let op: IModelOperation = {
+const meta = manager.getModelMeta(TestModel);
+const recordField = meta.fieldsByName['record'];
+const recordMultiKeyField = meta.fieldsByName['recordMultiKey'];
+const recordListField = meta.fieldsByName['recordList'];
+
+const op: IModelOperation = {
     operation: 'create'
 };
-let opts: IValidationOptions = {
+const opts: IValidationOptions = {
     timeout: 200
 };
 
@@ -86,6 +99,77 @@ describe('rev.fields.validators.record', () => {
             test.record = 222;
             vld.recordClassValidator(manager, test, recordField, op, vResult, opts);
             expectValidationFailure('invalid_record_class', recordField.name, msg.invalid_record_class(recordField.name), vResult);
+        });
+
+    });
+
+    describe('recordPrimaryKeyValidator()', () => {
+
+        it('returns valid = true when record is not defined', () => {
+            let test = new TestModel();
+            vld.recordPrimaryKeyValidator(manager, test, recordField, op, vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when record is null', () => {
+            let test = new TestModel();
+            test.record = null;
+            vld.recordPrimaryKeyValidator(manager, test, recordField, op, vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when record is missing primary key field', () => {
+            let test = new TestModel();
+            test.record = {};
+            vld.recordPrimaryKeyValidator(manager, test, recordField, op, vResult, opts);
+            expectValidationFailure('missing_record_primary_key', recordField.name, msg.missing_record_primary_key(recordField.name), vResult);
+        });
+
+        it('returns valid = false when linked record primary key field is null', () => {
+            let test = new TestModel();
+            let record = new TestRelatedModel();
+            record.id = null;
+            test.record = record;
+            vld.recordPrimaryKeyValidator(manager, test, recordField, op, vResult, opts);
+            expectValidationFailure('missing_record_primary_key', recordField.name, msg.missing_record_primary_key(recordField.name), vResult);
+        });
+
+        it('returns valid = true when record contains primary key field', () => {
+            let test = new TestModel();
+            let record = new TestRelatedModel();
+            record.id = 7;
+            test.record = record;
+            vld.recordPrimaryKeyValidator(manager, test, recordField, op, vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = false when multi-key linked record has null primary key values', () => {
+            let test = new TestModel();
+            let record = new TestRelatedModelMultiKey();
+            record.id = null;
+            record.id2 = null;
+            test.recordMultiKey = record;
+            vld.recordPrimaryKeyValidator(manager, test, recordMultiKeyField, op, vResult, opts);
+            expectValidationFailure('missing_record_primary_key', recordMultiKeyField.name, msg.missing_record_primary_key(recordMultiKeyField.name), vResult);
+        });
+
+        it('returns valid = true when multi-key linked record contains at least one primary key value', () => {
+            let test = new TestModel();
+            let record = new TestRelatedModelMultiKey();
+            record.id2 = 7;
+            test.recordMultiKey = record;
+            vld.recordPrimaryKeyValidator(manager, test, recordMultiKeyField, op, vResult, opts);
+            expect(vResult.valid).to.equal(true);
+        });
+
+        it('returns valid = true when multi-key linked record contains all primary key values', () => {
+            let test = new TestModel();
+            let record = new TestRelatedModelMultiKey();
+            record.id = 2;
+            record.id2 = 7;
+            test.recordMultiKey = record;
+            vld.recordPrimaryKeyValidator(manager, test, recordMultiKeyField, op, vResult, opts);
+            expect(vResult.valid).to.equal(true);
         });
 
     });
