@@ -139,14 +139,14 @@ describe('rev.fields.recordfields', () => {
 
             it('returns null if model field is not set', () => {
                 const record = new TestModel();
-                expect(field.toBackendValue(manager, record, field)).to.be.null;
+                expect(field.toBackendValue(manager, field, record[field.name])).to.be.null;
             });
 
             it('returns null if model primary key field is not set', () => {
                 const record = new TestModel();
                 const linkedModel = new TestRelatedModel();
                 record.value = linkedModel;
-                expect(field.toBackendValue(manager, record, field)).to.be.null;
+                expect(field.toBackendValue(manager, field, record[field.name])).to.be.null;
             });
 
             it('returns primary key value if model primary key field is set', () => {
@@ -154,7 +154,7 @@ describe('rev.fields.recordfields', () => {
                 const linkedModel = new TestRelatedModel();
                 linkedModel.name = 'key_value';
                 record.value = linkedModel;
-                expect(field.toBackendValue(manager, record, field)).to.equal('key_value');
+                expect(field.toBackendValue(manager, field, record[field.name])).to.equal('key_value');
             });
 
         });
@@ -164,14 +164,14 @@ describe('rev.fields.recordfields', () => {
 
             it('returns null if model field is not set', () => {
                 const record = new TestModel();
-                expect(field.toBackendValue(manager, record, field)).to.be.null;
+                expect(field.toBackendValue(manager, field, record[field.name])).to.be.null;
             });
 
             it('returns stringified array with all nulls if model primary key fields are not set', () => {
                 const record = new TestModel();
                 const linkedModel = new TestRelatedModelMultiKey();
                 record.valueMulti = linkedModel;
-                expect(field.toBackendValue(manager, record, field)).to.equal(
+                expect(field.toBackendValue(manager, field, record[field.name])).to.equal(
                     JSON.stringify([null, null])
                 );
             });
@@ -181,7 +181,7 @@ describe('rev.fields.recordfields', () => {
                 const linkedModel = new TestRelatedModelMultiKey();
                 linkedModel.id2 = 12;
                 record.valueMulti = linkedModel;
-                expect(field.toBackendValue(manager, record, field)).to.equal(
+                expect(field.toBackendValue(manager, field, record[field.name])).to.equal(
                     JSON.stringify([null, 12])
                 );
             });
@@ -192,7 +192,7 @@ describe('rev.fields.recordfields', () => {
                 linkedModel.id1 = 24;
                 linkedModel.id2 = 48;
                 record.valueMulti = linkedModel;
-                expect(field.toBackendValue(manager, record, field)).to.equal(
+                expect(field.toBackendValue(manager, field, record[field.name])).to.equal(
                     JSON.stringify([24, 48])
                 );
             });

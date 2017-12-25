@@ -195,7 +195,7 @@ export class InMemoryBackend implements IBackend {
                 }
             }
             else if (typeof model[fieldName] != 'undefined') {
-                target[fieldName] = field.toBackendValue(manager, model, field);
+                target[fieldName] = field.toBackendValue(manager, field, model[fieldName]);
             }
         }
     }

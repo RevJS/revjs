@@ -7,10 +7,9 @@ export function hydrate<T extends IModel>(manager: IModelManager, model: new() =
     let instance = new model();
 
     if (data && typeof data == 'object') {
-        // In future, this may also do data conversion, etc.
         for (let field of meta.fields) {
             if (typeof data[field.name] != 'undefined') {
-                instance[field.name] = data[field.name];
+                instance[field.name] = field.fromBackendValue(manager, field, data[field.name]);
             }
         }
     }

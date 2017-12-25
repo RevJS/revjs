@@ -1,7 +1,7 @@
 
 import { Field, IFieldOptions } from './field';
 import * as validators from '../validation/validators';
-import { IModelManager, IModel } from '../models/types';
+import { IModelManager } from '../models/types';
 import { isSet } from '../utils';
 
 export interface IRecordFieldOptions extends IFieldOptions {
@@ -29,9 +29,8 @@ export class RecordField extends Field {
 
     }
 
-    toBackendValue<T extends IModel>(manager: IModelManager, model: T, field: Field): any {
-        const record = model[field.name];
-        if (!isSet(record)) {
+    toBackendValue(manager: IModelManager, field: Field, value: any): any {
+        if (!isSet(value)) {
             return null;
         }
         const meta = manager.getModelMeta(field.options.model);
@@ -39,10 +38,10 @@ export class RecordField extends Field {
             return null;  // Should not be hit due to primary key validator
         }
         if (meta.primaryKey.length == 1) {
-            return record[meta.primaryKey[0]] || null;
+            return value[meta.primaryKey[0]] || null;
         }
         else {
-            const pkValue = meta.primaryKey.map((keyField) => record[keyField]);
+            const pkValue = meta.primaryKey.map((keyField) => value[keyField]);
             return JSON.stringify(pkValue);
         }
     }
@@ -68,7 +67,7 @@ export class RecordListField extends Field {
 
     }
 
-    toBackendValue<T extends IModel>(manager: IModelManager, model: T, field: Field): any {
+    toBackendValue(manager: IModelManager, field: Field, value: any): any {
         // Cannot currently be stored
     }
 }
