@@ -1,7 +1,7 @@
 
 import { IBackend } from '../';
 import { IModel, IModelMeta, IModelManager, ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IReadMeta, IReadOptions, IRemoveMeta, IRemoveOptions, IExecArgs, IExecMeta, IExecOptions } from '../../models/types';
-import { ModelOperationResult } from '../../operations/operationresult';
+import { ModelOperationResult, IModelOperationResult } from '../../operations/operationresult';
 import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
 import { sortRecords } from './sort';
@@ -224,30 +224,39 @@ export class InMemoryBackend implements IBackend {
 
     private async _getForeignKeyInstances(manager: IModelManager, meta: IModelMeta<any>, foreignKeyValues: IForeignKeyValues) {
 
-        const foreignKeyInstances: IForeignKeyInstances = {};
+        const foreignKeyFields: string[] = [];
+        const foreignKeyPKFields: string[] = [];
+        const foreignKeyPromises: Array<Promise<IModelOperationResult<any, any>>> = [];
 
         for (let fieldName in foreignKeyValues) {
             if (foreignKeyValues[fieldName].length > 0) {
                 let field = meta.fieldsByName[fieldName] as RelatedModelField;
                 let relatedMeta = manager.getModelMeta(field.options.model);
 
-                let res = await manager.read(
-                    relatedMeta.ctor,
-                    {
-                        [relatedMeta.primaryKey]: { $in: foreignKeyValues[fieldName] }
-                    },
-                    { limit: foreignKeyValues[fieldName].length }
-                );
-
-                foreignKeyInstances[fieldName] = {};
-                for (let instance of res.results) {
-                    foreignKeyInstances[fieldName][instance[relatedMeta.primaryKey]] = instance;
-                }
+                foreignKeyFields.push(fieldName);
+                foreignKeyPKFields.push(relatedMeta.primaryKey);
+                foreignKeyPromises.push(
+                    manager.read(
+                        relatedMeta.ctor,
+                        {
+                            [relatedMeta.primaryKey]: { $in: foreignKeyValues[fieldName] }
+                        },
+                        { limit: foreignKeyValues[fieldName].length }
+                    ));
             }
         }
 
-        return foreignKeyInstances;
+        const foreignKeyInstances: IForeignKeyInstances = {};
 
+        let results = await Promise.all(foreignKeyPromises);
+        foreignKeyFields.forEach((fieldName, i) => {
+            foreignKeyInstances[fieldName] = {};
+            for (let instance of results[i].results) {
+                foreignKeyInstances[fieldName][instance[foreignKeyPKFields[i]]] = instance;
+            }
+        });
+
+        return foreignKeyInstances;
     }
 
 }
