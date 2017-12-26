@@ -7,6 +7,16 @@ import { InMemoryQuery } from './query';
 import { sortRecords } from './sort';
 import { AutoNumberField, RelatedModelField } from '../../fields';
 
+interface IForeignKeyValues {
+    [fieldName: string]: any[];
+}
+
+interface IForeignKeyInstances {
+    [fieldName: string]: {
+        [keyValue: string]: IModel
+    };
+}
+
 export class InMemoryBackend implements IBackend {
     _storage: {
         [modelName: string]: any[]
@@ -87,9 +97,7 @@ export class InMemoryBackend implements IBackend {
         let queryNode = parser.getQueryNodeForQuery(model, where);
         let query = new InMemoryQuery(queryNode);
 
-        const foreignKeyValues: {
-            [fieldName: string]: any[]
-        } = {};
+        const foreignKeyValues: IForeignKeyValues = {};
 
         // Populate scalar values and cache related model information
         result.results = [];
@@ -122,11 +130,9 @@ export class InMemoryBackend implements IBackend {
             }
         }
 
-        if (Object.keys(foreignKeyValues).length > 0) {
-            for (let fieldName in foreignKeyValues) {
-                // let field = meta.fieldsByName[fieldName] as RelatedModelField;
-                console.log('need to lookup values for', fieldName);
-            }
+        if (options.related) {
+            const foreignKeyInstances = await this._getForeignKeyInstances(manager, meta, foreignKeyValues);
+            console.log('instances', foreignKeyInstances);
         }
 
         if (options.order_by) {
@@ -214,6 +220,34 @@ export class InMemoryBackend implements IBackend {
                 }
             }
         }
+    }
+
+    private async _getForeignKeyInstances(manager: IModelManager, meta: IModelMeta<any>, foreignKeyValues: IForeignKeyValues) {
+
+        const foreignKeyInstances: IForeignKeyInstances = {};
+
+        for (let fieldName in foreignKeyValues) {
+            if (foreignKeyValues[fieldName].length > 0) {
+                let field = meta.fieldsByName[fieldName] as RelatedModelField;
+                let relatedMeta = manager.getModelMeta(field.options.model);
+
+                let res = await manager.read(
+                    relatedMeta.ctor,
+                    {
+                        [relatedMeta.primaryKey]: { $in: foreignKeyValues[fieldName] }
+                    },
+                    { limit: foreignKeyValues[fieldName].length }
+                );
+
+                foreignKeyInstances[fieldName] = {};
+                for (let instance of res.results) {
+                    foreignKeyInstances[fieldName][instance[relatedMeta.primaryKey]] = instance;
+                }
+            }
+        }
+
+        return foreignKeyInstances;
+
     }
 
 }
