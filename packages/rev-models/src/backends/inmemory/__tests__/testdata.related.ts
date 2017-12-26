@@ -8,6 +8,10 @@ export class Company {
         name: string;
     @d.RelatedModelList({ model: 'Developer' })
         developers: Developer[];
+    
+    constructor(data?: Partial<Company>) {
+        Object.assign(this, data);
+    }
 }
 
 export class Developer {
@@ -17,6 +21,10 @@ export class Developer {
         name: string;
     @d.RelatedModel({ model: 'Company' })
         company: Company;
+
+    constructor(data?: Partial<Developer>) {
+        Object.assign(this, data);
+    }
 }
 
 export const testCompanyData = [
@@ -55,5 +63,10 @@ export const testDeveloperData = [
         id: 5,
         name: 'Captain JavaScript',
         company: 2
+    },
+    {
+        id: 6,
+        name: 'Kim Jong Fail',
+        company: null
     },
 ];

@@ -5,7 +5,7 @@ import { ModelOperationResult } from '../../operations/operationresult';
 import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
 import { sortRecords } from './sort';
-import { AutoNumberField } from '../../fields';
+import { AutoNumberField, RelatedModelField } from '../../fields';
 
 export class InMemoryBackend implements IBackend {
     _storage: {
@@ -82,7 +82,7 @@ export class InMemoryBackend implements IBackend {
     }
 
     read<T extends IModel>(manager: IModelManager, model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
-        return new Promise<ModelOperationResult<T, IReadMeta>>((resolve) => {
+        return new Promise<ModelOperationResult<T, IReadMeta>>((resolve, reject) => {
 
             let meta = manager.getModelMeta(model);
             if (!where) {
@@ -99,13 +99,45 @@ export class InMemoryBackend implements IBackend {
             let parser = new QueryParser(manager);
             let queryNode = parser.getQueryNodeForQuery(model, where);
             let query = new InMemoryQuery(queryNode);
+
+            const foreignKeyValues: {
+                [fieldName: string]: any[]
+            } = {};
+
+            // Populate scalar values and cache related model information
             result.results = [];
             for (let record of modelStorage) {
+
                 if (query.testRecord(record)) {
+
                     let modelInstance = manager.hydrate(model, record);
                     result.results.push(modelInstance);
+
+                    if (options.related) {
+                        for (let fieldName of options.related) {
+                            let field = meta.fieldsByName[fieldName];
+                            let keyValue = record[fieldName];
+
+                            if (field instanceof RelatedModelField) {
+                                if (!(fieldName in foreignKeyValues)) {
+                                    foreignKeyValues[fieldName] = [];
+                                }
+                                if (typeof keyValue != 'undefined'
+                                    && keyValue !== null
+                                    && foreignKeyValues[fieldName].indexOf(keyValue) == -1) {
+                                        foreignKeyValues[fieldName].push(keyValue);
+                                }
+
+                            }
+                        }
+                    }
                 }
             }
+
+            if (options.related) {
+                console.log('foreignKeyVals', foreignKeyValues);
+            }
+
             if (options.order_by) {
                 result.results = sortRecords(result.results, options.order_by) as T[];
                 result.setMeta({ order_by: options.order_by });
