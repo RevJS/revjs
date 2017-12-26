@@ -26,7 +26,7 @@ export function modelClassValidator<T extends IModel>(manager: IModelManager, mo
 export function modelPrimaryKeyValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         const meta = manager.getModelMeta(field.options.model);
-        if (!meta.primaryKey || meta.primaryKey.length == 0) {
+        if (!meta.primaryKey) {
             result.addFieldError(
                 field.name,
                 msg.missing_model_primary_key(field.name),
@@ -34,7 +34,7 @@ export function modelPrimaryKeyValidator<T extends IModel>(manager: IModelManage
             );
         }
         else {
-            const pkValue = meta.primaryKey.find((pkName) => model[field.name][pkName]);
+            const pkValue = model[field.name][meta.primaryKey];
             if (!pkValue) {
                 result.addFieldError(
                     field.name,

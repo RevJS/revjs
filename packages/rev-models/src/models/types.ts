@@ -19,7 +19,7 @@ export interface IModelMeta<T> {
     fieldsByName?: {
         [fieldName: string]: Field
     };
-    primaryKey?: string[];
+    primaryKey?: string;
     backend?: string;
     stored?: boolean;
 }

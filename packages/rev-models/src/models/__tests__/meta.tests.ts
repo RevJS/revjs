@@ -237,7 +237,7 @@ describe('initialiseMeta() - with decorators', () => {
         expect((MyClass.prototype as any).__fields).to.be.an('Array');
     });
 
-    it('meta.primaryKey defaults to []', () => {
+    it('meta.primaryKey defaults to undefined', () => {
         class MyClass {
             @d.IntegerField()
                 id: number;
@@ -245,21 +245,33 @@ describe('initialiseMeta() - with decorators', () => {
                 name: string;
         }
         let res = initialiseMeta(testManager, MyClass);
-        expect(res.primaryKey).to.deep.equal([]);
+        expect(res.primaryKey).to.be.undefined;
     });
 
-    it('fields with primaryKey set are added to meta.primaryKey', () => {
+    it('field with primaryKey set is added to meta.primaryKey', () => {
+        class MyClass {
+            @d.IntegerField({primaryKey: true})
+                id: number;
+            @d.TextField()
+                name: string;
+        }
+        let res = initialiseMeta(testManager, MyClass);
+        expect(res.primaryKey).to.equal('id');
+    });
+
+    it('throws when more than one field is set as primaryKey', () => {
         class MyClass {
             @d.IntegerField({primaryKey: true})
                 id: number;
             @d.TextField({primaryKey: true})
                 name: string;
         }
-        let res = initialiseMeta(testManager, MyClass);
-        expect(res.primaryKey).to.deep.equal(['id', 'name']);
+        expect(() => {
+            initialiseMeta(testManager, MyClass);
+        }).to.throw('More than one field has been set as the primaryKey');
     });
 
-    it('fields with primaryKey set are merged with existing meta.primaryKey', () => {
+    it('throws when primaryKey is already set', () => {
         class MyClass {
             @d.IntegerField({primaryKey: true})
                 id: number;
@@ -267,10 +279,11 @@ describe('initialiseMeta() - with decorators', () => {
                 name: string;
         }
         let meta = {
-            primaryKey: ['name']
+            primaryKey: 'name'
         };
-        let res = initialiseMeta(testManager, MyClass, meta);
-        expect(res.primaryKey).to.deep.equal(['name', 'id']);
+        expect(() => {
+            initialiseMeta(testManager, MyClass, meta);
+        }).to.throw('More than one field has been set as the primaryKey');
     });
 
     it('meta.primaryKey is left untouched if fields do not override it', () => {
@@ -281,13 +294,13 @@ describe('initialiseMeta() - with decorators', () => {
                 name: string;
         }
         let meta = {
-            primaryKey: ['id', 'name']
+            primaryKey: 'id'
         };
         let res = initialiseMeta(testManager, MyClass, meta);
-        expect(res.primaryKey).to.deep.equal(['id', 'name']);
+        expect(res.primaryKey).to.deep.equal('id');
     });
 
-    it('throws if meta.primaryKey is not an array', () => {
+    it('throws if meta.primaryKey is not a string', () => {
         class MyClass {
             @d.IntegerField()
                 id: number;
@@ -296,12 +309,12 @@ describe('initialiseMeta() - with decorators', () => {
         }
         expect(() => {
             initialiseMeta(testManager, MyClass, {
-                primaryKey: 'id' as any
+                primaryKey: ['id'] as any
             });
-        }).to.throw('primaryKey must be an array of field names');
+        }).to.throw('primaryKey must be a string');
     });
 
-    it('throws if an invalid field name is in meta.primaryKey', () => {
+    it('throws if an invalid field name is set as meta.primaryKey', () => {
         class MyClass {
             @d.IntegerField()
                 id: number;
@@ -309,7 +322,7 @@ describe('initialiseMeta() - with decorators', () => {
                 name: string;
         }
         let meta = {
-            primaryKey: ['id', 'woooo']
+            primaryKey: 'woooo'
         };
         expect(() => {
             initialiseMeta(testManager, MyClass, meta);

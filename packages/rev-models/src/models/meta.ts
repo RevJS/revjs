@@ -47,12 +47,9 @@ export function initialiseMeta<T extends IModel>(manager: IModelManager, model: 
         }
     }
     if (meta.primaryKey) {
-        if (typeof meta.primaryKey != 'object' || !(meta.primaryKey instanceof Array)) {
-            throw new Error(`MetadataError: primaryKey must be an array of field names.`);
+        if (typeof meta.primaryKey != 'string') {
+            throw new Error(`MetadataError: primaryKey must be a string containing the primary key field name.`);
         }
-    }
-    else {
-        meta.primaryKey = [];
     }
 
     // Populate default metadata
@@ -80,14 +77,15 @@ export function initialiseMeta<T extends IModel>(manager: IModelManager, model: 
             throw new Error(`MetadataError: Field "${field.name}" is defined more than once.`);
         }
         meta.fieldsByName[field.name] = field;
-        if (field.options.primaryKey && meta.primaryKey.indexOf(field.name) == -1) {
-            meta.primaryKey.push(field.name);
+        if (field.options.primaryKey) {
+            if (meta.primaryKey) {
+                throw new Error('MetadataError: More than one field has been set as the primaryKey. Composite primary keys are not currently supported.');
+            }
+            meta.primaryKey = field.name;
         }
     }
-    for (let field of meta.primaryKey) {
-        if (!(field in meta.fieldsByName)) {
-            throw new Error(`MetadataError: Primary key field "${field}" is not defined.`);
-        }
+    if (meta.primaryKey && !(meta.primaryKey in meta.fieldsByName)) {
+        throw new Error(`MetadataError: Primary key field "${meta.primaryKey}" is not defined.`);
     }
 
     return meta;

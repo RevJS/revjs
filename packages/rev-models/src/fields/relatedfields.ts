@@ -36,15 +36,11 @@ export class RelatedModelField extends RelatedModelFieldBase {
             return null;
         }
         const meta = manager.getModelMeta(field.options.model);
-        if (!meta.primaryKey || meta.primaryKey.length == 0) {
+        if (!meta.primaryKey) {
             return null;  // Should not be hit due to primary key validator
         }
-        if (meta.primaryKey.length == 1) {
-            return value[meta.primaryKey[0]] || null;
-        }
         else {
-            const pkValue = meta.primaryKey.map((keyField) => value[keyField]);
-            return JSON.stringify(pkValue);
+            return value[meta.primaryKey] || null;
         }
     }
 }

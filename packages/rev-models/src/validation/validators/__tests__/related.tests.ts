@@ -18,8 +18,6 @@ class TestModel {
         name: any;
     @d.RelatedModel({ model: 'TestRelatedModel' })
         model: any;
-    @d.RelatedModel({ model: 'TestRelatedModelMultiKey' })
-        modelMultiKey: any;
     @d.RelatedModelList({ model: 'TestRelatedModel' })
         modelList: any;
 }
@@ -30,25 +28,16 @@ class TestRelatedModel {
     @d.TextField()
         name: string;
 }
-class TestRelatedModelMultiKey {
-    @d.IntegerField({ primaryKey: true})
-        id: number;
-    @d.IntegerField({ primaryKey: true})
-        id2: number;
-    @d.TextField()
-        name: string;
-}
+
 class TestUnrelatedModel {}
 
 const manager = new ModelManager();
 manager.registerBackend('default', new InMemoryBackend());
 manager.register(TestModel);
 manager.register(TestRelatedModel);
-manager.register(TestRelatedModelMultiKey);
 
 const meta = manager.getModelMeta(TestModel);
 const relatedModelField = meta.fieldsByName['model'];
-const relatedModelMultiKeyField = meta.fieldsByName['modelMultiKey'];
 const modelListField = meta.fieldsByName['modelList'];
 
 const op: IModelOperation = {
@@ -140,35 +129,6 @@ describe('rev.fields.validators.related', () => {
             record.id = 7;
             test.model = record;
             vld.modelPrimaryKeyValidator(manager, test, relatedModelField, op, vResult, opts);
-            expect(vResult.valid).to.equal(true);
-        });
-
-        it('returns valid = false when multi-key linked record has null primary key values', () => {
-            let test = new TestModel();
-            let record = new TestRelatedModelMultiKey();
-            record.id = null;
-            record.id2 = null;
-            test.modelMultiKey = record;
-            vld.modelPrimaryKeyValidator(manager, test, relatedModelMultiKeyField, op, vResult, opts);
-            expectValidationFailure('missing_model_primary_key', relatedModelMultiKeyField.name, msg.missing_model_primary_key(relatedModelMultiKeyField.name), vResult);
-        });
-
-        it('returns valid = true when multi-key linked record contains at least one primary key value', () => {
-            let test = new TestModel();
-            let record = new TestRelatedModelMultiKey();
-            record.id2 = 7;
-            test.modelMultiKey = record;
-            vld.modelPrimaryKeyValidator(manager, test, relatedModelMultiKeyField, op, vResult, opts);
-            expect(vResult.valid).to.equal(true);
-        });
-
-        it('returns valid = true when multi-key linked record contains all primary key values', () => {
-            let test = new TestModel();
-            let record = new TestRelatedModelMultiKey();
-            record.id = 2;
-            record.id2 = 7;
-            test.modelMultiKey = record;
-            vld.modelPrimaryKeyValidator(manager, test, relatedModelMultiKeyField, op, vResult, opts);
             expect(vResult.valid).to.equal(true);
         });
 
