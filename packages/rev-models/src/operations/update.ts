@@ -47,7 +47,7 @@ export async function update<T extends IModel>(manager: IModelManager, model: T,
     };
     let operationResult = new ModelOperationResult<T, IUpdateMeta>(operation);
 
-    let validationResult = await validate(manager, model, operation, opts.validation ? opts.validation : null)
+    let validationResult = await validate(manager, model, operation, opts.validation ? opts.validation : null);
     if (!validationResult.valid) {
         throw operationResult.createValidationError(validationResult);
     }
