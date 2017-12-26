@@ -116,14 +116,15 @@ export class InMemoryBackend implements IBackend {
                             if (!(fieldName in foreignKeyValues)) {
                                 foreignKeyValues[fieldName] = [];
                             }
-
-                            if (typeof keyValue != 'undefined'
-                                && keyValue !== null
-                                && foreignKeyValues[fieldName].indexOf(keyValue) == -1) {
-
+                            if (typeof keyValue != 'undefined' && keyValue !== null) {
+                                modelInstance[fieldName] = keyValue;
+                                if (foreignKeyValues[fieldName].indexOf(keyValue) == -1) {
                                     foreignKeyValues[fieldName].push(keyValue);
+                                }
                             }
-
+                            else {
+                                modelInstance[fieldName] = null;
+                            }
                         }
                     }
                 }
@@ -131,8 +132,19 @@ export class InMemoryBackend implements IBackend {
         }
 
         if (options.related) {
+            // Add foreign key model instances
             const foreignKeyInstances = await this._getForeignKeyInstances(manager, meta, foreignKeyValues);
-            console.log('instances', foreignKeyInstances);
+
+            for (let instance of result.results) {
+                for (let fieldName of options.related) {
+                    if (instance[fieldName] !== null) {
+                        if (foreignKeyInstances[fieldName]
+                            && foreignKeyInstances[fieldName][instance[fieldName]]) {
+                                instance[fieldName] = foreignKeyInstances[fieldName][instance[fieldName]];
+                        }
+                    }
+                }
+            }
         }
 
         if (options.order_by) {

@@ -83,7 +83,7 @@ describe('rev.backends.inmemory - read() related field tests', () => {
                         { id: 3, name: 'Nerdy McNerdface', company: expectedCompany1 },
                         { id: 4, name: 'Bilbo Baggins', company: expectedCompany2 },
                         { id: 5, name: 'Captain JavaScript', company: expectedCompany2 },
-                        { id: 6, name: 'Kim Jong Fail', company: expectedCompany2 }
+                        { id: 6, name: 'Kim Jong Fail', company: null }
                     ]);
                 });
         });
