@@ -13,3 +13,14 @@ export function escapeForRegex(str: string) {
     }
     return str.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
 }
+
+export function withTimeout<T>(promise: Promise<T>, timeout: number, name: string) {
+    return Promise.race([
+        promise,
+        new Promise<T>((resolve, reject) => {
+            setTimeout(() => {
+                reject(new Error(`${name} - timed out after ${timeout} milliseconds`));
+            }, timeout);
+        })
+    ]);
+}

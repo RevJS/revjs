@@ -6,44 +6,34 @@ import { IModelOperation } from './operation';
 
 export const DEFAULT_CREATE_OPTIONS: ICreateOptions = {};
 
-export function create<T extends IModel>(manager: IModelManager, model: T, options?: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
-    return new Promise((resolve, reject) => {
+export async function create<T extends IModel>(manager: IModelManager, model: T, options?: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
 
-        if (typeof model != 'object') {
-            throw new Error('Specified model is not a Model instance');
-        }
+    if (typeof model != 'object') {
+        throw new Error('Specified model is not a Model instance');
+    }
 
-        let meta = manager.getModelMeta(model);
-        if (!meta.stored) {
-            throw new Error('Cannot call create() on models with stored: false');
-        }
+    let meta = manager.getModelMeta(model);
+    if (!meta.stored) {
+        throw new Error('Cannot call create() on models with stored: false');
+    }
 
-        let backend = manager.getBackend(meta.backend);
+    let backend = manager.getBackend(meta.backend);
 
-        let operation: IModelOperation = {
-            operation: 'create'
-        };
-        let operationResult = new ModelOperationResult<T, ICreateMeta>(operation);
-        let opts = Object.assign({}, DEFAULT_CREATE_OPTIONS, options);
-        validate(manager, model, operation, opts.validation ? opts.validation : null)
-            .then((validationResult) => {
+    let operation: IModelOperation = {
+        operation: 'create'
+    };
+    let operationResult = new ModelOperationResult<T, ICreateMeta>(operation);
+    let opts = Object.assign({}, DEFAULT_CREATE_OPTIONS, options);
 
-                if (!validationResult.valid) {
-                    throw operationResult.createValidationError(validationResult);
-                }
-                else {
-                    operationResult.validation = validationResult;
-                }
+    let validationResult = await validate(manager, model, operation, opts.validation ? opts.validation : null)
 
-                return backend.create(manager, model, operationResult, opts);
+    if (!validationResult.valid) {
+        throw operationResult.createValidationError(validationResult);
+    }
+    else {
+        operationResult.validation = validationResult;
+    }
 
-            })
-            .then((res) => {
-                resolve(res);
-            })
-            .catch((err) => {
-                reject(err);
-            });
-    });
+    return backend.create(manager, model, operationResult, opts);
 
 }

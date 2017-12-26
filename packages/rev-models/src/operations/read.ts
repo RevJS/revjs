@@ -9,33 +9,26 @@ export const DEFAULT_READ_OPTIONS: IReadOptions = {
     offset: 0
 };
 
-export function read<T extends IModel>(manager: IModelManager, model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
-    return new Promise((resolve, reject) => {
+export async function read<T extends IModel>(manager: IModelManager, model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
 
-        let meta = manager.getModelMeta(model) as IModelMeta<T>;
-        let backend = manager.getBackend(meta.backend);
-        let operation: IModelOperation = {
-            operation: 'read',
-            where: where
-        };
-        let operationResult = new ModelOperationResult<T, IReadMeta>(operation);
-        if (options) {
-            if (options.related) {
-                validateRelated(model, meta, options.related);
-            }
-            if (options.order_by) {
-                validateOrderBy(model, meta, options.order_by);
-            }
+    let meta = manager.getModelMeta(model) as IModelMeta<T>;
+    let backend = manager.getBackend(meta.backend);
+    let operation: IModelOperation = {
+        operation: 'read',
+        where: where
+    };
+    let operationResult = new ModelOperationResult<T, IReadMeta>(operation);
+    if (options) {
+        if (options.related) {
+            validateRelated(model, meta, options.related);
         }
-        let opts = Object.assign({}, DEFAULT_READ_OPTIONS, options);
-        backend.read(manager, model, where || {}, operationResult, opts)
-            .then((res) => {
-                resolve(res);
-            })
-            .catch((err) => {
-                reject(err);
-            });
-    });
+        if (options.order_by) {
+            validateOrderBy(model, meta, options.order_by);
+        }
+    }
+    let opts = Object.assign({}, DEFAULT_READ_OPTIONS, options);
+    return backend.read(manager, model, where || {}, operationResult, opts);
+
 }
 
 export function validateRelated<T extends IModel>(model: new() => T, meta: IModelMeta<T>, related: any) {
