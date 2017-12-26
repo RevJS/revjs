@@ -21,167 +21,150 @@ export class InMemoryBackend implements IBackend {
         this._storage = {};
     }
 
-    load<T extends IModel>(manager: IModelManager, model: new(...args: any[]) => T, data: any[]): Promise<ModelOperationResult<T, null>> {
-        return new Promise<ModelOperationResult<T, null>>((resolve) => {
+    async load<T extends IModel>(manager: IModelManager, model: new(...args: any[]) => T, data: any[]): Promise<void> {
+        let meta = manager.getModelMeta(model);
+        let modelStorage = this._getModelStorage(meta);
 
-            let meta = manager.getModelMeta(model);
-            let modelStorage = this._getModelStorage(meta);
+        if (typeof data != 'object' || !(data instanceof Array)
+                || (data.length > 0 && typeof data[0] != 'object')) {
+            throw new Error('load() data must be an array of objects');
+        }
 
-            if (typeof data != 'object' || !(data instanceof Array)
-                    || (data.length > 0 && typeof data[0] != 'object')) {
-                throw new Error('load() data must be an array of objects');
-            }
-
-            for (let record of data) {
-                modelStorage.push(record);
-            }
-            resolve();
-        });
-    }
-
-    create<T extends IModel>(manager: IModelManager, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
-        return new Promise<ModelOperationResult<T, ICreateMeta>>((resolve) => {
-
-            let meta = manager.getModelMeta(model);
-            let modelStorage = this._getModelStorage(meta);
-
-            let record = {};
-            this._writeFields(manager, 'create', model, meta, record);
+        for (let record of data) {
             modelStorage.push(record);
-
-            result.result = manager.hydrate(meta.ctor, record);
-            resolve(result);
-
-        });
+        }
     }
 
-    update<T extends IModel>(manager: IModelManager, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
-        return new Promise<ModelOperationResult<T, IUpdateMeta>>((resolve) => {
+    async create<T extends IModel>(manager: IModelManager, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
 
-            if (!where) {
-                throw new Error('update() requires the \'where\' parameter');
-            }
+        let meta = manager.getModelMeta(model);
+        let modelStorage = this._getModelStorage(meta);
 
-            let meta = manager.getModelMeta(model);
-            let parser = new QueryParser(manager);
-            let queryNode = parser.getQueryNodeForQuery(meta.ctor, where);
-            let query = new InMemoryQuery(queryNode);
+        let record = {};
+        this._writeFields(manager, 'create', model, meta, record);
+        modelStorage.push(record);
 
-            let modelStorage = this._getModelStorage(meta);
-            let updateCount = 0;
-            for (let record of modelStorage) {
-                if (query.testRecord(record)) {
-                    this._writeFields(manager, 'update', model, meta, record, options.fields);
-                    updateCount++;
-                }
-            }
-            result.setMeta({ total_count: updateCount });
-            resolve(result);
-
-        });
+        result.result = manager.hydrate(meta.ctor, record);
+        return result;
     }
 
-    read<T extends IModel>(manager: IModelManager, model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
-        return new Promise<ModelOperationResult<T, IReadMeta>>((resolve, reject) => {
+    async update<T extends IModel>(manager: IModelManager, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+        if (!where) {
+            throw new Error('update() requires the \'where\' parameter');
+        }
 
-            let meta = manager.getModelMeta(model);
-            if (!where) {
-                throw new Error('read() requires the \'where\' parameter');
+        let meta = manager.getModelMeta(model);
+        let parser = new QueryParser(manager);
+        let queryNode = parser.getQueryNodeForQuery(meta.ctor, where);
+        let query = new InMemoryQuery(queryNode);
+
+        let modelStorage = this._getModelStorage(meta);
+        let updateCount = 0;
+        for (let record of modelStorage) {
+            if (query.testRecord(record)) {
+                this._writeFields(manager, 'update', model, meta, record, options.fields);
+                updateCount++;
             }
-            if (options.limit < 1) {
-                throw new Error('options.limit cannot be less than 1');
-            }
-            if (options.offset < 0) {
-                throw new Error('options.offset cannot be less than zero');
-            }
+        }
+        result.setMeta({ total_count: updateCount });
+        return result;
+    }
 
-            let modelStorage = this._getModelStorage(meta);
-            let parser = new QueryParser(manager);
-            let queryNode = parser.getQueryNodeForQuery(model, where);
-            let query = new InMemoryQuery(queryNode);
+    async read<T extends IModel>(manager: IModelManager, model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+        let meta = manager.getModelMeta(model);
+        if (!where) {
+            throw new Error('read() requires the \'where\' parameter');
+        }
+        if (options.limit < 1) {
+            throw new Error('options.limit cannot be less than 1');
+        }
+        if (options.offset < 0) {
+            throw new Error('options.offset cannot be less than zero');
+        }
 
-            const foreignKeyValues: {
-                [fieldName: string]: any[]
-            } = {};
+        let modelStorage = this._getModelStorage(meta);
+        let parser = new QueryParser(manager);
+        let queryNode = parser.getQueryNodeForQuery(model, where);
+        let query = new InMemoryQuery(queryNode);
 
-            // Populate scalar values and cache related model information
-            result.results = [];
-            for (let record of modelStorage) {
+        const foreignKeyValues: {
+            [fieldName: string]: any[]
+        } = {};
 
-                if (query.testRecord(record)) {
+        // Populate scalar values and cache related model information
+        result.results = [];
+        for (let record of modelStorage) {
 
-                    let modelInstance = manager.hydrate(model, record);
-                    result.results.push(modelInstance);
+            if (query.testRecord(record)) {
 
-                    if (options.related) {
-                        for (let fieldName of options.related) {
-                            let field = meta.fieldsByName[fieldName];
-                            let keyValue = record[fieldName];
+                let modelInstance = manager.hydrate(model, record);
+                result.results.push(modelInstance);
 
-                            if (field instanceof RelatedModelField) {
-                                if (!(fieldName in foreignKeyValues)) {
-                                    foreignKeyValues[fieldName] = [];
-                                }
-                                if (typeof keyValue != 'undefined'
-                                    && keyValue !== null
-                                    && foreignKeyValues[fieldName].indexOf(keyValue) == -1) {
-                                        foreignKeyValues[fieldName].push(keyValue);
-                                }
+                if (options.related) {
+                    for (let fieldName of options.related) {
+                        let field = meta.fieldsByName[fieldName];
+                        let keyValue = record[fieldName];
 
+                        if (field instanceof RelatedModelField) {
+                            if (!(fieldName in foreignKeyValues)) {
+                                foreignKeyValues[fieldName] = [];
                             }
+                            if (typeof keyValue != 'undefined'
+                                && keyValue !== null
+                                && foreignKeyValues[fieldName].indexOf(keyValue) == -1) {
+                                    foreignKeyValues[fieldName].push(keyValue);
+                            }
+
                         }
                     }
                 }
             }
+        }
 
-            if (options.related) {
-                console.log('foreignKeyVals', foreignKeyValues);
-            }
+        if (options.related) {
+            console.log('foreignKeyVals', foreignKeyValues);
+        }
 
-            if (options.order_by) {
-                result.results = sortRecords(result.results, options.order_by) as T[];
-                result.setMeta({ order_by: options.order_by });
-            }
-            result.setMeta({
-                offset: options.offset,
-                limit: options.limit,
-                total_count: result.results.length
-            });
-            result.results = result.results.slice(
-                result.meta.offset,
-                result.meta.offset + result.meta.limit);
-            resolve(result);
+        if (options.order_by) {
+            result.results = sortRecords(result.results, options.order_by) as T[];
+            result.setMeta({ order_by: options.order_by });
+        }
+        result.setMeta({
+            offset: options.offset,
+            limit: options.limit,
+            total_count: result.results.length
         });
+        result.results = result.results.slice(
+            result.meta.offset,
+            result.meta.offset + result.meta.limit);
+
+        return result;
     }
 
-    remove<T extends IModel>(manager: IModelManager, model: T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
-        return new Promise<ModelOperationResult<T, IRemoveMeta>>((resolve, reject) => {
+    async remove<T extends IModel>(manager: IModelManager, model: T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+        if (!where) {
+            throw new Error('remove() requires the \'where\' parameter');
+        }
 
-            if (!where) {
-                throw new Error('remove() requires the \'where\' parameter');
+        let meta = manager.getModelMeta(model);
+        let parser = new QueryParser(manager);
+        let queryNode = parser.getQueryNodeForQuery(meta.ctor, where);
+        let query = new InMemoryQuery(queryNode);
+
+        let modelStorage = this._getModelStorage(meta);
+        let removeCount = 0;
+        let newStorage = [];
+        for (let record of modelStorage) {
+            if (query.testRecord(record)) {
+                removeCount++;
             }
-
-            let meta = manager.getModelMeta(model);
-            let parser = new QueryParser(manager);
-            let queryNode = parser.getQueryNodeForQuery(meta.ctor, where);
-            let query = new InMemoryQuery(queryNode);
-
-            let modelStorage = this._getModelStorage(meta);
-            let removeCount = 0;
-            let newStorage = [];
-            for (let record of modelStorage) {
-                if (query.testRecord(record)) {
-                    removeCount++;
-                }
-                else {
-                    newStorage.push(record);
-                }
+            else {
+                newStorage.push(record);
             }
-            this._setModelStorage(meta, newStorage);
-            result.setMeta({ total_count: removeCount });
-            resolve(result);
-
-        });
+        }
+        this._setModelStorage(meta, newStorage);
+        result.setMeta({ total_count: removeCount });
+        return result;
     }
 
     exec<R>(manager: IModelManager, model: IModel, method: string, argObj: IExecArgs, result: ModelOperationResult<R, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
