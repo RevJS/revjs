@@ -104,14 +104,15 @@ export class InMemoryBackend implements IBackend {
                     for (let fieldName of options.related) {
                         let field = meta.fieldsByName[fieldName];
                         let keyValue = record[fieldName];
-
                         if (field instanceof RelatedModelField) {
                             if (!(fieldName in foreignKeyValues)) {
                                 foreignKeyValues[fieldName] = [];
                             }
+
                             if (typeof keyValue != 'undefined'
                                 && keyValue !== null
                                 && foreignKeyValues[fieldName].indexOf(keyValue) == -1) {
+
                                     foreignKeyValues[fieldName].push(keyValue);
                             }
 
@@ -121,8 +122,11 @@ export class InMemoryBackend implements IBackend {
             }
         }
 
-        if (options.related) {
-            console.log('foreignKeyVals', foreignKeyValues);
+        if (Object.keys(foreignKeyValues).length > 0) {
+            for (let fieldName in foreignKeyValues) {
+                // let field = meta.fieldsByName[fieldName] as RelatedModelField;
+                console.log('need to lookup values for', fieldName);
+            }
         }
 
         if (options.order_by) {
