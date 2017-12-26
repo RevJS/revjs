@@ -8,7 +8,7 @@ export class Company {
         name: string;
     @d.RelatedModelList({ model: 'Developer' })
         developers: Developer[];
-    
+
     constructor(data?: Partial<Company>) {
         Object.assign(this, data);
     }

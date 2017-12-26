@@ -16,6 +16,9 @@
   "author": "Russell Briggs <russ@paraflyer.net>",
   "license": "MIT",
   "typings": "lib/index.d.ts",
+  "dependencies": {
+    "tslib": "1.x"
+  },
   "devDependencies": {
     "run-bin": "^1.0.0"
   }

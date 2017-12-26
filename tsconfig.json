@@ -2,6 +2,7 @@
     "compilerOptions": {
         "declaration": true,
         "experimentalDecorators": true,
+        "importHelpers": true,
         "noImplicitAny": true,
         "suppressImplicitAnyIndexErrors": true,
         "noUnusedLocals": true,

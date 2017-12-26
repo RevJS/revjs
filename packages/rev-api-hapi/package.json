@@ -19,7 +19,8 @@
     "graphql-server-hapi": "^0.8.0",
     "hapi": "^16.0.0",
     "rev-api": "^0.0.1",
-    "rev-models": "^0.0.1"
+    "rev-models": "^0.0.1",
+    "tslib": "1.x"
   },
   "devDependencies": {
     "@types/hapi": "^16.0.0",
