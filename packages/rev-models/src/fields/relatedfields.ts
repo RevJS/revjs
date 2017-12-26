@@ -8,6 +8,11 @@ export interface IRelatedModelFieldOptions extends IFieldOptions {
     model: string;
 }
 
+export interface IRelatedModelListFieldOptions extends IFieldOptions {
+    model: string;
+    field: string;
+}
+
 export const DEFAULT_MODELLIST_FIELD_OPTIONS: IFieldOptions = {
     required: false
 };
@@ -46,11 +51,11 @@ export class RelatedModelField extends RelatedModelFieldBase {
 }
 
 export class RelatedModelListField extends RelatedModelFieldBase {
-    options: IRelatedModelFieldOptions;
+    options: IRelatedModelListFieldOptions;
 
     constructor(
             name: string,
-            options: IRelatedModelFieldOptions) {
+            options: IRelatedModelListFieldOptions) {
 
         // RecordListFields should not be required by default
         const opts = Object.assign({}, DEFAULT_MODELLIST_FIELD_OPTIONS, options);
@@ -59,6 +64,9 @@ export class RelatedModelListField extends RelatedModelFieldBase {
 
         if (!options.model || typeof options.model != 'string') {
             throw new Error('RelatedModelListField Error: options.model must be a non-empty string');
+        }
+        if (!options.field || typeof options.field != 'string') {
+            throw new Error('RelatedModelListField Error: options.field must be a non-empty string');
         }
 
         this.validators.push(validators.modelListClassValidator);

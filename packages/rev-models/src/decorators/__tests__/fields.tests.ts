@@ -140,7 +140,7 @@ describe('rev.decorators.fields', () => {
 
         it('ReccordListField', () => {
             class MyClass {
-                @d.RelatedModelList({ model: 'TestRelatedModel' })
+                @d.RelatedModelList({ model: 'TestRelatedModel', field: 'foreignKeyField' })
                     test: string;
             }
             expectFieldMeta(MyClass, 'test', f.RelatedModelListField);

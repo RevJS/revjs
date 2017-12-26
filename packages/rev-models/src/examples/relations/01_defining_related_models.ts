@@ -23,7 +23,7 @@ export class Developer extends BaseModel<Developer> {
         id: number;
     @rev.TextField({label: 'Name'})
         name: string;
-    @rev.RelatedModelList({ model: 'Job' })
+    @rev.RelatedModelList({ model: 'Job', field: 'developer' })
         jobs: Job[];
 
 }

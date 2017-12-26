@@ -18,7 +18,7 @@ class TestModel {
         name: any;
     @d.RelatedModel({ model: 'TestRelatedModel' })
         model: any;
-    @d.RelatedModelList({ model: 'TestRelatedModel' })
+    @d.RelatedModelList({ model: 'TestRelatedModel', field: 'field' })
         modelList: any;
 }
 

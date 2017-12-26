@@ -1,4 +1,4 @@
-import { RelatedModelField, RelatedModelListField, IRelatedModelFieldOptions, DEFAULT_MODELLIST_FIELD_OPTIONS } from '../relatedfields';
+import { RelatedModelField, RelatedModelListField, IRelatedModelFieldOptions, DEFAULT_MODELLIST_FIELD_OPTIONS, IRelatedModelListFieldOptions } from '../relatedfields';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { Field, DEFAULT_FIELD_OPTIONS } from '../field';
 import { requiredValidator, modelClassValidator, modelListClassValidator, modelPrimaryKeyValidator } from '../../validation/validators';
@@ -151,8 +151,9 @@ describe('rev.fields.relatedmodelfields', () => {
     });
 
     describe('RecordListField', () => {
-        const testOpts: IRelatedModelFieldOptions = {
-            model: 'TestRelatedModel'
+        const testOpts: IRelatedModelListFieldOptions = {
+            model: 'TestRelatedModel',
+            field: 'someField'
         };
 
         it('creates a field with properties as expected', () => {
@@ -174,7 +175,8 @@ describe('rev.fields.relatedmodelfields', () => {
         it('throws if passed model is not a string', () => {
             expect(() => {
                 new RelatedModelListField('value', {
-                    model: 22 as any
+                    model: 22 as any,
+                    field: 'field'
                 });
             }).to.throw('options.model must be a non-empty string');
         });
@@ -182,26 +184,45 @@ describe('rev.fields.relatedmodelfields', () => {
         it('throws if passed model is an empty string', () => {
             expect(() => {
                 new RelatedModelListField('value', {
-                    model: ''
+                    model: '',
+                    field: 'field'
                 });
             }).to.throw('options.model must be a non-empty string');
         });
 
+        it('throws if passed field is not a string', () => {
+            expect(() => {
+                new RelatedModelListField('value', {
+                    model: 'model',
+                    field: 22 as any
+                });
+            }).to.throw('options.field must be a non-empty string');
+        });
+
+        it('throws if passed field is an empty string', () => {
+            expect(() => {
+                new RelatedModelListField('value', {
+                    model: 'model',
+                    field: ''
+                });
+            }).to.throw('options.field must be a non-empty string');
+        });
+
         it('adds the just the recordListClassValidator if options.required is false', () => {
-            let test = new RelatedModelListField('value', {model: 'TestRelatedModel', required: false });
+            let test = new RelatedModelListField('value', {model: 'TestRelatedModel', field: 'field', required: false });
             expect(test.validators.length).to.equal(1);
             expect(test.validators[0]).to.equal(modelListClassValidator);
         });
 
         it('adds the required validator if options.required is true', () => {
-            let test = new RelatedModelListField('value', {model: 'TestRelatedModel', required: true });
+            let test = new RelatedModelListField('value', {model: 'TestRelatedModel', field: 'field', required: true });
             expect(test.validators.length).to.equal(2);
             expect(test.validators[0]).to.equal(requiredValidator);
             expect(test.validators[1]).to.equal(modelListClassValidator);
         });
 
         it('successfully validates a record', () => {
-            let test = new RelatedModelListField('value', {model: 'TestRelatedModel'});
+            let test = new RelatedModelListField('value', {model: 'TestRelatedModel', field: 'field'});
             let model1 = new TestRelatedModel();
             let model2 = new TestRelatedModel();
             model1.name = 'Fred';
@@ -212,28 +233,28 @@ describe('rev.fields.relatedmodelfields', () => {
         });
 
         it('successfully validates an undefined value if field not required', () => {
-            let test = new RelatedModelListField('value', {model: 'TestRelatedModel', required: false });
+            let test = new RelatedModelListField('value', {model: 'TestRelatedModel', field: 'field', required: false });
             testModel.value = undefined;
             return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.true; });
         });
 
         it('does not validate an undefined value if field is required', () => {
-            let test = new RelatedModelListField('value', {model: 'TestRelatedModel', required: true });
+            let test = new RelatedModelListField('value', {model: 'TestRelatedModel', field: 'field', required: true });
             testModel.value = undefined;
             return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate a record of the wrong class', () => {
-            let test = new RelatedModelListField('value', {model: 'TestRelatedModel'});
+            let test = new RelatedModelListField('value', {model: 'TestRelatedModel', field: 'field'});
             testModel.value = [new TestUnrelatedModel()];
             return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });
         });
 
         it('does not validate a plain instance of a model', () => {
-            let test = new RelatedModelListField('value', {model: 'TestRelatedModel'});
+            let test = new RelatedModelListField('value', {model: 'TestRelatedModel', field: 'field'});
             testModel.value = new TestRelatedModel();
             return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.false; });

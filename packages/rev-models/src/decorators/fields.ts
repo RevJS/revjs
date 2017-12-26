@@ -116,7 +116,7 @@ export function RelatedModel(options: fld.IRelatedModelFieldOptions)
     };
 }
 
-export function RelatedModelList(options: fld.IRelatedModelFieldOptions)
+export function RelatedModelList(options: fld.IRelatedModelListFieldOptions)
 {
     return function(target: any, propName: string) {
         addFieldMeta(target, propName, new fld.RelatedModelListField(propName, options));

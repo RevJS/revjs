@@ -6,7 +6,7 @@ export class Company {
         id: number;
     @d.TextField()
         name: string;
-    @d.RelatedModelList({ model: 'Developer' })
+    @d.RelatedModelList({ model: 'Developer', field: 'company' })
         developers: Developer[];
 
     constructor(data?: Partial<Company>) {
