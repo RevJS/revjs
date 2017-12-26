@@ -8,11 +8,15 @@ import { MockBackend } from './mock-backend';
 import { ModelManager } from '../../models/manager';
 import { IModelMeta } from '../../models/types';
 
+class TestRelatedModel {}
+
 class TestModel {
     @d.TextField()
         name: string;
     @d.IntegerField()
         age: number;
+    @d.RelatedModel({ model: 'TestRelatedModel' })
+        related: TestRelatedModel;
 }
 
 class TestModel2 {}
@@ -113,6 +117,26 @@ describe('rev.operations.read()', () => {
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain(`field 'star_sign' does not exist in model`);
+            });
+    });
+
+    it('rejects if "related" option does not match a field', () => {
+        return rwRead.read(manager, TestModel, whereClause, {
+            related: ['flibble']
+        })
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain(`field 'flibble' does not exist in model`);
+            });
+    });
+
+    it('rejects if "related" option does not match a related model field', () => {
+        return rwRead.read(manager, TestModel, whereClause, {
+            related: ['name']
+        })
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain(`field 'name' is not a related model field`);
             });
     });
 
