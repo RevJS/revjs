@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { ModelManager } from '../../../models/manager';
 import { InMemoryBackend } from '../backend';
 import { ModelOperationResult } from '../../../operations/operationresult';
-import { Company, Developer, testCompanyData, testDeveloperData } from './testdata.related';
+import { Company, Developer, testCompanyData, testDeveloperData, City, testCityData } from './testdata.related';
 import { DEFAULT_READ_OPTIONS } from '../../../operations/read';
 import { IReadMeta } from '../../../models/types';
 
@@ -19,19 +19,19 @@ describe('rev.backends.inmemory - read() related field tests', () => {
     let companyReadResult: ModelOperationResult<Company, IReadMeta>;
     let developerReadResult: ModelOperationResult<Developer, IReadMeta>;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         manager = new ModelManager();
         backend = new InMemoryBackend();
         manager.registerBackend('default', backend);
         manager.register(Company);
         manager.register(Developer);
+        manager.register(City);
         companyReadResult = new ModelOperationResult<Company, IReadMeta>({operation: 'read'});
         developerReadResult = new ModelOperationResult<Developer, IReadMeta>({operation: 'read'});
 
-        return backend.load(manager, Company, testCompanyData)
-        .then(() => {
-            return backend.load(manager, Developer, testDeveloperData);
-        });
+        await backend.load(manager, Company, testCompanyData);
+        await backend.load(manager, Developer, testDeveloperData);
+        await backend.load(manager, City, testCityData);
     });
 
     describe('read() - without "related" option specified', () => {
@@ -66,9 +66,9 @@ describe('rev.backends.inmemory - read() related field tests', () => {
 
     });
 
-    describe('read() - with "related" option specifying a RelatedModel field with a single primary key', () => {
+    describe('read() - with "related" option specifying RelatedModel fields', () => {
 
-        it('returns results with RelatedModel field hydrated', () => {
+        it('returns results with one RelatedModel field hydrated', () => {
             const expectedCompany1 = new Company(testCompanyData[0]);
             const expectedCompany2 = new Company(testCompanyData[1]);
             return backend.read(manager, Developer, {}, developerReadResult, getReadOpts({
@@ -85,6 +85,45 @@ describe('rev.backends.inmemory - read() related field tests', () => {
                         { id: 5, name: 'Captain JavaScript', company: expectedCompany2 },
                         { id: 6, name: 'Kim Jong Fail', company: null }
                     ]);
+                });
+        });
+
+        it('returns results with two RelatedModel fields hydrated', () => {
+            const expectedCompany1 = new Company(testCompanyData[0]);
+            const expectedCompany2 = new Company(testCompanyData[1]);
+            const expectedCity1 = new Company(testCityData[0]);
+            const expectedCity2 = new Company(testCityData[1]);
+            return backend.read(manager, Developer, {}, developerReadResult, getReadOpts({
+                related: [ 'company', 'city' ]
+            }))
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.result).to.be.undefined;
+                    expect(res.results).to.deep.equal([
+                        { id: 1, name: 'Billy Devman', company: expectedCompany1, city: expectedCity1 },
+                        { id: 2, name: 'Jane Programmer', company: expectedCompany1, city: null  },
+                        { id: 3, name: 'Nerdy McNerdface', company: expectedCompany1, city: expectedCity2  },
+                        { id: 4, name: 'Bilbo Baggins', company: expectedCompany2, city: null  },
+                        { id: 5, name: 'Captain JavaScript', company: expectedCompany2, city: expectedCity1  },
+                        { id: 6, name: 'Kim Jong Fail', company: null, city: 4  }
+                    ]);
+                });
+        });
+
+        it('returns the plain foreign key value if it does not match a record', () => {
+            return backend.read(manager, Developer, {
+                id: 6
+            }, developerReadResult, getReadOpts({
+                related: [ 'city' ]
+            }))
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.result).to.be.undefined;
+                    expect(res.results[0]).to.deep.equal({
+                        id: 6,
+                        name: 'Kim Jong Fail',
+                        city: 4
+                    });
                 });
         });
 
