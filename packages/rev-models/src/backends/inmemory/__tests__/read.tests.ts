@@ -195,6 +195,24 @@ describe('rev.backends.inmemory', () => {
                 });
         });
 
+        it('returns raw values when options.raw_values is set', () => {
+            return backend.read(manager, TestModel, {}, readResult, getReadOpts({
+                raw_values: ['id']
+            }))
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.result).to.be.undefined;
+                    expect(res.results).to.have.length(5);
+                    expect(res.results[0]).to.be.instanceof(TestModel);
+                    expect(res.results[1]).to.be.instanceof(TestModel);
+                    expect(res.results[2]).to.be.instanceof(TestModel);
+                    expect(res.meta.raw_values).to.exist;
+                    expect(res.meta.raw_values).to.have.length(5);
+                    expect(res.meta.raw_values[1].id).to.equal(1);
+                    expect(res.meta.raw_values[2].id).to.equal(2);
+                });
+        });
+
         it('throws an error if where clause is not provided', () => {
             return backend.read(manager, TestModel, null, readResult, getReadOpts())
                 .then(() => { throw new Error('expected to reject'); })

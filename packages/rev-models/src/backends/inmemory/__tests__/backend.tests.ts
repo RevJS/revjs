@@ -16,7 +16,6 @@ describe('rev.backends.inmemory', () => {
 
     let manager: ModelManager;
     let backend: InMemoryBackend;
-    let loadResult: ModelOperationResult<TestModel, null>;
     let readResult: ModelOperationResult<TestModel, IReadMeta>;
 
     beforeEach(() => {
@@ -24,7 +23,6 @@ describe('rev.backends.inmemory', () => {
         backend = new InMemoryBackend();
         manager.registerBackend('default', backend);
         manager.register(TestModel);
-        loadResult = new ModelOperationResult<TestModel, null>({operation: 'load'});
         readResult = new ModelOperationResult<TestModel, IReadMeta>({operation: 'read'});
     });
 

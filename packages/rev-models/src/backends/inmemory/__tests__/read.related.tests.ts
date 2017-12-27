@@ -12,7 +12,7 @@ function getReadOpts(options?: object) {
     return Object.assign({}, DEFAULT_READ_OPTIONS, options);
 }
 
-describe.only('rev.backends.inmemory - read() related field tests', () => {
+describe('rev.backends.inmemory - read() related field tests', () => {
 
     let manager: ModelManager;
     let backend: InMemoryBackend;
