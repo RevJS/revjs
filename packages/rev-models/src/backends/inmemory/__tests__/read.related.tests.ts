@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { ModelManager } from '../../../models/manager';
 import { InMemoryBackend } from '../backend';
 import { ModelOperationResult } from '../../../operations/operationresult';
-import { Company, Developer, testCompanyData, testDeveloperData, City, testCityData } from './testdata.related';
+import { Company, Developer, testCompanyData, testDeveloperData, City, testCityData, Department, testDepartmentData } from './testdata.related';
 import { DEFAULT_READ_OPTIONS } from '../../../operations/read';
 import { IReadMeta } from '../../../models/types';
 
@@ -26,12 +26,14 @@ describe.only('rev.backends.inmemory - read() related field tests', () => {
         manager.register(Company);
         manager.register(Developer);
         manager.register(City);
+        manager.register(Department);
         companyReadResult = new ModelOperationResult<Company, IReadMeta>({operation: 'read'});
         developerReadResult = new ModelOperationResult<Developer, IReadMeta>({operation: 'read'});
 
         await backend.load(manager, Company, testCompanyData);
         await backend.load(manager, Developer, testDeveloperData);
         await backend.load(manager, City, testCityData);
+        await backend.load(manager, Department, testDepartmentData);
     });
 
     describe('read() - without "related" option specified', () => {
@@ -59,7 +61,8 @@ describe.only('rev.backends.inmemory - read() related field tests', () => {
                     expect(res.result).to.be.undefined;
                     expect(res.results).to.deep.equal([
                         { id: 1, name: 'AccelDev Inc.' },
-                        { id: 2, name: 'Programs R Us' }
+                        { id: 2, name: 'Programs R Us' },
+                        { id: 3, name: 'AwesomeSoft' },
                     ]);
                 });
         });
@@ -67,10 +70,12 @@ describe.only('rev.backends.inmemory - read() related field tests', () => {
     });
 
     describe('read() - with "related" option specifying RelatedModel fields', () => {
+        const expectedCompany1 = new Company({ id: 1, name: 'AccelDev Inc.' });
+        const expectedCompany2 = new Company({ id: 2, name: 'Programs R Us' });
+        const expectedCity1 = new City(testCityData[0]);
+        const expectedCity2 = new Company(testCityData[1]);
 
         it('returns results with one RelatedModel field hydrated', () => {
-            const expectedCompany1 = new Company(testCompanyData[0]);
-            const expectedCompany2 = new Company(testCompanyData[1]);
             return backend.read(manager, Developer, {}, developerReadResult, getReadOpts({
                 related: [ 'company' ]
             }))
@@ -89,10 +94,6 @@ describe.only('rev.backends.inmemory - read() related field tests', () => {
         });
 
         it('returns results with two RelatedModel fields hydrated', () => {
-            const expectedCompany1 = new Company(testCompanyData[0]);
-            const expectedCompany2 = new Company(testCompanyData[1]);
-            const expectedCity1 = new Company(testCityData[0]);
-            const expectedCity2 = new Company(testCityData[1]);
             return backend.read(manager, Developer, {}, developerReadResult, getReadOpts({
                 related: [ 'company', 'city' ]
             }))
@@ -132,22 +133,121 @@ describe.only('rev.backends.inmemory - read() related field tests', () => {
     describe('read() - with "related" option specifying RelatedModelList fields', () => {
 
         it('returns results with one RelatedModelList field hydrated', () => {
-            return backend.read(manager, Company, {
-                id: 2
-            }, companyReadResult, getReadOpts({
+            return backend.read(manager, Company, {}, companyReadResult, getReadOpts({
                 related: [ 'developers' ]
             }))
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
-                    expect(res.results).to.deep.equal([{
-                        id: 2,
-                        name: 'Programs R Us',
-                        developers: [
-                            { id: 4, name: 'Bilbo Baggins' },
-                            { id: 5, name: 'Captain JavaScript' }
-                        ]
-                    }]);
+                    expect(res.results).to.deep.equal([
+                        {
+                            id: 1,
+                            name: 'AccelDev Inc.',
+                            developers: [
+                                { id: 1, name: 'Billy Devman' },
+                                { id: 2, name: 'Jane Programmer'},
+                                { id: 3, name: 'Nerdy McNerdface' }
+                            ]
+                        },
+                        {
+                            id: 2,
+                            name: 'Programs R Us',
+                            developers: [
+                                { id: 4, name: 'Bilbo Baggins' },
+                                { id: 5, name: 'Captain JavaScript' }
+                            ]
+                        },
+                        {
+                            id: 3,
+                            name: 'AwesomeSoft',
+                            developers: []
+                        }
+                    ]);
+                });
+        });
+
+        it('returns results with two RelatedModelList fields hydrated', () => {
+            return backend.read(manager, Company, {}, companyReadResult, getReadOpts({
+                related: [ 'departments', 'developers' ]
+            }))
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.result).to.be.undefined;
+                    expect(res.results).to.deep.equal([
+                        {
+                            id: 1,
+                            name: 'AccelDev Inc.',
+                            departments: [
+                                { id: 1, name: 'Front End Department'},
+                                { id: 2, name: 'Backend Department' }
+                            ],
+                            developers: [
+                                { id: 1, name: 'Billy Devman' },
+                                { id: 2, name: 'Jane Programmer'},
+                                { id: 3, name: 'Nerdy McNerdface' }
+                            ]
+                        },
+                        {
+                            id: 2,
+                            name: 'Programs R Us',
+                            departments: [
+                                { id: 3, name: 'The Cheiftans'}
+                            ],
+                            developers: [
+                                { id: 4, name: 'Bilbo Baggins' },
+                                { id: 5, name: 'Captain JavaScript' }
+                            ]
+                        },
+                        {
+                            id: 3,
+                            name: 'AwesomeSoft',
+                            departments: [
+                                { id: 4, name: 'Sales'},
+                                { id: 5, name: 'Research & Development'},
+                            ],
+                            developers: []
+                        }
+                    ]);
+                });
+        });
+    });
+
+    describe('read() - with "related" option specifying RelatedModel and RelatedModelList fields', () => {
+
+        it('returns results with RelatedModel and RelatedModelList fields hydrated', () => {
+            return backend.read(manager, Company, {}, companyReadResult, getReadOpts({
+                related: [ 'developers', 'leadDeveloper' ]
+            }))
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.result).to.be.undefined;
+                    expect(res.results).to.deep.equal([
+                        {
+                            id: 1,
+                            name: 'AccelDev Inc.',
+                            developers: [
+                                { id: 1, name: 'Billy Devman' },
+                                { id: 2, name: 'Jane Programmer'},
+                                { id: 3, name: 'Nerdy McNerdface' }
+                            ],
+                            leadDeveloper: { id: 3, name: 'Nerdy McNerdface' }
+                        },
+                        {
+                            id: 2,
+                            name: 'Programs R Us',
+                            developers: [
+                                { id: 4, name: 'Bilbo Baggins' },
+                                { id: 5, name: 'Captain JavaScript' }
+                            ],
+                            leadDeveloper: { id: 5, name: 'Captain JavaScript' }
+                        },
+                        {
+                            id: 3,
+                            name: 'AwesomeSoft',
+                            developers: [],
+                            leadDeveloper: null
+                        }
+                    ]);
                 });
         });
     });

@@ -33,6 +33,7 @@
      "no-submodule-imports": false,
      "object-literal-shorthand": false,
      "member-access": [false],
+     "prefer-conditional-expression": false,
      "prefer-const": false,
      "prefer-for-of": false,
      "no-unused-expression": [false],

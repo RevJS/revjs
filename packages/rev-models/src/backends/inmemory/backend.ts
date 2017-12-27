@@ -1,6 +1,6 @@
 
 import { IBackend } from '../';
-import { IModel, IModelMeta, IModelManager, ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IReadMeta, IReadOptions, IRemoveMeta, IRemoveOptions, IExecArgs, IExecMeta, IExecOptions } from '../../models/types';
+import { IModel, IModelMeta, IModelManager, ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IReadMeta, IReadOptions, IRemoveMeta, IRemoveOptions, IExecArgs, IExecMeta, IExecOptions, IRawValues } from '../../models/types';
 import { ModelOperationResult, IModelOperationResult } from '../../operations/operationresult';
 import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
@@ -105,6 +105,7 @@ export class InMemoryBackend implements IBackend {
 
         const primaryKeyValues: any[] = [];
         const foreignKeyValues: IForeignKeyValues = {};
+        const rawValues: IRawValues = [];
 
         // Populate scalar values and cache related model information
         result.results = [];
@@ -136,6 +137,14 @@ export class InMemoryBackend implements IBackend {
                         }
                     }
                 }
+
+                if (options.raw_values) {
+                    let rawValueObj = {};
+                    for (let fieldName of options.raw_values) {
+                        rawValueObj[fieldName] = record[fieldName];
+                    }
+                    rawValues.push(rawValueObj);
+                }
             }
         }
 
@@ -147,20 +156,32 @@ export class InMemoryBackend implements IBackend {
             ]);
             const [relatedModelInstances, relatedModelListInstances] = related;
 
-            console.log('LIST', relatedModelListInstances);
-
             for (let instance of result.results) {
                 for (let fieldName of options.related) {
-                    if (instance[fieldName] !== null) {
-                        if (relatedModelInstances[fieldName]
+                    let field = meta.fieldsByName[fieldName];
+                    if (field instanceof RelatedModelField) {
+                        if (instance[fieldName] !== null
+                            && relatedModelInstances[fieldName]
                             && relatedModelInstances[fieldName][instance[fieldName]]) {
                                 instance[fieldName] = relatedModelInstances[fieldName][instance[fieldName]];
+                        }
+                    }
+                    else if (field instanceof RelatedModelListField) {
+                        if (relatedModelListInstances[fieldName]
+                            && relatedModelListInstances[fieldName][instance[meta.primaryKey]]) {
+                                instance[fieldName] = relatedModelListInstances[fieldName][instance[meta.primaryKey]];
+                        }
+                        else {
+                            instance[fieldName] = [];
                         }
                     }
                 }
             }
         }
 
+        if (options.raw_values) {
+            result.setMeta({ raw_values: rawValues });
+        }
         if (options.order_by) {
             result.results = sortRecords(result.results, options.order_by) as T[];
             result.setMeta({ order_by: options.order_by });
@@ -302,9 +323,11 @@ export class InMemoryBackend implements IBackend {
                         relatedMeta.ctor,
                         {
                             [field.options.field]: { $in: primaryKeyValues }
+                        },
+                        {
+                            raw_values: [field.options.field]
                         }
-                    )); // NOTE: Currently limited to the default number of results
-
+                    )); // NOTE: Number of results limited to the default number of results
             }
         }
 
@@ -313,18 +336,13 @@ export class InMemoryBackend implements IBackend {
         let results = await Promise.all(modelListFieldPromises);
         modelListFields.forEach((fieldName, i) => {
             relatedModelListInstances[fieldName] = {};
-
-            console.log('FK', modelListFields, modelListFieldFKs);
-
-            for (let instance of results[i].results) {
-                console.log('PKVal', instance[modelListFieldFKs[i]]);
-                if (!relatedModelListInstances[fieldName][instance[modelListFieldFKs[i]]]) {
-                    relatedModelListInstances[fieldName][instance[modelListFieldFKs[i]]] = [];
+            results[i].results.forEach((instance, resultIdx) => {
+                let fkValue = results[i].meta.raw_values[resultIdx][modelListFieldFKs[i]];
+                if (!relatedModelListInstances[fieldName][fkValue]) {
+                    relatedModelListInstances[fieldName][fkValue] = [];
                 }
-                relatedModelListInstances[fieldName][instance[modelListFieldFKs[i]]].push(instance);
-            }
-
-            console.log('instances', relatedModelListInstances[fieldName]);
+                relatedModelListInstances[fieldName][fkValue].push(instance);
+            });
         });
 
         return relatedModelListInstances;

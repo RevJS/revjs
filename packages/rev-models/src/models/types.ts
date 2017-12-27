@@ -57,13 +57,19 @@ export interface IReadOptions {
     limit?: number;
     offset?: number;
     related?: string[];
+    raw_values?: string[];
 }
+
+export type IRawValues = Array<{
+    [fieldName: string]: any;
+}>;
 
 export interface IReadMeta extends IOperationMeta {
     order_by?: string[];
     limit: number;
     offset: number;
     total_count: number;
+    raw_values?: IRawValues;
 }
 
 export interface IExecArgs {
