@@ -5,15 +5,21 @@ import { ModelOperationResult, IModelOperationResult } from '../../operations/op
 import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
 import { sortRecords } from './sort';
-import { AutoNumberField, RelatedModelField } from '../../fields';
+import { AutoNumberField, RelatedModelField, RelatedModelListField } from '../../fields';
 
 interface IForeignKeyValues {
     [fieldName: string]: any[];
 }
 
-interface IForeignKeyInstances {
+interface IRelatedModelInstances {
     [fieldName: string]: {
         [keyValue: string]: IModel
+    };
+}
+
+interface IRelatedModelListInstances {
+    [fieldName: string]: {
+        [keyValue: string]: IModel[]
     };
 }
 
@@ -97,6 +103,7 @@ export class InMemoryBackend implements IBackend {
         let queryNode = parser.getQueryNodeForQuery(model, where);
         let query = new InMemoryQuery(queryNode);
 
+        const primaryKeyValues: any[] = [];
         const foreignKeyValues: IForeignKeyValues = {};
 
         // Populate scalar values and cache related model information
@@ -107,6 +114,7 @@ export class InMemoryBackend implements IBackend {
 
                 let modelInstance = manager.hydrate(model, record);
                 result.results.push(modelInstance);
+                primaryKeyValues.push(modelInstance[meta.primaryKey]);
 
                 if (options.related) {
                     for (let fieldName of options.related) {
@@ -132,15 +140,21 @@ export class InMemoryBackend implements IBackend {
         }
 
         if (options.related) {
-            // Add foreign key model instances
-            const foreignKeyInstances = await this._getForeignKeyInstances(manager, meta, foreignKeyValues);
+            // Get related record data
+            const related = await Promise.all([
+                this._getRelatedModelInstances(manager, meta, foreignKeyValues),
+                this._getRelatedModelListInstances(manager, meta, primaryKeyValues, options.related)
+            ]);
+            const [relatedModelInstances, relatedModelListInstances] = related;
+
+            console.log('LIST', relatedModelListInstances);
 
             for (let instance of result.results) {
                 for (let fieldName of options.related) {
                     if (instance[fieldName] !== null) {
-                        if (foreignKeyInstances[fieldName]
-                            && foreignKeyInstances[fieldName][instance[fieldName]]) {
-                                instance[fieldName] = foreignKeyInstances[fieldName][instance[fieldName]];
+                        if (relatedModelInstances[fieldName]
+                            && relatedModelInstances[fieldName][instance[fieldName]]) {
+                                instance[fieldName] = relatedModelInstances[fieldName][instance[fieldName]];
                         }
                     }
                 }
@@ -234,7 +248,7 @@ export class InMemoryBackend implements IBackend {
         }
     }
 
-    private async _getForeignKeyInstances(manager: IModelManager, meta: IModelMeta<any>, foreignKeyValues: IForeignKeyValues) {
+    private async _getRelatedModelInstances(manager: IModelManager, meta: IModelMeta<any>, foreignKeyValues: IForeignKeyValues) {
 
         const foreignKeyFields: string[] = [];
         const foreignKeyPKFields: string[] = [];
@@ -258,17 +272,62 @@ export class InMemoryBackend implements IBackend {
             }
         }
 
-        const foreignKeyInstances: IForeignKeyInstances = {};
+        const relatedModelInstances: IRelatedModelInstances = {};
 
         let results = await Promise.all(foreignKeyPromises);
         foreignKeyFields.forEach((fieldName, i) => {
-            foreignKeyInstances[fieldName] = {};
+            relatedModelInstances[fieldName] = {};
             for (let instance of results[i].results) {
-                foreignKeyInstances[fieldName][instance[foreignKeyPKFields[i]]] = instance;
+                relatedModelInstances[fieldName][instance[foreignKeyPKFields[i]]] = instance;
             }
         });
 
-        return foreignKeyInstances;
+        return relatedModelInstances;
+    }
+
+    private async _getRelatedModelListInstances(manager: IModelManager, meta: IModelMeta<any>, primaryKeyValues: string[], fieldNames: string[]) {
+
+        const modelListFields: string[] = [];
+        const modelListFieldFKs: string[] = [];
+        const modelListFieldPromises: Array<Promise<IModelOperationResult<any, any>>> = [];
+
+        for (let fieldName of fieldNames) {
+            let field = meta.fieldsByName[fieldName];
+            if (field instanceof RelatedModelListField) {
+                let relatedMeta = manager.getModelMeta(field.options.model);
+                modelListFields.push(fieldName);
+                modelListFieldFKs.push(field.options.field);
+                modelListFieldPromises.push(
+                    manager.read(
+                        relatedMeta.ctor,
+                        {
+                            [field.options.field]: { $in: primaryKeyValues }
+                        }
+                    )); // NOTE: Currently limited to the default number of results
+
+            }
+        }
+
+        const relatedModelListInstances: IRelatedModelListInstances = {};
+
+        let results = await Promise.all(modelListFieldPromises);
+        modelListFields.forEach((fieldName, i) => {
+            relatedModelListInstances[fieldName] = {};
+
+            console.log('FK', modelListFields, modelListFieldFKs);
+
+            for (let instance of results[i].results) {
+                console.log('PKVal', instance[modelListFieldFKs[i]]);
+                if (!relatedModelListInstances[fieldName][instance[modelListFieldFKs[i]]]) {
+                    relatedModelListInstances[fieldName][instance[modelListFieldFKs[i]]] = [];
+                }
+                relatedModelListInstances[fieldName][instance[modelListFieldFKs[i]]].push(instance);
+            }
+
+            console.log('instances', relatedModelListInstances[fieldName]);
+        });
+
+        return relatedModelListInstances;
     }
 
 }

@@ -12,7 +12,7 @@ function getReadOpts(options?: object) {
     return Object.assign({}, DEFAULT_READ_OPTIONS, options);
 }
 
-describe('rev.backends.inmemory - read() related field tests', () => {
+describe.only('rev.backends.inmemory - read() related field tests', () => {
 
     let manager: ModelManager;
     let backend: InMemoryBackend;
@@ -127,6 +127,29 @@ describe('rev.backends.inmemory - read() related field tests', () => {
                 });
         });
 
+    });
+
+    describe('read() - with "related" option specifying RelatedModelList fields', () => {
+
+        it('returns results with one RelatedModelList field hydrated', () => {
+            return backend.read(manager, Company, {
+                id: 2
+            }, companyReadResult, getReadOpts({
+                related: [ 'developers' ]
+            }))
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.result).to.be.undefined;
+                    expect(res.results).to.deep.equal([{
+                        id: 2,
+                        name: 'Programs R Us',
+                        developers: [
+                            { id: 4, name: 'Bilbo Baggins' },
+                            { id: 5, name: 'Captain JavaScript' }
+                        ]
+                    }]);
+                });
+        });
     });
 
 });
