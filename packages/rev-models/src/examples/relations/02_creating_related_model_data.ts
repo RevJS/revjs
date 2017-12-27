@@ -43,4 +43,12 @@ export async function createJobs() {
     });
     await models.create(job2);
 
+    const job3 = new Job({
+        developer: null,
+        company: company2,
+        job_title: 'Principal VB.Net Engineer',
+        date: '2017-05-12'
+    });
+    await models.create(job3);
+
 }

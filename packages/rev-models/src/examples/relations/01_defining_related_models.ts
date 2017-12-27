@@ -30,7 +30,7 @@ export class Developer extends BaseModel<Developer> {
 
 export class Job extends BaseModel<Job> {
 
-    @rev.RelatedModel({ model: 'Developer' })
+    @rev.RelatedModel({ model: 'Developer', required: false })
         developer: Developer;
     @rev.RelatedModel({ model: 'Company' })
         company: Company;
