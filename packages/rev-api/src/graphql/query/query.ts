@@ -28,7 +28,7 @@ export function getQueryConfig(api: IGraphQLApi): GraphQLObjectTypeConfig<any, a
                 args: {
                     where: { type: GraphQLJSON }
                 },
-                resolve: (value: any, args: any, context: any): Promise<any> => {
+                resolve: (root: any, args: any, context: any, info: any): Promise<any> => {
                     let modelMeta = models.getModelMeta(modelName);
 
                     return models.read(modelMeta.ctor, {})

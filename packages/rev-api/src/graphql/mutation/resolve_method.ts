@@ -10,7 +10,7 @@ export function getMethodResolver(manager: IModelApiManager, modelName: string, 
     let modelMeta = models.getModelMeta(modelName);
     let methodMeta = meta.methods[methodName];
 
-    return (value: any, args: any): Promise<IModelOperationResult<any, any>> => {
+    return (root: any, args: any, context: any, info: any): Promise<IModelOperationResult<any, any>> => {
 
         let modelData = args ? args.model : undefined;
         let instance = models.hydrate(modelMeta.ctor, modelData);

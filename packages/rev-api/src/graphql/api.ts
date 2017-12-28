@@ -64,15 +64,15 @@ export class GraphQLApi implements IGraphQLApi {
                     if (scalarType) {
                         fieldConfig[field.name] = {
                             type: scalarType,
-                            resolve: (value: any, args: any, context: any) => {
-                                return value[field.name];
+                            resolve: (root: any, args: any, context: any, info: any) => {
+                                return root[field.name];
                             }
                         };
                     }
                     else if (field instanceof fields.RelatedModelField) {
                         fieldConfig[field.name] = {
                             type: this.modelObjectTypes[field.options.model],
-                            resolve: (value: any, args: any, context: any) => {
+                            resolve: (root: any, args: any, context: any, info: any) => {
                                 return {};
                             }
                         };
@@ -80,7 +80,7 @@ export class GraphQLApi implements IGraphQLApi {
                     else if (field instanceof fields.RelatedModelListField) {
                         fieldConfig[field.name] = {
                             type: new GraphQLList(this.modelObjectTypes[field.options.model]),
-                            resolve: (value: any, args: any, context: any) => {
+                            resolve: (root: any, args: any, context: any, info: any) => {
                                 return [{}];
                             }
                         };

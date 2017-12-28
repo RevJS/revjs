@@ -104,7 +104,7 @@ describe('getMethodResolver()', () => {
                     id: 23,
                     name: 'Timothy'
                 }
-            })
+            }, {}, {})
             .then((res) => {
                 expect(res.success).to.be.true;
                 expect(res.result).to.deep.equal(new User({
@@ -122,7 +122,7 @@ describe('getMethodResolver()', () => {
                     name: 'Timothy'
                 },
                 extraArg: 'test'
-            })
+            }, {}, {})
             .then((res) => {
                 expect(smellyArgs).to.have.length(1);
                 expect(smellyArgs[0]).to.have.property('manager', models);
@@ -146,7 +146,7 @@ describe('getMethodResolver()', () => {
                     name: 'Joe',
                     extra_prop: 'Flibble'
                 }
-            })
+            }, {}, {})
             .then((res) => {
                 expect(smellyInstanceProps).to.deep.equal({
                     id: 12,
@@ -161,7 +161,7 @@ describe('getMethodResolver()', () => {
                 model: {
                     id: 12,
                 }
-            })
+            }, {}, {})
             .then((res) => {
                 expect(smellyInstanceProps).to.deep.equal({
                     id: 12,
@@ -177,7 +177,7 @@ describe('getMethodResolver()', () => {
                     id: 'Oooh er!',
                     name: null
                 }
-            })
+            }, {}, {})
             .then((res) => {
                 expect(smellyInstanceProps).to.deep.equal({
                     id: 'Oooh er!',
@@ -188,7 +188,7 @@ describe('getMethodResolver()', () => {
 
         it('method that returns no result still responds with a successful ModelOperationResult', () => {
             let resolver = getMethodResolver(api, 'User', 'methodNoResult');
-            return resolver(undefined, {})
+            return resolver(undefined, {}, {}, {})
             .then((res) => {
                 expect(res).to.be.instanceof(ModelOperationResult);
                 expect(res.success).to.be.true;
@@ -198,7 +198,7 @@ describe('getMethodResolver()', () => {
 
         it('method that returns a value has it wrapped in a ModelOperationResult', () => {
             let resolver = getMethodResolver(api, 'User', 'methodValueResult');
-            return resolver(undefined, {})
+            return resolver(undefined, {}, {}, {})
             .then((res) => {
                 expect(res).to.be.instanceof(ModelOperationResult);
                 expect(res.success).to.be.true;
@@ -208,7 +208,7 @@ describe('getMethodResolver()', () => {
 
         it('method that returns a ModelOperationResult returns it directly', () => {
             let resolver = getMethodResolver(api, 'User', 'methodOperationResult');
-            return resolver(undefined, {})
+            return resolver(undefined, {}, {}, {})
             .then((res) => {
                 expect(res).to.be.instanceof(ModelOperationResult);
                 expect(res.success).to.be.true;
@@ -218,7 +218,7 @@ describe('getMethodResolver()', () => {
 
         it('method that throws an error has it bubbled up', () => {
             let resolver = getMethodResolver(api, 'User', 'methodWithError');
-            return resolver(undefined, {})
+            return resolver(undefined, {}, {}, {})
             .then((res) => { throw new Error('expected to throw'); })
             .catch((err) => {
                 expect(err.message).to.equal('Oh noes!!!');
@@ -246,7 +246,7 @@ describe('getMethodResolver()', () => {
             return resolver(undefined, {
                 textArg: 'test',
                 intArg: 21
-            })
+            }, {}, {})
             .then((res) => {
                 expect(smellyArgs).to.have.length(1);
                 expect(smellyArgs[0]).to.have.property('manager', models);
@@ -262,7 +262,7 @@ describe('getMethodResolver()', () => {
             let resolver = getResolver();
             return resolver(undefined, {
                 textArg: 'test'
-            })
+            }, {}, {})
             .then((res) => {
                 expect(smellyArgs).to.have.length(1);
                 expect(smellyArgs[0].args).to.deep.equal({
@@ -274,7 +274,7 @@ describe('getMethodResolver()', () => {
 
         it('validation error returned when required arg not set', () => {
             let resolver = getResolver();
-            return resolver(undefined, undefined)
+            return resolver(undefined, undefined, {}, {})
             .then((res) => {
                 expect(smellyArgs).to.be.undefined; // not called
                 expect(res.success).to.be.false;
@@ -288,7 +288,7 @@ describe('getMethodResolver()', () => {
             return resolver(undefined, {
                 textArg: 'test',
                 intArg: 'test'
-            })
+            }, {}, {})
             .then((res) => {
                 expect(smellyArgs).to.be.undefined; // not called
                 expect(res.success).to.be.false;
@@ -319,7 +319,7 @@ describe('getMethodResolver()', () => {
                     name: 'Bob'
                 },
                 textArg: 'test'
-            })
+            }, {}, {})
             .then((res) => {
                 expect(smellyArgs).to.have.length(1);
                 expect(smellyArgs[0]).to.have.property('manager', models);
@@ -343,7 +343,7 @@ describe('getMethodResolver()', () => {
 
         it('custom method called with no model data or args', () => {
             let resolver = getResolver();
-            return resolver(undefined, undefined)
+            return resolver(undefined, undefined, {}, {})
             .then((res) => {
                 expect(smellyArgs).to.have.length(1);
                 expect(smellyArgs[0]).to.have.property('manager', models);

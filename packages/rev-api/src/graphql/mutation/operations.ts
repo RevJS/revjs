@@ -13,7 +13,7 @@ export function getModelOperationMutations(manager: IModelApiManager, meta: IApi
                 args: {
                     id: { type: new GraphQLNonNull(GraphQLInt) }
                 },
-                resolve: (value: any, args: any) => {
+                resolve: (root: any, args: any, context: any, info: any) => {
                     return {
                         success: true
                     };
