@@ -1,9 +1,8 @@
 import { fields, IModelManager } from 'rev-models';
 
-import { GraphQLSchema, GraphQLObjectType, GraphQLResolveInfo } from 'graphql';
+import { GraphQLSchema, GraphQLObjectType, GraphQLResolveInfo, GraphQLList } from 'graphql';
 import { GraphQLInt, GraphQLFloat, GraphQLString, GraphQLBoolean } from 'graphql/type/scalars';
-import { GraphQLSchemaConfig } from 'graphql/type/schema';
-import { getQueryConfig } from './query/query';
+import * as GraphQLJSON from 'graphql-type-json';
 import { getMutationConfig } from './mutation/mutation';
 import { IModelApiManager } from '../api/types';
 import { IGraphQLApi, IGraphQLFieldConverter } from './types';
@@ -49,18 +48,13 @@ export class GraphQLApi implements IGraphQLApi {
         }
     }
 
-    generateModelObjectType(modelName: string): GraphQLObjectType {
-
+    generateModelObject(modelName: string): GraphQLObjectType {
         let meta = this.getModelManager().getModelMeta(modelName);
-
         return new GraphQLObjectType({
             name: modelName,
             fields: () => {
-
                 const fieldConfig = {};
-
                 meta.fields.forEach((field) => {
-
                     let scalarType = this.getGraphQLFieldConverter(field);
                     if (scalarType) {
                         fieldConfig[field.name] = {
@@ -96,28 +90,68 @@ export class GraphQLApi implements IGraphQLApi {
         });
     }
 
-    getModelObjectType(modelName: string): GraphQLObjectType {
+    getModelObject(modelName: string): GraphQLObjectType {
         return this.modelObjectTypes[modelName];
+    }
+
+    getNoModelsObject(): GraphQLObjectType {
+        return new GraphQLObjectType({
+            name: 'query',
+            fields: {
+                no_models: {
+                    type: GraphQLString,
+                    resolve() {
+                        return 'No models have been registered for read access';
+                    }
+                }
+            }
+        });
+    }
+
+    getSchemaQueryObject(): GraphQLObjectType {
+        const readableModels = this.getReadableModels();
+        if (readableModels.length == 0) {
+            return this.getNoModelsObject();
+        }
+        else {
+            const models = this.getModelManager();
+            const queryObjectConfig = {
+                name: 'query',
+                fields: {}
+            };
+            for (let modelName of readableModels) {
+                let modelType = this.getModelObject(modelName);
+                queryObjectConfig.fields[modelName] = {
+                    type: new GraphQLList(modelType),
+                    args: {
+                        where: { type: GraphQLJSON }
+                    },
+                    resolve: (rootValue: any, args?: any, context?: any, info?: GraphQLResolveInfo): Promise<any> => {
+                        let modelMeta = models.getModelMeta(modelName);
+                        return models.read(modelMeta.ctor, {})
+                            .then((res) => {
+                                return res.results;
+                            });
+                    }
+                };
+            }
+            return new GraphQLObjectType(queryObjectConfig);
+        }
     }
 
     getSchema(): GraphQLSchema {
 
         const readableModels = this.manager.getModelNamesByOperation('read');
         readableModels.forEach((modelName) => {
-            this.modelObjectTypes[modelName] = this.generateModelObjectType(modelName);
+            this.modelObjectTypes[modelName] = this.generateModelObject(modelName);
         });
 
-        const schema: GraphQLSchemaConfig = {} as any;
+        const mutations = getMutationConfig(this.manager);
 
-        const queryConfig = getQueryConfig(this);
-        const mutationConfig = getMutationConfig(this.manager);
-
-        schema.query = new GraphQLObjectType(queryConfig);
-        if (mutationConfig) {
-            schema.mutation = new GraphQLObjectType(mutationConfig);
-        }
-
-        return new GraphQLSchema(schema);
+        return new GraphQLSchema({
+            query: this.getSchemaQueryObject(),
+            mutation: mutations ? new GraphQLObjectType(mutations) : undefined
+        });
     }
 
 }

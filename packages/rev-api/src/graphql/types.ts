@@ -9,7 +9,7 @@ export interface IGraphQLApi {
     getApiManager(): IModelApiManager;
     getReadableModels(): string[];
     getGraphQLFieldConverter(field: fields.Field): IGraphQLFieldConverter;
-    getModelObjectType(modelName: string): GraphQLObjectType;
+    getModelObject(modelName: string): GraphQLObjectType;
 }
 
 export interface IGraphQLFieldConverter {

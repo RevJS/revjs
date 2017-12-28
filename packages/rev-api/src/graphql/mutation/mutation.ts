@@ -25,6 +25,4 @@ export function getMutationConfig(manager: IModelApiManager): GraphQLObjectTypeC
         return mutations;
     }
 
-    return null;
-
 }
