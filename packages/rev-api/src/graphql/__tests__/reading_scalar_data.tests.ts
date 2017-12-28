@@ -23,7 +23,7 @@ describe('GraphQL "query" type - scalar model data', () => {
             apiManager.register(models.Post, { operations: ['read'] });
             api = new GraphQLApi(apiManager);
 
-            schema = api.getGraphQLSchema();
+            schema = api.getSchema();
         });
 
         it('a query returns an empty array', async () => {
@@ -59,7 +59,7 @@ describe('GraphQL "query" type - scalar model data', () => {
             api = new GraphQLApi(apiManager);
             expectedPosts = await createPosts(modelManager);
 
-            schema = api.getGraphQLSchema();
+            schema = api.getSchema();
         });
 
         it('a query returns the expected data', async () => {

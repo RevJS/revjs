@@ -15,7 +15,7 @@ describe('GraphQL "query" type - model list', () => {
         before(() => {
             manager = new ModelApiManager(models.getModelManager());
             api = new GraphQLApi(manager);
-            schema = api.getGraphQLSchema();
+            schema = api.getSchema();
         });
 
         it('API should not have any models available for read', () => {
@@ -65,7 +65,7 @@ describe('GraphQL "query" type - model list', () => {
             manager.register(models.Post, { operations: ['read'] });
             api = new GraphQLApi(manager);
 
-            schema = api.getGraphQLSchema();
+            schema = api.getSchema();
         });
 
         it('they are available to query, and have the correct return type', async () => {
@@ -112,7 +112,7 @@ describe('GraphQL "query" type - model list', () => {
             manager.register(models.Post, { operations: ['create'] });
             api = new GraphQLApi(manager);
 
-            schema = api.getGraphQLSchema();
+            schema = api.getSchema();
         });
 
         it('only registers models that are readable', async () => {
@@ -162,7 +162,7 @@ describe('GraphQL "query" type - model list', () => {
 
         it('getGraphQLSchema() throws an error', async () => {
             expect(() => {
-                schema = api.getGraphQLSchema();
+                schema = api.getSchema();
             }).to.throw('The field class of ModelWithUnknownField.unknownField does not have a registered mapping');
         });
 

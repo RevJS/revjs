@@ -99,7 +99,7 @@ export class GraphQLApi implements IGraphQLApi {
         return this.modelObjectTypes[modelName];
     }
 
-    getGraphQLSchema(): GraphQLSchema {
+    getSchema(): GraphQLSchema {
 
         const readableModels = this.manager.getModelNamesByOperation('read');
         readableModels.forEach((modelName) => {

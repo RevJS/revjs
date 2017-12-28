@@ -3,6 +3,8 @@ import { ModelManager, IModel } from 'rev-models';
 import { checkIsModelConstructor } from 'rev-models/lib/models/utils';
 import { initialiseApiMeta } from '../api/meta';
 import { IModelApiManager, IApiMeta } from './types';
+import { GraphQLApi } from '../graphql/api';
+import { GraphQLSchema } from 'graphql/type/schema';
 
 export class ModelApiManager implements IModelApiManager {
 
@@ -54,6 +56,10 @@ export class ModelApiManager implements IModelApiManager {
             throw new Error(`ApiManagerError: Model '${modelName}' does not have a registered API.`);
         }
         return this._apiMeta[modelName];
+    }
+
+    getGraphQLSchema(): GraphQLSchema {
+        return new GraphQLApi(this).getSchema();
     }
 
     clearManager() {
