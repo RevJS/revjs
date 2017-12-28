@@ -1,6 +1,6 @@
 import { fields, IModelManager } from 'rev-models';
 
-import { GraphQLSchema, GraphQLScalarType, GraphQLObjectType, GraphQLList } from 'graphql';
+import { GraphQLSchema, GraphQLScalarType, GraphQLObjectType, GraphQLList, GraphQLResolveInfo } from 'graphql';
 import { GraphQLInt, GraphQLFloat, GraphQLString, GraphQLBoolean } from 'graphql/type/scalars';
 import { GraphQLSchemaConfig } from 'graphql/type/schema';
 import { getQueryConfig } from './query/query';
@@ -64,15 +64,15 @@ export class GraphQLApi implements IGraphQLApi {
                     if (scalarType) {
                         fieldConfig[field.name] = {
                             type: scalarType,
-                            resolve: (root: any, args: any, context: any, info: any) => {
-                                return root[field.name];
+                            resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
+                                return rootValue[field.name];
                             }
                         };
                     }
                     else if (field instanceof fields.RelatedModelField) {
                         fieldConfig[field.name] = {
                             type: this.modelObjectTypes[field.options.model],
-                            resolve: (root: any, args: any, context: any, info: any) => {
+                            resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
                                 return {};
                             }
                         };
@@ -80,7 +80,7 @@ export class GraphQLApi implements IGraphQLApi {
                     else if (field instanceof fields.RelatedModelListField) {
                         fieldConfig[field.name] = {
                             type: new GraphQLList(this.modelObjectTypes[field.options.model]),
-                            resolve: (root: any, args: any, context: any, info: any) => {
+                            resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
                                 return [{}];
                             }
                         };

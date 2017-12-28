@@ -1,4 +1,4 @@
-import { GraphQLFieldConfigMap, GraphQLNonNull, GraphQLInt } from 'graphql';
+import { GraphQLFieldConfigMap, GraphQLNonNull, GraphQLInt, GraphQLResolveInfo } from 'graphql';
 import { IApiMeta, IModelApiManager } from '../../api/types';
 import * as GraphQLJSON from 'graphql-type-json';
 
@@ -13,7 +13,7 @@ export function getModelOperationMutations(manager: IModelApiManager, meta: IApi
                 args: {
                     id: { type: new GraphQLNonNull(GraphQLInt) }
                 },
-                resolve: (root: any, args: any, context: any, info: any) => {
+                resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
                     return {
                         success: true
                     };
