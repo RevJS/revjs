@@ -1,18 +1,15 @@
 
-import { ModelManager, IModel, fields } from 'rev-models';
+import { ModelManager, IModel } from 'rev-models';
 import { checkIsModelConstructor } from 'rev-models/lib/models/utils';
-import { IApiMeta, initialiseApiMeta } from '../api/meta';
-import { getGraphQLSchema } from '../graphql/schema';
-import { GraphQLSchema, GraphQLScalarType } from 'graphql';
-import { GraphQLInt, GraphQLFloat, GraphQLString, GraphQLBoolean } from 'graphql/type/scalars';
+import { initialiseApiMeta } from '../api/meta';
+import { IModelApiManager, IApiMeta } from './types';
 
-export class ModelApiManager {
+export class ModelApiManager implements IModelApiManager {
 
     modelManager: ModelManager;
     _apiMeta: {
         [modelName: string]: IApiMeta
     };
-    _graphqlTypeMapping: Array<[new(...args: any[]) => fields.Field, GraphQLScalarType]>;
 
     constructor(modelManager: ModelManager) {
         if (typeof modelManager != 'object' || !(modelManager instanceof ModelManager)) {
@@ -20,17 +17,6 @@ export class ModelApiManager {
         }
         this.modelManager = modelManager;
         this._apiMeta = {};
-        this._graphqlTypeMapping = [
-            [fields.AutoNumberField, GraphQLInt],
-            [fields.IntegerField, GraphQLInt],
-            [fields.NumberField, GraphQLFloat],
-            [fields.TextField, GraphQLString],
-            [fields.BooleanField, GraphQLBoolean],
-            [fields.SelectionField, GraphQLString],
-            [fields.DateField, GraphQLString],
-            [fields.TimeField, GraphQLString],
-            [fields.DateTimeField, GraphQLString],
-        ];
     }
 
     getModelManager() {
@@ -68,19 +54,6 @@ export class ModelApiManager {
             throw new Error(`ApiManagerError: Model '${modelName}' does not have a registered API.`);
         }
         return this._apiMeta[modelName];
-    }
-
-    getGraphQLSchema(): GraphQLSchema {
-        return getGraphQLSchema(this);
-    }
-
-    getGraphQLScalarType(field: fields.Field) {
-        for (const fieldMapping of this._graphqlTypeMapping) {
-            if (field instanceof fieldMapping[0]) {
-                return fieldMapping[1];
-            }
-        }
-        return GraphQLString;
     }
 
     clearManager() {

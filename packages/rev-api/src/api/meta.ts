@@ -1,25 +1,12 @@
 
 import { fields, IModel } from 'rev-models';
-import { ModelApiManager } from '../api/manager';
 import { STANDARD_OPERATIONS } from 'rev-models/lib/operations';
+import { IApiMeta, IModelApiManager } from './types';
 
 const RESERVED_ARG_NAMES = ['model'];
 
-export interface IApiMethodMeta {
-    args?: fields.Field[];
-    modelData?: boolean;
-}
-
-export interface IApiMeta {
-    model?: string;
-    operations?: string[];
-    methods?: {
-        [methodName: string]: IApiMethodMeta;
-    };
-}
-
 export function initialiseApiMeta<T extends IModel>(
-        apiManager: ModelApiManager,
+        apiManager: IModelApiManager,
         model: T,
         apiMeta: IApiMeta) {
 
@@ -39,7 +26,7 @@ export function initialiseApiMeta<T extends IModel>(
     apiMeta.model = apiMeta.model || model.name;
 
     // Check if model is registered
-    if (!apiManager.modelManager.isRegistered(apiMeta.model)) {
+    if (!apiManager.getModelManager().isRegistered(apiMeta.model)) {
         throw new Error(`ApiManagerError: Model '${apiMeta.model}' is not registered with the model manager.`);
     }
 

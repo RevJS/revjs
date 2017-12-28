@@ -3,7 +3,7 @@ import * as models from '../../__tests__/models.fixture';
 import { ModelApiManager } from '../../../api/manager';
 
 import { expect } from 'chai';
-import { IApiMeta } from '../../../api/meta';
+import { IApiMeta } from '../../../api/types';
 import { GraphQLFieldConfigMap } from 'graphql';
 import { getModelOperationMutations } from '../operations';
 

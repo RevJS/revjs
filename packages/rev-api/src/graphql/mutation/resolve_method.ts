@@ -1,12 +1,11 @@
 
-import { IModelOperationResult, ModelOperationResult, ModelManager } from 'rev-models';
-import { ModelApiManager } from '../../api/manager';
+import { IModelOperationResult, ModelOperationResult, IModelManager } from 'rev-models';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
-import { IApiMethodMeta } from '../../api/meta';
+import { IApiMethodMeta, IModelApiManager } from '../../api/types';
 import { IModelOperation } from 'rev-models/lib/operations/operation';
 
-export function getMethodResolver(manager: ModelApiManager, modelName: string, methodName: string) {
-    let models = manager.modelManager;
+export function getMethodResolver(manager: IModelApiManager, modelName: string, methodName: string) {
+    let models = manager.getModelManager();
     let meta = manager.getApiMeta(modelName);
     let modelMeta = models.getModelMeta(modelName);
     let methodMeta = meta.methods[methodName];
@@ -43,7 +42,7 @@ function getMethodExecArgs(meta: IApiMethodMeta, args: any) {
     return argsData;
 }
 
-function validateMethodArgs(models: ModelManager, methodMeta: IApiMethodMeta, args: any): Promise<ModelValidationResult> {
+function validateMethodArgs(models: IModelManager, methodMeta: IApiMethodMeta, args: any): Promise<ModelValidationResult> {
 
     let promises: Array<Promise<any>> = [];
     let result = new ModelValidationResult();

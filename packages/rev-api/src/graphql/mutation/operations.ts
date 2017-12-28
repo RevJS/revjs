@@ -1,9 +1,8 @@
 import { GraphQLFieldConfigMap, GraphQLNonNull, GraphQLInt } from 'graphql';
-import { IApiMeta } from '../../api/meta';
+import { IApiMeta, IModelApiManager } from '../../api/types';
 import * as GraphQLJSON from 'graphql-type-json';
-import { ModelApiManager } from '../../api/manager';
 
-export function getModelOperationMutations(manager: ModelApiManager, meta: IApiMeta): GraphQLFieldConfigMap<any, any> {
+export function getModelOperationMutations(manager: IModelApiManager, meta: IApiMeta): GraphQLFieldConfigMap<any, any> {
     let fields = {};
 
     for (let operationName of meta.operations) {

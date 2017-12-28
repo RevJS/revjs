@@ -3,21 +3,23 @@ import { expect } from 'chai';
 import { ModelApiManager } from '../../../api/manager';
 import * as models from '../../__tests__/models.fixture';
 import { graphql, GraphQLSchema } from 'graphql';
-import { getGraphQLSchema } from '../../schema';
+import { GraphQLApi } from '../../api';
 
 describe('GraphQL "query" type - model list', () => {
 
     describe('When no models are registered', () => {
-        let api: ModelApiManager;
+        let manager: ModelApiManager;
+        let api: GraphQLApi;
         let schema: GraphQLSchema;
 
         before(() => {
-            api = new ModelApiManager(models.getModelManager());
-            schema = getGraphQLSchema(api);
+            manager = new ModelApiManager(models.getModelManager());
+            api = new GraphQLApi(manager);
+            schema = api.getGraphQLSchema();
         });
 
         it('API should not have any models available for read', () => {
-            expect(api.getModelNamesByOperation('read')).to.have.length(0);
+            expect(manager.getModelNamesByOperation('read')).to.have.length(0);
         });
 
         it('Schema contains a single "no_models" field', async () => {
@@ -53,15 +55,17 @@ describe('GraphQL "query" type - model list', () => {
 
     describe('When models are registered', () => {
 
-        let api: ModelApiManager;
+        let manager: ModelApiManager;
+        let api: GraphQLApi;
         let schema: GraphQLSchema;
 
         before(() => {
-            api = new ModelApiManager(models.getModelManager());
-            api.register(models.User, { operations: ['read'] });
-            api.register(models.Post, { operations: ['read'] });
+            manager = new ModelApiManager(models.getModelManager());
+            manager.register(models.User, { operations: ['read'] });
+            manager.register(models.Post, { operations: ['read'] });
+            api = new GraphQLApi(manager);
 
-            schema = getGraphQLSchema(api);
+            schema = api.getGraphQLSchema();
         });
 
         it('they are available to query, and have the correct return type', async () => {
@@ -98,15 +102,17 @@ describe('GraphQL "query" type - model list', () => {
 
     describe('When some models are not readable', () => {
 
-        let api: ModelApiManager;
+        let manager: ModelApiManager;
+        let api: GraphQLApi;
         let schema: GraphQLSchema;
 
         before(() => {
-            api = new ModelApiManager(models.getModelManager());
-            api.register(models.User, { operations: ['read'] });
-            api.register(models.Post, { operations: ['create'] });
+            manager = new ModelApiManager(models.getModelManager());
+            manager.register(models.User, { operations: ['read'] });
+            manager.register(models.Post, { operations: ['create'] });
+            api = new GraphQLApi(manager);
 
-            schema = getGraphQLSchema(api);
+            schema = api.getGraphQLSchema();
         });
 
         it('only registers models that are readable', async () => {

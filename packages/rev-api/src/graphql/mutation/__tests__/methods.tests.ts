@@ -6,7 +6,7 @@ import { ModelApiManager } from '../../../api/manager';
 import { expect } from 'chai';
 import { GraphQLFieldConfigMap } from 'graphql';
 import { getModelMethodMutations } from '../methods';
-import { IApiMeta } from '../../../api/meta';
+import { IApiMeta } from '../../../api/types';
 
 describe('getModelMethodMutations()', () => {
     let api: ModelApiManager;

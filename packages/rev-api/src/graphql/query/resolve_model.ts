@@ -1,8 +1,8 @@
 
-import { ModelApiManager } from '../../api/manager';
+import { IModelApiManager } from '../../api/types';
 
-export function getModelResolver(manager: ModelApiManager, modelName: string) {
-    let models = manager.modelManager;
+export function getModelResolver(manager: IModelApiManager, modelName: string) {
+    let models = manager.getModelManager();
     let modelMeta = models.getModelMeta(modelName);
 
     return (value: any, args: any, context: any): Promise<any> => {

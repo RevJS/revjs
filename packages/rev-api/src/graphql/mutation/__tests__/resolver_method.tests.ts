@@ -5,7 +5,7 @@ import { IntegerField, TextField, ModelOperationResult,
 import { ModelApiManager } from '../../../api/manager';
 
 import { expect } from 'chai';
-import { IApiMeta } from '../../../api/meta';
+import { IApiMeta } from '../../../api/types';
 import { getMethodResolver } from '../resolve_method';
 
 let smellyInstanceProps: any;

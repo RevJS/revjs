@@ -1,4 +1,4 @@
-import { IApiMethodMeta } from '../api/meta';
+import { IApiMethodMeta } from '../api/types';
 import { STANDARD_OPERATIONS } from 'rev-models/lib/operations';
 
 // ApiOperations class decorator

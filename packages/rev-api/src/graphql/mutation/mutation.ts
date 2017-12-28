@@ -1,9 +1,9 @@
-import { ModelApiManager } from '../../api/manager';
+import { IModelApiManager } from '../../api/types';
 import { GraphQLObjectTypeConfig } from 'graphql';
 import { getModelOperationMutations } from './operations';
 import { getModelMethodMutations } from './methods';
 
-export function getMutationConfig(manager: ModelApiManager): GraphQLObjectTypeConfig<any, any> {
+export function getMutationConfig(manager: IModelApiManager): GraphQLObjectTypeConfig<any, any> {
 
     let mutations = {
         name: 'mutation',
