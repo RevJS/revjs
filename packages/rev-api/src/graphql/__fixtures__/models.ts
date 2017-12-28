@@ -1,16 +1,19 @@
 import {
     fields, ModelManager, InMemoryBackend,
     IntegerField, TextField, DateField, BooleanField, DateTimeField,
-    AutoNumberField, NumberField, SelectionField, TimeField
+    AutoNumberField, NumberField, SelectionField, TimeField,
+    RelatedModel, RelatedModelList
 } from 'rev-models';
 
 export class User {
-    @IntegerField()
+    @IntegerField({ primaryKey: true })
         id: number = 1;
     @TextField()
         name: string = 'A Test Model';
     @DateField()
         date_registered: string = '2017-12-01';
+    @RelatedModelList({ model: 'Post', field: 'user' })
+        posts: Post[];
 
     constructor(data?: Partial<User>) {
         Object.assign(this, data);
@@ -20,7 +23,7 @@ export class User {
 }
 
 export class Post {
-    @IntegerField()
+    @IntegerField({ primaryKey: true })
         id: number = 10;
     @TextField()
         title: string;
@@ -30,6 +33,8 @@ export class Post {
         published: boolean;
     @DateTimeField()
         post_date: string;
+    @RelatedModel({ model: 'User' })
+        user: User;
 
     constructor(data?: Partial<Post>) {
         Object.assign(this, data);

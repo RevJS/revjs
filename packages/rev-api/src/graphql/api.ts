@@ -1,6 +1,6 @@
 import { fields, IModelManager } from 'rev-models';
 
-import { GraphQLSchema, GraphQLObjectType, GraphQLList, GraphQLResolveInfo } from 'graphql';
+import { GraphQLSchema, GraphQLObjectType, GraphQLResolveInfo } from 'graphql';
 import { GraphQLInt, GraphQLFloat, GraphQLString, GraphQLBoolean } from 'graphql/type/scalars';
 import { GraphQLSchemaConfig } from 'graphql/type/schema';
 import { getQueryConfig } from './query/query';
@@ -71,20 +71,20 @@ export class GraphQLApi implements IGraphQLApi {
                         };
                     }
                     else if (field instanceof fields.RelatedModelField) {
-                        fieldConfig[field.name] = {
-                            type: this.modelObjectTypes[field.options.model],
-                            resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
-                                return {};
-                            }
-                        };
+                        // fieldConfig[field.name] = {
+                        //     type: this.modelObjectTypes[field.options.model],
+                        //     resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
+                        //         return {};
+                        //     }
+                        // };
                     }
                     else if (field instanceof fields.RelatedModelListField) {
-                        fieldConfig[field.name] = {
-                            type: new GraphQLList(this.modelObjectTypes[field.options.model]),
-                            resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
-                                return [{}];
-                            }
-                        };
+                        // fieldConfig[field.name] = {
+                        //     type: new GraphQLList(this.modelObjectTypes[field.options.model]),
+                        //     resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
+                        //         return [{}];
+                        //     }
+                        // };
                     }
                     else {
                         throw new Error(`GraphQLApi Error: The field class of ${modelName}.${field.name} does not have a registered mapping.`);

@@ -1,5 +1,5 @@
 
-import * as models from './models.fixture';
+import * as models from '../__fixtures__/models';
 import { ModelApiManager } from '../../api/manager';
 import { GraphQLApi } from '../api';
 

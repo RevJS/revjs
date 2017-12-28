@@ -1,11 +1,10 @@
 
 import { expect } from 'chai';
 import { ModelApiManager } from '../../api/manager';
-import * as models from './models.fixture';
+import * as models from '../__fixtures__/models';
 import { graphql, GraphQLSchema } from 'graphql';
 import { ModelManager, fields } from 'rev-models';
-import { createPosts } from './modeldata.fixture';
-import { expectToHaveProperties } from '../../__test_utils__/utils';
+import { createData, IModelTestData } from '../__fixtures__/modeldata';
 import { GraphQLApi } from '../api';
 
 describe('GraphQL query type - scalar model data', () => {
@@ -50,14 +49,15 @@ describe('GraphQL query type - scalar model data', () => {
         let api: GraphQLApi;
         let schema: GraphQLSchema;
         let modelManager: ModelManager;
-        let expectedPosts: models.Post[];
+        let expectedData: IModelTestData;
 
         beforeEach(async () => {
             modelManager = models.getModelManager();
             apiManager = new ModelApiManager(modelManager);
             apiManager.register(models.Post, { operations: ['read'] });
             api = new GraphQLApi(apiManager);
-            expectedPosts = await createPosts(modelManager);
+
+            expectedData = await createData(modelManager);
 
             schema = api.getSchema();
         });
@@ -75,9 +75,15 @@ describe('GraphQL query type - scalar model data', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post).to.have.length(expectedPosts.length);
-            for (let i = 0; i < expectedPosts.length; i++) {
-                expectToHaveProperties(result.data.Post[i], expectedPosts[i]);
+            expect(result.data.Post).to.have.length(expectedData.posts.length);
+            for (let i = 0; i < expectedData.posts.length; i++) {
+                expect(result.data.Post[i]).to.deep.equal({
+                    id: expectedData.posts[i].id,
+                    title: expectedData.posts[i].title,
+                    body: expectedData.posts[i].body,
+                    published: expectedData.posts[i].published,
+                    post_date: expectedData.posts[i].post_date,
+                });
             }
         });
 

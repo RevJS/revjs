@@ -1,5 +1,5 @@
 
-import * as models from '../../__tests__/models.fixture';
+import * as models from '../../__tests__/../__fixtures__/models';
 import { fields } from 'rev-models';
 import { ModelApiManager } from '../../../api/manager';
 

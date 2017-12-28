@@ -1,7 +1,7 @@
 
 import { expect } from 'chai';
 import { ModelApiManager } from '../../api/manager';
-import * as models from './models.fixture';
+import * as models from '../__fixtures__/models';
 import { graphql, GraphQLSchema } from 'graphql';
 import { GraphQLApi } from '../api';
 
