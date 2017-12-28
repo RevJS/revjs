@@ -1,6 +1,6 @@
 import { IModelManager } from 'rev-models/lib/models/types';
 import { IModel, fields } from 'rev-models';
-import { GraphQLScalarType } from 'graphql';
+import { GraphQLScalarType, GraphQLObjectTypeConfig } from 'graphql';
 
 export interface IApiMethodMeta {
     args?: fields.Field[];
@@ -32,4 +32,5 @@ export interface IGraphQLApi {
     getModelManager(): IModelManager;
     getApiManager(): IModelApiManager;
     getGraphQLScalarType(field: fields.Field): GraphQLScalarType;
+    getModelObjectType(modelName: string): GraphQLObjectTypeConfig<any, any>;
 }

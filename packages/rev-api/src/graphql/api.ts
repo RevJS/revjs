@@ -1,6 +1,6 @@
 import { fields, IModelManager } from 'rev-models';
 
-import { GraphQLSchema, GraphQLScalarType, GraphQLObjectType } from 'graphql';
+import { GraphQLSchema, GraphQLScalarType, GraphQLObjectType, GraphQLObjectTypeConfig } from 'graphql';
 import { GraphQLInt, GraphQLFloat, GraphQLString, GraphQLBoolean } from 'graphql/type/scalars';
 import { GraphQLSchemaConfig } from 'graphql/type/schema';
 import { getQueryConfig } from './query/query';
@@ -42,6 +42,23 @@ export class GraphQLApi implements IGraphQLApi {
             }
         }
         return GraphQLString;
+    }
+
+    getModelObjectType(modelName: string): GraphQLObjectTypeConfig<any, any> {
+        let meta = this.getModelManager().getModelMeta(modelName);
+        let config = {
+            name: modelName,
+            fields: {}
+        };
+        for (let field of meta.fields) {
+            config.fields[field.name] = {
+                type: this.getGraphQLScalarType(field),
+                resolve: (value: any, args: any, context: any) => {
+                    return value[field.name];
+                }
+            };
+        }
+        return config;
     }
 
     getGraphQLSchema(): GraphQLSchema {
