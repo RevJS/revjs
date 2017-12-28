@@ -28,6 +28,8 @@ export interface IModelApiManager {
     clearManager(): void;
 }
 
-export interface IGraphQLApiMeta {
+export interface IGraphQLApi {
+    getModelManager(): IModelManager;
+    getApiManager(): IModelApiManager;
     getGraphQLScalarType(field: fields.Field): GraphQLScalarType;
 }

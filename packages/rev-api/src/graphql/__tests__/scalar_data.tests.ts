@@ -1,12 +1,12 @@
 
 import { expect } from 'chai';
-import { ModelApiManager } from '../../../api/manager';
-import * as models from '../../__tests__/models.fixture';
+import { ModelApiManager } from '../../api/manager';
+import * as models from './models.fixture';
 import { graphql, GraphQLSchema } from 'graphql';
 import { ModelManager } from 'rev-models';
-import { createPosts } from '../../__tests__/modeldata.fixture';
-import { expectToHaveProperties } from '../../../__test_utils__/utils';
-import { GraphQLApi } from '../../api';
+import { createPosts } from './modeldata.fixture';
+import { expectToHaveProperties } from '../../__test_utils__/utils';
+import { GraphQLApi } from '../api';
 
 describe('GraphQL "query" type - scalar model data', () => {
 

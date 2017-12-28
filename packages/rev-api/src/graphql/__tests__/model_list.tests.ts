@@ -1,9 +1,9 @@
 
 import { expect } from 'chai';
-import { ModelApiManager } from '../../../api/manager';
-import * as models from '../../__tests__/models.fixture';
+import { ModelApiManager } from '../../api/manager';
+import * as models from './models.fixture';
 import { graphql, GraphQLSchema } from 'graphql';
-import { GraphQLApi } from '../../api';
+import { GraphQLApi } from '../api';
 
 describe('GraphQL "query" type - model list', () => {
 

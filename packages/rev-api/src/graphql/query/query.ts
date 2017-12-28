@@ -1,14 +1,14 @@
-import { IModelApiManager, IGraphQLApiMeta } from '../../api/types';
+import { IGraphQLApi } from '../../api/types';
 import { GraphQLString, GraphQLObjectTypeConfig, GraphQLObjectType, GraphQLList } from 'graphql';
-import { getModelConfig } from './model';
 import * as GraphQLJSON from 'graphql-type-json';
-import { getModelResolver } from './resolve_model';
+import { getModelConfig } from '../types/model';
 
-export function getQueryConfig(manager: IModelApiManager, gqlMeta: IGraphQLApiMeta): GraphQLObjectTypeConfig<any, any> {
+export function getQueryConfig(api: IGraphQLApi): GraphQLObjectTypeConfig<any, any> {
 
-    let readModels = manager.getModelNamesByOperation('read');
+    const readModels = api.getApiManager().getModelNamesByOperation('read');
+    const models = api.getModelManager();
 
-    let queries = {
+    const queries = {
         name: 'query',
         fields: {}
     };
@@ -22,13 +22,21 @@ export function getQueryConfig(manager: IModelApiManager, gqlMeta: IGraphQLApiMe
     }
     else {
         for (let modelName of readModels) {
-            let modelConfig = getModelConfig(manager, gqlMeta, modelName);
+            let modelConfig = getModelConfig(api, modelName);
+
             queries.fields[modelName] = {
                 type: new GraphQLList(new GraphQLObjectType(modelConfig)),
                 args: {
                     where: { type: GraphQLJSON }
                 },
-                resolve: getModelResolver(manager, modelName)
+                resolve: (value: any, args: any, context: any): Promise<any> => {
+                    let modelMeta = models.getModelMeta(modelName);
+
+                    return models.read(modelMeta.ctor, {})
+                        .then((res) => {
+                            return res.results;
+                        });
+                }
             };
         }
     }

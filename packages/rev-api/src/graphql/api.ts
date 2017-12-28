@@ -5,9 +5,9 @@ import { GraphQLInt, GraphQLFloat, GraphQLString, GraphQLBoolean } from 'graphql
 import { GraphQLSchemaConfig } from 'graphql/type/schema';
 import { getQueryConfig } from './query/query';
 import { getMutationConfig } from './mutation/mutation';
-import { IModelApiManager, IGraphQLApiMeta } from '../api/types';
+import { IModelApiManager, IGraphQLApi } from '../api/types';
 
-export class GraphQLApi implements IGraphQLApiMeta {
+export class GraphQLApi implements IGraphQLApi {
     _graphqlTypeMapping: Array<[new(...args: any[]) => fields.Field, GraphQLScalarType]>;
 
     constructor(private manager: IModelApiManager) {
@@ -48,7 +48,7 @@ export class GraphQLApi implements IGraphQLApiMeta {
 
         const schema: GraphQLSchemaConfig = {} as any;
 
-        const queryConfig = getQueryConfig(this.manager, this);
+        const queryConfig = getQueryConfig(this);
         const mutationConfig = getMutationConfig(this.manager);
 
         schema.query = new GraphQLObjectType(queryConfig);
