@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { ModelApiManager } from '../../api/manager';
 import * as models from './models.fixture';
 import { graphql, GraphQLSchema } from 'graphql';
-import { ModelManager } from 'rev-models';
+import { ModelManager, fields } from 'rev-models';
 import { createPosts } from './modeldata.fixture';
 import { expectToHaveProperties } from '../../__test_utils__/utils';
 import { GraphQLApi } from '../api';
@@ -96,12 +96,7 @@ describe('GraphQL query type - scalar model data', () => {
             apiManager.register(models.ModelWithAllScalarFields, { operations: ['read'] });
 
             data = new models.ModelWithAllScalarFields();
-            try {
-                await modelManager.create(data);
-            }
-            catch (e) {
-                console.log(e.result.validation.fieldErrors);
-            }
+            await modelManager.create(data);
 
             schema = apiManager.getGraphQLSchema();
         });
@@ -135,6 +130,56 @@ describe('GraphQL query type - scalar model data', () => {
                 timeField: '12:13:14',
                 dateTimeField: '2017-12-25T12:13:14'
             });
+        });
+
+    });
+
+    describe('Can override Model -> GraphQL field conversion', () => {
+
+        let apiManager: ModelApiManager;
+        let api: GraphQLApi;
+        let schema: GraphQLSchema;
+        let modelManager: ModelManager;
+        let data: models.ModelWithAllScalarFields;
+
+        beforeEach(async () => {
+            modelManager = models.getModelManager();
+            apiManager = new ModelApiManager(modelManager);
+            apiManager.register(models.ModelWithAllScalarFields, { operations: ['read'] });
+            api = new GraphQLApi(apiManager);
+            api.fieldConverters.forEach((converter) => {
+                if (converter[0] == fields.TextField) {
+                    converter[1].converter = (model, fieldName) => {
+                        return 'I am a custom converter!';
+                    };
+                }
+            });
+
+            data = new models.ModelWithAllScalarFields();
+            await modelManager.create(data);
+
+            schema = api.getSchema();
+        });
+
+        it('a query returns the expected data', async () => {
+            const query = `
+                query {
+                    ModelWithAllScalarFields {
+                        autoNumberField
+                        integerField
+                        numberField
+                        textField
+                        booleanField
+                        selectionField
+                        dateField
+                        timeField
+                        dateTimeField
+                    }
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.data.ModelWithAllScalarFields).to.have.length(1);
+            expect(result.data.ModelWithAllScalarFields[0].textField).to.equal('I am a custom converter!');
         });
 
     });
