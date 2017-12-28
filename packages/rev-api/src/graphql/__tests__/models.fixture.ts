@@ -2,6 +2,7 @@ import {
     ModelManager, InMemoryBackend,
     IntegerField, TextField, DateField, BooleanField, DateTimeField
 } from 'rev-models';
+import { Field } from 'rev-models/lib/fields';
 
 export class User {
     @IntegerField()
@@ -39,10 +40,29 @@ export class Post {
     postMethod3() {}
 }
 
+export class UnknownField extends Field {}
+
+export class ModelWithUnknownField {
+    unknownField: string;
+    @IntegerField()
+        id: number = 1;
+    @TextField()
+        name: string = 'A test model with a weird field type';
+
+    constructor(data?: Partial<User>) {
+        Object.assign(this, data);
+    }
+
+    userMethod1() {}
+}
+
 export function getModelManager() {
     const modelManager = new ModelManager();
     modelManager.registerBackend('default', new InMemoryBackend());
     modelManager.register(User);
     modelManager.register(Post);
+    modelManager.register(ModelWithUnknownField, { fields: [
+        new UnknownField('unknownField')
+    ]});
     return modelManager;
 }

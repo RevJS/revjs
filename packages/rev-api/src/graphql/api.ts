@@ -1,6 +1,6 @@
 import { fields, IModelManager } from 'rev-models';
 
-import { GraphQLSchema, GraphQLScalarType, GraphQLObjectType, GraphQLObjectTypeConfig } from 'graphql';
+import { GraphQLSchema, GraphQLScalarType, GraphQLObjectType } from 'graphql';
 import { GraphQLInt, GraphQLFloat, GraphQLString, GraphQLBoolean } from 'graphql/type/scalars';
 import { GraphQLSchemaConfig } from 'graphql/type/schema';
 import { getQueryConfig } from './query/query';
@@ -8,13 +8,14 @@ import { getMutationConfig } from './mutation/mutation';
 import { IModelApiManager, IGraphQLApi } from '../api/types';
 
 export class GraphQLApi implements IGraphQLApi {
-    _graphqlTypeMapping: Array<[new(...args: any[]) => fields.Field, GraphQLScalarType]>;
+    fieldTypeMap: Array<[new(...args: any[]) => fields.Field, GraphQLScalarType]>;
+    modelObjectTypes: { [modelName: string]: GraphQLObjectType } = {};
 
     constructor(private manager: IModelApiManager) {
         if (!manager || typeof manager.getApiMeta != 'function') {
             throw new Error(`GraphQLApi: Invalid ModelApiManager passed in constructor.`);
         }
-        this._graphqlTypeMapping = [
+        this.fieldTypeMap = [
             [fields.AutoNumberField, GraphQLInt],
             [fields.IntegerField, GraphQLInt],
             [fields.NumberField, GraphQLFloat],
@@ -36,29 +37,34 @@ export class GraphQLApi implements IGraphQLApi {
     }
 
     getGraphQLScalarType(field: fields.Field) {
-        for (const fieldMapping of this._graphqlTypeMapping) {
+        for (const fieldMapping of this.fieldTypeMap) {
             if (field instanceof fieldMapping[0]) {
                 return fieldMapping[1];
             }
         }
-        return GraphQLString;
     }
 
-    getModelObjectType(modelName: string): GraphQLObjectTypeConfig<any, any> {
+    getModelObjectType(modelName: string): GraphQLObjectType {
         let meta = this.getModelManager().getModelMeta(modelName);
         let config = {
             name: modelName,
             fields: {}
         };
         for (let field of meta.fields) {
-            config.fields[field.name] = {
-                type: this.getGraphQLScalarType(field),
-                resolve: (value: any, args: any, context: any) => {
-                    return value[field.name];
-                }
-            };
+            let scalarType = this.getGraphQLScalarType(field);
+            if (scalarType) {
+                config.fields[field.name] = {
+                    type: scalarType,
+                    resolve: (value: any, args: any, context: any) => {
+                        return value[field.name];
+                    }
+                };
+            }
+            else {
+                throw new Error(`GraphQLApi Error: The field class of ${modelName}.${field.name} does not have a registered mapping.`);
+            }
         }
-        return config;
+        return new GraphQLObjectType(config);
     }
 
     getGraphQLSchema(): GraphQLSchema {

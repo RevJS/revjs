@@ -1,5 +1,5 @@
 import { IGraphQLApi } from '../../api/types';
-import { GraphQLString, GraphQLObjectTypeConfig, GraphQLObjectType, GraphQLList } from 'graphql';
+import { GraphQLString, GraphQLObjectTypeConfig, GraphQLList } from 'graphql';
 import * as GraphQLJSON from 'graphql-type-json';
 
 export function getQueryConfig(api: IGraphQLApi): GraphQLObjectTypeConfig<any, any> {
@@ -24,7 +24,7 @@ export function getQueryConfig(api: IGraphQLApi): GraphQLObjectTypeConfig<any, a
             let modelConfig = api.getModelObjectType(modelName);
 
             queries.fields[modelName] = {
-                type: new GraphQLList(new GraphQLObjectType(modelConfig)),
+                type: new GraphQLList(modelConfig),
                 args: {
                     where: { type: GraphQLJSON }
                 },
