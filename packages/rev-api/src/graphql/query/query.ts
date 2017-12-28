@@ -4,7 +4,7 @@ import * as GraphQLJSON from 'graphql-type-json';
 
 export function getQueryConfig(api: IGraphQLApi): GraphQLObjectTypeConfig<any, any> {
 
-    const readModels = api.getApiManager().getModelNamesByOperation('read');
+    const readModels = api.getReadableModels();
     const models = api.getModelManager();
 
     const queries = {
@@ -21,10 +21,10 @@ export function getQueryConfig(api: IGraphQLApi): GraphQLObjectTypeConfig<any, a
     }
     else {
         for (let modelName of readModels) {
-            let modelConfig = api.getModelObjectType(modelName);
+            let modelType = api.getModelObjectType(modelName);
 
             queries.fields[modelName] = {
-                type: new GraphQLList(modelConfig),
+                type: new GraphQLList(modelType),
                 args: {
                     where: { type: GraphQLJSON }
                 },

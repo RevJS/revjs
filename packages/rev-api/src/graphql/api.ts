@@ -1,6 +1,6 @@
 import { fields, IModelManager } from 'rev-models';
 
-import { GraphQLSchema, GraphQLScalarType, GraphQLObjectType } from 'graphql';
+import { GraphQLSchema, GraphQLScalarType, GraphQLObjectType, GraphQLList } from 'graphql';
 import { GraphQLInt, GraphQLFloat, GraphQLString, GraphQLBoolean } from 'graphql/type/scalars';
 import { GraphQLSchemaConfig } from 'graphql/type/schema';
 import { getQueryConfig } from './query/query';
@@ -36,6 +36,10 @@ export class GraphQLApi implements IGraphQLApi {
         return this.manager.getModelManager();
     }
 
+    getReadableModels(): string[] {
+        return Object.keys(this.modelObjectTypes);
+    }
+
     getGraphQLScalarType(field: fields.Field) {
         for (const fieldMapping of this.fieldTypeMap) {
             if (field instanceof fieldMapping[0]) {
@@ -44,7 +48,7 @@ export class GraphQLApi implements IGraphQLApi {
         }
     }
 
-    getModelObjectType(modelName: string): GraphQLObjectType {
+    generateModelObjectType(modelName: string): GraphQLObjectType {
         let meta = this.getModelManager().getModelMeta(modelName);
         let config = {
             name: modelName,
@@ -60,6 +64,22 @@ export class GraphQLApi implements IGraphQLApi {
                     }
                 };
             }
+            else if (field instanceof fields.RelatedModelField) {
+                config.fields[field.name] = () => ({
+                    type: this.modelObjectTypes[field.options.model],
+                    resolve: (value: any, args: any, context: any) => {
+                        return {};
+                    }
+                });
+            }
+            else if (field instanceof fields.RelatedModelListField) {
+                config.fields[field.name] = () => ({
+                    type: new GraphQLList(this.modelObjectTypes[field.options.model]),
+                    resolve: (value: any, args: any, context: any) => {
+                        return [{}];
+                    }
+                });
+            }
             else {
                 throw new Error(`GraphQLApi Error: The field class of ${modelName}.${field.name} does not have a registered mapping.`);
             }
@@ -67,7 +87,16 @@ export class GraphQLApi implements IGraphQLApi {
         return new GraphQLObjectType(config);
     }
 
+    getModelObjectType(modelName: string): GraphQLObjectType {
+        return this.modelObjectTypes[modelName];
+    }
+
     getGraphQLSchema(): GraphQLSchema {
+
+        const readableModels = this.manager.getModelNamesByOperation('read');
+        readableModels.forEach((modelName) => {
+            this.modelObjectTypes[modelName] = this.generateModelObjectType(modelName);
+        });
 
         const schema: GraphQLSchemaConfig = {} as any;
 

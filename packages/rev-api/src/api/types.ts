@@ -31,6 +31,7 @@ export interface IModelApiManager {
 export interface IGraphQLApi {
     getModelManager(): IModelManager;
     getApiManager(): IModelApiManager;
+    getReadableModels(): string[];
     getGraphQLScalarType(field: fields.Field): GraphQLScalarType;
     getModelObjectType(modelName: string): GraphQLObjectType;
 }
