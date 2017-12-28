@@ -49,42 +49,50 @@ export class GraphQLApi implements IGraphQLApi {
     }
 
     generateModelObjectType(modelName: string): GraphQLObjectType {
+
         let meta = this.getModelManager().getModelMeta(modelName);
-        let config = {
+
+        return new GraphQLObjectType({
             name: modelName,
-            fields: {}
-        };
-        for (let field of meta.fields) {
-            let scalarType = this.getGraphQLScalarType(field);
-            if (scalarType) {
-                config.fields[field.name] = {
-                    type: scalarType,
-                    resolve: (value: any, args: any, context: any) => {
-                        return value[field.name];
+            fields: () => {
+
+                const fieldConfig = {};
+
+                meta.fields.forEach((field) => {
+
+                    let scalarType = this.getGraphQLScalarType(field);
+                    if (scalarType) {
+                        fieldConfig[field.name] = {
+                            type: scalarType,
+                            resolve: (value: any, args: any, context: any) => {
+                                return value[field.name];
+                            }
+                        };
                     }
-                };
-            }
-            else if (field instanceof fields.RelatedModelField) {
-                config.fields[field.name] = () => ({
-                    type: this.modelObjectTypes[field.options.model],
-                    resolve: (value: any, args: any, context: any) => {
-                        return {};
+                    else if (field instanceof fields.RelatedModelField) {
+                        fieldConfig[field.name] = {
+                            type: this.modelObjectTypes[field.options.model],
+                            resolve: (value: any, args: any, context: any) => {
+                                return {};
+                            }
+                        };
                     }
+                    else if (field instanceof fields.RelatedModelListField) {
+                        fieldConfig[field.name] = {
+                            type: new GraphQLList(this.modelObjectTypes[field.options.model]),
+                            resolve: (value: any, args: any, context: any) => {
+                                return [{}];
+                            }
+                        };
+                    }
+                    else {
+                        throw new Error(`GraphQLApi Error: The field class of ${modelName}.${field.name} does not have a registered mapping.`);
+                    }
+
                 });
+                return fieldConfig;
             }
-            else if (field instanceof fields.RelatedModelListField) {
-                config.fields[field.name] = () => ({
-                    type: new GraphQLList(this.modelObjectTypes[field.options.model]),
-                    resolve: (value: any, args: any, context: any) => {
-                        return [{}];
-                    }
-                });
-            }
-            else {
-                throw new Error(`GraphQLApi Error: The field class of ${modelName}.${field.name} does not have a registered mapping.`);
-            }
-        }
-        return new GraphQLObjectType(config);
+        });
     }
 
     getModelObjectType(modelName: string): GraphQLObjectType {
