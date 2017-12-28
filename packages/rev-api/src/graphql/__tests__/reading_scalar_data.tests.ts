@@ -8,7 +8,7 @@ import { createPosts } from './modeldata.fixture';
 import { expectToHaveProperties } from '../../__test_utils__/utils';
 import { GraphQLApi } from '../api';
 
-describe('GraphQL "query" type - scalar model data', () => {
+describe('GraphQL query type - scalar model data', () => {
 
     describe('When model has no data', () => {
 
@@ -79,6 +79,62 @@ describe('GraphQL "query" type - scalar model data', () => {
             for (let i = 0; i < expectedPosts.length; i++) {
                 expectToHaveProperties(result.data.Post[i], expectedPosts[i]);
             }
+        });
+
+    });
+
+    describe('Can read all default supported scalar field types', () => {
+
+        let apiManager: ModelApiManager;
+        let schema: GraphQLSchema;
+        let modelManager: ModelManager;
+        let data: models.ModelWithAllScalarFields;
+
+        beforeEach(async () => {
+            modelManager = models.getModelManager();
+            apiManager = new ModelApiManager(modelManager);
+            apiManager.register(models.ModelWithAllScalarFields, { operations: ['read'] });
+
+            data = new models.ModelWithAllScalarFields();
+            try {
+                await modelManager.create(data);
+            }
+            catch (e) {
+                console.log(e.result.validation.fieldErrors);
+            }
+
+            schema = apiManager.getGraphQLSchema();
+        });
+
+        it('a query returns the expected data', async () => {
+            const query = `
+                query {
+                    ModelWithAllScalarFields {
+                        autoNumberField
+                        integerField
+                        numberField
+                        textField
+                        booleanField
+                        selectionField
+                        dateField
+                        timeField
+                        dateTimeField
+                    }
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.data.ModelWithAllScalarFields).to.have.length(1);
+            expect(result.data.ModelWithAllScalarFields[0]).to.deep.equal({
+                autoNumberField: 1,
+                integerField: 2,
+                numberField: 3.456,
+                textField: 'A test model with all default field types',
+                booleanField: true,
+                selectionField: 'Y',
+                dateField: '2017-12-25',
+                timeField: '12:13:14',
+                dateTimeField: '2017-12-25T12:13:14'
+            });
         });
 
     });

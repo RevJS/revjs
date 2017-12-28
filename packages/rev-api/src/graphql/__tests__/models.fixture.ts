@@ -1,8 +1,8 @@
 import {
-    ModelManager, InMemoryBackend,
-    IntegerField, TextField, DateField, BooleanField, DateTimeField
+    fields, ModelManager, InMemoryBackend,
+    IntegerField, TextField, DateField, BooleanField, DateTimeField,
+    AutoNumberField, NumberField, SelectionField, TimeField
 } from 'rev-models';
-import { Field } from 'rev-models/lib/fields';
 
 export class User {
     @IntegerField()
@@ -40,7 +40,7 @@ export class Post {
     postMethod3() {}
 }
 
-export class UnknownField extends Field {}
+export class UnknownField extends fields.Field {}
 
 export class ModelWithUnknownField {
     unknownField: string;
@@ -48,6 +48,33 @@ export class ModelWithUnknownField {
         id: number = 1;
     @TextField()
         name: string = 'A test model with a weird field type';
+
+    constructor(data?: Partial<User>) {
+        Object.assign(this, data);
+    }
+
+    userMethod1() {}
+}
+
+export class ModelWithAllScalarFields {
+    @AutoNumberField()
+        autoNumberField: number;
+    @IntegerField()
+        integerField: number = 2;
+    @NumberField()
+        numberField: number = 3.456;
+    @TextField()
+        textField: string = 'A test model with all default field types';
+    @BooleanField()
+        booleanField: boolean = true;
+    @SelectionField({ selection: [['Y', 'Yes'], ['N', 'No']] })
+        selectionField: string = 'Y';
+    @DateField()
+        dateField: string = '2017-12-25';
+    @TimeField()
+        timeField: string = '12:13:14';
+    @DateTimeField()
+        dateTimeField: string = '2017-12-25T12:13:14';
 
     constructor(data?: Partial<User>) {
         Object.assign(this, data);
@@ -64,5 +91,6 @@ export function getModelManager() {
     modelManager.register(ModelWithUnknownField, { fields: [
         new UnknownField('unknownField')
     ]});
+    modelManager.register(ModelWithAllScalarFields);
     return modelManager;
 }
