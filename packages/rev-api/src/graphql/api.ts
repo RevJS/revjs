@@ -1,30 +1,31 @@
 import { fields, IModelManager } from 'rev-models';
 
-import { GraphQLSchema, GraphQLScalarType, GraphQLObjectType, GraphQLList, GraphQLResolveInfo } from 'graphql';
+import { GraphQLSchema, GraphQLObjectType, GraphQLList, GraphQLResolveInfo } from 'graphql';
 import { GraphQLInt, GraphQLFloat, GraphQLString, GraphQLBoolean } from 'graphql/type/scalars';
 import { GraphQLSchemaConfig } from 'graphql/type/schema';
 import { getQueryConfig } from './query/query';
 import { getMutationConfig } from './mutation/mutation';
-import { IModelApiManager, IGraphQLApi } from '../api/types';
+import { IModelApiManager } from '../api/types';
+import { IGraphQLApi, IGraphQLFieldConverter } from './types';
 
 export class GraphQLApi implements IGraphQLApi {
-    fieldTypeMap: Array<[new(...args: any[]) => fields.Field, GraphQLScalarType]>;
+    fieldConverters: Array<[new(...args: any[]) => fields.Field, IGraphQLFieldConverter]>;
     modelObjectTypes: { [modelName: string]: GraphQLObjectType } = {};
 
     constructor(private manager: IModelApiManager) {
         if (!manager || typeof manager.getApiMeta != 'function') {
             throw new Error(`GraphQLApi: Invalid ModelApiManager passed in constructor.`);
         }
-        this.fieldTypeMap = [
-            [fields.AutoNumberField, GraphQLInt],
-            [fields.IntegerField, GraphQLInt],
-            [fields.NumberField, GraphQLFloat],
-            [fields.TextField, GraphQLString],
-            [fields.BooleanField, GraphQLBoolean],
-            [fields.SelectionField, GraphQLString],
-            [fields.DateField, GraphQLString],
-            [fields.TimeField, GraphQLString],
-            [fields.DateTimeField, GraphQLString],
+        this.fieldConverters = [
+            [fields.AutoNumberField, { type: GraphQLInt, converter: (model, fieldName) => model[fieldName] }],
+            [fields.IntegerField, { type: GraphQLInt, converter: (model, fieldName) => model[fieldName] }],
+            [fields.NumberField, { type: GraphQLFloat, converter: (model, fieldName) => model[fieldName] }],
+            [fields.TextField, { type: GraphQLString, converter: (model, fieldName) => model[fieldName] }],
+            [fields.BooleanField, { type: GraphQLBoolean, converter: (model, fieldName) => model[fieldName] }],
+            [fields.SelectionField, { type: GraphQLString, converter: (model, fieldName) => model[fieldName] }],
+            [fields.DateField, { type: GraphQLString, converter: (model, fieldName) => model[fieldName] }],
+            [fields.TimeField, { type: GraphQLString, converter: (model, fieldName) => model[fieldName] }],
+            [fields.DateTimeField, { type: GraphQLString, converter: (model, fieldName) => model[fieldName] }],
         ];
     }
 
@@ -40,8 +41,8 @@ export class GraphQLApi implements IGraphQLApi {
         return Object.keys(this.modelObjectTypes);
     }
 
-    getGraphQLScalarType(field: fields.Field) {
-        for (const fieldMapping of this.fieldTypeMap) {
+    getGraphQLFieldConverter(field: fields.Field) {
+        for (const fieldMapping of this.fieldConverters) {
             if (field instanceof fieldMapping[0]) {
                 return fieldMapping[1];
             }
@@ -60,12 +61,12 @@ export class GraphQLApi implements IGraphQLApi {
 
                 meta.fields.forEach((field) => {
 
-                    let scalarType = this.getGraphQLScalarType(field);
+                    let scalarType = this.getGraphQLFieldConverter(field);
                     if (scalarType) {
                         fieldConfig[field.name] = {
-                            type: scalarType,
+                            type: scalarType.type,
                             resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
-                                return rootValue[field.name];
+                                return scalarType.converter(rootValue, field.name);
                             }
                         };
                     }

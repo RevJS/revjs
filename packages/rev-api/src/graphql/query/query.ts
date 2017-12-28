@@ -1,4 +1,4 @@
-import { IGraphQLApi } from '../../api/types';
+import { IGraphQLApi } from '../types';
 import { GraphQLString, GraphQLObjectTypeConfig, GraphQLList, GraphQLResolveInfo } from 'graphql';
 import * as GraphQLJSON from 'graphql-type-json';
 
