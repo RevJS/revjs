@@ -108,8 +108,8 @@ describe('GraphQL "query" type - model list', () => {
 
         before(() => {
             manager = new ModelApiManager(models.getModelManager());
-            manager.register(models.User, { operations: ['read'] });
             manager.register(models.Post, { operations: ['create'] });
+            manager.register(models.UnrelatedModel, { operations: ['read'] });
             api = new GraphQLApi(manager);
 
             schema = api.getSchema();
@@ -129,7 +129,7 @@ describe('GraphQL "query" type - model list', () => {
             `;
             const result = await graphql(schema, query);
             expect(result.data.__schema.queryType.fields).to.have.length(1);
-            expect(result.data.__schema.queryType.fields[0].name).to.equal('User');
+            expect(result.data.__schema.queryType.fields[0].name).to.equal('UnrelatedModel');
         });
 
         it('attempts to read unreadable models fail', async () => {
@@ -167,5 +167,26 @@ describe('GraphQL "query" type - model list', () => {
         });
 
     });
+
+    describe('When registering models that reference other models that are not in the API', () => {
+
+        let manager: ModelApiManager;
+        let api: GraphQLApi;
+        let schema: GraphQLSchema;
+
+        before(() => {
+            manager = new ModelApiManager(models.getModelManager());
+            manager.register(models.Post, { operations: ['read'] });
+            api = new GraphQLApi(manager);
+        });
+
+        it('getSchema() throws with a helpful error message', async () => {
+            expect(() => {
+                schema = api.getSchema();
+            }).to.throw(`Model field 'Post.user' is linked to a model 'User', which is not registered with the api`);
+        });
+
+    });
+
 
 });

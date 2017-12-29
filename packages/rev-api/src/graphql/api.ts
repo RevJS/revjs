@@ -64,21 +64,30 @@ export class GraphQLApi implements IGraphQLApi {
                             }
                         };
                     }
-                    else if (field instanceof fields.RelatedModelField) {
-                        // fieldConfig[field.name] = {
-                        //     type: this.modelObjectTypes[field.options.model],
-                        //     resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
-                        //         return {};
-                        //     }
-                        // };
-                    }
-                    else if (field instanceof fields.RelatedModelListField) {
-                        // fieldConfig[field.name] = {
-                        //     type: new GraphQLList(this.modelObjectTypes[field.options.model]),
-                        //     resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
-                        //         return [{}];
-                        //     }
-                        // };
+                    else if (field instanceof fields.RelatedModelFieldBase) {
+                        let modelObjectType = this.modelObjectTypes[field.options.model];
+                        if (!modelObjectType) {
+                            throw new Error(`GraphQLApi: Model field '${modelName}.${field.name}' is linked to a model '${field.options.model}', which is not registered with the api.`);
+                        }
+                        if (field instanceof fields.RelatedModelField) {
+                            fieldConfig[field.name] = {
+                                type: modelObjectType,
+                                resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
+                                    return {};
+                                }
+                            };
+                        }
+                        else if (field instanceof fields.RelatedModelListField) {
+                            fieldConfig[field.name] = {
+                                type: new GraphQLList(modelObjectType),
+                                resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
+                                    return [{}];
+                                }
+                            };
+                        }
+                        else {
+                            throw new Error(`GraphQLApi: Unknown relational field type for '${modelName}.${field.name}'`);
+                        }
                     }
                     else {
                         throw new Error(`GraphQLApi Error: The field class of ${modelName}.${field.name} does not have a registered mapping.`);
@@ -97,13 +106,11 @@ export class GraphQLApi implements IGraphQLApi {
     getNoModelsObject(): GraphQLObjectType {
         return new GraphQLObjectType({
             name: 'query',
-            fields: {
-                no_models: {
-                    type: GraphQLString,
-                    resolve() {
-                        return 'No models have been registered for read access';
-                    }
-                }
+            fields: { no_models: {
+                type: GraphQLString,
+                resolve() {
+                    return 'No models have been registered for read access';
+                }}
             }
         });
     }

@@ -20,6 +20,7 @@ describe('GraphQL query type - scalar model data', () => {
             modelManager = models.getModelManager();
             apiManager = new ModelApiManager(modelManager);
             apiManager.register(models.Post, { operations: ['read'] });
+            apiManager.register(models.User, { operations: ['read'] });
             api = new GraphQLApi(apiManager);
 
             schema = api.getSchema();
@@ -55,6 +56,7 @@ describe('GraphQL query type - scalar model data', () => {
             modelManager = models.getModelManager();
             apiManager = new ModelApiManager(modelManager);
             apiManager.register(models.Post, { operations: ['read'] });
+            apiManager.register(models.User, { operations: ['read'] });
             api = new GraphQLApi(apiManager);
 
             expectedData = await createData(modelManager);

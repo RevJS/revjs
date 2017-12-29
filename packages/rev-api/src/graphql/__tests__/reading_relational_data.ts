@@ -7,7 +7,7 @@ import { ModelManager } from 'rev-models';
 import { createData, IModelTestData } from '../__fixtures__/modeldata';
 import { GraphQLApi } from '../api';
 
-describe('GraphQL query type - relational data', () => {
+describe('Querying relational data', () => {
     let apiManager: ModelApiManager;
     let api: GraphQLApi;
     let schema: GraphQLSchema;
@@ -18,6 +18,7 @@ describe('GraphQL query type - relational data', () => {
         modelManager = models.getModelManager();
         apiManager = new ModelApiManager(modelManager);
         apiManager.register(models.Post, { operations: ['read'] });
+        apiManager.register(models.User, { operations: ['read'] });
         api = new GraphQLApi(apiManager);
 
         expectedData = await createData(modelManager);

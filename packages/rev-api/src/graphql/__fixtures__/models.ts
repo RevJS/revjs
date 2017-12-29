@@ -45,6 +45,17 @@ export class Post {
     postMethod3() {}
 }
 
+export class UnrelatedModel {
+    @AutoNumberField({ primaryKey: true })
+        id: number = 1;
+    @TextField()
+        name: string = 'A model that doesnt have any relational links';
+
+    constructor(data?: Partial<User>) {
+        Object.assign(this, data);
+    }
+}
+
 export class UnknownField extends fields.Field {}
 
 export class ModelWithUnknownField {
@@ -93,6 +104,7 @@ export function getModelManager() {
     modelManager.registerBackend('default', new InMemoryBackend());
     modelManager.register(User);
     modelManager.register(Post);
+    modelManager.register(UnrelatedModel);
     modelManager.register(ModelWithUnknownField, { fields: [
         new UnknownField('unknownField')
     ]});
