@@ -164,12 +164,19 @@ export class GraphQLApi implements IGraphQLApi {
                         where: { type: GraphQLJSON }
                     },
                     resolve: (rootValue: any, args?: any, context?: any, info?: GraphQLResolveInfo): Promise<any> => {
+                        let whereClause = {};
+                        if (args && args.where) {
+                            if (typeof args.where != 'object') {
+                                throw new Error(`GraphQLApi Error: The "where" argument must be an object.`);
+                            }
+                            whereClause = args.where;
+                        }
                         let modelMeta = models.getModelMeta(modelName);
                         let selectedRelationalFields = this.getQueryRelatedFieldList(info, modelMeta);
                         let readOptions: IReadOptions = {
                             related: selectedRelationalFields
                         };
-                        return models.read(modelMeta.ctor, {}, readOptions)
+                        return models.read(modelMeta.ctor, whereClause, readOptions)
                             .then((res) => {
                                 return res.results;
                             });
