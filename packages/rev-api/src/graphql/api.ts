@@ -6,7 +6,7 @@ import * as GraphQLJSON from 'graphql-type-json';
 import { getMutationConfig } from './mutation/mutation';
 import { IModelApiManager } from '../api/types';
 import { IGraphQLApi, IGraphQLFieldConverter } from './types';
-import { IReadOptions } from 'rev-models/lib/models/types';
+import { IReadOptions, IModelMeta } from 'rev-models/lib/models/types';
 
 export class GraphQLApi implements IGraphQLApi {
     fieldConverters: Array<[new(...args: any[]) => fields.Field, IGraphQLFieldConverter]>;
@@ -116,9 +116,43 @@ export class GraphQLApi implements IGraphQLApi {
         });
     }
 
-    getNodeSelectedSubfields(info: GraphQLResolveInfo): string[] {
-        // Extract the list of selected subfields for the current graphql node
-        return info.fieldNodes[0].selectionSet.selections.map((selection: FieldNode) => selection.name.value);
+    _findRelationalFieldNodes(node: FieldNode, meta: IModelMeta<any>, relatedNodes: any) {
+        // For this node in the GraphQL Query, find all the sub-nodes that
+        // are Relational fields (subclasses of RelatedModelFieldBase) and
+        // record them in the "relatedNodes" object
+        for (let selection of (node.selectionSet.selections as FieldNode[])) {
+            let fieldName = selection.name.value;
+            let field = meta.fieldsByName[fieldName];
+            if (field instanceof fields.RelatedModelFieldBase) {
+                let childMeta = this.manager.getModelManager().getModelMeta(field.options.model);
+                relatedNodes[fieldName] = {};
+                this._findRelationalFieldNodes(selection, childMeta, relatedNodes[fieldName]);
+            }
+        }
+    }
+
+    _listRelationalFields(relatedNodes: any, prefix: string, relatedList: string[]) {
+        // Traverse the "relatedNodes" object and add all unique paths to the relatedList array
+        // e.g. { a: { b: {}, c: {} }} becomes [ 'a.b', 'a.c' ]
+        if (prefix && Object.keys(relatedNodes).length == 0) {
+            relatedList.push(prefix);
+        }
+        else {
+            prefix = prefix ? prefix + '.' : prefix;
+            for (let key in relatedNodes) {
+                this._listRelationalFields(relatedNodes[key], prefix + key, relatedList);
+            }
+        }
+    }
+
+    getQueryRelatedFieldList(info: GraphQLResolveInfo, meta: IModelMeta<any>): string[] {
+        // Build the list of "related" fields in the query, to pass to rev-models
+        const rootNode = info.fieldNodes[0];
+        const relatedNodes = {};
+        const relatedList: string[] = [];
+        this._findRelationalFieldNodes(rootNode, meta, relatedNodes);
+        this._listRelationalFields(relatedNodes, '', relatedList);
+        return relatedList;
     }
 
     getSchemaQueryObject(): GraphQLObjectType {
@@ -141,9 +175,7 @@ export class GraphQLApi implements IGraphQLApi {
                     },
                     resolve: (rootValue: any, args?: any, context?: any, info?: GraphQLResolveInfo): Promise<any> => {
                         let modelMeta = models.getModelMeta(modelName);
-                        let selectedFields = this.getNodeSelectedSubfields(info);
-                        let selectedRelationalFields = selectedFields.filter((fieldName) =>
-                            modelMeta.fieldsByName[fieldName] instanceof fields.RelatedModelFieldBase);
+                        let selectedRelationalFields = this.getQueryRelatedFieldList(info, modelMeta);
                         let readOptions: IReadOptions = {
                             related: selectedRelationalFields
                         };

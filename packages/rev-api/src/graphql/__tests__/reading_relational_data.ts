@@ -123,14 +123,15 @@ describe('Querying relational data', () => {
                                 name
                             }
                         }
+                        user {
+                            name
+                        }
                     }
 
                 }
             }
         `;
         const result = await graphql(schema, query);
-        console.log(result.data.User[0]);
-        console.log(result.data.User[1]);
         expect(result.data.User).to.deep.equal([
             {
                 id: 1,
