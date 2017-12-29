@@ -1,6 +1,6 @@
 import { fields, IModelManager } from 'rev-models';
 
-import { GraphQLSchema, GraphQLObjectType, GraphQLResolveInfo, GraphQLList, FieldNode } from 'graphql';
+import { GraphQLSchema, GraphQLObjectType, GraphQLResolveInfo, GraphQLList, FieldNode, GraphQLType } from 'graphql';
 import { GraphQLInt, GraphQLFloat, GraphQLString, GraphQLBoolean } from 'graphql/type/scalars';
 import * as GraphQLJSON from 'graphql-type-json';
 import { getMutationConfig } from './mutation/mutation';
@@ -41,10 +41,25 @@ export class GraphQLApi implements IGraphQLApi {
         return Object.keys(this.modelObjectTypes);
     }
 
-    getGraphQLFieldConverter(field: fields.Field) {
-        for (const fieldMapping of this.fieldConverters) {
-            if (field instanceof fieldMapping[0]) {
-                return fieldMapping[1];
+    getGraphQLFieldConverter(field: fields.Field): IGraphQLFieldConverter {
+        if (field instanceof fields.RelatedModelFieldBase) {
+            let modelObjectType: GraphQLType = this.modelObjectTypes[field.options.model];
+            if (!modelObjectType) {
+                throw new Error(`GraphQLApi: Model field '${field.name}' is linked to a model '${field.options.model}', which is not registered with the api.`);
+            }
+            if (field instanceof fields.RelatedModelListField) {
+                modelObjectType = new GraphQLList(modelObjectType);
+            }
+            return {
+                type: modelObjectType,
+                converter: (model, fieldName) => model[fieldName]
+            };
+        }
+        else {
+            for (const fieldMapping of this.fieldConverters) {
+                if (field instanceof fieldMapping[0]) {
+                    return fieldMapping[1];
+                }
             }
         }
     }
@@ -56,39 +71,14 @@ export class GraphQLApi implements IGraphQLApi {
             fields: () => {
                 const fieldConfig = {};
                 meta.fields.forEach((field) => {
-                    let scalarType = this.getGraphQLFieldConverter(field);
-                    if (scalarType) {
+                    let fieldConverter = this.getGraphQLFieldConverter(field);
+                    if (fieldConverter) {
                         fieldConfig[field.name] = {
-                            type: scalarType.type,
+                            type: fieldConverter.type,
                             resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
-                                return scalarType.converter(rootValue, field.name);
+                                return fieldConverter.converter(rootValue, field.name);
                             }
                         };
-                    }
-                    else if (field instanceof fields.RelatedModelFieldBase) {
-                        let modelObjectType = this.modelObjectTypes[field.options.model];
-                        if (!modelObjectType) {
-                            throw new Error(`GraphQLApi: Model field '${modelName}.${field.name}' is linked to a model '${field.options.model}', which is not registered with the api.`);
-                        }
-                        if (field instanceof fields.RelatedModelField) {
-                            fieldConfig[field.name] = {
-                                type: modelObjectType,
-                                resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
-                                    return rootValue[field.name];
-                                }
-                            };
-                        }
-                        else if (field instanceof fields.RelatedModelListField) {
-                            fieldConfig[field.name] = {
-                                type: new GraphQLList(modelObjectType),
-                                resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
-                                    return rootValue[field.name];
-                                }
-                            };
-                        }
-                        else {
-                            throw new Error(`GraphQLApi: Unknown relational field type for '${modelName}.${field.name}'`);
-                        }
                     }
                     else {
                         throw new Error(`GraphQLApi Error: The field class of ${modelName}.${field.name} does not have a registered mapping.`);

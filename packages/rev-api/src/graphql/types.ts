@@ -2,7 +2,7 @@
 import { IModelManager, IModel } from 'rev-models/lib/models/types';
 import { IModelApiManager } from '../api/types';
 import { fields } from 'rev-models';
-import { GraphQLScalarType, GraphQLObjectType } from 'graphql';
+import { GraphQLObjectType, GraphQLType } from 'graphql';
 
 export interface IGraphQLApi {
     getModelManager(): IModelManager;
@@ -13,6 +13,6 @@ export interface IGraphQLApi {
 }
 
 export interface IGraphQLFieldConverter {
-    type: GraphQLScalarType;
+    type: GraphQLType;
     converter(model: IModel, fieldName: string): any;
 }
