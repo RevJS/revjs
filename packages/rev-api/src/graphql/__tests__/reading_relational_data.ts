@@ -70,4 +70,40 @@ describe('Querying relational data', () => {
         ]);
     });
 
+    it('Can read data from RelatedModelList fields (1-level deep)', async () => {
+        const query = `
+            query {
+                User {
+                    id,
+                    name,
+                    date_registered,
+                    posts {
+                        post_date
+                        title
+                    }
+                }
+            }
+        `;
+        const result = await graphql(schema, query);
+        expect(result.data.User).to.deep.equal([
+            {
+                id: 1,
+                name: 'Billy Bob',
+                date_registered: '2012-03-20',
+                posts: [
+                    { post_date: '2018-01-31T12:11:10', title: 'RevJS v1.0.0 Released!' },
+                    { post_date: '2017-04-15T13:14:15', title: 'JavaScript is Awesome' }
+                ]
+            },
+            {
+                id: 2,
+                name: 'Mike Portnoy',
+                date_registered: '2017-10-02',
+                posts: [
+                    { post_date: '2017-07-02T01:02:03', title: 'Ruby Sucks' }
+                ]
+            }
+        ]);
+    });
+
 });
