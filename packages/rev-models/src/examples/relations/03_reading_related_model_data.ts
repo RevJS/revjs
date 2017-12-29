@@ -24,6 +24,13 @@ import { createJobs } from './02_creating_related_model_data';
     });
     console.log(developersWithJobs.results[0]);
 
+    console.log('\nYou can also load deeply nested data by using dot notation with the "related" option...');
+
+    const jobsWithDeepData = await models.read(Job, {}, {
+        related: [ 'company.city' ]
+    });
+    console.log(jobsWithDeepData.results);
+
     console.log('\nYou can filter based on related record IDs...');
 
     const jobsWithNoDeveloper = await models.read(Job, {

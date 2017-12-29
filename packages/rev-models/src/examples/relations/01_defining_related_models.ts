@@ -8,12 +8,24 @@ export class BaseModel<T> {
     }
 }
 
+export class City extends BaseModel<City> {
+
+    @rev.IntegerField({ primaryKey: true })
+        id: number;
+    @rev.TextField()
+        name: string;
+    @rev.TextField()
+        code: string;
+}
+
 export class Company extends BaseModel<Company> {
 
     @rev.IntegerField({ primaryKey: true })
         id: number;
     @rev.TextField()
         name: string;
+    @rev.RelatedModel({ model: 'City' })
+        city: City;
 
 }
 
@@ -41,6 +53,7 @@ export class Job extends BaseModel<Job> {
 
 }
 
+models.register(City);
 models.register(Company);
 models.register(Developer);
 models.register(Job);

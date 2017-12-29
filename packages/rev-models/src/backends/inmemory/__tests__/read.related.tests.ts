@@ -252,4 +252,70 @@ describe('rev.backends.inmemory - read() related field tests', () => {
         });
     });
 
+    describe('read() - with "related" option specifying fields multiple levels deep', () => {
+
+        it('returns results with related data from all levels', () => {
+            return backend.read(manager, Developer, {
+                id: { $in: [1, 5] }
+            }, developerReadResult, getReadOpts({
+                related: [
+                    'company.departments',
+                    'company.departments.company',
+                    'city',  ]
+            }))
+                .then((res) => {
+                    expect(res.success).to.be.true;
+                    expect(res.result).to.be.undefined;
+                    expect(res.results).to.deep.equal([
+                        {
+                            id: 1,
+                            name: 'Billy Devman',
+                            city: { id: 1, name: 'Wellington' },
+                            company: {
+                                id: 1,
+                                name: 'AccelDev Inc.',
+                                departments: [
+                                    {
+                                        id: 1,
+                                        name: 'Front End Department',
+                                        company: {
+                                            id: 1,
+                                            name: 'AccelDev Inc.'
+                                        }
+                                    },
+                                    {
+                                        id: 2,
+                                        name: 'Backend Department',
+                                        company: {
+                                            id: 1,
+                                            name: 'AccelDev Inc.'
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            id: 5,
+                            name: 'Captain JavaScript',
+                            city: { id: 1, name: 'Wellington' },
+                            company: {
+                                id: 2,
+                                name: 'Programs R Us',
+                                departments: [
+                                    {
+                                        id: 3,
+                                        name: 'The Cheiftans',
+                                        company: {
+                                            id: 2,
+                                            name: 'Programs R Us',
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]);
+                });
+        });
+    });
+
 });

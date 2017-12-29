@@ -1,18 +1,34 @@
 
 import { models } from '../01_defining_a_model_manager';
-import { Company, Developer, Job } from './01_defining_related_models';
+import { City, Company, Developer, Job } from './01_defining_related_models';
 
 export async function createJobs() {
 
+    const city1 = new City({
+        id: 1,
+        name: 'Wellington',
+        code: 'WEL'
+    });
+    await models.create(city1);
+
+    const city2 = new City({
+        id: 2,
+        name: 'Auckland',
+        code: 'AUK'
+    });
+    await models.create(city2);
+
     const company1 = new Company({
         id: 1,
-        name: 'Aztec Inc'
+        name: 'Aztec Inc',
+        city: city1
     });
     await models.create(company1);
 
     const company2 = new Company({
         id: 2,
-        name: 'MBI Ltd'
+        name: 'MBI Ltd',
+        city: city2
     });
     await models.create(company2);
 

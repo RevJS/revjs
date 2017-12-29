@@ -42,11 +42,12 @@ export function validateRelated<T extends IModel>(model: new() => T, meta: IMode
         if (typeof related_field != 'string') {
             throw new Error('read(): related: array contains a non-string value');
         }
-        if (!(related_field in meta.fieldsByName)) {
-            throw new Error(`read(): related: field '${related_field}' does not exist in model`);
+        let fieldName = related_field.split('.')[0];
+        if (!(fieldName in meta.fieldsByName)) {
+            throw new Error(`read(): related: field '${related_field}' does not exist in model '${meta.name}'`);
         }
-        if (!(meta.fieldsByName[related_field] instanceof RelatedModelFieldBase)) {
-            throw new Error(`read(): related: field '${related_field}' is not a related model field`);
+        if (!(meta.fieldsByName[fieldName] instanceof RelatedModelFieldBase)) {
+            throw new Error(`read(): related: field '${related_field}' is not a relational field in model '${meta.name}'`);
         }
     }
 }

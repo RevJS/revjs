@@ -136,7 +136,7 @@ describe('rev.operations.read()', () => {
         })
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
-                expect(err.message).to.contain(`field 'name' is not a related model field`);
+                expect(err.message).to.contain(`field 'name' is not a relational field`);
             });
     });
 

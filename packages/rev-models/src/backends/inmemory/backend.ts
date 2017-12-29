@@ -107,6 +107,8 @@ export class InMemoryBackend implements IBackend {
         const foreignKeyValues: IForeignKeyValues = {};
         const rawValues: IRawValues = [];
 
+        const relatedFieldNames = this._getOwnRelatedFieldNames(options);
+
         // Populate scalar values and cache related model information
         result.results = [];
         for (let record of modelStorage) {
@@ -117,8 +119,8 @@ export class InMemoryBackend implements IBackend {
                 result.results.push(modelInstance);
                 primaryKeyValues.push(modelInstance[meta.primaryKey]);
 
-                if (options.related) {
-                    for (let fieldName of options.related) {
+                if (relatedFieldNames) {
+                    for (let fieldName of relatedFieldNames) {
                         let field = meta.fieldsByName[fieldName];
                         let keyValue = record[fieldName];
                         if (field instanceof RelatedModelField) {
@@ -148,16 +150,16 @@ export class InMemoryBackend implements IBackend {
             }
         }
 
-        if (options.related) {
+        if (relatedFieldNames) {
             // Get related record data
             const related = await Promise.all([
-                this._getRelatedModelInstances(manager, meta, foreignKeyValues),
-                this._getRelatedModelListInstances(manager, meta, primaryKeyValues, options.related)
+                this._getRelatedModelInstances(manager, meta, foreignKeyValues, options),
+                this._getRelatedModelListInstances(manager, meta, primaryKeyValues, options)
             ]);
             const [relatedModelInstances, relatedModelListInstances] = related;
 
             for (let instance of result.results) {
-                for (let fieldName of options.related) {
+                for (let fieldName of relatedFieldNames) {
                     let field = meta.fieldsByName[fieldName];
                     if (field instanceof RelatedModelField) {
                         if (instance[fieldName] !== null
@@ -269,7 +271,26 @@ export class InMemoryBackend implements IBackend {
         }
     }
 
-    private async _getRelatedModelInstances(manager: IModelManager, meta: IModelMeta<any>, foreignKeyValues: IForeignKeyValues) {
+    _getOwnRelatedFieldNames(options: IReadOptions) {
+        return options.related && options.related.map((fieldName) => {
+            return fieldName.split('.')[0];
+        });
+    }
+
+    _getChildRelatedFieldNames(options: IReadOptions, parent: string) {
+        if (options.related) {
+            let childRelatedFields: string[] = [];
+            options.related.forEach((fieldName) => {
+                let tokens = fieldName.split('.');
+                if (tokens.length > 1 && tokens[0] == parent) {
+                    childRelatedFields.push(tokens.slice(1).join('.'));
+                }
+            });
+            return childRelatedFields;
+        }
+    }
+
+    private async _getRelatedModelInstances(manager: IModelManager, meta: IModelMeta<any>, foreignKeyValues: IForeignKeyValues, options: IReadOptions) {
 
         const foreignKeyFields: string[] = [];
         const foreignKeyPKFields: string[] = [];
@@ -279,6 +300,10 @@ export class InMemoryBackend implements IBackend {
             if (foreignKeyValues[fieldName].length > 0) {
                 let field = meta.fieldsByName[fieldName] as RelatedModelField;
                 let relatedMeta = manager.getModelMeta(field.options.model);
+                let readOptions: IReadOptions = {
+                    limit: foreignKeyValues[fieldName].length,
+                    related: this._getChildRelatedFieldNames(options, fieldName)
+                };
 
                 foreignKeyFields.push(fieldName);
                 foreignKeyPKFields.push(relatedMeta.primaryKey);
@@ -288,7 +313,7 @@ export class InMemoryBackend implements IBackend {
                         {
                             [relatedMeta.primaryKey]: { $in: foreignKeyValues[fieldName] }
                         },
-                        { limit: foreignKeyValues[fieldName].length }
+                        readOptions
                     ));
             }
         }
@@ -306,16 +331,22 @@ export class InMemoryBackend implements IBackend {
         return relatedModelInstances;
     }
 
-    private async _getRelatedModelListInstances(manager: IModelManager, meta: IModelMeta<any>, primaryKeyValues: string[], fieldNames: string[]) {
+    private async _getRelatedModelListInstances(manager: IModelManager, meta: IModelMeta<any>, primaryKeyValues: string[], options: IReadOptions) {
 
         const modelListFields: string[] = [];
         const modelListFieldFKs: string[] = [];
         const modelListFieldPromises: Array<Promise<IModelOperationResult<any, any>>> = [];
+        const relatedFieldNames = this._getOwnRelatedFieldNames(options);
 
-        for (let fieldName of fieldNames) {
+        for (let fieldName of relatedFieldNames) {
             let field = meta.fieldsByName[fieldName];
             if (field instanceof RelatedModelListField) {
                 let relatedMeta = manager.getModelMeta(field.options.model);
+                let readOptions: IReadOptions = {
+                    // NOTE: Number of results limited to the default number of results
+                    raw_values: [field.options.field],
+                    related: this._getChildRelatedFieldNames(options, fieldName)
+                };
                 modelListFields.push(fieldName);
                 modelListFieldFKs.push(field.options.field);
                 modelListFieldPromises.push(
@@ -324,10 +355,8 @@ export class InMemoryBackend implements IBackend {
                         {
                             [field.options.field]: { $in: primaryKeyValues }
                         },
-                        {
-                            raw_values: [field.options.field]
-                        }
-                    )); // NOTE: Number of results limited to the default number of results
+                        readOptions
+                    ));
             }
         }
 
