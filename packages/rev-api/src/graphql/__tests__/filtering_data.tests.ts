@@ -45,6 +45,26 @@ describe('GraphQL query type - filtering model data', () => {
             }]);
         });
 
+        it('I can use fancy operators', async () => {
+            const query = `
+                query {
+                    Post(where: {
+                            _and: [
+                                { id: { _gt: 1 }},
+                                { id: { _lt: 3 }}
+                            ]}) {
+                        id,
+                        title
+                    }
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.data.Post).to.deep.equal([{
+                id: 2,
+                title: 'JavaScript is Awesome'
+            }]);
+        });
+
         it('If the "where" argument is not an object I get an error', async () => {
             const query = `
                 query {
