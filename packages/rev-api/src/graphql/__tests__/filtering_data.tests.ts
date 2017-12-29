@@ -92,4 +92,70 @@ describe('GraphQL query type - filtering model data', () => {
         });
 
     });
+
+    describe('About pagination and sorting', () => {
+
+        let apiManager: ModelApiManager;
+        let api: GraphQLApi;
+        let schema: GraphQLSchema;
+        let modelManager: ModelManager;
+
+        beforeEach(async () => {
+            modelManager = models.getModelManager();
+            apiManager = new ModelApiManager(modelManager);
+            apiManager.register(models.Post, { operations: ['read'] });
+            apiManager.register(models.User, { operations: ['read'] });
+            apiManager.register(models.Comment, { operations: ['read'] });
+            api = new GraphQLApi(apiManager);
+
+            await createData(modelManager);
+
+            schema = api.getSchema();
+        });
+
+        it('I can use the "limit" argument to restrict / expand the number of results', async () => {
+            const query = `
+                query {
+                    Post(limit: 2) {
+                        id,
+                        title
+                    }
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.data.Post).to.deep.equal([
+                {
+                    id: 1,
+                    title: 'RevJS v1.0.0 Released!'
+                },
+                {
+                    id: 2,
+                    title: 'JavaScript is Awesome'
+                }
+            ]);
+        });
+
+        it('I can use the "offset" argument to start returning results from half way through the list', async () => {
+            const query = `
+                query {
+                    Post(offset: 1) {
+                        id,
+                        title
+                    }
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.data.Post).to.deep.equal([
+                {
+                    id: 2,
+                    title: 'JavaScript is Awesome'
+                },
+                {
+                    id: 3,
+                    title: 'Ruby Sucks'
+                }
+            ]);
+        });
+    });
+
 });

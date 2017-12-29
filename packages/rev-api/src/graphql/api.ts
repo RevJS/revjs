@@ -161,21 +161,31 @@ export class GraphQLApi implements IGraphQLApi {
                 queryObjectConfig.fields[modelName] = {
                     type: new GraphQLList(modelType),
                     args: {
-                        where: { type: GraphQLJSON }
+                        where: { type: GraphQLJSON },
+                        limit: { type: GraphQLInt },
+                        offset: { type: GraphQLInt }
                     },
                     resolve: (rootValue: any, args?: any, context?: any, info?: GraphQLResolveInfo): Promise<any> => {
-                        let whereClause = {};
-                        if (args && args.where) {
-                            if (typeof args.where != 'object') {
-                                throw new Error(`GraphQLApi Error: The "where" argument must be an object.`);
-                            }
-                            whereClause = args.where;
-                        }
                         let modelMeta = models.getModelMeta(modelName);
                         let selectedRelationalFields = this.getQueryRelatedFieldList(info, modelMeta);
+                        let whereClause = {};
                         let readOptions: IReadOptions = {
                             related: selectedRelationalFields
                         };
+                        if (args) {
+                            if (args.where) {
+                                if (typeof args.where != 'object') {
+                                    throw new Error(`GraphQLApi Error: The "where" argument must be an object.`);
+                                }
+                                whereClause = args.where;
+                            }
+                            if (args.limit) {
+                                readOptions.limit = args.limit;
+                            }
+                            if (args.offset) {
+                                readOptions.offset = args.offset;
+                            }
+                        }
                         return models.read(modelMeta.ctor, whereClause, readOptions)
                             .then((res) => {
                                 return res.results;
