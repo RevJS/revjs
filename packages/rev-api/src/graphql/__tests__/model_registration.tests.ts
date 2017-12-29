@@ -189,7 +189,7 @@ describe('GraphQL "query" type - model list', () => {
         it('getSchema() throws with a helpful error message', async () => {
             expect(() => {
                 schema = api.getSchema();
-            }).to.throw(`Model field 'Post.user' is linked to a model 'User', which is not registered with the api`);
+            }).to.throw(`Model field 'user' is linked to a model 'User', which is not registered with the api`);
         });
 
     });

@@ -107,7 +107,7 @@ describe('Querying relational data', () => {
         ]);
     });
 
-    it.only('Can read a mix of data from many levels deep', async () => {
+    it('Can read a mix of data from many levels deep', async () => {
         const query = `
             query {
                 User {
@@ -137,17 +137,45 @@ describe('Querying relational data', () => {
                 id: 1,
                 name: 'Billy Bob',
                 posts: [
-                    { id: 1, title: 'RevJS v1.0.0 Released!', comments: [
-                        // stuff here
-                    ]},
-                    { id: 2, title: 'JavaScript is Awesome', comments: null }
+                    {
+                        id: 1, title: 'RevJS v1.0.0 Released!',
+                        comments: [
+                            {
+                                id: 1, comment: 'I totally agree',
+                                user: {
+                                    name: 'Mike Portnoy'
+                                }
+                            },
+                            {
+                                id: 2, comment: 'Sweet!',
+                                user: {
+                                    name: 'Billy Bob'
+                                }
+                            }
+                        ],
+                        user: {
+                            name: 'Billy Bob'
+                        }                    },
+                    {
+                        id: 2, title: 'JavaScript is Awesome',
+                        comments: [],
+                        user: {
+                            name: 'Billy Bob'
+                        }
+                    }
                 ]
             },
             {
                 id: 2,
                 name: 'Mike Portnoy',
                 posts: [
-                    { id: 3, title: 'Ruby Sucks', comments: null }
+                    {
+                        id: 3, title: 'Ruby Sucks',
+                        comments: [],
+                        user: {
+                            name: 'Mike Portnoy'
+                        }
+                    }
                 ]
             }
         ]);
