@@ -12,6 +12,12 @@ export class QueryNode<T extends IModel> implements IQueryNode<T> {
         public operator: string,
         public parent: IQueryNode<T>) {
 
+        // Nodes should store the operator name without its prefix
+        const opName = parser.getUnprefixedOperatorName(operator);
+        if (opName) {
+            this.operator = opName;
+        }
+
         this.children = [];
     }
 

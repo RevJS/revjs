@@ -39,7 +39,7 @@ describe('class ValueOperator<T> - constructor', () => {
 
     it('stores the operator and value as public properties', () => {
         let node = new ValueOperator(parser, TestModel, '_eq', 12, null);
-        expect(node.operator).to.equal('_eq');
+        expect(node.operator).to.equal('eq');
         expect(node.value).to.equal(12);
     });
 

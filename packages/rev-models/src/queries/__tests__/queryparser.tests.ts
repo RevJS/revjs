@@ -30,8 +30,8 @@ let invalidQueryObjects = [
 
 describe('class QueryParser - constructor', () => {
     let parser: QueryParser;
-    let conjunctionOperators = ['_and', '_or'];
-    let fieldOperators = ['_eq', '_ne', '_gt', '_gte', '_lt', '_lte', '_like', '_in', '_nin'];
+    let conjunctionOperators = ['and', 'or'];
+    let fieldOperators = ['eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'like', 'in', 'nin'];
 
     before(() => {
         parser = new QueryParser(manager);
@@ -87,16 +87,16 @@ describe('class QueryParser - constructor', () => {
 
     describe('getQueryNodeForQuery() - single-key objects', () => {
 
-        it('returns a ConjunctionNode(_or) if operator is _or', () => {
+        it('returns a ConjunctionNode (or) if operator is _or', () => {
             let node = parser.getQueryNodeForQuery(TestModel, { _or: [] });
             expect(node).to.be.instanceof(ConjunctionNode);
-            expect(node.operator).to.equal('_or');
+            expect(node.operator).to.equal('or');
         });
 
-        it('returns a ConjunctionNode(_and) if operator is _and', () => {
+        it('returns a ConjunctionNode (and) if operator is _and', () => {
             let node = parser.getQueryNodeForQuery(TestModel, { _and: [] });
             expect(node).to.be.instanceof(ConjunctionNode);
-            expect(node.operator).to.equal('_and');
+            expect(node.operator).to.equal('and');
         });
 
         it('returns a FieldNode if key is a field name', () => {
@@ -132,9 +132,31 @@ describe('class QueryParser - constructor', () => {
                 let node = parser.getQueryNodeForQuery(TestModel, queryObj);
                 let keys = Object.keys(queryObj);
                 expect(node).to.be.instanceof(ConjunctionNode);
-                expect(node.operator).to.equal('_and');
+                expect(node.operator).to.equal('and');
                 expect(node.children).to.have.length(keys.length);
             }
+        });
+
+    });
+
+    describe('When I change the OPERATOR_PREFIX for a QueryParser', () => {
+
+        it('it can successfully parse queries using the alternative prefix', () => {
+            let customParser = new QueryParser(manager);
+            customParser.OPERATOR_PREFIX = '$';
+
+            let altOperatorTest = {
+                $and: [
+                    { name: { $eq: 'bob' }},
+                    { id: { $gt: 1}}
+                ]
+            };
+
+            let node = customParser.getQueryNodeForQuery(TestModel, altOperatorTest);
+            expect(node).to.be.instanceof(ConjunctionNode);
+            expect(node.operator).to.equal('and');
+            expect(node.children).to.have.length(2);
+            expect(node.children[0].children[0].operator).to.equal('eq');
         });
 
     });

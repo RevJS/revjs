@@ -52,7 +52,7 @@ describe('class ValueListOperator<T> - constructor', () => {
     it('stores the operator and values as public properties', () => {
         let valueList = ['a', 'b'];
         let node = new ValueListOperator(parser, TestModel, '_in', valueList, null);
-        expect(node.operator).to.equal('_in');
+        expect(node.operator).to.equal('in');
         expect(node.values).to.deep.equal(valueList);
     });
 

@@ -36,7 +36,7 @@ describe('class ConjunctionNode<T> - constructor', () => {
 
     it('creates a conjunction node with the correct operator', () => {
         let node = new ConjunctionNode(parser, TestModel, '_and', [], null);
-        expect(node.operator).to.equal('_and');
+        expect(node.operator).to.equal('and');
     });
 
     it('creates a conjunction node with no children if value array is empty', () => {

@@ -16,21 +16,21 @@ export class QueryParser implements IQueryParser {
     constructor(public manager: IModelManager) {
 
         this.registerConjunctionOperators({
-            _and: ConjunctionNode,
-            _or: ConjunctionNode
+            and: ConjunctionNode,
+            or: ConjunctionNode
         });
 
         this.registerFieldOperators({
-            _eq: ValueOperator,
-            _ne: ValueOperator,
-            _gt: ValueOperator,
-            _gte: ValueOperator,
-            _lt: ValueOperator,
-            _lte: ValueOperator,
-            _like: ValueOperator,
+            eq: ValueOperator,
+            ne: ValueOperator,
+            gt: ValueOperator,
+            gte: ValueOperator,
+            lt: ValueOperator,
+            lte: ValueOperator,
+            like: ValueOperator,
 
-            _in: ValueListOperator,
-            _nin: ValueListOperator
+            in: ValueListOperator,
+            nin: ValueListOperator
         });
     }
 
@@ -40,6 +40,24 @@ export class QueryParser implements IQueryParser {
 
     registerFieldOperators(operators: IOperatorRegister) {
         Object.assign(this.FIELD_OPERATORS, operators);
+    }
+
+    isConjunctionOperator(prefixedOperatorName: string) {
+        return Boolean(Object.keys(this.CONJUNCTION_OPERATORS)
+            .find((operator) => this.OPERATOR_PREFIX + operator == prefixedOperatorName));
+    }
+
+    isFieldOperator(prefixedOperatorName: string) {
+        return Boolean(Object.keys(this.FIELD_OPERATORS)
+            .find((operator) => this.OPERATOR_PREFIX + operator == prefixedOperatorName));
+    }
+
+    getUnprefixedOperatorName(prefixedOperatorName: string) {
+        const prefix = this.OPERATOR_PREFIX;
+        if (typeof prefixedOperatorName == 'string'
+            && prefixedOperatorName.substr(0, prefix.length) == prefix) {
+                return prefixedOperatorName.substr(prefix.length);
+        }
     }
 
     getQueryNodeForQuery<T extends IModel>(
@@ -56,8 +74,9 @@ export class QueryParser implements IQueryParser {
         let keys = Object.keys(value);
         if (keys.length == 1) {
             let key = keys[0];
-            if (key in this.CONJUNCTION_OPERATORS) {
-                return new (this.CONJUNCTION_OPERATORS[key])(this, model, key, value[key], parent);
+            if (this.isConjunctionOperator(key)) {
+                const opName = this.getUnprefixedOperatorName(key);
+                return new (this.CONJUNCTION_OPERATORS[opName])(this, model, key, value[key], parent);
             }
             else if (key in meta.fieldsByName) {
                 return new FieldNode(this, model, key, value[key], parent);
@@ -71,6 +90,6 @@ export class QueryParser implements IQueryParser {
             token[key] = value[key];
             queryTokens.push(token);
         }
-        return new this.CONJUNCTION_OPERATORS._and(this, model, '_and', queryTokens, parent);
+        return new this.CONJUNCTION_OPERATORS.and(this, model, '_and', queryTokens, parent);
     }
 }

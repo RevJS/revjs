@@ -18,11 +18,16 @@ export interface IOperatorRegister {
 
 export interface IQueryParser {
     manager: IModelManager;
+    OPERATOR_PREFIX: string;
     CONJUNCTION_OPERATORS: IOperatorRegister;
     FIELD_OPERATORS: IOperatorRegister;
 
     registerFieldOperators(operators: IOperatorRegister): void;
     registerConjunctionOperators(operators: IOperatorRegister): void;
+
+    isFieldOperator(prefixedOperatorName: string): boolean;
+    isConjunctionOperator(prefixedOperatorName: string): boolean;
+    getUnprefixedOperatorName(prefixedOperatorName: string): string;
 
     getQueryNodeForQuery<T extends IModel>(
         model: new() => T,

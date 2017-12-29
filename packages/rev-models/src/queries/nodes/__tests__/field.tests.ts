@@ -33,7 +33,7 @@ describe('class FieldNode<T> - constructor', () => {
         let node = new FieldNode(parser, TestModel, 'name', 'bob', null);
         expect(node.children).to.have.length(1);
         expect(node.children[0]).to.be.instanceof(ValueOperator);
-        expect(node.children[0].operator).to.equal('_eq');
+        expect(node.children[0].operator).to.equal('eq');
     });
 
     it('throws if value is not a field value or valid query object', () => {

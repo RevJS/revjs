@@ -30,11 +30,12 @@ export class FieldNode<T extends IModel> extends QueryNode<T> {
         else {
             let keys = Object.keys(value);
             for (let key of keys) {
-                if (!(key in parser.FIELD_OPERATORS)) {
+                if (!parser.isFieldOperator(key)) {
                     throw new Error(`unrecognised field operator '${key}'`);
                 }
                 else {
-                    this.children.push(new parser.FIELD_OPERATORS[key](parser, model, key, value[key], this));
+                    const opName = parser.getUnprefixedOperatorName(key);
+                    this.children.push(new parser.FIELD_OPERATORS[opName](parser, model, key, value[key], this));
                 }
             }
         }

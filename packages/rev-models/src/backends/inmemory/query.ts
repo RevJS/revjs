@@ -28,7 +28,7 @@ export class InMemoryQuery<T extends IModel> {
     }
 
     testRecordAgainstConjunction(record: object, conjunction: ConjunctionNode<T>): boolean {
-        if (conjunction.operator == '_and') {
+        if (conjunction.operator == 'and') {
             for (let childNode of conjunction.children) {
                 if (!this.testRecordAgainstNode(record, childNode)) {
                     return false;
@@ -36,7 +36,7 @@ export class InMemoryQuery<T extends IModel> {
             }
             return true;
         }
-        else if (conjunction.operator == '_or') {
+        else if (conjunction.operator == 'or') {
             for (let childNode of conjunction.children) {
                 if (this.testRecordAgainstNode(record, childNode)) {
                     return true;
@@ -60,34 +60,34 @@ export class InMemoryQuery<T extends IModel> {
 
     testRecordFieldValue(record: object, fieldName: string, valueNode: IQueryNode<T>): boolean {
         if (valueNode instanceof ValueOperator) {
-            if (valueNode.operator == '_eq' && record[fieldName] == valueNode.value) {
+            if (valueNode.operator == 'eq' && record[fieldName] == valueNode.value) {
                 return true;
             }
-            if (valueNode.operator == '_ne' && record[fieldName] != valueNode.value) {
+            if (valueNode.operator == 'ne' && record[fieldName] != valueNode.value) {
                 return true;
             }
-            if (valueNode.operator == '_gt' && record[fieldName] > valueNode.value) {
+            if (valueNode.operator == 'gt' && record[fieldName] > valueNode.value) {
                 return true;
             }
-            if (valueNode.operator == '_gte' && record[fieldName] >= valueNode.value) {
+            if (valueNode.operator == 'gte' && record[fieldName] >= valueNode.value) {
                 return true;
             }
-            if (valueNode.operator == '_lt' && record[fieldName] < valueNode.value) {
+            if (valueNode.operator == 'lt' && record[fieldName] < valueNode.value) {
                 return true;
             }
-            if (valueNode.operator == '_lte' && record[fieldName] <= valueNode.value) {
+            if (valueNode.operator == 'lte' && record[fieldName] <= valueNode.value) {
                 return true;
             }
-            if (valueNode.operator == '_like' && getLikeOperatorRegExp(valueNode.value).test(record[fieldName])) {
+            if (valueNode.operator == 'like' && getLikeOperatorRegExp(valueNode.value).test(record[fieldName])) {
                 return true;
             }
             return false;
         }
         else if (valueNode instanceof ValueListOperator) {
-            if (valueNode.operator == '_in') {
+            if (valueNode.operator == 'in') {
                 return (valueNode.values.indexOf(record[fieldName]) > -1);
             }
-            if (valueNode.operator == '_nin') {
+            if (valueNode.operator == 'nin') {
                 return (valueNode.values.indexOf(record[fieldName]) == -1);
             }
         }
