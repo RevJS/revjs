@@ -24,35 +24,35 @@ describe('class ValueListOperator<T> - constructor', () => {
 
     it('throws if operator is not a field operator', () => {
         expect(() => {
-            new ValueListOperator(parser, TestModel, '$and', [], null);
+            new ValueListOperator(parser, TestModel, '_and', [], null);
         }).to.throw('unrecognised field operator');
     });
 
     it('throws if value is not an array', () => {
         expect(() => {
-            new ValueListOperator(parser, TestModel, '$in', null, null);
+            new ValueListOperator(parser, TestModel, '_in', null, null);
         }).to.throw('must be an array');
         expect(() => {
-            new ValueListOperator(parser, TestModel, '$in', {} as any, null);
+            new ValueListOperator(parser, TestModel, '_in', {} as any, null);
         }).to.throw('must be an array');
     });
 
     it('throws if an array element is not a field value', () => {
         expect(() => {
-            new ValueListOperator(parser, TestModel, '$in', ['a', new RegExp('a')], null);
+            new ValueListOperator(parser, TestModel, '_in', ['a', new RegExp('a')], null);
         }).to.throw('invalid field value');
     });
 
     it('does not throw if value array is empty', () => {
         expect(() => {
-            new ValueListOperator(parser, TestModel, '$in', [], null);
+            new ValueListOperator(parser, TestModel, '_in', [], null);
         }).to.not.throw();
     });
 
     it('stores the operator and values as public properties', () => {
         let valueList = ['a', 'b'];
-        let node = new ValueListOperator(parser, TestModel, '$in', valueList, null);
-        expect(node.operator).to.equal('$in');
+        let node = new ValueListOperator(parser, TestModel, '_in', valueList, null);
+        expect(node.operator).to.equal('_in');
         expect(node.values).to.deep.equal(valueList);
     });
 

@@ -46,7 +46,7 @@ describe('rev.backends.inmemory', () => {
             let model = new TestModel();
             model.id = 1;
             model.name = 'bob';
-            return backend.update(manager, model, { id: { $gte: 0 } }, updateResult, {})
+            return backend.update(manager, model, { id: { _gte: 0 } }, updateResult, {})
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -94,7 +94,7 @@ describe('rev.backends.inmemory', () => {
             model.name = 'gertrude';
             model.gender = 'female';
             return backend.update(manager, model, {
-                id: { $gt: 0, $lt: 3 }
+                id: { _gt: 0, _lt: 3 }
             }, updateResult, {})
                 .then((res) => {
                     let storage = backend._storage['TestModel'];

@@ -256,7 +256,7 @@ describe('rev.backends.inmemory - read() related field tests', () => {
 
         it('returns results with related data from all levels', () => {
             return backend.read(manager, Developer, {
-                id: { $in: [1, 5] }
+                id: { _in: [1, 5] }
             }, developerReadResult, getReadOpts({
                 related: [
                     'company.departments',

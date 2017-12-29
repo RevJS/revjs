@@ -311,7 +311,7 @@ export class InMemoryBackend implements IBackend {
                     manager.read(
                         relatedMeta.ctor,
                         {
-                            [relatedMeta.primaryKey]: { $in: foreignKeyValues[fieldName] }
+                            [relatedMeta.primaryKey]: { _in: foreignKeyValues[fieldName] }
                         },
                         readOptions
                     ));
@@ -353,7 +353,7 @@ export class InMemoryBackend implements IBackend {
                     manager.read(
                         relatedMeta.ctor,
                         {
-                            [field.options.field]: { $in: primaryKeyValues }
+                            [field.options.field]: { _in: primaryKeyValues }
                         },
                         readOptions
                     ));

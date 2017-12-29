@@ -22,7 +22,7 @@ export class FieldNode<T extends IModel> extends QueryNode<T> {
             throw new Error(`'${fieldName}' is not a recognised field`);
         }
         else if (isFieldValue(value)) {
-            this.children.push(new ValueOperator(parser, model, '$eq', value, this));
+            this.children.push(new ValueOperator(parser, model, '_eq', value, this));
         }
         else if (!value || typeof value != 'object' || Object.keys(value).length == 0) {
             throw new Error(`invalid field query value for field '${fieldName}'`);

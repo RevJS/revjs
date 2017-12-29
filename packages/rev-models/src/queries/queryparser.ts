@@ -11,25 +11,26 @@ import { IModel, IModelManager } from '../models/types';
 export class QueryParser implements IQueryParser {
     CONJUNCTION_OPERATORS: IOperatorRegister = {};
     FIELD_OPERATORS: IOperatorRegister = {};
+    OPERATOR_PREFIX: string = '_';
 
     constructor(public manager: IModelManager) {
 
         this.registerConjunctionOperators({
-            $and: ConjunctionNode,
-            $or: ConjunctionNode
+            _and: ConjunctionNode,
+            _or: ConjunctionNode
         });
 
         this.registerFieldOperators({
-            $eq: ValueOperator,
-            $ne: ValueOperator,
-            $gt: ValueOperator,
-            $gte: ValueOperator,
-            $lt: ValueOperator,
-            $lte: ValueOperator,
-            $like: ValueOperator,
+            _eq: ValueOperator,
+            _ne: ValueOperator,
+            _gt: ValueOperator,
+            _gte: ValueOperator,
+            _lt: ValueOperator,
+            _lte: ValueOperator,
+            _like: ValueOperator,
 
-            $in: ValueListOperator,
-            $nin: ValueListOperator
+            _in: ValueListOperator,
+            _nin: ValueListOperator
         });
     }
 
@@ -70,6 +71,6 @@ export class QueryParser implements IQueryParser {
             token[key] = value[key];
             queryTokens.push(token);
         }
-        return new this.CONJUNCTION_OPERATORS.$and(this, model, '$and', queryTokens, parent);
+        return new this.CONJUNCTION_OPERATORS._and(this, model, '_and', queryTokens, parent);
     }
 }

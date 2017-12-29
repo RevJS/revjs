@@ -29,11 +29,11 @@ describe('class FieldNode<T> - constructor', () => {
         }).to.throw('is not a recognised field');
     });
 
-    it('contains a single ValueOperator($eq) if value is a field value', () => {
+    it('contains a single ValueOperator(_eq) if value is a field value', () => {
         let node = new FieldNode(parser, TestModel, 'name', 'bob', null);
         expect(node.children).to.have.length(1);
         expect(node.children[0]).to.be.instanceof(ValueOperator);
-        expect(node.children[0].operator).to.equal('$eq');
+        expect(node.children[0].operator).to.equal('_eq');
     });
 
     it('throws if value is not a field value or valid query object', () => {
@@ -47,15 +47,15 @@ describe('class FieldNode<T> - constructor', () => {
 
     it('throws if field operator is not in parser.FIELD_OPERATORS', () => {
         expect(() => {
-            new FieldNode(parser, TestModel, 'name', { $neq: 'test', $flibble: 2 }, null);
+            new FieldNode(parser, TestModel, 'name', { _neq: 'test', _flibble: 2 }, null);
         }).to.throw('unrecognised field operator');
     });
 
     it('creates a child node for each element in the value array', () => {
         let node = new FieldNode(parser, TestModel, 'name', {
-            $gt: 'aaa',
-            $lt: 'zzz',
-            $ne: 'jimbob'
+            _gt: 'aaa',
+            _lt: 'zzz',
+            _ne: 'jimbob'
         }, null);
         expect(node.children).to.have.length(3);
     });

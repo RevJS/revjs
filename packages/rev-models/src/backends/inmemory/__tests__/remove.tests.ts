@@ -85,7 +85,7 @@ describe('rev.backends.inmemory', () => {
         it('removes filtered records when where clause is set', () => {
             let model = new TestModel();
             return backend.remove(manager, model, {
-                id: { $in: [2, 3] }
+                id: { _in: [2, 3] }
             }, removeResult, {})
                 .then((res) => {
                     let storage = backend._storage['TestModel'];

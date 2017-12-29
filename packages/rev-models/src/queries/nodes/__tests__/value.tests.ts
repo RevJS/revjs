@@ -24,22 +24,22 @@ describe('class ValueOperator<T> - constructor', () => {
 
     it('throws if operator is not a field operator', () => {
         expect(() => {
-            new ValueOperator(parser, TestModel, '$and', [], null);
+            new ValueOperator(parser, TestModel, '_and', [], null);
         }).to.throw('unrecognised field operator');
     });
 
     it('throws if value is not a valid field value', () => {
         expect(() => {
-            new ValueOperator(parser, TestModel, '$eq', undefined, null);
+            new ValueOperator(parser, TestModel, '_eq', undefined, null);
         }).to.throw('invalid field value');
         expect(() => {
-            new ValueOperator(parser, TestModel, '$eq', {}, null);
+            new ValueOperator(parser, TestModel, '_eq', {}, null);
         }).to.throw('invalid field value');
     });
 
     it('stores the operator and value as public properties', () => {
-        let node = new ValueOperator(parser, TestModel, '$eq', 12, null);
-        expect(node.operator).to.equal('$eq');
+        let node = new ValueOperator(parser, TestModel, '_eq', 12, null);
+        expect(node.operator).to.equal('_eq');
         expect(node.value).to.equal(12);
     });
 

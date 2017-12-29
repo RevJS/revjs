@@ -66,7 +66,7 @@ describe('rev.backends.inmemory - update() related field tests', () => {
     //     model.name = 'gertrude';
     //     model.gender = 'female';
     //     return backend.update(manager, model, {
-    //         id: { $gt: 0, $lt: 3 }
+    //         id: { _gt: 0, _lt: 3 }
     //     }, companyUpdateResult, {})
     //         .then((res) => {
     //             let storage = backend._storage['TestModel'];

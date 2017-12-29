@@ -34,7 +34,7 @@ import { createJobs } from './02_creating_related_model_data';
     console.log('\nYou can filter based on related record IDs...');
 
     const jobsWithNoDeveloper = await models.read(Job, {
-        developer: { $eq: null }
+        developer: { _eq: null }
     }, {
         related: [ 'company', 'developer' ]
     });

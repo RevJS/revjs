@@ -16,9 +16,9 @@ import { loadTestData } from './load_test_data';
     console.log('Newsletter Subscribers Only:', subscribers.results);
 
     const agedPeople = await models.read(Person, {
-        $or: [
-            { age: { $lt: 21 }},
-            { age: { $gt: 40 }}
+        _or: [
+            { age: { _lt: 21 }},
+            { age: { _gt: 40 }}
         ]
     });
     console.log('Aged less than 21 or over 40:', agedPeople.results);

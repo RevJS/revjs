@@ -42,7 +42,7 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('returns a successful, empty result when where clause sets a filter', () => {
-            return backend.read(manager, TestModel, { name: { $like: '% Doe' } }, readResult, getReadOpts())
+            return backend.read(manager, TestModel, { name: { _like: '% Doe' } }, readResult, getReadOpts())
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -89,7 +89,7 @@ describe('rev.backends.inmemory', () => {
 
         it('returns filtered records when where clause is set', () => {
             return backend.read(manager, TestModel, {
-                name: { $like: '% Doe' }
+                name: { _like: '% Doe' }
             }, readResult, getReadOpts())
                 .then((res) => {
                     expect(res.success).to.be.true;

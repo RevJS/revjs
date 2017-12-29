@@ -30,8 +30,8 @@ let invalidQueryObjects = [
 
 describe('class QueryParser - constructor', () => {
     let parser: QueryParser;
-    let conjunctionOperators = ['$and', '$or'];
-    let fieldOperators = ['$eq', '$ne', '$gt', '$gte', '$lt', '$lte', '$like', '$in', '$nin'];
+    let conjunctionOperators = ['_and', '_or'];
+    let fieldOperators = ['_eq', '_ne', '_gt', '_gte', '_lt', '_lte', '_like', '_in', '_nin'];
 
     before(() => {
         parser = new QueryParser(manager);
@@ -87,16 +87,16 @@ describe('class QueryParser - constructor', () => {
 
     describe('getQueryNodeForQuery() - single-key objects', () => {
 
-        it('returns a ConjunctionNode($or) if operator is $or', () => {
-            let node = parser.getQueryNodeForQuery(TestModel, { $or: [] });
+        it('returns a ConjunctionNode(_or) if operator is _or', () => {
+            let node = parser.getQueryNodeForQuery(TestModel, { _or: [] });
             expect(node).to.be.instanceof(ConjunctionNode);
-            expect(node.operator).to.equal('$or');
+            expect(node.operator).to.equal('_or');
         });
 
-        it('returns a ConjunctionNode($and) if operator is $and', () => {
-            let node = parser.getQueryNodeForQuery(TestModel, { $and: [] });
+        it('returns a ConjunctionNode(_and) if operator is _and', () => {
+            let node = parser.getQueryNodeForQuery(TestModel, { _and: [] });
             expect(node).to.be.instanceof(ConjunctionNode);
-            expect(node.operator).to.equal('$and');
+            expect(node.operator).to.equal('_and');
         });
 
         it('returns a FieldNode if key is a field name', () => {
@@ -110,7 +110,7 @@ describe('class QueryParser - constructor', () => {
                 parser.getQueryNodeForQuery(TestModel, { unknown_field: 12 });
             }).to.throw('not a recognised field or conjunction operator');
             expect(() => {
-                parser.getQueryNodeForQuery(TestModel, { $lt: 12 });
+                parser.getQueryNodeForQuery(TestModel, { _lt: 12 });
             }).to.throw('not a recognised field or conjunction operator');
         });
 
@@ -119,7 +119,7 @@ describe('class QueryParser - constructor', () => {
     describe('getQueryNodeForQuery() - multi-key objects', () => {
 
         let multiKeyTestObjects = [
-            { id: 1, $or: [
+            { id: 1, _or: [
                 { id: 2 },
                 { id: 3 }
             ]},
@@ -127,12 +127,12 @@ describe('class QueryParser - constructor', () => {
             { id: 3, name: 'sally', active: true }
         ];
 
-        it('returns a ConjunctionNode($and) for all multi-key objects', () => {
+        it('returns a ConjunctionNode(_and) for all multi-key objects', () => {
             for (let queryObj of multiKeyTestObjects) {
                 let node = parser.getQueryNodeForQuery(TestModel, queryObj);
                 let keys = Object.keys(queryObj);
                 expect(node).to.be.instanceof(ConjunctionNode);
-                expect(node.operator).to.equal('$and');
+                expect(node.operator).to.equal('_and');
                 expect(node.children).to.have.length(keys.length);
             }
         });
