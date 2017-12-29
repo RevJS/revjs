@@ -156,6 +156,91 @@ describe('GraphQL query type - filtering model data', () => {
                 }
             ]);
         });
+
+        it('I can use the "limit" and "offset" args together to do magical things (pagination)', async () => {
+            const query = `
+                query {
+                    Post(offset: 1, limit: 1) {
+                        id,
+                        title
+                    }
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.data.Post).to.deep.equal([
+                {
+                    id: 2,
+                    title: 'JavaScript is Awesome'
+                }
+            ]);
+        });
+
+        it('I can sort the results using the "order_by" argument', async () => {
+            // GraphQL automagically converts "title" to ["title"]. Cool :)
+            const query = `
+                query {
+                    Post(order_by: "title") {
+                        id,
+                        title
+                    }
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.data.Post).to.deep.equal([
+                { id: 2, title: 'JavaScript is Awesome'},
+                { id: 1, title: 'RevJS v1.0.0 Released!'},
+                { id: 3, title: 'Ruby Sucks'},
+            ]);
+        });
+
+        it('I can sort the results in reverse order using the "order_by" argument and "desc" keyword', async () => {
+            const query = `
+                query {
+                    Post(order_by: "id desc") {
+                        id,
+                        title
+                    }
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.data.Post).to.deep.equal([
+                { id: 3, title: 'Ruby Sucks'},
+                { id: 2, title: 'JavaScript is Awesome'},
+                { id: 1, title: 'RevJS v1.0.0 Released!'},
+            ]);
+        });
+
+        it('I can sort the results by multiple fields', async () => {
+            const query = `
+                query {
+                    Post(order_by: ["post_date", "title"]) {
+                        id,
+                        title
+                    }
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.data.Post).to.deep.equal([
+                { id: 2, title: 'JavaScript is Awesome'},
+                { id: 3, title: 'Ruby Sucks'},
+                { id: 1, title: 'RevJS v1.0.0 Released!'},
+            ]);
+        });
+
+        it('I can use sorting and pagination fields together', async () => {
+            const query = `
+                query {
+                    Post(order_by: "post_date desc", limit: 1) {
+                        id,
+                        title
+                    }
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.data.Post).to.deep.equal([
+                { id: 1, title: 'RevJS v1.0.0 Released!'}
+            ]);
+        });
     });
 
 });

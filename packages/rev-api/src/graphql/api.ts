@@ -163,7 +163,9 @@ export class GraphQLApi implements IGraphQLApi {
                     args: {
                         where: { type: GraphQLJSON },
                         limit: { type: GraphQLInt },
-                        offset: { type: GraphQLInt }
+                        offset: { type: GraphQLInt },
+                        order_by: { type: new GraphQLList(GraphQLString) }
+
                     },
                     resolve: (rootValue: any, args?: any, context?: any, info?: GraphQLResolveInfo): Promise<any> => {
                         let modelMeta = models.getModelMeta(modelName);
@@ -184,6 +186,9 @@ export class GraphQLApi implements IGraphQLApi {
                             }
                             if (args.offset) {
                                 readOptions.offset = args.offset;
+                            }
+                            if (args.order_by) {
+                                readOptions.order_by = args.order_by;
                             }
                         }
                         return models.read(modelMeta.ctor, whereClause, readOptions)
