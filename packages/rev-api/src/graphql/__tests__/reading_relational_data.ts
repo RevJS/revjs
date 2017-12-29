@@ -28,7 +28,7 @@ describe('Querying relational data', () => {
 
     beforeEach(setup);
 
-    it('Can read data from RelatedModel fields', async () => {
+    it('Can read data from RelatedModel fields (1-level deep)', async () => {
         const query = `
             query {
                 Post {
@@ -42,16 +42,32 @@ describe('Querying relational data', () => {
             }
         `;
         const result = await graphql(schema, query);
-        console.log(result);
-        expect(false).to.equal('Make me green!');
-        // expect(result.data.Post).to.have.length(expectedData.posts.length);
-        // for (let i = 0; i < expectedData.posts.length; i++) {
-        //     expect(result.data.Post[i]).to.deep.equal({
-        //         id: expectedData.posts[i].id,
-        //         title: expectedData.posts[i].title,
-        //         body: expectedData.posts[i].body
-        //     });
-        // }
+        expect(result.data.Post).to.deep.equal([
+            {
+                id: 1,
+                title: 'RevJS v1.0.0 Released!',
+                post_date: '2018-01-31T12:11:10',
+                user: {
+                    name: 'Billy Bob'
+                }
+            },
+            {
+                id: 2,
+                title: 'JavaScript is Awesome',
+                post_date: '2017-04-15T13:14:15',
+                user: {
+                    name: 'Billy Bob'
+                }
+            },
+            {
+                id: 3,
+                title: 'Ruby Sucks',
+                post_date: '2017-07-02T01:02:03',
+                user: {
+                    name: 'Mike Portnoy'
+                }
+            }
+        ]);
     });
 
 });

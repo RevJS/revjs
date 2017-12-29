@@ -1,11 +1,12 @@
 import { fields, IModelManager } from 'rev-models';
 
-import { GraphQLSchema, GraphQLObjectType, GraphQLResolveInfo, GraphQLList } from 'graphql';
+import { GraphQLSchema, GraphQLObjectType, GraphQLResolveInfo, GraphQLList, FieldNode } from 'graphql';
 import { GraphQLInt, GraphQLFloat, GraphQLString, GraphQLBoolean } from 'graphql/type/scalars';
 import * as GraphQLJSON from 'graphql-type-json';
 import { getMutationConfig } from './mutation/mutation';
 import { IModelApiManager } from '../api/types';
 import { IGraphQLApi, IGraphQLFieldConverter } from './types';
+import { IReadOptions } from 'rev-models/lib/models/types';
 
 export class GraphQLApi implements IGraphQLApi {
     fieldConverters: Array<[new(...args: any[]) => fields.Field, IGraphQLFieldConverter]>;
@@ -73,7 +74,7 @@ export class GraphQLApi implements IGraphQLApi {
                             fieldConfig[field.name] = {
                                 type: modelObjectType,
                                 resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
-                                    return {};
+                                    return rootValue[field.name];
                                 }
                             };
                         }
@@ -81,7 +82,7 @@ export class GraphQLApi implements IGraphQLApi {
                             fieldConfig[field.name] = {
                                 type: new GraphQLList(modelObjectType),
                                 resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
-                                    return [{}];
+                                    return rootValue[field.name];
                                 }
                             };
                         }
@@ -115,6 +116,11 @@ export class GraphQLApi implements IGraphQLApi {
         });
     }
 
+    getNodeSelectedSubfields(info: GraphQLResolveInfo): string[] {
+        // Extract the list of selected subfields for the current graphql node
+        return info.fieldNodes[0].selectionSet.selections.map((selection: FieldNode) => selection.name.value);
+    }
+
     getSchemaQueryObject(): GraphQLObjectType {
         const readableModels = this.getReadableModels();
         if (readableModels.length == 0) {
@@ -135,7 +141,13 @@ export class GraphQLApi implements IGraphQLApi {
                     },
                     resolve: (rootValue: any, args?: any, context?: any, info?: GraphQLResolveInfo): Promise<any> => {
                         let modelMeta = models.getModelMeta(modelName);
-                        return models.read(modelMeta.ctor, {})
+                        let selectedFields = this.getNodeSelectedSubfields(info);
+                        let selectedRelationalFields = selectedFields.filter((fieldName) =>
+                            modelMeta.fieldsByName[fieldName] instanceof fields.RelatedModelFieldBase);
+                        let readOptions: IReadOptions = {
+                            related: selectedRelationalFields
+                        };
+                        return models.read(modelMeta.ctor, {}, readOptions)
                             .then((res) => {
                                 return res.results;
                             });

@@ -188,5 +188,4 @@ describe('GraphQL "query" type - model list', () => {
 
     });
 
-
 });

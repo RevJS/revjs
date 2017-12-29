@@ -34,9 +34,8 @@ export async function read<T extends IModel>(manager: IModelManager, model: new(
 export function validateRelated<T extends IModel>(model: new() => T, meta: IModelMeta<T>, related: any) {
 
     if (typeof related != 'object'
-            || !(related instanceof Array)
-            || related.length == 0) {
-        throw new Error('read(): related: must be an array with at least one item');
+            || !(related instanceof Array)) {
+        throw new Error('read(): related: must be an array');
     }
 
     for (let related_field of related) {
