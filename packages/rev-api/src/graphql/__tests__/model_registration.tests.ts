@@ -63,6 +63,7 @@ describe('GraphQL "query" type - model list', () => {
             manager = new ModelApiManager(models.getModelManager());
             manager.register(models.User, { operations: ['read'] });
             manager.register(models.Post, { operations: ['read'] });
+            manager.register(models.Comment, { operations: ['read'] });
             api = new GraphQLApi(manager);
 
             schema = api.getSchema();
@@ -85,7 +86,7 @@ describe('GraphQL "query" type - model list', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.__schema.queryType.fields).to.have.length(2);
+            expect(result.data.__schema.queryType.fields).to.have.length(3);
             expect(result.data.__schema.queryType.fields[0].name).to.equal('User');
             expect(result.data.__schema.queryType.fields[0].type).to.deep.equal({
                 kind: 'LIST',
@@ -95,6 +96,11 @@ describe('GraphQL "query" type - model list', () => {
             expect(result.data.__schema.queryType.fields[1].type).to.deep.equal({
                 kind: 'LIST',
                 ofType: { name: 'Post' }
+            });
+            expect(result.data.__schema.queryType.fields[2].name).to.equal('Comment');
+            expect(result.data.__schema.queryType.fields[2].type).to.deep.equal({
+                kind: 'LIST',
+                ofType: { name: 'Comment' }
             });
         });
 

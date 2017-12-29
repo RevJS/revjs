@@ -19,6 +19,7 @@ describe('Querying relational data', () => {
         apiManager = new ModelApiManager(modelManager);
         apiManager.register(models.Post, { operations: ['read'] });
         apiManager.register(models.User, { operations: ['read'] });
+        apiManager.register(models.Comment, { operations: ['read'] });
         api = new GraphQLApi(apiManager);
 
         expectedData = await createData(modelManager);
@@ -101,6 +102,51 @@ describe('Querying relational data', () => {
                 date_registered: '2017-10-02',
                 posts: [
                     { post_date: '2017-07-02T01:02:03', title: 'Ruby Sucks' }
+                ]
+            }
+        ]);
+    });
+
+    it.only('Can read a mix of data from many levels deep', async () => {
+        const query = `
+            query {
+                User {
+                    id,
+                    name
+                    posts {
+                        id
+                        title
+                        comments {
+                            id
+                            comment
+                            user {
+                                name
+                            }
+                        }
+                    }
+
+                }
+            }
+        `;
+        const result = await graphql(schema, query);
+        console.log(result.data.User[0]);
+        console.log(result.data.User[1]);
+        expect(result.data.User).to.deep.equal([
+            {
+                id: 1,
+                name: 'Billy Bob',
+                posts: [
+                    { id: 1, title: 'RevJS v1.0.0 Released!', comments: [
+                        // stuff here
+                    ]},
+                    { id: 2, title: 'JavaScript is Awesome', comments: null }
+                ]
+            },
+            {
+                id: 2,
+                name: 'Mike Portnoy',
+                posts: [
+                    { id: 3, title: 'Ruby Sucks', comments: null }
                 ]
             }
         ]);

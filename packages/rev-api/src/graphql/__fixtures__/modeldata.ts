@@ -1,9 +1,10 @@
 import { ModelManager } from 'rev-models';
-import { Post, User } from './models';
+import { Post, User, Comment } from './models';
 
 export interface IModelTestData {
     users: User[];
     posts: Post[];
+    comments: Comment[];
 }
 
 export async function createData(manager: ModelManager): Promise<IModelTestData> {
@@ -53,6 +54,21 @@ My precious...`,
         })
     ];
 
+    const comments = [
+        new Comment({
+            id: 1,
+            post: posts[0],
+            comment: 'I totally agree',
+            user: users[1]
+        }),
+        new Comment({
+            id: 2,
+            post: posts[0],
+            comment: 'Sweet!',
+            user: users[0]
+        }),
+    ];
+
     for (const user of users) {
         try {
             await manager.create(user);
@@ -73,9 +89,20 @@ My precious...`,
         }
     }
 
+    for (const comment of comments) {
+        try {
+            await manager.create(comment);
+        }
+        catch (e) {
+            console.log(comment);
+            console.log(e.result.validation.fieldErrors);
+        }
+    }
+
     return {
         users,
-        posts
+        posts,
+        comments
     };
 
 }

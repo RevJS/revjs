@@ -35,6 +35,8 @@ export class Post {
         post_date: string;
     @RelatedModel({ model: 'User' })
         user: User;
+    @RelatedModelList({ model: 'Comment', field: 'post' })
+        comments: Comment[];
 
     constructor(data?: Partial<Post>) {
         Object.assign(this, data);
@@ -43,6 +45,21 @@ export class Post {
     postMethod1() {}
     postMethod2() {}
     postMethod3() {}
+}
+
+export class Comment {
+    @IntegerField({ primaryKey: true })
+        id: number;
+    @RelatedModel({ model: 'Post' })
+        post: Post;
+    @TextField()
+        comment: string;
+    @RelatedModel({ model: 'User' })
+        user: User;
+
+    constructor(data?: Partial<Comment>) {
+        Object.assign(this, data);
+    }
 }
 
 export class UnrelatedModel {
@@ -104,6 +121,7 @@ export function getModelManager() {
     modelManager.registerBackend('default', new InMemoryBackend());
     modelManager.register(User);
     modelManager.register(Post);
+    modelManager.register(Comment);
     modelManager.register(UnrelatedModel);
     modelManager.register(ModelWithUnknownField, { fields: [
         new UnknownField('unknownField')
