@@ -14,6 +14,10 @@
   },
   "author": "Russell Briggs <russ@paraflyer.net>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RevJS/revjs.git"
+  },
   "typings": "lib/index.d.ts",
   "dependencies": {
     "graphql": "^0.10.1",
