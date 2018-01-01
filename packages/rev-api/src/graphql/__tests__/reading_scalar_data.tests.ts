@@ -31,16 +31,18 @@ describe('GraphQL query type - scalar model data', () => {
             const query = `
                 query {
                     Post {
-                        id,
-                        title,
-                        body,
-                        published,
-                        post_date
+                        results {
+                            id,
+                            title,
+                            body,
+                            published,
+                            post_date
+                        }
                     }
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post).to.deep.equal([]);
+            expect(result.data.Post.results).to.deep.equal([]);
         });
 
     });
@@ -70,18 +72,20 @@ describe('GraphQL query type - scalar model data', () => {
             const query = `
                 query {
                     Post {
-                        id,
-                        title,
-                        body,
-                        published,
-                        post_date
+                        results {
+                            id,
+                            title,
+                            body,
+                            published,
+                            post_date
+                        }
                     }
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post).to.have.length(expectedData.posts.length);
+            expect(result.data.Post.results).to.have.length(expectedData.posts.length);
             for (let i = 0; i < expectedData.posts.length; i++) {
-                expect(result.data.Post[i]).to.deep.equal({
+                expect(result.data.Post.results[i]).to.deep.equal({
                     id: expectedData.posts[i].id,
                     title: expectedData.posts[i].title,
                     body: expectedData.posts[i].body,
@@ -115,21 +119,23 @@ describe('GraphQL query type - scalar model data', () => {
             const query = `
                 query {
                     ModelWithAllScalarFields {
-                        autoNumberField
-                        integerField
-                        numberField
-                        textField
-                        booleanField
-                        selectionField
-                        dateField
-                        timeField
-                        dateTimeField
+                        results {
+                            autoNumberField
+                            integerField
+                            numberField
+                            textField
+                            booleanField
+                            selectionField
+                            dateField
+                            timeField
+                            dateTimeField
+                        }
                     }
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.ModelWithAllScalarFields).to.have.length(1);
-            expect(result.data.ModelWithAllScalarFields[0]).to.deep.equal({
+            expect(result.data.ModelWithAllScalarFields.results).to.have.length(1);
+            expect(result.data.ModelWithAllScalarFields.results[0]).to.deep.equal({
                 autoNumberField: 1,
                 integerField: 2,
                 numberField: 3.456,
@@ -175,21 +181,23 @@ describe('GraphQL query type - scalar model data', () => {
             const query = `
                 query {
                     ModelWithAllScalarFields {
-                        autoNumberField
-                        integerField
-                        numberField
-                        textField
-                        booleanField
-                        selectionField
-                        dateField
-                        timeField
-                        dateTimeField
+                        results {
+                            autoNumberField
+                            integerField
+                            numberField
+                            textField
+                            booleanField
+                            selectionField
+                            dateField
+                            timeField
+                            dateTimeField
+                        }
                     }
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.ModelWithAllScalarFields).to.have.length(1);
-            expect(result.data.ModelWithAllScalarFields[0].textField).to.equal('I am a custom converter!');
+            expect(result.data.ModelWithAllScalarFields.results).to.have.length(1);
+            expect(result.data.ModelWithAllScalarFields.results[0].textField).to.equal('I am a custom converter!');
         });
 
     });

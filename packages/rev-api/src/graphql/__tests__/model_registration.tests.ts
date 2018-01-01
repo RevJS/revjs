@@ -87,21 +87,13 @@ describe('GraphQL "query" type - model list', () => {
             `;
             const result = await graphql(schema, query);
             expect(result.data.__schema.queryType.fields).to.have.length(3);
+            console.log(result.data.__schema.queryType.fields[0]);
             expect(result.data.__schema.queryType.fields[0].name).to.equal('User');
-            expect(result.data.__schema.queryType.fields[0].type).to.deep.equal({
-                kind: 'LIST',
-                ofType: { name: 'User' }
-            });
+            expect(result.data.__schema.queryType.fields[0].type.kind).to.equal('OBJECT');
             expect(result.data.__schema.queryType.fields[1].name).to.equal('Post');
-            expect(result.data.__schema.queryType.fields[1].type).to.deep.equal({
-                kind: 'LIST',
-                ofType: { name: 'Post' }
-            });
+            expect(result.data.__schema.queryType.fields[1].type.kind).to.equal('OBJECT');
             expect(result.data.__schema.queryType.fields[2].name).to.equal('Comment');
-            expect(result.data.__schema.queryType.fields[2].type).to.deep.equal({
-                kind: 'LIST',
-                ofType: { name: 'Comment' }
-            });
+            expect(result.data.__schema.queryType.fields[2].type.kind).to.equal('OBJECT');
         });
 
     });
@@ -142,7 +134,9 @@ describe('GraphQL "query" type - model list', () => {
             const query = `
                 query {
                     Post {
-                        title
+                        results {
+                            title
+                        }
                     }
                 }
             `;
@@ -158,7 +152,6 @@ describe('GraphQL "query" type - model list', () => {
 
         let manager: ModelApiManager;
         let api: GraphQLApi;
-        let schema: GraphQLSchema;
 
         before(() => {
             manager = new ModelApiManager(models.getModelManager());
@@ -168,7 +161,7 @@ describe('GraphQL "query" type - model list', () => {
 
         it('getGraphQLSchema() throws an error', async () => {
             expect(() => {
-                schema = api.getSchema();
+                api.getSchema();
             }).to.throw('The field class of ModelWithUnknownField.unknownField does not have a registered mapping');
         });
 
@@ -178,7 +171,6 @@ describe('GraphQL "query" type - model list', () => {
 
         let manager: ModelApiManager;
         let api: GraphQLApi;
-        let schema: GraphQLSchema;
 
         before(() => {
             manager = new ModelApiManager(models.getModelManager());
@@ -188,7 +180,7 @@ describe('GraphQL "query" type - model list', () => {
 
         it('getSchema() throws with a helpful error message', async () => {
             expect(() => {
-                schema = api.getSchema();
+                api.getSchema();
             }).to.throw(`Model field 'user' is linked to a model 'User', which is not registered with the api`);
         });
 

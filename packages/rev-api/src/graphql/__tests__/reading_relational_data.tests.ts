@@ -4,7 +4,7 @@ import { ModelApiManager } from '../../api/manager';
 import * as models from '../__fixtures__/models';
 import { graphql, GraphQLSchema } from 'graphql';
 import { ModelManager } from 'rev-models';
-import { createData, IModelTestData } from '../__fixtures__/modeldata';
+import { createData } from '../__fixtures__/modeldata';
 import { GraphQLApi } from '../api';
 
 describe('Querying relational data', () => {
@@ -12,7 +12,6 @@ describe('Querying relational data', () => {
     let api: GraphQLApi;
     let schema: GraphQLSchema;
     let modelManager: ModelManager;
-    let expectedData: IModelTestData;
 
     async function setup() {
         modelManager = models.getModelManager();
@@ -22,7 +21,7 @@ describe('Querying relational data', () => {
         apiManager.register(models.Comment, { operations: ['read'] });
         api = new GraphQLApi(apiManager);
 
-        expectedData = await createData(modelManager);
+        await createData(modelManager);
 
         schema = api.getSchema();
     }
@@ -33,17 +32,19 @@ describe('Querying relational data', () => {
         const query = `
             query {
                 Post {
-                    id,
-                    title,
-                    post_date,
-                    user {
-                        name
+                    results {
+                        id,
+                        title,
+                        post_date,
+                        user {
+                            name
+                        }
                     }
                 }
             }
         `;
         const result = await graphql(schema, query);
-        expect(result.data.Post).to.deep.equal([
+        expect(result.data.Post.results).to.deep.equal([
             {
                 id: 1,
                 title: 'RevJS v1.0.0 Released!',
@@ -75,18 +76,20 @@ describe('Querying relational data', () => {
         const query = `
             query {
                 User {
-                    id,
-                    name,
-                    date_registered,
-                    posts {
-                        post_date
-                        title
+                    results {
+                        id,
+                        name,
+                        date_registered,
+                        posts {
+                            post_date
+                            title
+                        }
                     }
                 }
             }
         `;
         const result = await graphql(schema, query);
-        expect(result.data.User).to.deep.equal([
+        expect(result.data.User.results).to.deep.equal([
             {
                 id: 1,
                 name: 'Billy Bob',
@@ -111,28 +114,29 @@ describe('Querying relational data', () => {
         const query = `
             query {
                 User {
-                    id,
-                    name
-                    posts {
-                        id
-                        title
-                        comments {
+                    results {
+                        id,
+                        name
+                        posts {
                             id
-                            comment
+                            title
+                            comments {
+                                id
+                                comment
+                                user {
+                                    name
+                                }
+                            }
                             user {
                                 name
                             }
                         }
-                        user {
-                            name
-                        }
                     }
-
                 }
             }
         `;
         const result = await graphql(schema, query);
-        expect(result.data.User).to.deep.equal([
+        expect(result.data.User.results).to.deep.equal([
             {
                 id: 1,
                 name: 'Billy Bob',

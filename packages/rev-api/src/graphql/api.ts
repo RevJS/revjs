@@ -6,7 +6,8 @@ import * as GraphQLJSON from 'graphql-type-json';
 import { getMutationConfig } from './mutation/mutation';
 import { IModelApiManager } from '../api/types';
 import { IGraphQLApi, IGraphQLFieldConverter } from './types';
-import { IReadOptions, IModelMeta } from 'rev-models/lib/models/types';
+import { IReadOptions, IModelMeta, IReadMeta } from 'rev-models/lib/models/types';
+import { IModelOperationResult } from '../../../rev-models/lib/operations/operationresult';
 
 export class GraphQLApi implements IGraphQLApi {
     fieldConverters: Array<[new(...args: any[]) => fields.Field, IGraphQLFieldConverter]>;
@@ -94,6 +95,45 @@ export class GraphQLApi implements IGraphQLApi {
         return this.modelObjectTypes[modelName];
     }
 
+    getModelQueryResultsObject(modelName: string, metaObject: GraphQLObjectType): GraphQLObjectType {
+        let modelType = this.getModelObject(modelName);
+        const objectConfig = {
+            name: modelName + '_results',
+            fields: {
+                results: {
+                    type: new GraphQLList(modelType),
+                    resolve: (rootValue: IModelOperationResult<any, any>) => rootValue.results
+                },
+                meta: {
+                    type: metaObject,
+                    resolve: (rootValue: IModelOperationResult<any, any>) => rootValue.meta
+                }
+            }
+        };
+        return new GraphQLObjectType(objectConfig);
+    }
+
+    getQueryMetaObject(): GraphQLObjectType {
+        const objectConfig = {
+            name: 'RevApi_meta',
+            fields: {
+                limit: {
+                    type: GraphQLInt,
+                    resolve: (rootValue: IReadMeta) => rootValue.limit
+                },
+                offset: {
+                    type: GraphQLInt,
+                    resolve: (rootValue: IReadMeta) => rootValue.offset
+                },
+                total_count: {
+                    type: GraphQLInt,
+                    resolve: (rootValue: IReadMeta) => rootValue.total_count
+                },
+            }
+        };
+        return new GraphQLObjectType(objectConfig);
+    }
+
     getNoModelsObject(): GraphQLObjectType {
         return new GraphQLObjectType({
             name: 'query',
@@ -123,7 +163,8 @@ export class GraphQLApi implements IGraphQLApi {
 
     _listRelationalFields(relatedNodes: any, prefix: string, relatedList: string[]) {
         // Traverse the "relatedNodes" object and add all unique paths to the relatedList array
-        // e.g. { a: { b: {}, c: {} }} becomes [ 'a.b', 'a.c' ]
+        // e.g. { a: { b: {}, c: {} }} becomes [ 'a.b', 'a.c' ]. These can then be passed to the
+        // model backend so it can build a suitable query to include all related data.
         if (prefix && Object.keys(relatedNodes).length == 0) {
             relatedList.push(prefix);
         }
@@ -138,15 +179,22 @@ export class GraphQLApi implements IGraphQLApi {
     getQueryRelatedFieldList(info: GraphQLResolveInfo, meta: IModelMeta<any>): string[] {
         // Build the list of "related" fields in the query, to pass to rev-models
         const rootNode = info.fieldNodes[0];
-        const relatedNodes = {};
-        const relatedList: string[] = [];
-        this._findRelationalFieldNodes(rootNode, meta, relatedNodes);
-        this._listRelationalFields(relatedNodes, '', relatedList);
-        return relatedList;
+        const resultsNode = rootNode.selectionSet.selections.find(
+            (selection: FieldNode) => selection.name.value == 'results'
+        ) as FieldNode;
+        if (resultsNode) {
+            const relatedNodes = {};
+            const relatedList: string[] = [];
+            this._findRelationalFieldNodes(resultsNode, meta, relatedNodes);
+            this._listRelationalFields(relatedNodes, '', relatedList);
+            return relatedList;
+        }
+        return [];
     }
 
     getSchemaQueryObject(): GraphQLObjectType {
         const readableModels = this.getReadableModels();
+        const queryMetaObject = this.getQueryMetaObject();
         if (readableModels.length == 0) {
             return this.getNoModelsObject();
         }
@@ -157,9 +205,9 @@ export class GraphQLApi implements IGraphQLApi {
                 fields: {}
             };
             for (let modelName of readableModels) {
-                let modelType = this.getModelObject(modelName);
+                let modelMeta = models.getModelMeta(modelName);
                 queryObjectConfig.fields[modelName] = {
-                    type: new GraphQLList(modelType),
+                    type: this.getModelQueryResultsObject(modelName, queryMetaObject),
                     args: {
                         where: { type: GraphQLJSON },
                         limit: { type: GraphQLInt },
@@ -168,7 +216,6 @@ export class GraphQLApi implements IGraphQLApi {
 
                     },
                     resolve: (rootValue: any, args?: any, context?: any, info?: GraphQLResolveInfo): Promise<any> => {
-                        let modelMeta = models.getModelMeta(modelName);
                         let selectedRelationalFields = this.getQueryRelatedFieldList(info, modelMeta);
                         let whereClause = {};
                         let readOptions: IReadOptions = {
@@ -191,10 +238,7 @@ export class GraphQLApi implements IGraphQLApi {
                                 readOptions.order_by = args.order_by;
                             }
                         }
-                        return models.read(modelMeta.ctor, whereClause, readOptions)
-                            .then((res) => {
-                                return res.results;
-                            });
+                        return models.read(modelMeta.ctor, whereClause, readOptions);
                     }
                 };
             }

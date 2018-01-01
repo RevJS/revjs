@@ -33,13 +33,15 @@ describe('GraphQL query type - filtering model data', () => {
             const query = `
                 query {
                     Post(where: {id : 2}) {
-                        id,
-                        title
+                        results {
+                            id,
+                            title
+                        }
                     }
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post).to.deep.equal([{
+            expect(result.data.Post.results).to.deep.equal([{
                 id: 2,
                 title: 'JavaScript is Awesome'
             }]);
@@ -53,13 +55,15 @@ describe('GraphQL query type - filtering model data', () => {
                                 { id: { _gt: 1 }},
                                 { id: { _lt: 3 }}
                             ]}) {
-                        id,
-                        title
+                        results {
+                            id,
+                            title
+                        }
                     }
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post).to.deep.equal([{
+            expect(result.data.Post.results).to.deep.equal([{
                 id: 2,
                 title: 'JavaScript is Awesome'
             }]);
@@ -69,8 +73,10 @@ describe('GraphQL query type - filtering model data', () => {
             const query = `
                 query {
                     Post(where: 2) {
-                        id,
-                        title
+                        results {
+                            id,
+                            title
+                        }
                     }
                 }
             `;
@@ -82,8 +88,10 @@ describe('GraphQL query type - filtering model data', () => {
             const query = `
                 query {
                     Post(where: { fred: "bloggs" }) {
-                        id,
-                        title
+                        results {
+                            id,
+                            title
+                        }
                     }
                 }
             `;
@@ -117,13 +125,15 @@ describe('GraphQL query type - filtering model data', () => {
             const query = `
                 query {
                     Post(limit: 2) {
-                        id,
-                        title
+                        results {
+                            id,
+                            title
+                        }
                     }
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post).to.deep.equal([
+            expect(result.data.Post.results).to.deep.equal([
                 {
                     id: 1,
                     title: 'RevJS v1.0.0 Released!'
@@ -139,13 +149,15 @@ describe('GraphQL query type - filtering model data', () => {
             const query = `
                 query {
                     Post(offset: 1) {
-                        id,
-                        title
+                        results {
+                            id,
+                            title
+                        }
                     }
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post).to.deep.equal([
+            expect(result.data.Post.results).to.deep.equal([
                 {
                     id: 2,
                     title: 'JavaScript is Awesome'
@@ -161,13 +173,15 @@ describe('GraphQL query type - filtering model data', () => {
             const query = `
                 query {
                     Post(offset: 1, limit: 1) {
-                        id,
-                        title
+                        results {
+                            id,
+                            title
+                        }
                     }
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post).to.deep.equal([
+            expect(result.data.Post.results).to.deep.equal([
                 {
                     id: 2,
                     title: 'JavaScript is Awesome'
@@ -180,13 +194,15 @@ describe('GraphQL query type - filtering model data', () => {
             const query = `
                 query {
                     Post(order_by: "title") {
-                        id,
-                        title
+                        results {
+                            id,
+                            title
+                        }
                     }
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post).to.deep.equal([
+            expect(result.data.Post.results).to.deep.equal([
                 { id: 2, title: 'JavaScript is Awesome'},
                 { id: 1, title: 'RevJS v1.0.0 Released!'},
                 { id: 3, title: 'Ruby Sucks'},
@@ -197,13 +213,15 @@ describe('GraphQL query type - filtering model data', () => {
             const query = `
                 query {
                     Post(order_by: "id desc") {
-                        id,
-                        title
+                        results {
+                            id,
+                            title
+                        }
                     }
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post).to.deep.equal([
+            expect(result.data.Post.results).to.deep.equal([
                 { id: 3, title: 'Ruby Sucks'},
                 { id: 2, title: 'JavaScript is Awesome'},
                 { id: 1, title: 'RevJS v1.0.0 Released!'},
@@ -214,13 +232,15 @@ describe('GraphQL query type - filtering model data', () => {
             const query = `
                 query {
                     Post(order_by: ["post_date", "title"]) {
-                        id,
-                        title
+                        results {
+                            id,
+                            title
+                        }
                     }
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post).to.deep.equal([
+            expect(result.data.Post.results).to.deep.equal([
                 { id: 2, title: 'JavaScript is Awesome'},
                 { id: 3, title: 'Ruby Sucks'},
                 { id: 1, title: 'RevJS v1.0.0 Released!'},
@@ -231,13 +251,15 @@ describe('GraphQL query type - filtering model data', () => {
             const query = `
                 query {
                     Post(order_by: "post_date desc", limit: 1) {
-                        id,
-                        title
+                        results {
+                            id,
+                            title
+                        }
                     }
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post).to.deep.equal([
+            expect(result.data.Post.results).to.deep.equal([
                 { id: 1, title: 'RevJS v1.0.0 Released!'}
             ]);
         });
