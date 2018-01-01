@@ -5,6 +5,7 @@
     "postinstall": "lerna bootstrap",
     "build": "lerna run build",
     "test": "lerna run test",
+    "test-ci": "lerna run test-ci",
     "pack": "lerna run pack"
   },
   "devDependencies": {
@@ -15,6 +16,7 @@
     "@types/sinon": "2.3.4",
     "chai": "4.1.2",
     "mocha": "3.5.3",
+    "mocha-circleci-reporter": "0.0.2",
     "rewire": "2.5.2",
     "sinon": "3.3.0",
     "ts-node": "3.3.0",

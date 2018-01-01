@@ -87,7 +87,6 @@ describe('GraphQL "query" type - model list', () => {
             `;
             const result = await graphql(schema, query);
             expect(result.data.__schema.queryType.fields).to.have.length(3);
-            console.log(result.data.__schema.queryType.fields[0]);
             expect(result.data.__schema.queryType.fields[0].name).to.equal('User');
             expect(result.data.__schema.queryType.fields[0].type.kind).to.equal('OBJECT');
             expect(result.data.__schema.queryType.fields[1].name).to.equal('Post');
