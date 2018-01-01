@@ -211,47 +211,6 @@ describe('rev.backends.inmemory', () => {
                 });
         });
 
-        it('throws an error if where clause is not provided', () => {
-            return backend.read(manager, TestModel, null, readResult, getReadOpts())
-                .then(() => { throw new Error('expected to reject'); })
-                .catch((err) => {
-                    expect(err.message).to.contain('read() requires the \'where\' parameter');
-                });
-        });
-
-        it('throws an error if options.limit == 0', () => {
-            return backend.read(manager, TestModel, {}, readResult, getReadOpts({
-                    offset: 2,
-                    limit: 0
-                }))
-                .then(() => { throw new Error('expected to reject'); })
-                .catch((err) => {
-                    expect(err.message).to.contain('options.limit cannot be less than 1');
-                });
-        });
-
-        it('throws an error if options.limit is negative', () => {
-            return backend.read(manager, TestModel, {}, readResult, getReadOpts({
-                    offset: 2,
-                    limit: -12
-                }))
-                .then(() => { throw new Error('expected to reject'); })
-                .catch((err) => {
-                    expect(err.message).to.contain('options.limit cannot be less than 1');
-                });
-        });
-
-        it('throws an error if options.offset is negative', () => {
-            return backend.read(manager, TestModel, {}, readResult, getReadOpts({
-                    offset: -10,
-                    limit: 10
-                }))
-                .then(() => { throw new Error('expected to reject'); })
-                .catch((err) => {
-                    expect(err.message).to.contain('options.offset cannot be less than zero');
-                });
-        });
-
         it('throws when an invalid query is specified', () => {
             return backend.read(manager, TestModel, {
                     non_existent_field: 42

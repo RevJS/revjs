@@ -88,16 +88,6 @@ export class InMemoryBackend implements IBackend {
 
     async read<T extends IModel>(manager: IModelManager, model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
         let meta = manager.getModelMeta(model);
-        if (!where) {
-            throw new Error('read() requires the \'where\' parameter');
-        }
-        if (options.limit < 1) {
-            throw new Error('options.limit cannot be less than 1');
-        }
-        if (options.offset < 0) {
-            throw new Error('options.offset cannot be less than zero');
-        }
-
         let modelStorage = this._getModelStorage(meta);
         let parser = new QueryParser(manager);
         let queryNode = parser.getQueryNodeForQuery(model, where);

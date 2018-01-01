@@ -12,13 +12,13 @@ export const DEFAULT_READ_OPTIONS: IReadOptions = {
 export async function read<T extends IModel>(manager: IModelManager, model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
 
     let meta = manager.getModelMeta(model) as IModelMeta<T>;
-    let backend = manager.getBackend(meta.backend);
-    let operation: IModelOperation = {
-        operation: 'read',
-        where: where
-    };
-    let operationResult = new ModelOperationResult<T, IReadMeta>(operation);
     if (options) {
+        if (typeof options.limit != 'undefined' && options.limit < 1) {
+            throw new Error('read(): options.limit cannot be less than 1');
+        }
+        if (typeof options.offset != 'undefined' && options.offset < 0) {
+            throw new Error('read(): options.offset cannot be less than zero');
+        }
         if (options.related) {
             validateRelated(model, meta, options.related);
         }
@@ -26,6 +26,13 @@ export async function read<T extends IModel>(manager: IModelManager, model: new(
             validateOrderBy(model, meta, options.order_by);
         }
     }
+
+    let backend = manager.getBackend(meta.backend);
+    let operation: IModelOperation = {
+        operation: 'read',
+        where: where
+    };
+    let operationResult = new ModelOperationResult<T, IReadMeta>(operation);
     let opts = Object.assign({}, DEFAULT_READ_OPTIONS, options);
     return backend.read(manager, model, where || {}, operationResult, opts);
 

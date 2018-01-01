@@ -66,7 +66,7 @@ describe('rev.operations.read()', () => {
             });
     });
 
-    it('allows backend.read() to be called without a where clause', () => {
+    it('calls backend.read() with a default where clause if one is not provided', () => {
         return rwRead.read(manager, TestModel)
             .then((res) => {
                 expect(mockBackend.readStub.callCount).to.equal(1);
@@ -137,6 +137,39 @@ describe('rev.operations.read()', () => {
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain(`field 'name' is not a relational field`);
+            });
+    });
+
+    it('throws an error if options.limit == 0', () => {
+        return rwRead.read(manager, TestModel, {}, {
+                offset: 2,
+                limit: 0
+            })
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('options.limit cannot be less than 1');
+            });
+    });
+
+    it('throws an error if options.limit is negative', () => {
+        return rwRead.read(manager, TestModel, {}, {
+                offset: 2,
+                limit: -12
+            })
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('options.limit cannot be less than 1');
+            });
+    });
+
+    it('throws an error if options.offset is negative', () => {
+        return rwRead.read(manager, TestModel, {}, {
+                offset: -10,
+                limit: 10
+            })
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('options.offset cannot be less than zero');
             });
     });
 
