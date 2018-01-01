@@ -38,7 +38,7 @@ jobs:
       - run:
           command: npm run test-ci
           environment:
-            MOCHA_FILE: "/tmp/test-results/result-[hash].xml"
+            MOCHA_FILE: "/tmp/test-results/junit/result-[hash].xml"
 
       - store_test_results:
           path: /tmp/test-results
