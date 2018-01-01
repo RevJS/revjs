@@ -33,9 +33,12 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-        
+
       # run tests!
       - run:
           command: npm run test-ci
           environment:
-            MOCHA_FILE: "$CIRCLE_TEST_REPORTS/test-results-[hash].xml"
+            MOCHA_FILE: "/tmp/test-results/result-[hash].xml"
+
+      - store_test_results:
+          path: /tmp/test-results
