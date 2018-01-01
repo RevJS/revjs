@@ -7,6 +7,8 @@
     "test": "lerna run test",
     "test-ci": "lerna run test-ci",
     "pack": "lerna run pack",
+    "updated": "lerna updated",
+    "publish": "npm run build && npm run test && lerna publish",
     "clean": "lerna clean"
   },
   "devDependencies": {
