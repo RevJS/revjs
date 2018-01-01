@@ -34,6 +34,6 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
         
       # run tests!
-      - run: npm test
-        environment:
-          MOCHA_FILE: "$CIRCLE_TEST_REPORTS/test-results-[hash].xml"
+      - run: npm test-ci
+          environment:
+            MOCHA_FILE: "$CIRCLE_TEST_REPORTS/test-results-[hash].xml"
