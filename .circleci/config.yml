@@ -35,6 +35,6 @@ jobs:
         
       # run tests!
       - run:
-          command: npm test-ci
+          command: npm run test-ci
           environment:
             MOCHA_FILE: "$CIRCLE_TEST_REPORTS/test-results-[hash].xml"
