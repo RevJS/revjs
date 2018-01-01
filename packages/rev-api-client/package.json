@@ -21,6 +21,7 @@
   },
   "typings": "lib/index.d.ts",
   "dependencies": {
+    "axios": "^0.17.1",
     "graphql": "^0.10.1",
     "graphql-type-json": "^0.1.4",
     "rev-models": "^0.1.1",
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@types/graphql": "^0.9.1",
+    "rev-api": "^0.1.1",
     "run-bin": "^1.0.0"
   }
 }
