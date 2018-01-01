@@ -39,3 +39,6 @@ models.register(Person);
 // Register Model API
 let api = new ModelApiManager(models);
 api.register(Person);
+
+// Now you can call api.getGraphQLSchema() to get an automatically generated
+// API, and expose it via e.g. Apollo GraphQL Server

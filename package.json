@@ -6,23 +6,24 @@
     "build": "lerna run build",
     "test": "lerna run test",
     "test-ci": "lerna run test-ci",
-    "pack": "lerna run pack"
+    "pack": "lerna run pack",
+    "clean": "lerna clean"
   },
   "devDependencies": {
-    "lerna": "2.2.0",
-    "@types/chai": "4.0.4",
-    "@types/mocha": "2.2.43",
+    "lerna": "2.5.1",
+    "@types/chai": "4.0.10",
+    "@types/mocha": "2.2.45",
     "@types/rewire": "2.5.28",
-    "@types/sinon": "2.3.4",
+    "@types/sinon": "4.1.2",
     "chai": "4.1.2",
-    "mocha": "3.5.3",
+    "mocha": "4.1.0",
     "mocha-circleci-reporter": "0.0.2",
-    "rewire": "2.5.2",
-    "sinon": "3.3.0",
-    "ts-node": "3.3.0",
-    "tslint": "5.7.0",
-    "tslint-no-circular-imports": "0.2.0",
-    "typedoc": "^0.8.0",
-    "typescript": "2.5.2"
+    "rewire": "3.0.2",
+    "sinon": "4.1.3",
+    "ts-node": "4.1.0",
+    "tslint": "5.8.0",
+    "tslint-no-circular-imports": "0.2.1",
+    "typedoc": "0.9.0",
+    "typescript": "2.6.2"
   }
 }

@@ -29,6 +29,7 @@
      "variable-name": [false],
      "no-empty": false,
      "no-empty-interface": false,
+     "no-implicit-dependencies": false,
      "no-string-literal": false,
      "no-submodule-imports": false,
      "object-literal-shorthand": false,

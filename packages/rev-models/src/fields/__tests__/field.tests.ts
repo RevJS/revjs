@@ -4,7 +4,7 @@ import { requiredValidator } from '../../validation/validators';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { IModelOperation } from '../../operations/operation';
 import { ModelManager } from '../../models/manager';
-import { IModel, IModelMeta } from '../../models/types';
+import { IModel } from '../../models/types';
 
 function quickValidAsyncValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
@@ -35,14 +35,9 @@ class TestModel {
 let models = new ModelManager();
 
 describe('rev.fields.field', () => {
-    let meta: IModelMeta<TestModel>;
     let testOp: IModelOperation = {
         operation: 'create'
     };
-
-    beforeEach(() => {
-        meta = {};
-    });
 
     describe('Field - constructor()', () => {
 

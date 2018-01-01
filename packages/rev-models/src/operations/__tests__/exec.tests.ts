@@ -38,12 +38,10 @@ let manager: ModelManager;
 
 describe('rev.operations.exec()', () => {
 
-    let options: IExecOptions;
     let callSpy: sinon.SinonSpy;
     let testArgs = { someArg: 1 };
 
     beforeEach(() => {
-        options = {};
         callSpy = sinon.spy();
         mockBackend = new MockBackend();
         manager = new ModelManager();

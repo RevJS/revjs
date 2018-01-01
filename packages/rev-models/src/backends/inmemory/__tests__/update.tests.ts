@@ -12,9 +12,7 @@ describe('rev.backends.inmemory', () => {
     let manager: ModelManager;
     let options: IUpdateOptions;
     let backend: InMemoryBackend;
-    let loadResult: ModelOperationResult<TestModel, null>;
     let updateResult: ModelOperationResult<TestModel, IUpdateMeta>;
-    let updateResult2: ModelOperationResult<TestModel, IUpdateMeta>;
 
     beforeEach(() => {
         manager = new ModelManager();
@@ -22,9 +20,7 @@ describe('rev.backends.inmemory', () => {
         backend = new InMemoryBackend();
         manager.registerBackend('default', backend);
         manager.register(TestModel);
-        loadResult = new ModelOperationResult<TestModel, null>({operation: 'load'});
         updateResult = new ModelOperationResult<TestModel, IUpdateMeta>({operation: 'update'});
-        updateResult2 = new ModelOperationResult<TestModel, IUpdateMeta>({operation: 'update'});
     });
 
     describe('update() - with no data', () => {

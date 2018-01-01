@@ -13,6 +13,7 @@
     "pack": "npm pack"
   },
   "author": "Russell Briggs <russ@paraflyer.net>",
+  "private": true,
   "license": "MIT",
   "typings": "lib/index.d.ts",
   "dependencies": {

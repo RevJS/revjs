@@ -20,7 +20,6 @@ describe('rev.backends.inmemory', () => {
     let backend: InMemoryBackend;
     let createResult: ModelOperationResult<TestModel, ICreateMeta>;
     let createResult2: ModelOperationResult<TestModel, ICreateMeta>;
-    let loadResult: ModelOperationResult<TestModel, null>;
     let updateResult: ModelOperationResult<TestModel, IUpdateMeta>;
 
     beforeEach(() => {
@@ -30,7 +29,6 @@ describe('rev.backends.inmemory', () => {
         manager.register(TestModel);
         createResult = new ModelOperationResult<TestModel, ICreateMeta>({operation: 'create'});
         createResult2 = new ModelOperationResult<TestModel, ICreateMeta>({operation: 'create'});
-        loadResult = new ModelOperationResult<TestModel, null>({operation: 'load'});
         updateResult = new ModelOperationResult<TestModel, IUpdateMeta>({operation: 'update'});
     });
 

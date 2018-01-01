@@ -4,7 +4,7 @@ import { ModelApiManager } from '../../api/manager';
 import * as models from '../__fixtures__/models';
 import { graphql, GraphQLSchema } from 'graphql';
 import { ModelManager } from 'rev-models';
-import { createData, IModelTestData } from '../__fixtures__/modeldata';
+import { createData } from '../__fixtures__/modeldata';
 import { GraphQLApi } from '../api';
 
 describe('GraphQL query type - top-level objects', () => {
@@ -13,7 +13,6 @@ describe('GraphQL query type - top-level objects', () => {
     let api: GraphQLApi;
     let schema: GraphQLSchema;
     let modelManager: ModelManager;
-    let expectedData: IModelTestData;
 
     beforeEach(async () => {
         modelManager = models.getModelManager();
@@ -23,7 +22,7 @@ describe('GraphQL query type - top-level objects', () => {
         apiManager.register(models.Comment, { operations: ['read'] });
         api = new GraphQLApi(apiManager);
 
-        expectedData = await createData(modelManager);
+        await createData(modelManager);
 
         schema = api.getSchema();
     });

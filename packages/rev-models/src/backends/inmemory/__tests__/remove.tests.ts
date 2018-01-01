@@ -12,9 +12,7 @@ describe('rev.backends.inmemory', () => {
     let manager: ModelManager;
     let options: IRemoveOptions;
     let backend: InMemoryBackend;
-    let loadResult: ModelOperationResult<TestModel, null>;
     let removeResult: ModelOperationResult<TestModel, IRemoveMeta>;
-    let removeResult2: ModelOperationResult<TestModel, IRemoveMeta>;
 
     beforeEach(() => {
         manager = new ModelManager();
@@ -22,9 +20,7 @@ describe('rev.backends.inmemory', () => {
         backend = new InMemoryBackend();
         manager.registerBackend('default', backend);
         manager.register(TestModel);
-        loadResult = new ModelOperationResult<TestModel, null>({operation: 'load'});
         removeResult = new ModelOperationResult<TestModel, IRemoveMeta>({operation: 'remove'});
-        removeResult2 = new ModelOperationResult<TestModel, IRemoveMeta>({operation: 'remove'});
     });
 
     describe('remove() - with no data', () => {
