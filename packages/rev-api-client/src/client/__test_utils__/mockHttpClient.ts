@@ -1,12 +1,26 @@
 
 import { ModelApiManager, GraphQLApi } from 'rev-api';
 import * as models from '../__fixtures__/models';
-import { graphql, GraphQLSchema } from 'graphql';
-import { ModelManager, fields } from 'rev-models';
-import { createData, IModelTestData } from '../__fixtures__/modeldata';
+import { graphql } from 'graphql';
+import { ModelManager } from 'rev-models';
+import { createData } from '../__fixtures__/modeldata';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ExecutionResult } from 'graphql/execution/execute';
 
+/**
+ * Returns a mock axios function with a fixed http response
+ * @param mockResponse
+ */
+export function getMockHttpClient(mockResponse: AxiosResponse<any>) {
+    return async (config: AxiosRequestConfig): Promise<AxiosResponse<any>> => {
+        return mockResponse;
+    };
+}
+
+/**
+ * Returns a mock axios function which makes actual graphql queries against rev-api
+ * @param modelManager
+ */
 export async function getMockApiHttpClient(modelManager: ModelManager) {
     const apiManager = new ModelApiManager(modelManager);
     apiManager.register(models.Post, { operations: ['read'] });

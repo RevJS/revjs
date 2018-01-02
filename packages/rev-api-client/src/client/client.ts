@@ -1,13 +1,14 @@
 
 import { IModel, ModelManager } from 'rev-models';
-import axios, { AxiosRequestConfig, AxiosPromise } from 'axios';
+import axios, { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
 
 import { IBackend } from 'rev-models/lib/backends/backend';
 import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
 import {
     ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IRemoveMeta,
-    IRemoveOptions, IReadMeta, IReadOptions, IExecArgs, IExecMeta, IExecOptions
+    IRemoveOptions, IReadMeta, IReadOptions, IExecArgs, IExecMeta, IExecOptions, IModelMeta
 } from 'rev-models/lib/models/types';
+import { jsonToGraphQLQuery } from 'json-to-graphql-query';
 
 export class ModelApiBackend implements IBackend {
 
@@ -23,6 +24,20 @@ export class ModelApiBackend implements IBackend {
         }
     }
 
+    _createHttpError(message: string, response: AxiosResponse) {
+        const error = new Error(message);
+        error.response = response;
+        return error;
+    }
+
+    _objectToGraphQLQuery(queryObject: any) {
+
+    }
+
+    _createGraphQLQuery(meta: IModelMeta<any>) {
+
+    }
+
     async create<T extends IModel>(manager: ModelManager, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
         return Promise.reject(new Error('Not yet implemented'));
     }
@@ -36,19 +51,28 @@ export class ModelApiBackend implements IBackend {
     }
 
     async read<T extends IModel>(manager: ModelManager, model: new() => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+        let meta = manager.getModelMeta(model);
+        let query = {
+            query: {
+                [meta.name]: {
+                    results: {
+                        id: true,
+                        comment: true
+                    }
+                }
+            }
+        };
         const httpResult = await this._httpClient({
             url: this.apiUrl,
             method: 'POST',
-            data: `
-                query {
-                    Comment {
-                        results {
-                            id,
-                            comment
-                        }
-                    }
-                }`
+            data: jsonToGraphQLQuery(query)
         });
+        if (!httpResult.data) {
+            throw this._createHttpError('received no data from the API', httpResult);
+        }
+        if (!httpResult.data.data) {
+            throw this._createHttpError('graphql response did not contain the "data" attribute', httpResult);
+        }
         const returnedData = httpResult.data.data.Comment.results;
         result.results = [];
         returnedData.forEach((record: any) => {
