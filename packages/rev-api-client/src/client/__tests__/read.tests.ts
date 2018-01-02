@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
 import { getMockApiHttpClient, getMockHttpClient } from '../__test_utils__/mockHttpClient';
-import { ModelApiBackend } from '../client';
+import { ModelApiBackend } from '../backend';
 import { getModelManager, Comment } from '../__fixtures__/models';
 import { ModelManager, ModelOperationResult } from 'rev-models';
 import { IReadMeta, IReadOptions } from 'rev-models/lib/models/types';

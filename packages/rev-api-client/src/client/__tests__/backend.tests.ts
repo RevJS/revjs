@@ -1,6 +1,6 @@
 
 import { expect } from 'chai';
-import { ModelApiBackend } from '../client';
+import { ModelApiBackend } from '../backend';
 
 describe('ModelApiBackend', () => {
 

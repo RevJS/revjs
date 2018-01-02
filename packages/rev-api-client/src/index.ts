@@ -1,2 +1,2 @@
 
-export { ModelApiBackend } from './client/client';
+export { ModelApiBackend } from './client/backend';
