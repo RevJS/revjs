@@ -79,7 +79,26 @@ describe('ModelApiBackend - read()', () => {
         return apiBackend.read(manager, Comment, {}, readResult, readOptions)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
-                expect(err.message).to.contain('received no data from the API');
+                expect(err.message).to.contain('Received no data from the API');
+                expect(err.response).to.equal(mockResponse);
+            });
+    });
+
+    it('re-throws graphql errors if they have been returned', () => {
+        const mockResponse: AxiosResponse = {
+            data: {
+                errors: [
+                    { message: 'Something broke!' }
+                ]
+            },
+            status: 200, statusText: '', headers: {}, config: {}
+        };
+        setup({ responseType: 'mock', mockResponse: mockResponse });
+
+        return apiBackend.read(manager, Comment, {}, readResult, readOptions)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('GraphQL errors were returned');
                 expect(err.response).to.equal(mockResponse);
             });
     });
@@ -94,9 +113,29 @@ describe('ModelApiBackend - read()', () => {
         return apiBackend.read(manager, Comment, {}, readResult, readOptions)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
-                expect(err.message).to.contain('graphql response did not contain the "data" attribute');
+                expect(err.message).to.contain('GraphQL response did not contain the expected model results');
                 expect(err.response).to.equal(mockResponse);
             });
     });
 
+    it('throws error with received data if response does not contain the expected model results', () => {
+        const mockResponse: AxiosResponse = {
+            data: {
+                data: {
+                    Users: {
+                        results: []
+                    }
+                }
+            },
+            status: 200, statusText: '', headers: {}, config: {}
+        };
+        setup({ responseType: 'mock', mockResponse: mockResponse });
+
+        return apiBackend.read(manager, Comment, {}, readResult, readOptions)
+            .then(() => { throw new Error('expected to reject'); })
+            .catch((err) => {
+                expect(err.message).to.contain('GraphQL response did not contain the expected model results');
+                expect(err.response).to.equal(mockResponse);
+            });
+    });
 });

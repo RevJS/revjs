@@ -67,10 +67,15 @@ export class ModelApiBackend implements IBackend {
             data: jsonToGraphQLQuery(query)
         });
         if (!httpResult.data) {
-            throw this._createHttpError('received no data from the API', httpResult);
+            throw this._createHttpError('Received no data from the API', httpResult);
         }
-        if (!httpResult.data.data) {
-            throw this._createHttpError('graphql response did not contain the "data" attribute', httpResult);
+        if (httpResult.data.errors) {
+            throw this._createHttpError('GraphQL errors were returned', httpResult);
+        }
+        if (!httpResult.data.data
+            || !httpResult.data.data[meta.name]
+            || !(httpResult.data.data[meta.name].results instanceof Array)) {
+            throw this._createHttpError('GraphQL response did not contain the expected model results', httpResult);
         }
         const returnedData = httpResult.data.data[meta.name].results;
         result.results = [];
