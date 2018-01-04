@@ -1,5 +1,5 @@
 
-import { IModel, ModelManager } from 'rev-models';
+import { IModel, ModelManager, fields } from 'rev-models';
 import axios, { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
 
 import { IBackend } from 'rev-models/lib/backends/backend';
@@ -30,12 +30,20 @@ export class ModelApiBackend implements IBackend {
         return error;
     }
 
-    _objectToGraphQLQuery(queryObject: any) {
-
-    }
-
-    _createGraphQLQuery(meta: IModelMeta<any>) {
-
+    _buildGraphQLQuery(meta: IModelMeta<any>) {
+        const fieldObj: any = {};
+        for (const field of meta.fields) {
+            if (!(field instanceof fields.RelatedModelFieldBase)) {
+                fieldObj[field.name] = true;
+            }
+        }
+        return {
+            query: {
+                [meta.name]: {
+                    results: fieldObj
+                }
+            }
+        };
     }
 
     async create<T extends IModel>(manager: ModelManager, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
@@ -51,17 +59,8 @@ export class ModelApiBackend implements IBackend {
     }
 
     async read<T extends IModel>(manager: ModelManager, model: new() => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
-        let meta = manager.getModelMeta(model);
-        let query = {
-            query: {
-                [meta.name]: {
-                    results: {
-                        id: true,
-                        comment: true
-                    }
-                }
-            }
-        };
+        const meta = manager.getModelMeta(model);
+        const query = this._buildGraphQLQuery(meta);
         const httpResult = await this._httpClient({
             url: this.apiUrl,
             method: 'POST',
@@ -73,7 +72,7 @@ export class ModelApiBackend implements IBackend {
         if (!httpResult.data.data) {
             throw this._createHttpError('graphql response did not contain the "data" attribute', httpResult);
         }
-        const returnedData = httpResult.data.data.Comment.results;
+        const returnedData = httpResult.data.data[meta.name].results;
         result.results = [];
         returnedData.forEach((record: any) => {
             result.results.push(manager.hydrate(model, record));

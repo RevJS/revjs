@@ -4,9 +4,10 @@ import { expect } from 'chai';
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
 import { getMockApiHttpClient, getMockHttpClient } from '../__test_utils__/mockHttpClient';
 import { ModelApiBackend } from '../backend';
-import { getModelManager, Comment } from '../__fixtures__/models';
+import { getModelManager, Comment, Post } from '../__fixtures__/models';
 import { ModelManager, ModelOperationResult } from 'rev-models';
 import { IReadMeta, IReadOptions } from 'rev-models/lib/models/types';
+import { expectToHaveProperties } from '../__test_utils__/utils';
 
 describe('ModelApiBackend - read()', () => {
 
@@ -14,7 +15,7 @@ describe('ModelApiBackend - read()', () => {
     let mockHttpClient: (config: AxiosRequestConfig) => AxiosPromise;
     let apiBackend: ModelApiBackend;
     let readOptions: IReadOptions;
-    let readResult: ModelOperationResult<Comment, IReadMeta>;
+    let readResult: ModelOperationResult<any, IReadMeta>;
 
     async function setup(options: {
         responseType: 'rev-api' | 'mock',
@@ -36,7 +37,7 @@ describe('ModelApiBackend - read()', () => {
         await setup({ responseType: 'rev-api' });
     });
 
-    it('can read scalar data from graphql api', async () => {
+    it('reads all scalar fields from graphql api (Comments)', async () => {
         const result = await apiBackend.read(
             manager, Comment, {}, readResult, readOptions
         );
@@ -47,6 +48,25 @@ describe('ModelApiBackend - read()', () => {
         ]);
         expect(result.results[0]).to.be.instanceof(Comment);
         expect(result.results[1]).to.be.instanceof(Comment);
+    });
+
+    it('reads all scalar fields from graphql api (Posts)', async () => {
+        const result = await apiBackend.read(
+            manager, Post, {}, readResult, readOptions
+        );
+        expect(result.success).to.be.true;
+        expect(result.results[0]).to.be.instanceof(Post);
+        expect(result.results[1]).to.be.instanceof(Post);
+        expect(result.results[2]).to.be.instanceof(Post);
+        expectToHaveProperties(result.results[0], {
+            id: 1, title: 'RevJS v1.0.0 Released!'
+        });
+        expectToHaveProperties(result.results[1], {
+            id: 2, title: 'JavaScript is Awesome'
+        });
+        expectToHaveProperties(result.results[2], {
+            id: 3, title: 'Ruby Sucks'
+        });
     });
 
     it('throws error with received data if response is empty', () => {
