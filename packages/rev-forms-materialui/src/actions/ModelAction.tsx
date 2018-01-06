@@ -2,7 +2,7 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from 'material-ui/Button';
 import { IExecArgs, IExecOptions } from 'rev-models/lib/models/types';
 import { ModelManager } from 'rev-models';
 import { ModelForm } from '../forms/ModelForm';
@@ -109,11 +109,12 @@ export class FormAction extends React.Component<IFormActionProps> {
     render() {
         let type = this.props.default ? 'submit' : 'button';
         return (
-            <RaisedButton
+            <Button raised color="primary"
                 type={type}
-                label={this.props.label}
                 onClick={this.onAction.bind(this)}
-                primary={true} style={{ margin: 12 }} />
+                style={{ margin: 12 }}>
+                {this.props.label}
+            </Button>
         );
     }
 }

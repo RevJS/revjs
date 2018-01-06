@@ -21,7 +21,7 @@
   },
   "typings": "lib/index.d.ts",
   "dependencies": {
-    "material-ui": "^0.19.4",
+    "material-ui": "1.0.0-beta.26",
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "rev-forms": "^0.0.1",
@@ -29,7 +29,6 @@
     "tslib": "1.x"
   },
   "devDependencies": {
-    "@types/material-ui": "^0.18.0",
     "@types/prop-types": "^15.5.2",
     "@types/react": "^16.0.0",
     "run-bin": "^1.0.0"

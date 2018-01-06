@@ -1,7 +1,8 @@
 
 import * as React from 'react';
 
-import MUITextField from 'material-ui/TextField';
+import { FormControl, FormHelperText } from 'material-ui/Form';
+import Input, { InputLabel } from 'material-ui/Input';
 
 import { IModelFieldComponentProps } from './types';
 import * as fields from 'rev-models/lib/fields';
@@ -19,25 +20,25 @@ export const TextField: React.StatelessComponent<IModelFieldComponentProps> = (p
         errorText += err.message + '. ';
     });
 
-    const styles = {
-        errorStyle: {
-            textAlign: 'left'
-        }
-    };
-
     return (
-        <MUITextField
-            name={props.field.name}
-            floatingLabelText={props.field.options.label || props.field.name}
-            type={type}
-            value={props.value}
-            errorText={errorText}
-            errorStyle={styles.errorStyle}
-            disabled={props.disabled}
-            onChange={(event, value) => props.onChange(value)}
-            onFocus={props.onFocus}
-            onBlur={props.onBlur}
-            fullWidth={true}
-        />
+        <FormControl fullWidth>
+            <InputLabel htmlFor={props.field.name + '--id'}>
+                {props.field.options.label || props.field.name}
+            </InputLabel>
+            <Input
+                id={props.field.name + '--helper'}
+                type={type}
+                value={props.value}
+                onChange={(event) => props.onChange(event.target.value)}
+                disabled={props.disabled}
+                onFocus={props.onFocus}
+                onBlur={props.onBlur}
+            />
+            <FormHelperText
+                id={props.field.name + '--helper-text'}
+            >
+                {errorText}
+            </FormHelperText>
+        </FormControl>
     );
 };
