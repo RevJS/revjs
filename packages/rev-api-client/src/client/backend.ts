@@ -64,7 +64,7 @@ export class ModelApiBackend implements IBackend {
         const httpResult = await this._httpClient({
             url: this.apiUrl,
             method: 'POST',
-            data: jsonToGraphQLQuery(query)
+            data: { query: jsonToGraphQLQuery(query) }
         });
         if (!httpResult.data) {
             throw this._createHttpError('Received no data from the API', httpResult);

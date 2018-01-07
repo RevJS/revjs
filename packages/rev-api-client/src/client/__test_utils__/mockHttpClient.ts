@@ -33,7 +33,7 @@ export async function getMockApiHttpClient(modelManager: ModelManager) {
     const schema = api.getSchema();
 
     return async (config: AxiosRequestConfig): Promise<AxiosResponse<ExecutionResult>> => {
-        const queryResult = await graphql(schema, config.data);
+        const queryResult = await graphql(schema, config.data.query);
         return {
             data: queryResult,
             status: 200,
