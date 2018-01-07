@@ -98,11 +98,11 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
 
             const tableBody = (
                 <TableBody>
-                    {['row1', 'row2', 'row2'].map((data, rowIdx) => {
+                    {this.state.modelData.results.map((record, rowIdx) => {
                         return (
                             <TableRow key={rowIdx} hover>
                                 {this.props.fields.map((fieldName, colIdx) => {
-                                    // const field = this.modelMeta.fieldsByName[fieldName];
+                                    const data = record[fieldName].toString();
                                     return (
                                         <TableCell key={colIdx} padding="dense">{data}</TableCell>
                                     );
