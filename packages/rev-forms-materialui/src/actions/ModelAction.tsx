@@ -29,22 +29,18 @@ export interface IFormActionContext {
 
 export class FormAction extends React.Component<IFormActionProps> {
 
+    context: IFormActionContext;
     static contextTypes = {
         modelForm: PropTypes.object,
         modelManager: PropTypes.object
     };
 
-    modelForm: ModelForm;
-    modelManager: ModelManager;
-
     constructor(props: IFormActionProps, context: IFormActionContext) {
-        super(props);
-        this.modelForm = context.modelForm;
-        if (!this.modelForm) {
+        super(props, context);
+        if (!this.context.modelForm) {
             throw new Error('ModelAction Error: must be nested inside a ModelForm');
         }
-        this.modelManager = context.modelManager;
-        if (!this.modelManager) {
+        if (!this.context.modelManager) {
             throw new Error('ModelAction Error: must be nested inside a ModelProvider.');
         }
     }
@@ -54,15 +50,15 @@ export class FormAction extends React.Component<IFormActionProps> {
         console.log('onAction', this);
         console.log('type', actionType);
 
-        const validationResult = await this.modelForm.validate();
-        this.modelForm.updateValidationState(validationResult);
+        const validationResult = await this.context.modelForm.validate();
+        this.context.modelForm.updateValidationState(validationResult);
 
         if (validationResult.valid) {
             if (actionType == 'post') {
                 if (!this.props.url) {
                     throw new Error('ModelAction Error: you must specify the url property when type is "post"');
                 }
-                this.modelForm.disable(true);
+                this.context.modelForm.disable(true);
                 return fetch(this.props.url, {
                     method: 'post',
                     headers: {
@@ -70,36 +66,36 @@ export class FormAction extends React.Component<IFormActionProps> {
                         'Content-Type': 'application/json'
                     },
                     credentials: 'same-origin',
-                    body: JSON.stringify(this.modelForm.state.fieldValues)
+                    body: JSON.stringify(this.context.modelForm.state.fieldValues)
                 })
                 .then((res) => {
                     if (res.status < 200 || res.status > 299) {
                         throw new Error('Got status ' + res.status);
                     }
                     if (this.props.onSuccess) {
-                        this.modelForm.disable(false);
+                        this.context.modelForm.disable(false);
                         this.props.onSuccess(res);
                     }
                 })
                 .catch((err) => {
                     if (this.props.onFailure) {
-                        this.modelForm.disable(false);
+                        this.context.modelForm.disable(false);
                         this.props.onFailure(err);
                     }
                 });
             }
             else {
-                let modelMeta = this.modelManager.getModelMeta(this.modelForm.props.model);
-                let model = this.modelManager.hydrate(modelMeta.ctor, this.modelForm.state.fieldValues);
+                let modelMeta = this.context.modelManager.getModelMeta(this.context.modelForm.props.model);
+                let model = this.context.modelManager.hydrate(modelMeta.ctor, this.context.modelForm.state.fieldValues);
                 console.log(model);
-                this.modelForm.disable(true);
-                return this.modelManager.exec(model, this.props.method, this.props.args, this.props.options)
+                this.context.modelForm.disable(true);
+                return this.context.modelManager.exec(model, this.props.method, this.props.args, this.props.options)
                 .then((res) => {
-                    this.modelForm.disable(false);
+                    this.context.modelForm.disable(false);
                     console.log('exec result', res);
                 })
                 .catch((err) => {
-                    this.modelForm.disable(false);
+                    this.context.modelForm.disable(false);
                     console.log('exec failure', err);
                 });
             }

@@ -9,7 +9,7 @@ import { DateField } from './DateField';
 import { NumberField } from './NumberField';
 import { SelectionField } from './SelectionField';
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { IModelFormContext, ModelForm } from '../forms/ModelForm';
+import { IModelFormProvidedContext, ModelForm } from '../forms/ModelForm';
 import { IModelFieldComponentProps } from './types';
 import { IFieldError } from 'rev-models/lib/validation/validationresult';
 
@@ -17,28 +17,30 @@ export interface IModelFieldProps {
     name: string;
 }
 
+export interface IFormFieldContext {
+    modelForm: ModelForm;
+    modelManager: ModelManager;
+}
+
 export class ModelField extends React.Component<IModelFieldProps> {
 
+    context: IFormFieldContext;
     static contextTypes = {
         modelManager: PropTypes.object,
         modelForm: PropTypes.object
     };
 
-    modelManager: ModelManager;
-    modelForm: ModelForm;
     modelMeta: IModelMeta<any>;
     modelField: fields.Field;
 
-    constructor(props: IModelFieldProps, context: IModelProviderContext & IModelFormContext) {
-        super(props);
-        this.modelManager = context.modelManager;
-        this.modelForm = context.modelForm;
-        if (!this.modelForm) {
+    constructor(props: IModelFieldProps, context: IModelProviderContext & IModelFormProvidedContext) {
+        super(props, context);
+        if (!this.context.modelForm) {
             throw new Error('ModelField Error: must be nested inside a ModelForm.');
         }
-        this.modelMeta = this.modelManager.getModelMeta(this.modelForm.props.model);
+        this.modelMeta = this.context.modelManager.getModelMeta(this.context.modelForm.props.model);
         if (!(props.name in this.modelMeta.fieldsByName)) {
-            throw new Error(`ModelField Error: Model '${this.modelForm.props.model}' does not have a field called '${props.name}'.`);
+            throw new Error(`ModelField Error: Model '${this.context.modelForm.props.model}' does not have a field called '${props.name}'.`);
         }
         this.modelField = this.modelMeta.fieldsByName[props.name];
     }
@@ -47,22 +49,22 @@ export class ModelField extends React.Component<IModelFieldProps> {
     onBlur() {}
 
     onChange(value: any) {
-        this.modelForm.updateFieldValue(this.modelField.name, value);
+        this.context.modelForm.updateFieldValue(this.modelField.name, value);
     }
 
     render() {
 
         let fieldErrors: IFieldError[] = [];
-        if (this.modelField.name in this.modelForm.state.fieldErrors) {
-            fieldErrors = this.modelForm.state.fieldErrors[this.modelField.name];
+        if (this.modelField.name in this.context.modelForm.state.fieldErrors) {
+            fieldErrors = this.context.modelForm.state.fieldErrors[this.modelField.name];
         }
 
         let modelFieldProps: IModelFieldComponentProps = {
             modelMeta: this.modelMeta,
             field: this.modelField,
-            value: this.modelForm.state.fieldValues[this.modelField.name],
+            value: this.context.modelForm.state.fieldValues[this.modelField.name],
             errors: fieldErrors,
-            disabled: this.modelForm.state.disabled,
+            disabled: this.context.modelForm.state.disabled,
             onFocus: () => this.onFocus(),
             onBlur: () => this.onBlur(),
             onChange: (value) => this.onChange(value)

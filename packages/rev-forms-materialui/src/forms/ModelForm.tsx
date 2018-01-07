@@ -22,29 +22,32 @@ export interface IModelFormState {
     modelErrors: IModelError[];
 }
 
-export interface IModelFormContext {
+export interface IModelFormReceivedContext {
+    modelManager: ModelManager;
+}
+
+export interface IModelFormProvidedContext {
     modelForm: ModelForm;
 }
 
 export class ModelForm extends React.Component<IModelFormProps, IModelFormState> {
 
+    context: IModelFormReceivedContext;
     static contextTypes = {
         modelManager: PropTypes.object
     };
 
-    modelManager: ModelManager;
     modelMeta: IModelMeta<any>;
 
     constructor(props: IModelFormProps, context: IModelProviderContext) {
-        super(props);
-        this.modelManager = context.modelManager;
-        if (!this.modelManager) {
+        super(props, context);
+        if (!this.context.modelManager) {
             throw new Error('ModelForm Error: must be nested inside a ModelProvider.');
         }
-        if (!props.model || !this.modelManager.isRegistered(props.model)) {
+        if (!props.model || !this.context.modelManager.isRegistered(props.model)) {
             throw new Error(`ModelForm Error: Model '${props.model}' is not registered.`);
         }
-        this.modelMeta = this.modelManager.getModelMeta(this.props.model);
+        this.modelMeta = this.context.modelManager.getModelMeta(this.props.model);
         this.state = {
             valid: false,
             disabled: false,
@@ -81,8 +84,8 @@ export class ModelForm extends React.Component<IModelFormProps, IModelFormState>
     }
 
     async validate() {
-        const model = this.modelManager.hydrate(this.modelMeta.ctor, this.state.fieldValues);
-        return this.modelManager.validate(model);
+        const model = this.context.modelManager.hydrate(this.modelMeta.ctor, this.state.fieldValues);
+        return this.context.modelManager.validate(model);
     }
 
     disable(isDisabled: boolean) {
@@ -95,7 +98,7 @@ export class ModelForm extends React.Component<IModelFormProps, IModelFormState>
         modelForm: PropTypes.object
     };
 
-    getChildContext(): IModelFormContext {
+    getChildContext(): IModelFormProvidedContext {
         return {
             modelForm: this
         };

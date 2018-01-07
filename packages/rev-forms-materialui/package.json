@@ -6,10 +6,10 @@
   "scripts": {
     "build": "run-bin tslint -p . && run-bin tsc",
     "build-watch": "run-bin tsc --watch",
-    "test": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\"",
-    "test-ci": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\" --reporter mocha-circleci-reporter",
-    "test-watch": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\" --watch --watch-extensions ts,tsx",
-    "mocha": "run-bin mocha -r ts-node/register",
+    "test": "run-bin mocha -r ./testsetup -r ts-node/register --recursive \"./src/**/__tests__/*\"",
+    "test-ci": "run-bin mocha -r ./testsetup -r ts-node/register --recursive \"./src/**/__tests__/*\" --reporter mocha-circleci-reporter",
+    "test-watch": "run-bin mocha -r ./testsetup -r ts-node/register --recursive \"./src/**/__tests__/*\" --watch --watch-extensions ts,tsx",
+    "mocha": "run-bin mocha -r ./testsetup -r ts-node/register",
     "pack": "npm pack"
   },
   "author": "Russell Briggs <russ@paraflyer.net>",
