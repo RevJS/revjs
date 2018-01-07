@@ -1,6 +1,6 @@
 
 import * as rev from 'rev-models';
-import { ApiOperations, ApiMethod } from '../decorators/decorators';
+import { ApiOperations, ApiMethod } from '../decorators';
 import { ModelApiManager } from '../index';
 
 @ApiOperations(['read'])
