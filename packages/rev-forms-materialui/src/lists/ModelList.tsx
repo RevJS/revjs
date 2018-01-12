@@ -108,12 +108,20 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
         }
         else {
 
+            const readMeta = this.state.modelData.meta;
+            const firstRecordNumber = readMeta.offset + 1;
+            const lastRecordNumber = Math.min(
+                readMeta.offset + readMeta.limit,
+                readMeta.total_count
+            );
+            const recordCount = readMeta.total_count;
+
             const toolbar = (
                 <Toolbar className={this.props.classes.toolbar}>
                     <Typography type="title">{title}</Typography>
                     <div className={this.props.classes.pagination}>
                         <Typography type="caption">
-                            Records 1-10 of 256
+                            {`Records ${firstRecordNumber}-${lastRecordNumber} of ${recordCount}`}
                         </Typography>
                         <IconButton
                             onClick={() => {}}

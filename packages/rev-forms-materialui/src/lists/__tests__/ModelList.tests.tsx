@@ -121,10 +121,10 @@ describe('ModelList', () => {
 
     });
 
-    describe('when data has loaded', () => {
+    describe('when data has loaded - first page', () => {
         const model = 'Post';
         const fields = ['id', 'title', 'published', 'post_date'];
-        const maxRecords = 4;
+        const maxRecords = 3;
         let wrapper: ReactWrapper;
         let meta: IModelMeta<models.Post>;
         let expectedData: IModelTestData;
@@ -148,64 +148,83 @@ describe('ModelList', () => {
             wrapper.update();
         });
 
-        it('renders the list title', () => {
-            const listTitle = wrapper.find('h2');
-            expect(listTitle).to.have.length(1);
-            expect(listTitle.at(0).text()).to.equal('List with Data Loaded...');
-        });
+        describe('main elements', () => {
 
-        it('remders the pagination area', () => {
-            expect(wrapper.find('div.' + classes.pagination)).to.have.length(1);
-        });
-
-        it('does not render a loading progress indicator', () => {
-            expect(wrapper.find(LinearProgress)).to.have.length(0);
-        });
-
-        it('renders the table', () => {
-            expect(wrapper.find(Table)).to.have.length(1);
-        });
-
-        it('renders all column headings', () => {
-            expect(wrapper.find('th')).to.have.length(fields.length);
-        });
-
-        it('renders columns heading labels in correct order', () => {
-            fields.forEach((fieldName, idx) => {
-                const th = wrapper.find('th').at(idx);
-                expect(th.text()).to.equal(
-                    meta.fieldsByName[fieldName].options.label
-                    || meta.fieldsByName[fieldName].name
-                );
+            it('renders the list title', () => {
+                const listTitle = wrapper.find('h2');
+                expect(listTitle).to.have.length(1);
+                expect(listTitle.at(0).text()).to.equal('List with Data Loaded...');
             });
+
+            it('remders the pagination area', () => {
+                expect(wrapper.find('div.' + classes.pagination)).to.have.length(1);
+            });
+
+            it('does not render a loading progress indicator', () => {
+                expect(wrapper.find(LinearProgress)).to.have.length(0);
+            });
+
+            it('renders the table', () => {
+                expect(wrapper.find(Table)).to.have.length(1);
+            });
+
         });
 
-        it('renders table body', () => {
-            expect(wrapper.find('tbody')).to.have.length(1);
+        describe('pagination', () => {
+
+            it('remders the current offset and total record count', () => {
+                const pagination = wrapper.find('div.' + classes.pagination).at(0);
+                const paginationText = pagination.childAt(0).text();
+                expect(paginationText).to.equal('Records 1-3 of 7');
+            });
+
         });
 
-        it('renders up to "maxRecords" rows of data', () => {
-            expect(
-                wrapper.find('tbody')
-                .at(0).find('tr')
-            ).to.have.length(maxRecords);
-        });
+        describe('table data', () => {
 
-        it('renders the correct data in each cell', () => {
-            for (let i = 0; i < maxRecords; i++) {
-                const post = expectedData.posts[i];
-                const row = wrapper.find('tbody')
-                    .at(0).find('tr').at(i);
+            it('renders all column headings', () => {
+                expect(wrapper.find('th')).to.have.length(fields.length);
+            });
 
-                fields.forEach((fieldName, fieldIdx) => {
-                    const td = row.find('td').at(fieldIdx);
-
-                    expect(td.text()).to.equal(
-                        post[fieldName].toString()
+            it('renders columns heading labels in correct order', () => {
+                fields.forEach((fieldName, idx) => {
+                    const th = wrapper.find('th').at(idx);
+                    expect(th.text()).to.equal(
+                        meta.fieldsByName[fieldName].options.label
+                        || meta.fieldsByName[fieldName].name
                     );
                 });
-            }
+            });
+
+            it('renders table body', () => {
+                expect(wrapper.find('tbody')).to.have.length(1);
+            });
+
+            it('renders up to "maxRecords" rows of data', () => {
+                expect(
+                    wrapper.find('tbody')
+                    .at(0).find('tr')
+                ).to.have.length(maxRecords);
+            });
+
+            it('renders the correct data in each cell', () => {
+                for (let i = 0; i < maxRecords; i++) {
+                    const post = expectedData.posts[i];
+                    const row = wrapper.find('tbody')
+                        .at(0).find('tr').at(i);
+
+                    fields.forEach((fieldName, fieldIdx) => {
+                        const td = row.find('td').at(fieldIdx);
+
+                        expect(td.text()).to.equal(
+                            post[fieldName].toString()
+                        );
+                    });
+                }
+            });
+
         });
+
     });
 
 });

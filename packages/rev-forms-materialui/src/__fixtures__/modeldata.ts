@@ -76,6 +76,14 @@ My precious...`,
             post_date: '2017-04-15T13:14:15',
             user: users[0]
         }),
+        new Post({
+            id: 7,
+            title: 'Post 7',
+            body: `Another post...`,
+            published: true,
+            post_date: '2017-04-15T13:14:15',
+            user: users[0]
+        })
     ];
 
     const comments = [
