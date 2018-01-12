@@ -8,11 +8,16 @@ import { IReadMeta } from 'rev-models/lib/models/types';
 
 import { withStyles, WithStyles, StyleRules, StyledComponentProps } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
+import IconButton from 'material-ui/IconButton';
+import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
+import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
 import { LinearProgress } from 'material-ui/Progress';
 import Table, { TableHead, TableBody, TableRow, TableCell } from 'material-ui/Table';
+import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 
 export interface IModelListProps {
+    title?: string;
     model: string;
     fields: string[];
 }
@@ -36,6 +41,14 @@ const styles: StyleRules = {
     },
     progressBar: {
         marginTop: 20
+    },
+    toolbar: {
+        justifyContent: 'space-between',
+        borderBottom: '1px solid #EBEBEB'
+    },
+    pagination: {
+        display: 'flex',
+        alignItems: 'center'
     },
     table: {
     },
@@ -73,17 +86,46 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
 
     render() {
 
+        const title = this.props.title ? this.props.title : this.modelMeta.label + ' List';
+
         if (this.state.loadState == 'not_loaded') {
             return (
                 <Paper className={this.props.classes.root}>
+                    <Toolbar className={this.props.classes.toolbar}>
+                        <Typography type="title">{title}</Typography>
+                    </Toolbar>
                     <div className={this.props.classes.progressWrapper}>
-                        <Typography type="display2">Loading...</Typography>
+                        <Typography type="subheading">Loading...</Typography>
                         <LinearProgress className={this.props.classes.progressBar} />
                     </div>
                 </Paper>
             );
         }
         else {
+
+            const toolbar = (
+                <Toolbar className={this.props.classes.toolbar}>
+                    <Typography type="title">{title}</Typography>
+                    <div className={this.props.classes.pagination}>
+                        <Typography type="caption">
+                            Records 1-10 of 256
+                        </Typography>
+                        <IconButton
+                            onClick={() => {}}
+                            disabled={true}
+                        >
+                            <KeyboardArrowLeft />
+                        </IconButton>
+                        <IconButton
+                            onClick={() => {}}
+                            disabled={false}
+                        >
+                            <KeyboardArrowRight />
+                        </IconButton>
+                    </div>
+                </Toolbar>
+            );
+
             const tableHead = (
                 <TableHead>
                     <TableRow>
@@ -115,6 +157,7 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
 
             return (
                 <Paper className={this.props.classes.root}>
+                    {toolbar}
                     <Table className={this.props.classes.table}>
                         {tableHead}
                         {tableBody}
@@ -125,7 +168,7 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
     }
 
     async componentDidMount() {
-        if (this.state.loadState == 'not_loaded') {
+        if (lifecycleOptions.enableComponentDidMount && this.state.loadState == 'not_loaded') {
             const modelData = await this.context.modelManager.read(this.modelMeta.ctor);
             if (modelData.success && modelData.results) {
                 this.setState({
@@ -140,3 +183,7 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
 
 export const ModelList: React.ComponentType<IModelListProps & StyledComponentProps>
     = withStyles(styles)(ModelListC);
+
+export const lifecycleOptions = {
+    enableComponentDidMount: true
+};

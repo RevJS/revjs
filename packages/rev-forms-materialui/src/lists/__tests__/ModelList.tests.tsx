@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { mount, ReactWrapper } from 'enzyme';
 import { sleep } from '../../__test_utils__/utils';
-import { ModelList } from '../ModelList';
+import { ModelList, lifecycleOptions } from '../ModelList';
 import * as models from '../../__fixtures__/models';
 import { ModelManager, IModelMeta } from 'rev-models';
 import { ModelProvider } from '../../provider/ModelProvider';
@@ -58,10 +58,20 @@ describe('ModelList', () => {
 
         before(() => {
             modelManager = models.getModelManager();
+            lifecycleOptions.enableComponentDidMount = false;
             wrapper = mount(
                 <ModelProvider modelManager={modelManager}>
-                    <ModelList model={model} fields={fields} />
+                    <ModelList
+                        title="Test List"
+                        model={model}
+                        fields={fields} />
                 </ModelProvider>);
+        });
+
+        it('renders the list title', () => {
+            const listTitle = wrapper.find('h2');
+            expect(listTitle).to.have.length(1);
+            expect(listTitle.at(0).text()).to.equal('Test List');
         });
 
         it('renders a loading progress indicator', () => {
@@ -70,6 +80,30 @@ describe('ModelList', () => {
 
         it('does not render the table', () => {
             expect(wrapper.find(Table)).to.have.length(0);
+        });
+
+    });
+
+    describe('ModelList title prop - when not set', () => {
+        const model = 'Post';
+        const fields = ['id', 'title', 'published', 'post_date'];
+        let wrapper: ReactWrapper;
+
+        before(() => {
+            modelManager = models.getModelManager();
+            lifecycleOptions.enableComponentDidMount = false;
+            wrapper = mount(
+                <ModelProvider modelManager={modelManager}>
+                    <ModelList
+                        model={model}
+                        fields={fields} />
+                </ModelProvider>);
+        });
+
+        it('renders the model label + " List"', () => {
+            const listTitle = wrapper.find('h2');
+            expect(listTitle).to.have.length(1);
+            expect(listTitle.at(0).text()).to.equal('Post List');
         });
 
     });
@@ -86,12 +120,22 @@ describe('ModelList', () => {
             meta = modelManager.getModelMeta(models.Post);
             expectedData = await createData(modelManager);
 
+            lifecycleOptions.enableComponentDidMount = true;
             wrapper = mount(
                 <ModelProvider modelManager={modelManager}>
-                    <ModelList model={model} fields={fields} />
+                    <ModelList
+                        title="List with Data Loaded..."
+                        model={model}
+                        fields={fields} />
                 </ModelProvider>);
-            await sleep(50);
+            await sleep(10);
             wrapper.update();
+        });
+
+        it('renders the list title', () => {
+            const listTitle = wrapper.find('h2');
+            expect(listTitle).to.have.length(1);
+            expect(listTitle.at(0).text()).to.equal('List with Data Loaded...');
         });
 
         it('does not render a loading progress indicator', () => {
