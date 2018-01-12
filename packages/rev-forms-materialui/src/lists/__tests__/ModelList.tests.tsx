@@ -10,11 +10,20 @@ import { ModelManager, IModelMeta } from 'rev-models';
 import { ModelProvider } from '../../provider/ModelProvider';
 import { LinearProgress } from 'material-ui/Progress';
 import Table from 'material-ui/Table';
+import { getClasses } from 'material-ui/test-utils';
 import { createData, IModelTestData } from '../../__fixtures__/modeldata';
 
 describe('ModelList', () => {
 
     let modelManager: ModelManager;
+    let classes: any;
+
+    before(() => {
+        modelManager = models.getModelManager();
+        classes = getClasses(
+            <ModelList model="Post" fields={['id']} />
+        );
+    });
 
     describe('construction', () => {
         let errorStub: sinon.SinonStub;
@@ -72,6 +81,10 @@ describe('ModelList', () => {
             const listTitle = wrapper.find('h2');
             expect(listTitle).to.have.length(1);
             expect(listTitle.at(0).text()).to.equal('Test List');
+        });
+
+        it('does not remder the pagination area', () => {
+            expect(wrapper.find('div.' + classes.pagination)).to.have.length(0);
         });
 
         it('renders a loading progress indicator', () => {
@@ -136,6 +149,10 @@ describe('ModelList', () => {
             const listTitle = wrapper.find('h2');
             expect(listTitle).to.have.length(1);
             expect(listTitle.at(0).text()).to.equal('List with Data Loaded...');
+        });
+
+        it('remders the pagination area', () => {
+            expect(wrapper.find('div.' + classes.pagination)).to.have.length(1);
         });
 
         it('does not render a loading progress indicator', () => {
