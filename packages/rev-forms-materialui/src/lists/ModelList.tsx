@@ -17,14 +17,17 @@ import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 
 export interface IModelListProps {
-    title?: string;
     model: string;
     fields: string[];
+    title?: string;
+    maxRecords?: number;
 }
 
 export interface IModelListState {
     loadState: 'not_loaded' | 'loading' | 'loaded' | 'load_error';
     modelData?: IModelOperationResult<any, IReadMeta>;
+    limit: number;
+    offset: number;
 }
 
 export interface IModelListReceivedContext {
@@ -80,7 +83,9 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
         }
 
         this.state = {
-            loadState: 'not_loaded'
+            loadState: 'not_loaded',
+            limit: props.maxRecords || 20,
+            offset: 0
         };
     }
 
@@ -169,7 +174,10 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
 
     async componentDidMount() {
         if (lifecycleOptions.enableComponentDidMount && this.state.loadState == 'not_loaded') {
-            const modelData = await this.context.modelManager.read(this.modelMeta.ctor);
+            const modelData = await this.context.modelManager.read(
+                this.modelMeta.ctor, {}, {
+                    limit: this.state.limit
+                });
             if (modelData.success && modelData.results) {
                 this.setState({
                     loadState: 'loaded',

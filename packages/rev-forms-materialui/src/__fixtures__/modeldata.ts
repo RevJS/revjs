@@ -51,7 +51,31 @@ My precious...`,
             published: true,
             post_date: '2017-07-02T01:02:03',
             user: users[1]
-        })
+        }),
+        new Post({
+            id: 4,
+            title: 'Post 4',
+            body: `Another post...`,
+            published: true,
+            post_date: '2017-04-15T13:14:15',
+            user: users[0]
+        }),
+        new Post({
+            id: 5,
+            title: 'Post 5',
+            body: `Another post...`,
+            published: true,
+            post_date: '2017-04-15T13:14:15',
+            user: users[0]
+        }),
+        new Post({
+            id: 6,
+            title: 'Post 6',
+            body: `Another post...`,
+            published: true,
+            post_date: '2017-04-15T13:14:15',
+            user: users[0]
+        }),
     ];
 
     const comments = [

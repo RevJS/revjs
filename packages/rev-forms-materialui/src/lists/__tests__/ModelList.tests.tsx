@@ -124,6 +124,7 @@ describe('ModelList', () => {
     describe('when data has loaded', () => {
         const model = 'Post';
         const fields = ['id', 'title', 'published', 'post_date'];
+        const maxRecords = 4;
         let wrapper: ReactWrapper;
         let meta: IModelMeta<models.Post>;
         let expectedData: IModelTestData;
@@ -139,7 +140,9 @@ describe('ModelList', () => {
                     <ModelList
                         title="List with Data Loaded..."
                         model={model}
-                        fields={fields} />
+                        fields={fields}
+                        maxRecords={maxRecords}
+                    />
                 </ModelProvider>);
             await sleep(10);
             wrapper.update();
@@ -181,17 +184,18 @@ describe('ModelList', () => {
             expect(wrapper.find('tbody')).to.have.length(1);
         });
 
-        it('renders all rows of data', () => {
+        it('renders up to "maxRecords" rows of data', () => {
             expect(
                 wrapper.find('tbody')
                 .at(0).find('tr')
-            ).to.have.length(expectedData.posts.length);
+            ).to.have.length(maxRecords);
         });
 
         it('renders the correct data in each cell', () => {
-            expectedData.posts.forEach((post, postIdx) => {
+            for (let i = 0; i < maxRecords; i++) {
+                const post = expectedData.posts[i];
                 const row = wrapper.find('tbody')
-                    .at(0).find('tr').at(postIdx);
+                    .at(0).find('tr').at(i);
 
                 fields.forEach((fieldName, fieldIdx) => {
                     const td = row.find('td').at(fieldIdx);
@@ -200,7 +204,7 @@ describe('ModelList', () => {
                         post[fieldName].toString()
                     );
                 });
-            });
+            }
         });
     });
 
