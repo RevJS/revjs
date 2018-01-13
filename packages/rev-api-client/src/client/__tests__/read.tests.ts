@@ -29,7 +29,10 @@ describe('ModelApiBackend - read()', () => {
             mockHttpClient = getMockHttpClient(options.mockResponse);
         }
         apiBackend = new ModelApiBackend('/api', mockHttpClient);
-        readOptions = {};
+        readOptions = {
+            offset: 0,
+            limit: 20
+        };
         readResult = new ModelOperationResult<Comment, IReadMeta>({operation: 'read'});
     }
 
@@ -66,6 +69,18 @@ describe('ModelApiBackend - read()', () => {
         });
         expectToHaveProperties(result.results[2], {
             id: 3, title: 'Ruby Sucks'
+        });
+    });
+
+    it('returns read metadata', async () => {
+        const result = await apiBackend.read(
+            manager, Post, {}, readResult, readOptions
+        );
+        expect(result.success).to.be.true;
+        expect(result.meta).to.deep.equal({
+            offset: readOptions.offset,
+            limit: readOptions.limit,
+            total_count: 3
         });
     });
 

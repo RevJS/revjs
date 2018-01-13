@@ -30,7 +30,7 @@ export class ModelApiBackend implements IBackend {
         return error;
     }
 
-    _buildGraphQLQuery(meta: IModelMeta<any>) {
+    _buildGraphQLQuery(meta: IModelMeta<any>, offset: number, limit: number) {
         const fieldObj: any = {};
         for (const field of meta.fields) {
             if (!(field instanceof fields.RelatedModelFieldBase)) {
@@ -40,7 +40,16 @@ export class ModelApiBackend implements IBackend {
         return {
             query: {
                 [meta.name]: {
-                    results: fieldObj
+                    __args: {
+                        offset,
+                        limit
+                    },
+                    results: fieldObj,
+                    meta: {
+                        offset: true,
+                        limit: true,
+                        total_count: true
+                    }
                 }
             }
         };
@@ -60,7 +69,7 @@ export class ModelApiBackend implements IBackend {
 
     async read<T extends IModel>(manager: ModelManager, model: new() => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
         const meta = manager.getModelMeta(model);
-        const query = this._buildGraphQLQuery(meta);
+        const query = this._buildGraphQLQuery(meta, options.offset, options.limit);
         const httpResult = await this._httpClient({
             url: this.apiUrl,
             method: 'POST',
@@ -82,6 +91,8 @@ export class ModelApiBackend implements IBackend {
         returnedData.forEach((record: any) => {
             result.results.push(manager.hydrate(model, record));
         });
+        const returnedMeta = httpResult.data.data[meta.name].meta;
+        result.setMeta(returnedMeta);
         return result;
     }
 
