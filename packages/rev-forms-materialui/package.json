@@ -1,6 +1,6 @@
 {
   "name": "rev-forms-materialui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React, Redux-Forms and Material UI integration for RevJS",
   "main": "lib/index.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "rev-forms": "^0.0.1",
-    "rev-models": "^0.1.2",
+    "rev-models": "^0.2.0",
     "tslib": "1.x"
   },
   "devDependencies": {
