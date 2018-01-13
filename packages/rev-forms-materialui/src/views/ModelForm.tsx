@@ -15,11 +15,14 @@ export interface IModelFormState {
     fieldValues: {
         [fieldName: string]: any
     };
-    valid: boolean;
-    disabled: boolean;
     fieldErrors: {
         [fieldName: string]: IFieldError[]
     };
+    dirtyFields: {
+        [fieldName: string]: boolean;
+    };
+    valid: boolean;
+    disabled: boolean;
     modelErrors: IModelError[];
 }
 
@@ -54,6 +57,7 @@ export class ModelForm extends React.Component<IModelFormProps, IModelFormState>
             disabled: false,
             fieldValues: {},
             fieldErrors: {},
+            dirtyFields: {},
             modelErrors: []
         };
     }
@@ -69,12 +73,14 @@ export class ModelForm extends React.Component<IModelFormProps, IModelFormState>
     }
 
     updateFieldValue(fieldName: string, value: string) {
-        const newValues = { ...this.state.fieldValues, [fieldName]: value};
-        const newErrors = { ...this.state.fieldErrors };
-        delete newErrors[fieldName];
+        const fieldValues = { ...this.state.fieldValues, [fieldName]: value};
+        const fieldErrors = { ...this.state.fieldErrors };
+        delete fieldErrors[fieldName];
+        const dirtyFields = { ...this.state.dirtyFields, [fieldName]: true };
         this.setState({
-            fieldValues: newValues,
-            fieldErrors: newErrors
+            fieldValues,
+            fieldErrors,
+            dirtyFields
         });
     }
 

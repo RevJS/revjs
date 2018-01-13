@@ -5,7 +5,7 @@ import * as PropTypes from 'prop-types';
 import Button from 'material-ui/Button';
 import { IExecArgs, IExecOptions } from 'rev-models/lib/models/types';
 import { ModelManager } from 'rev-models';
-import { ModelForm } from '../forms/ModelForm';
+import { ModelForm } from './ModelForm';
 
 export type FormActionType = 'post' | 'method';
 const defaultActionType: FormActionType = 'method';

@@ -1,5 +1,5 @@
 
 export { ModelProvider } from './provider/ModelProvider';
-export { ModelForm } from './forms/ModelForm';
+export { ModelForm } from './views/ModelForm';
 export { ModelField } from './fields/ModelField';
-export { FormAction } from './actions/ModelAction';
+export { FormAction } from './views/ViewAction';

@@ -10,7 +10,7 @@ import { DateField } from './DateField';
 import { NumberField } from './NumberField';
 import { SelectionField } from './SelectionField';
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { IModelFormProvidedContext, ModelForm } from '../forms/ModelForm';
+import { IModelFormProvidedContext, ModelForm } from '../views/ModelForm';
 import { IModelFieldComponentProps } from './types';
 import { IFieldError } from 'rev-models/lib/validation/validationresult';
 
