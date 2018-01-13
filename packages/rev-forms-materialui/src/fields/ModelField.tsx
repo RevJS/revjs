@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import { ModelManager, IModelMeta, fields } from 'rev-models';
 
+import Grid from 'material-ui/Grid';
 import { TextField } from './TextField';
 import { BooleanField } from './BooleanField';
 import { DateField } from './DateField';
@@ -15,6 +16,9 @@ import { IFieldError } from 'rev-models/lib/validation/validationresult';
 
 export interface IModelFieldProps {
     name: string;
+    colspanNarrow?: number;
+    colspan?: number;
+    colspanWide?: number;
 }
 
 export interface IFormFieldContext {
@@ -70,31 +74,34 @@ export class ModelField extends React.Component<IModelFieldProps> {
             onChange: (value) => this.onChange(value)
         };
 
+        let component: React.ReactNode;
+
         if (this.modelField instanceof fields.TextField) {
-            return (
-                <TextField {...modelFieldProps} />
-            );
+            component = <TextField {...modelFieldProps} />;
         }
         else if (this.modelField instanceof fields.NumberField) {
-            return (
-                <NumberField {...modelFieldProps} />
-            );
+            component = <NumberField {...modelFieldProps} />;
         }
         else if (this.modelField instanceof fields.BooleanField) {
-            return (
-                <BooleanField {...modelFieldProps} />
-            );
+            component = <BooleanField {...modelFieldProps} />;
         }
         else if (this.modelField instanceof fields.SelectionField) {
-            return (
-                <SelectionField {...modelFieldProps} />
-            );
+            component = <SelectionField {...modelFieldProps} />;
         }
         else if (this.modelField instanceof fields.DateField) {
-            return (
-                <DateField {...modelFieldProps} />
-            );
+            component = <DateField {...modelFieldProps} />;
         }
+
+        const widthProps: any = {
+            xs: this.props.colspanNarrow || 12,
+            md: this.props.colspan || 6,
+        };
+        if (this.props.colspanWide) {
+            widthProps.lg = this.props.colspanWide;
+        }
+
+        return <Grid item {...widthProps}>{component}</Grid>;
+
     }
 
 }

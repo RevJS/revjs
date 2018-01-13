@@ -2,6 +2,7 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
+import Grid from 'material-ui/Grid';
 import { IModelProviderContext } from '../provider/ModelProvider';
 import { IFieldError, IModelError, ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 import { ModelManager, IModelMeta } from 'rev-models';
@@ -60,7 +61,9 @@ export class ModelForm extends React.Component<IModelFormProps, IModelFormState>
     render() {
         return (
             <form onSubmit={(e) => e.preventDefault()}>
-                {this.props.children}
+                <Grid container spacing={8}>
+                    {this.props.children}
+                </Grid>
             </form>
         );
     }
