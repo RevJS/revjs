@@ -89,8 +89,13 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
         };
     }
 
-    onNextPageButtonPressed() {
+    onForwardButtonPressed() {
         this.loadData(this.state.limit, this.state.offset + this.state.limit);
+    }
+
+    onBackButtonPressed() {
+        const offset = Math.max(this.state.offset - this.state.limit, 0);
+        this.loadData(this.state.limit, offset);
     }
 
     async loadData(limit: number, offset: number) {
@@ -119,7 +124,7 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
 
         if (this.state.loadState == 'loaded') {
             const readMeta = this.state.modelData.meta;
-            const firstRecordNumber = readMeta.offset + 1;
+            const firstRecordNumber = readMeta.total_count ? readMeta.offset + 1 : 0;
             const lastRecordNumber = Math.min(
                 readMeta.offset + readMeta.limit,
                 readMeta.total_count
@@ -142,13 +147,13 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
                         {paginationText}
                     </Typography>
                     <IconButton
-                        onClick={() => {}}
+                        onClick={() => this.onBackButtonPressed()}
                         disabled={backButtonDisabled}
                     >
                         <KeyboardArrowLeft titleAccess="Previous Page" />
                     </IconButton>
                     <IconButton
-                        onClick={() => this.onNextPageButtonPressed()}
+                        onClick={() => this.onForwardButtonPressed()}
                         disabled={forwardButtonDisabled}
                     >
                         <KeyboardArrowRight titleAccess="Next Page" />

@@ -334,9 +334,263 @@ describe('ModelList', () => {
             }
         });
 
-        /**
-         *  When there is no data I do a thing...
-         */
+    });
+
+    describe('when data has loaded, and I go to the 3rd page', () => {
+        const model = 'Post';
+        const fields = ['id', 'title', 'published', 'post_date'];
+        const maxRecords = 3;
+        let wrapper: ReactWrapper;
+        let meta: IModelMeta<models.Post>;
+        let expectedData: IModelTestData;
+        let pagination: ReactWrapper;
+        let backButton: ReactWrapper;
+        let forwardButton: ReactWrapper;
+
+        before(async () => {
+            modelManager = models.getModelManager();
+            meta = modelManager.getModelMeta(models.Post);
+            expectedData = await createData(modelManager);
+
+            lifecycleOptions.enableComponentDidMount = true;
+            wrapper = mount(
+                <ModelProvider modelManager={modelManager}>
+                    <ModelList
+                        title="List with Data Loaded..."
+                        model={model}
+                        fields={fields}
+                        maxRecords={maxRecords}
+                    />
+                </ModelProvider>);
+            await sleep(10);
+            wrapper.update();
+            pagination = wrapper.find('div.' + classes.pagination).at(0);
+            forwardButton = pagination.find('button').at(1);
+            forwardButton.simulate('click');
+            await sleep(10);
+            wrapper.update();
+            pagination = wrapper.find('div.' + classes.pagination).at(0);
+            forwardButton = pagination.find('button').at(1);
+            forwardButton.simulate('click');
+            await sleep(10);
+            wrapper.update();
+            pagination = wrapper.find('div.' + classes.pagination).at(0);
+            backButton = pagination.find('button').at(0);
+            forwardButton = pagination.find('button').at(1);
+        });
+
+        it('remders the current offset and total record count', () => {
+            const paginationText = pagination.childAt(0).text();
+            expect(paginationText).to.equal('Records 7-7 of 7');
+        });
+
+        it('the go-back button is not disabled', () => {
+            expect(backButton.prop('disabled')).to.be.false;
+        });
+
+        it('the go-forward button is disabled', () => {
+            expect(forwardButton.prop('disabled')).to.be.true;
+        });
+
+        it('renders the last row of data', () => {
+            expect(
+                wrapper.find('tbody')
+                .at(0).find('tr')
+            ).to.have.length(1);
+        });
+
+        it('renders the correct data, starting from the specified offset', () => {
+            const post = expectedData.posts[6];
+            const row = wrapper.find('tbody')
+                .at(0).find('tr').at(0);
+
+            fields.forEach((fieldName, fieldIdx) => {
+                const td = row.find('td').at(fieldIdx);
+
+                expect(td.text()).to.equal(
+                    post[fieldName].toString()
+                );
+            });
+        });
+    });
+
+    describe('when data has loaded, and I go to the 2nd page, then back to the first', () => {
+        const model = 'Post';
+        const fields = ['id', 'title', 'published', 'post_date'];
+        const maxRecords = 3;
+        let wrapper: ReactWrapper;
+        let meta: IModelMeta<models.Post>;
+        let expectedData: IModelTestData;
+        let pagination: ReactWrapper;
+        let backButton: ReactWrapper;
+        let forwardButton: ReactWrapper;
+
+        before(async () => {
+            modelManager = models.getModelManager();
+            meta = modelManager.getModelMeta(models.Post);
+            expectedData = await createData(modelManager);
+
+            lifecycleOptions.enableComponentDidMount = true;
+            wrapper = mount(
+                <ModelProvider modelManager={modelManager}>
+                    <ModelList
+                        title="List with Data Loaded..."
+                        model={model}
+                        fields={fields}
+                        maxRecords={maxRecords}
+                    />
+                </ModelProvider>);
+            await sleep(10);
+            wrapper.update();
+            pagination = wrapper.find('div.' + classes.pagination).at(0);
+            forwardButton = pagination.find('button').at(1);
+            forwardButton.simulate('click');
+            await sleep(10);
+            wrapper.update();
+            pagination = wrapper.find('div.' + classes.pagination).at(0);
+            backButton = pagination.find('button').at(0);
+            backButton.simulate('click');
+            await sleep(10);
+            wrapper.update();
+            pagination = wrapper.find('div.' + classes.pagination).at(0);
+            backButton = pagination.find('button').at(0);
+            forwardButton = pagination.find('button').at(1);
+        });
+
+        it('remders the current offset and total record count', () => {
+            const paginationText = pagination.childAt(0).text();
+            expect(paginationText).to.equal('Records 1-3 of 7');
+        });
+
+        it('the go-back button is disabled', () => {
+            expect(backButton.prop('disabled')).to.be.true;
+        });
+
+        it('the go-forward button is not disabled', () => {
+            expect(forwardButton.prop('disabled')).to.be.false;
+        });
+
+        it('renders up to "maxRecords" rows of data', () => {
+            expect(
+                wrapper.find('tbody')
+                .at(0).find('tr')
+            ).to.have.length(maxRecords);
+        });
+
+        it('renders the correct data in each cell', () => {
+            for (let i = 0; i < maxRecords; i++) {
+                const post = expectedData.posts[i];
+                const row = wrapper.find('tbody')
+                    .at(0).find('tr').at(i);
+
+                fields.forEach((fieldName, fieldIdx) => {
+                    const td = row.find('td').at(fieldIdx);
+
+                    expect(td.text()).to.equal(
+                        post[fieldName].toString()
+                    );
+                });
+            }
+        });
+    });
+
+    describe('when data has loaded but there are no results', () => {
+        const model = 'Post';
+        const fields = ['id', 'title', 'published', 'post_date'];
+        let wrapper: ReactWrapper;
+        let meta: IModelMeta<models.Post>;
+
+        before(async () => {
+            modelManager = models.getModelManager();
+            meta = modelManager.getModelMeta(models.Post);
+
+            lifecycleOptions.enableComponentDidMount = true;
+            wrapper = mount(
+                <ModelProvider modelManager={modelManager}>
+                    <ModelList
+                        title="List with Data Loaded..."
+                        model={model}
+                        fields={fields}
+                    />
+                </ModelProvider>);
+            await sleep(10);
+            wrapper.update();
+        });
+
+        describe('main elements', () => {
+
+            it('renders the list title', () => {
+                const listTitle = wrapper.find('h2');
+                expect(listTitle).to.have.length(1);
+                expect(listTitle.at(0).text()).to.equal('List with Data Loaded...');
+            });
+
+            it('remders the pagination area', () => {
+                expect(wrapper.find('div.' + classes.pagination)).to.have.length(1);
+            });
+
+            it('does not render a loading progress indicator', () => {
+                expect(wrapper.find(LinearProgress)).to.have.length(0);
+            });
+
+            it('renders the table', () => {
+                expect(wrapper.find(Table)).to.have.length(1);
+            });
+
+        });
+
+        describe('pagination', () => {
+            let pagination: ReactWrapper;
+            let paginationButtons: ReactWrapper;
+
+            before(() => {
+                pagination = wrapper.find('div.' + classes.pagination).at(0);
+                paginationButtons = pagination.find('button');
+            });
+
+            it('remders the current offset and total record count', () => {
+                const paginationText = pagination.childAt(0).text();
+                expect(paginationText).to.equal('Records 0-0 of 0');
+            });
+
+            it('remders the go-forward and go-back buttons', () => {
+                expect(paginationButtons).to.have.length(2);
+            });
+
+            it('the go-back button is disabled', () => {
+                expect(paginationButtons.at(0).prop('disabled')).to.be.true;
+            });
+
+            it('the go-forward button is disabled', () => {
+                expect(paginationButtons.at(1).prop('disabled')).to.be.true;
+            });
+
+        });
+
+        describe('table data', () => {
+
+            it('renders columns headings', () => {
+                fields.forEach((fieldName, idx) => {
+                    const th = wrapper.find('th').at(idx);
+                    expect(th.text()).to.equal(
+                        meta.fieldsByName[fieldName].options.label
+                        || meta.fieldsByName[fieldName].name
+                    );
+                });
+            });
+
+            it('renders table body', () => {
+                expect(wrapper.find('tbody')).to.have.length(1);
+            });
+
+            it('does not render any rows', () => {
+                expect(
+                    wrapper.find('tbody')
+                    .at(0).find('tr')
+                ).to.have.length(0);
+            });
+
+        });
 
     });
 
