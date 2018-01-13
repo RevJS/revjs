@@ -158,7 +158,7 @@ describe('ModelList', () => {
     describe('when data has loaded - first page', () => {
         const model = 'Post';
         const fields = ['id', 'title', 'published', 'post_date'];
-        const maxRecords = 3;
+        const rowLimit = 3;
         let wrapper: ReactWrapper;
         let meta: IModelMeta<models.Post>;
         let expectedData: IModelTestData;
@@ -175,7 +175,7 @@ describe('ModelList', () => {
                         title="List with Data Loaded..."
                         model={model}
                         fields={fields}
-                        maxRecords={maxRecords}
+                        rowLimit={rowLimit}
                     />
                 </ModelProvider>);
             await sleep(10);
@@ -248,15 +248,15 @@ describe('ModelList', () => {
                 expect(wrapper.find('tbody')).to.have.length(1);
             });
 
-            it('renders up to "maxRecords" rows of data', () => {
+            it('renders up to "rowLimit" rows of data', () => {
                 expect(
                     wrapper.find('tbody')
                     .at(0).find('tr')
-                ).to.have.length(maxRecords);
+                ).to.have.length(rowLimit);
             });
 
             it('renders the correct data in each cell', () => {
-                for (let i = 0; i < maxRecords; i++) {
+                for (let i = 0; i < rowLimit; i++) {
                     const post = expectedData.posts[i];
                     const row = wrapper.find('tbody')
                         .at(0).find('tr').at(i);
@@ -278,7 +278,7 @@ describe('ModelList', () => {
     describe('when data has loaded, and I go to the 2nd page', () => {
         const model = 'Post';
         const fields = ['id', 'title', 'published', 'post_date'];
-        const maxRecords = 3;
+        const rowLimit = 3;
         let wrapper: ReactWrapper;
         let expectedData: IModelTestData;
         let pagination: ReactWrapper;
@@ -296,7 +296,7 @@ describe('ModelList', () => {
                         title="List with Data Loaded..."
                         model={model}
                         fields={fields}
-                        maxRecords={maxRecords}
+                        rowLimit={rowLimit}
                     />
                 </ModelProvider>);
             await sleep(10);
@@ -324,16 +324,16 @@ describe('ModelList', () => {
             expect(forwardButton.prop('disabled')).to.be.false;
         });
 
-        it('renders "maxRecords" rows of data', () => {
+        it('renders "rowLimit" rows of data', () => {
             expect(
                 wrapper.find('tbody')
                 .at(0).find('tr')
-            ).to.have.length(maxRecords);
+            ).to.have.length(rowLimit);
         });
 
         it('renders the correct data, starting from the specified offset', () => {
-            for (let i = 0; i < maxRecords; i++) {
-                const postIdx = i + maxRecords;
+            for (let i = 0; i < rowLimit; i++) {
+                const postIdx = i + rowLimit;
                 const post = expectedData.posts[postIdx];
                 const row = wrapper.find('tbody')
                     .at(0).find('tr').at(i);
@@ -353,7 +353,7 @@ describe('ModelList', () => {
     describe('when data has loaded, and I go to the 3rd page', () => {
         const model = 'Post';
         const fields = ['id', 'title', 'published', 'post_date'];
-        const maxRecords = 3;
+        const rowLimit = 3;
         let wrapper: ReactWrapper;
         let expectedData: IModelTestData;
         let pagination: ReactWrapper;
@@ -371,7 +371,7 @@ describe('ModelList', () => {
                         title="List with Data Loaded..."
                         model={model}
                         fields={fields}
-                        maxRecords={maxRecords}
+                        rowLimit={rowLimit}
                     />
                 </ModelProvider>);
             await sleep(10);
@@ -429,7 +429,7 @@ describe('ModelList', () => {
     describe('when data has loaded, and I go to the 2nd page, then back to the first', () => {
         const model = 'Post';
         const fields = ['id', 'title', 'published', 'post_date'];
-        const maxRecords = 3;
+        const rowLimit = 3;
         let wrapper: ReactWrapper;
         let expectedData: IModelTestData;
         let pagination: ReactWrapper;
@@ -447,7 +447,7 @@ describe('ModelList', () => {
                         title="List with Data Loaded..."
                         model={model}
                         fields={fields}
-                        maxRecords={maxRecords}
+                        rowLimit={rowLimit}
                     />
                 </ModelProvider>);
             await sleep(10);
@@ -480,15 +480,15 @@ describe('ModelList', () => {
             expect(forwardButton.prop('disabled')).to.be.false;
         });
 
-        it('renders up to "maxRecords" rows of data', () => {
+        it('renders up to "rowLimit" rows of data', () => {
             expect(
                 wrapper.find('tbody')
                 .at(0).find('tr')
-            ).to.have.length(maxRecords);
+            ).to.have.length(rowLimit);
         });
 
         it('renders the correct data in each cell', () => {
-            for (let i = 0; i < maxRecords; i++) {
+            for (let i = 0; i < rowLimit; i++) {
                 const post = expectedData.posts[i];
                 const row = wrapper.find('tbody')
                     .at(0).find('tr').at(i);

@@ -19,7 +19,7 @@ export interface IModelListProps {
     model: string;
     fields: string[];
     title?: string;
-    maxRecords?: number;
+    rowLimit?: number;
 }
 
 export interface IModelListState {
@@ -84,7 +84,7 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
 
         this.state = {
             loadState: 'loading',
-            limit: props.maxRecords || 20,
+            limit: props.rowLimit || 20,
             offset: 0
         };
     }
