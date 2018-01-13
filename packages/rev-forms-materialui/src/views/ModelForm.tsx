@@ -5,7 +5,7 @@ import * as PropTypes from 'prop-types';
 import Grid from 'material-ui/Grid';
 import { IModelProviderContext } from '../provider/ModelProvider';
 import { IFieldError, IModelError, ModelValidationResult } from 'rev-models/lib/validation/validationresult';
-import { ModelManager, IModelMeta } from 'rev-models';
+import { IViewManagerContext } from './ViewManager';
 
 export interface IModelFormProps {
     model: string;
@@ -26,32 +26,33 @@ export interface IModelFormState {
     modelErrors: IModelError[];
 }
 
-export interface IModelFormReceivedContext {
-    modelManager: ModelManager;
-}
-
-export interface IModelFormProvidedContext {
+export interface IModelFormContext {
     modelForm: ModelForm;
 }
 
 export class ModelForm extends React.Component<IModelFormProps, IModelFormState> {
 
-    context: IModelFormReceivedContext;
+    context: IModelProviderContext & IViewManagerContext;
     static contextTypes = {
-        modelManager: PropTypes.object
+        modelManager: PropTypes.object,
+        viewContext: PropTypes.object
     };
-
-    modelMeta: IModelMeta<any>;
 
     constructor(props: IModelFormProps, context: IModelProviderContext) {
         super(props, context);
         if (!this.context.modelManager) {
             throw new Error('ModelForm Error: must be nested inside a ModelProvider.');
         }
+        if (!this.context.viewContext) {
+            throw new Error('ModelForm Error: must be nested inside a ViewManager.');
+        }
         if (!props.model || !this.context.modelManager.isRegistered(props.model)) {
             throw new Error(`ModelForm Error: Model '${props.model}' is not registered.`);
         }
-        this.modelMeta = this.context.modelManager.getModelMeta(this.props.model);
+        const modelMeta = this.context.viewContext.modelMeta;
+        if (modelMeta.name != props.model) {
+            throw new Error('ModelForm Error: model prop must currently be the same as ViewManager model.');
+        }
         this.state = {
             valid: false,
             disabled: false,
@@ -77,6 +78,7 @@ export class ModelForm extends React.Component<IModelFormProps, IModelFormState>
         const fieldErrors = { ...this.state.fieldErrors };
         delete fieldErrors[fieldName];
         const dirtyFields = { ...this.state.dirtyFields, [fieldName]: true };
+        this.context.viewContext.setDirty(true);
         this.setState({
             fieldValues,
             fieldErrors,
@@ -93,7 +95,7 @@ export class ModelForm extends React.Component<IModelFormProps, IModelFormState>
     }
 
     async validate() {
-        const model = this.context.modelManager.hydrate(this.modelMeta.ctor, this.state.fieldValues);
+        const model = this.context.modelManager.hydrate(this.context.viewContext.modelMeta.ctor, this.state.fieldValues);
         return this.context.modelManager.validate(model);
     }
 
@@ -107,7 +109,7 @@ export class ModelForm extends React.Component<IModelFormProps, IModelFormState>
         modelForm: PropTypes.object
     };
 
-    getChildContext(): IModelFormProvidedContext {
+    getChildContext(): IModelFormContext {
         return {
             modelForm: this
         };

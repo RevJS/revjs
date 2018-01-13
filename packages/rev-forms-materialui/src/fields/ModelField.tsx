@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import { ModelManager, IModelMeta, fields } from 'rev-models';
+import { IModelMeta, fields } from 'rev-models';
 
 import Grid from 'material-ui/Grid';
 import { TextField } from './TextField';
@@ -10,9 +10,10 @@ import { DateField } from './DateField';
 import { NumberField } from './NumberField';
 import { SelectionField } from './SelectionField';
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { IModelFormProvidedContext, ModelForm } from '../views/ModelForm';
+import { IModelFormContext } from '../views/ModelForm';
 import { IModelFieldComponentProps } from './types';
 import { IFieldError } from 'rev-models/lib/validation/validationresult';
+import { IViewManagerContext } from '../views/ViewManager';
 
 export interface IModelFieldProps {
     name: string;
@@ -21,30 +22,26 @@ export interface IModelFieldProps {
     colspanWide?: number;
 }
 
-export interface IFormFieldContext {
-    modelForm: ModelForm;
-    modelManager: ModelManager;
-}
-
 export class ModelField extends React.Component<IModelFieldProps> {
 
-    context: IFormFieldContext;
+    context: IModelProviderContext & IViewManagerContext & IModelFormContext;
     static contextTypes = {
         modelManager: PropTypes.object,
+        viewContext: PropTypes.object,
         modelForm: PropTypes.object
     };
 
     modelMeta: IModelMeta<any>;
     modelField: fields.Field;
 
-    constructor(props: IModelFieldProps, context: IModelProviderContext & IModelFormProvidedContext) {
+    constructor(props: IModelFieldProps, context: IModelProviderContext & IModelFormContext) {
         super(props, context);
         if (!this.context.modelForm) {
             throw new Error('ModelField Error: must be nested inside a ModelForm.');
         }
-        this.modelMeta = this.context.modelManager.getModelMeta(this.context.modelForm.props.model);
+        this.modelMeta = this.context.viewContext.modelMeta;
         if (!(props.name in this.modelMeta.fieldsByName)) {
-            throw new Error(`ModelField Error: Model '${this.context.modelForm.props.model}' does not have a field called '${props.name}'.`);
+            throw new Error(`ModelField Error: Model '${this.modelMeta.name}' does not have a field called '${props.name}'.`);
         }
         this.modelField = this.modelMeta.fieldsByName[props.name];
     }
