@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { ModelManager, IModelMeta, IModelOperationResult } from 'rev-models';
+import { IModelMeta, IModelOperationResult } from 'rev-models';
 import { IReadMeta } from 'rev-models/lib/models/types';
 
 import { withStyles, WithStyles, StyleRules, StyledComponentProps } from 'material-ui/styles';
@@ -14,23 +14,20 @@ import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
 import Table, { TableHead, TableBody, TableRow, TableCell } from 'material-ui/Table';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
+import { IViewManagerContext } from './ViewManager';
 
-export interface IModelListProps {
+export interface IListViewProps {
     model: string;
     fields: string[];
     title?: string;
     rowLimit?: number;
 }
 
-export interface IModelListState {
+export interface IListViewState {
     loadState: 'loading' | 'loaded' | 'load_error';
     modelData?: IModelOperationResult<any, IReadMeta>;
     limit: number;
     offset: number;
-}
-
-export interface IModelListReceivedContext {
-    modelManager: ModelManager;
 }
 
 const styles: StyleRules = {
@@ -51,28 +48,32 @@ const styles: StyleRules = {
     }
 };
 
-class ModelListC extends React.Component<IModelListProps & WithStyles, IModelListState> {
+class ListViewC extends React.Component<IListViewProps & WithStyles, IListViewState> {
 
-    context: IModelListReceivedContext;
+    context: IModelProviderContext & IViewManagerContext;
     static contextTypes = {
-        modelManager: PropTypes.object
+        modelManager: PropTypes.object,
+        viewContext: PropTypes.object
     };
 
     modelMeta: IModelMeta<any>;
 
-    constructor(props: IModelListProps & WithStyles, context: IModelProviderContext) {
+    constructor(props: IListViewProps & WithStyles, context: IModelProviderContext) {
         super(props, context);
         this.context.modelManager = context.modelManager;
         if (!this.context.modelManager) {
-            throw new Error('ModelList Error: must be nested inside a ModelProvider.');
+            throw new Error('ListView Error: must be nested inside a ModelProvider.');
+        }
+        if (!this.context.viewContext) {
+            throw new Error('ListView Error: must be nested inside a ViewManager.');
         }
         if (!props.model || !this.context.modelManager.isRegistered(props.model)) {
-            throw new Error(`ModelList Error: Model '${props.model}' is not registered.`);
+            throw new Error(`ListView Error: Model '${props.model}' is not registered.`);
         }
-        this.modelMeta = this.context.modelManager.getModelMeta(props.model);
+        this.modelMeta = this.context.viewContext.modelMeta;
         for (const fieldName of props.fields) {
             if (!(fieldName in this.modelMeta.fieldsByName)) {
-                throw new Error(`ModelList Error: Model '${props.model}' does not have a field called '${fieldName}'.`);
+                throw new Error(`ListView Error: Model '${props.model}' does not have a field called '${fieldName}'.`);
             }
         }
 
@@ -204,8 +205,8 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
 
 }
 
-export const ModelList: React.ComponentType<IModelListProps & StyledComponentProps>
-    = withStyles(styles)(ModelListC);
+export const ListView: React.ComponentType<IListViewProps & StyledComponentProps>
+    = withStyles(styles)(ListViewC);
 
 export const lifecycleOptions = {
     enableComponentDidMount: true

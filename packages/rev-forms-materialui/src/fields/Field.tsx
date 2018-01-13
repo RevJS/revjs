@@ -10,21 +10,21 @@ import { DateField } from './DateField';
 import { NumberField } from './NumberField';
 import { SelectionField } from './SelectionField';
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { IModelFormContext } from '../views/ModelForm';
+import { IFormViewContext } from '../views/FormView';
 import { IModelFieldComponentProps } from './types';
 import { IFieldError } from 'rev-models/lib/validation/validationresult';
 import { IViewManagerContext } from '../views/ViewManager';
 
-export interface IModelFieldProps {
+export interface IFieldProps {
     name: string;
     colspanNarrow?: number;
     colspan?: number;
     colspanWide?: number;
 }
 
-export class ModelField extends React.Component<IModelFieldProps> {
+export class Field extends React.Component<IFieldProps> {
 
-    context: IModelProviderContext & IViewManagerContext & IModelFormContext;
+    context: IModelProviderContext & IViewManagerContext & IFormViewContext;
     static contextTypes = {
         modelManager: PropTypes.object,
         viewContext: PropTypes.object,
@@ -34,7 +34,7 @@ export class ModelField extends React.Component<IModelFieldProps> {
     modelMeta: IModelMeta<any>;
     modelField: fields.Field;
 
-    constructor(props: IModelFieldProps, context: IModelProviderContext & IModelFormContext) {
+    constructor(props: IFieldProps, context: IModelProviderContext & IFormViewContext) {
         super(props, context);
         if (!this.context.modelForm) {
             throw new Error('ModelField Error: must be nested inside a ModelForm.');

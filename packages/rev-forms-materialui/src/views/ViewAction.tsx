@@ -5,7 +5,7 @@ import * as PropTypes from 'prop-types';
 import Button from 'material-ui/Button';
 import { IExecArgs, IExecOptions } from 'rev-models/lib/models/types';
 import { ModelManager } from 'rev-models';
-import { ModelForm } from './ModelForm';
+import { FormView } from './FormView';
 
 export type FormActionType = 'post' | 'method';
 const defaultActionType: FormActionType = 'method';
@@ -23,11 +23,11 @@ export interface IFormActionProps {
 }
 
 export interface IFormActionContext {
-    modelForm: ModelForm;
+    modelForm: FormView;
     modelManager: ModelManager;
 }
 
-export class FormAction extends React.Component<IFormActionProps> {
+export class ViewAction extends React.Component<IFormActionProps> {
 
     context: IFormActionContext;
     static contextTypes = {

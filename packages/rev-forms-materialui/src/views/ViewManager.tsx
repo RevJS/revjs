@@ -6,7 +6,7 @@ import { IModelMeta } from 'rev-models';
 
 export interface IViewManagerProps {
     model: string;
-    primaryKeyValue: string;
+    primaryKeyValue?: string;
 }
 
 export interface IViewManagerState {
@@ -35,18 +35,19 @@ export class ViewManager extends React.Component<IViewManagerProps, IViewManager
     constructor(props: IViewManagerProps, context: IModelProviderContext) {
         super(props, context);
 
+        this.modelMeta = this.context.modelManager.getModelMeta(this.props.model);
         this.state = {
             dirty: false
         };
     }
 
-    static childContextTypes = {
-        viewContext: PropTypes.object
-    };
-
     setDirty(dirty: boolean) {
         this.setState({ dirty });
     }
+
+    static childContextTypes = {
+        viewContext: PropTypes.object
+    };
 
     getChildContext(): IViewManagerContext {
         return {

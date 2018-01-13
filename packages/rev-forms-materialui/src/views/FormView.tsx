@@ -7,11 +7,11 @@ import { IModelProviderContext } from '../provider/ModelProvider';
 import { IFieldError, IModelError, ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 import { IViewManagerContext } from './ViewManager';
 
-export interface IModelFormProps {
+export interface IFormViewProps {
     model: string;
 }
 
-export interface IModelFormState {
+export interface IFormViewState {
     fieldValues: {
         [fieldName: string]: any
     };
@@ -26,11 +26,11 @@ export interface IModelFormState {
     modelErrors: IModelError[];
 }
 
-export interface IModelFormContext {
-    modelForm: ModelForm;
+export interface IFormViewContext {
+    modelForm: FormView;
 }
 
-export class ModelForm extends React.Component<IModelFormProps, IModelFormState> {
+export class FormView extends React.Component<IFormViewProps, IFormViewState> {
 
     context: IModelProviderContext & IViewManagerContext;
     static contextTypes = {
@@ -38,20 +38,20 @@ export class ModelForm extends React.Component<IModelFormProps, IModelFormState>
         viewContext: PropTypes.object
     };
 
-    constructor(props: IModelFormProps, context: IModelProviderContext) {
+    constructor(props: IFormViewProps, context: IModelProviderContext) {
         super(props, context);
         if (!this.context.modelManager) {
-            throw new Error('ModelForm Error: must be nested inside a ModelProvider.');
+            throw new Error('FormView Error: must be nested inside a ModelProvider.');
         }
         if (!this.context.viewContext) {
-            throw new Error('ModelForm Error: must be nested inside a ViewManager.');
+            throw new Error('FormView Error: must be nested inside a ViewManager.');
         }
         if (!props.model || !this.context.modelManager.isRegistered(props.model)) {
-            throw new Error(`ModelForm Error: Model '${props.model}' is not registered.`);
+            throw new Error(`FormView Error: Model '${props.model}' is not registered.`);
         }
         const modelMeta = this.context.viewContext.modelMeta;
         if (modelMeta.name != props.model) {
-            throw new Error('ModelForm Error: model prop must currently be the same as ViewManager model.');
+            throw new Error('FormView Error: model prop must currently be the same as ViewManager model.');
         }
         this.state = {
             valid: false,
@@ -109,7 +109,7 @@ export class ModelForm extends React.Component<IModelFormProps, IModelFormState>
         modelForm: PropTypes.object
     };
 
-    getChildContext(): IModelFormContext {
+    getChildContext(): IFormViewContext {
         return {
             modelForm: this
         };

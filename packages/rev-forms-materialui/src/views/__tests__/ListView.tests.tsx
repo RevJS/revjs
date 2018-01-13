@@ -4,25 +4,37 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { mount, ReactWrapper } from 'enzyme';
 import { sleep } from '../../__test_utils__/utils';
-import { ModelList, lifecycleOptions } from '../ModelList';
+import { ListView, lifecycleOptions } from '../ListView';
 import * as models from '../../__fixtures__/models';
 import { ModelManager, IModelMeta } from 'rev-models';
 import { ModelProvider } from '../../provider/ModelProvider';
 import Table from 'material-ui/Table';
 import { getClasses } from 'material-ui/test-utils';
 import { createData, IModelTestData } from '../../__fixtures__/modeldata';
+import { ViewManager } from '../ViewManager';
 
 describe('ModelList', () => {
 
     let modelManager: ModelManager;
+    const model = 'Post';
     let classes: any;
 
     before(() => {
         modelManager = models.getModelManager();
         classes = getClasses(
-            <ModelList model="Post" fields={['id']} />
+            <ListView model="Post" fields={['id']} />
         );
     });
+
+    function getWrapper(component: React.ReactNode) {
+        return mount(
+            <ModelProvider modelManager={modelManager}>
+                <ViewManager model={model}>
+                    {component}
+                </ViewManager>
+            </ModelProvider>
+        );
+    }
 
     describe('construction', () => {
         let errorStub: sinon.SinonStub;
@@ -38,29 +50,24 @@ describe('ModelList', () => {
 
         it('throws error when not nested inside a ModelProvider', () => {
             expect(() => {
-                mount(<ModelList model="Post" fields={['title']} />);
+                mount(<ListView model="Post" fields={['title']} />);
             }).to.throw('must be nested inside a ModelProvider');
         });
 
         it('throws error when specified model does not exist', () => {
             expect(() => {
-                mount(<ModelProvider modelManager={modelManager}>
-                        <ModelList model="NonExistey" fields={['name']} />
-                    </ModelProvider>);
+                getWrapper(<ListView model="NonExistey" fields={['name']} />);
             }).to.throw(`Model 'NonExistey' is not registered`);
         });
 
         it('throws error when field name does not exist on model', () => {
             expect(() => {
-                mount(<ModelProvider modelManager={modelManager}>
-                        <ModelList model="Post" fields={['flannel']} />
-                    </ModelProvider>);
+                getWrapper(<ListView model="Post" fields={['flannel']} />);
             }).to.throw(`Model 'Post' does not have a field called 'flannel'`);
         });
     });
 
-    describe('initial state - no data loaded', () => {
-        const model = 'Post';
+    describe.only('initial state - no data loaded', () => {
         const fields = ['id', 'title', 'published', 'post_date'];
         let meta: IModelMeta<models.Post>;
         let wrapper: ReactWrapper;
@@ -71,13 +78,12 @@ describe('ModelList', () => {
             modelManager = models.getModelManager();
             meta = modelManager.getModelMeta(models.Post);
             lifecycleOptions.enableComponentDidMount = false;
-            wrapper = mount(
-                <ModelProvider modelManager={modelManager}>
-                    <ModelList
-                        title="Test List"
-                        model={model}
-                        fields={fields} />
-                </ModelProvider>);
+            wrapper = getWrapper(
+                <ListView
+                    title="Test List"
+                    model={model}
+                    fields={fields} />
+            );
             pagination = wrapper.find('div.' + classes.pagination).at(0);
             paginationButtons = pagination.find('button');
         });
@@ -132,19 +138,16 @@ describe('ModelList', () => {
     });
 
     describe('ModelList title prop - when not set', () => {
-        const model = 'Post';
         const fields = ['id', 'title', 'published', 'post_date'];
         let wrapper: ReactWrapper;
 
         before(() => {
             modelManager = models.getModelManager();
             lifecycleOptions.enableComponentDidMount = false;
-            wrapper = mount(
-                <ModelProvider modelManager={modelManager}>
-                    <ModelList
-                        model={model}
-                        fields={fields} />
-                </ModelProvider>);
+            wrapper = getWrapper(
+                <ListView
+                    model={model}
+                    fields={fields} />);
         });
 
         it('renders the model label + " List"', () => {
@@ -156,7 +159,6 @@ describe('ModelList', () => {
     });
 
     describe('when data has loaded - first page', () => {
-        const model = 'Post';
         const fields = ['id', 'title', 'published', 'post_date'];
         const rowLimit = 3;
         let wrapper: ReactWrapper;
@@ -169,15 +171,13 @@ describe('ModelList', () => {
             expectedData = await createData(modelManager);
 
             lifecycleOptions.enableComponentDidMount = true;
-            wrapper = mount(
-                <ModelProvider modelManager={modelManager}>
-                    <ModelList
-                        title="List with Data Loaded..."
-                        model={model}
-                        fields={fields}
-                        rowLimit={rowLimit}
-                    />
-                </ModelProvider>);
+            wrapper = getWrapper(
+                <ListView
+                    title="List with Data Loaded..."
+                    model={model}
+                    fields={fields}
+                    rowLimit={rowLimit} />
+            );
             await sleep(10);
             wrapper.update();
         });
@@ -276,7 +276,6 @@ describe('ModelList', () => {
     });
 
     describe('when data has loaded, and I go to the 2nd page', () => {
-        const model = 'Post';
         const fields = ['id', 'title', 'published', 'post_date'];
         const rowLimit = 3;
         let wrapper: ReactWrapper;
@@ -290,15 +289,13 @@ describe('ModelList', () => {
             expectedData = await createData(modelManager);
 
             lifecycleOptions.enableComponentDidMount = true;
-            wrapper = mount(
-                <ModelProvider modelManager={modelManager}>
-                    <ModelList
-                        title="List with Data Loaded..."
-                        model={model}
-                        fields={fields}
-                        rowLimit={rowLimit}
-                    />
-                </ModelProvider>);
+            wrapper = getWrapper(
+                <ListView
+                    title="List with Data Loaded..."
+                    model={model}
+                    fields={fields}
+                    rowLimit={rowLimit}
+                />);
             await sleep(10);
             wrapper.update();
             pagination = wrapper.find('div.' + classes.pagination).at(0);
@@ -351,7 +348,6 @@ describe('ModelList', () => {
     });
 
     describe('when data has loaded, and I go to the 3rd page', () => {
-        const model = 'Post';
         const fields = ['id', 'title', 'published', 'post_date'];
         const rowLimit = 3;
         let wrapper: ReactWrapper;
@@ -365,15 +361,13 @@ describe('ModelList', () => {
             expectedData = await createData(modelManager);
 
             lifecycleOptions.enableComponentDidMount = true;
-            wrapper = mount(
-                <ModelProvider modelManager={modelManager}>
-                    <ModelList
-                        title="List with Data Loaded..."
-                        model={model}
-                        fields={fields}
-                        rowLimit={rowLimit}
-                    />
-                </ModelProvider>);
+            wrapper = getWrapper(
+                <ListView
+                    title="List with Data Loaded..."
+                    model={model}
+                    fields={fields}
+                    rowLimit={rowLimit}
+                />);
             await sleep(10);
             wrapper.update();
             pagination = wrapper.find('div.' + classes.pagination).at(0);
@@ -427,7 +421,6 @@ describe('ModelList', () => {
     });
 
     describe('when data has loaded, and I go to the 2nd page, then back to the first', () => {
-        const model = 'Post';
         const fields = ['id', 'title', 'published', 'post_date'];
         const rowLimit = 3;
         let wrapper: ReactWrapper;
@@ -441,15 +434,13 @@ describe('ModelList', () => {
             expectedData = await createData(modelManager);
 
             lifecycleOptions.enableComponentDidMount = true;
-            wrapper = mount(
-                <ModelProvider modelManager={modelManager}>
-                    <ModelList
-                        title="List with Data Loaded..."
-                        model={model}
-                        fields={fields}
-                        rowLimit={rowLimit}
-                    />
-                </ModelProvider>);
+            wrapper = getWrapper(
+                <ListView
+                    title="List with Data Loaded..."
+                    model={model}
+                    fields={fields}
+                    rowLimit={rowLimit}
+                />);
             await sleep(10);
             wrapper.update();
             pagination = wrapper.find('div.' + classes.pagination).at(0);
@@ -505,7 +496,6 @@ describe('ModelList', () => {
     });
 
     describe('when data has loaded but there are no results', () => {
-        const model = 'Post';
         const fields = ['id', 'title', 'published', 'post_date'];
         let wrapper: ReactWrapper;
         let meta: IModelMeta<models.Post>;
@@ -515,14 +505,12 @@ describe('ModelList', () => {
             meta = modelManager.getModelMeta(models.Post);
 
             lifecycleOptions.enableComponentDidMount = true;
-            wrapper = mount(
-                <ModelProvider modelManager={modelManager}>
-                    <ModelList
-                        title="List with Data Loaded..."
-                        model={model}
-                        fields={fields}
-                    />
-                </ModelProvider>);
+            wrapper = getWrapper(
+                <ListView
+                    title="List with Data Loaded..."
+                    model={model}
+                    fields={fields}
+                />);
             await sleep(10);
             wrapper.update();
         });
