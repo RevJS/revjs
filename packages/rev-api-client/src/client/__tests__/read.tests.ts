@@ -83,7 +83,7 @@ describe('ModelApiBackend - read()', () => {
         expect(result.meta).to.deep.equal({
             offset: 0,
             limit: 10,
-            total_count: 3
+            totalCount: 3
         });
     });
 

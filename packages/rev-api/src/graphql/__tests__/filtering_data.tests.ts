@@ -189,11 +189,11 @@ describe('GraphQL query type - filtering model data', () => {
             ]);
         });
 
-        it('I can sort the results using the "order_by" argument', async () => {
+        it('I can sort the results using the "orderBy" argument', async () => {
             // GraphQL automagically converts "title" to ["title"]. Cool :)
             const query = `
                 query {
-                    Post(order_by: "title") {
+                    Post(orderBy: "title") {
                         results {
                             id,
                             title
@@ -209,10 +209,10 @@ describe('GraphQL query type - filtering model data', () => {
             ]);
         });
 
-        it('I can sort the results in reverse order using the "order_by" argument and "desc" keyword', async () => {
+        it('I can sort the results in reverse order using the "orderBy" argument and "desc" keyword', async () => {
             const query = `
                 query {
-                    Post(order_by: "id desc") {
+                    Post(orderBy: "id desc") {
                         results {
                             id,
                             title
@@ -231,7 +231,7 @@ describe('GraphQL query type - filtering model data', () => {
         it('I can sort the results by multiple fields', async () => {
             const query = `
                 query {
-                    Post(order_by: ["post_date", "title"]) {
+                    Post(orderBy: ["post_date", "title"]) {
                         results {
                             id,
                             title
@@ -250,7 +250,7 @@ describe('GraphQL query type - filtering model data', () => {
         it('I can use sorting and pagination fields together', async () => {
             const query = `
                 query {
-                    Post(order_by: "post_date desc", limit: 1) {
+                    Post(orderBy: "post_date desc", limit: 1) {
                         results {
                             id,
                             title

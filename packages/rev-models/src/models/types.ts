@@ -41,7 +41,7 @@ export interface IUpdateOptions {
 }
 
 export interface IUpdateMeta extends IOperationMeta {
-    total_count: number;
+    totalCount: number;
 }
 
 export interface IRemoveOptions {
@@ -49,15 +49,15 @@ export interface IRemoveOptions {
 }
 
 export interface IRemoveMeta extends IOperationMeta {
-    total_count: number;
+    totalCount: number;
 }
 
 export interface IReadOptions {
-    order_by?: string[];
+    orderBy?: string[];
     limit?: number;
     offset?: number;
     related?: string[];
-    raw_values?: string[];
+    rawValues?: string[];
 }
 
 export type IRawValues = Array<{
@@ -65,11 +65,11 @@ export type IRawValues = Array<{
 }>;
 
 export interface IReadMeta extends IOperationMeta {
-    order_by?: string[];
+    orderBy?: string[];
     limit: number;
     offset: number;
-    total_count: number;
-    raw_values?: IRawValues;
+    totalCount: number;
+    rawValues?: IRawValues;
 }
 
 export interface IExecArgs {

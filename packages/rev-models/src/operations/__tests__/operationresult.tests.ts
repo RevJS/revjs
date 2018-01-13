@@ -136,8 +136,8 @@ describe('ModelOperationResult - setMeta()', () => {
     it('keys are merged as expected', () => {
         res.setMeta({ limit: 10, offset: 20 });
         expect(res.meta).to.deep.equal({ limit: 10, offset: 20 });
-        res.setMeta({ offset: 0, total_count: 30 });
-        expect(res.meta).to.deep.equal({ limit: 10, offset: 0, total_count: 30 });
+        res.setMeta({ offset: 0, totalCount: 30 });
+        expect(res.meta).to.deep.equal({ limit: 10, offset: 0, totalCount: 30 });
     });
 
     it('throws if metadata is not an object', () => {

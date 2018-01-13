@@ -25,18 +25,18 @@ describe('rev.backends.inmemory', () => {
 
     describe('remove() - with no data', () => {
 
-        it('returns with total_count = 0 when there is no data and where clause = {}', () => {
+        it('returns with totalCount = 0 when there is no data and where clause = {}', () => {
             let model = new TestModel();
             return backend.remove(manager, model, {}, removeResult, options)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
                     expect(res.results).to.be.undefined;
-                    expect(res.meta.total_count).to.equal(0);
+                    expect(res.meta.totalCount).to.equal(0);
                 });
         });
 
-        it('returns with total_count = 0 when there is no data and where clause sets a filter', () => {
+        it('returns with totalCount = 0 when there is no data and where clause sets a filter', () => {
             let model = new TestModel();
             model.id = 1;
             return backend.remove(manager, model, { id: 1 }, removeResult, {})
@@ -44,7 +44,7 @@ describe('rev.backends.inmemory', () => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
                     expect(res.results).to.be.undefined;
-                    expect(res.meta.total_count).to.equal(0);
+                    expect(res.meta.totalCount).to.equal(0);
                 });
         });
 
@@ -73,7 +73,7 @@ describe('rev.backends.inmemory', () => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
                     expect(res.results).to.be.undefined;
-                    expect(res.meta.total_count).to.equal(testData.length);
+                    expect(res.meta.totalCount).to.equal(testData.length);
                     expect(storage).to.have.length(0);
                 });
         });
@@ -88,7 +88,7 @@ describe('rev.backends.inmemory', () => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
                     expect(res.results).to.be.undefined;
-                    expect(res.meta.total_count).to.equal(2);  // total removed
+                    expect(res.meta.totalCount).to.equal(2);  // total removed
                     expect(storage[0].id).to.equal(testData[0].id);
                     expect(storage[1].id).to.equal(testData[1].id);
                     expect(storage[2].id).to.equal(testData[4].id);

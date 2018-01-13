@@ -48,7 +48,7 @@ export class ModelApiBackend implements IBackend {
                     meta: {
                         offset: true,
                         limit: true,
-                        total_count: true
+                        totalCount: true
                     }
                 }
             }

@@ -124,14 +124,14 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
 
         if (this.state.loadState == 'loaded') {
             const readMeta = this.state.modelData.meta;
-            const firstRecordNumber = readMeta.total_count ? readMeta.offset + 1 : 0;
+            const firstRecordNumber = readMeta.totalCount ? readMeta.offset + 1 : 0;
             const lastRecordNumber = Math.min(
                 readMeta.offset + readMeta.limit,
-                readMeta.total_count
+                readMeta.totalCount
             );
-            readMeta.total_count;
-            paginationText = `Records ${firstRecordNumber}-${lastRecordNumber} of ${readMeta.total_count}`;
-            if (lastRecordNumber < readMeta.total_count) {
+            readMeta.totalCount;
+            paginationText = `Records ${firstRecordNumber}-${lastRecordNumber} of ${readMeta.totalCount}`;
+            if (lastRecordNumber < readMeta.totalCount) {
                 forwardButtonDisabled = false;
             }
             if (firstRecordNumber > 1) {

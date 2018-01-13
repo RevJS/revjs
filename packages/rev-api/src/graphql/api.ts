@@ -125,9 +125,9 @@ export class GraphQLApi implements IGraphQLApi {
                     type: GraphQLInt,
                     resolve: (rootValue: IReadMeta) => rootValue.offset
                 },
-                total_count: {
+                totalCount: {
                     type: GraphQLInt,
-                    resolve: (rootValue: IReadMeta) => rootValue.total_count
+                    resolve: (rootValue: IReadMeta) => rootValue.totalCount
                 },
             }
         };
@@ -212,7 +212,7 @@ export class GraphQLApi implements IGraphQLApi {
                         where: { type: GraphQLJSON },
                         limit: { type: GraphQLInt },
                         offset: { type: GraphQLInt },
-                        order_by: { type: new GraphQLList(GraphQLString) }
+                        orderBy: { type: new GraphQLList(GraphQLString) }
 
                     },
                     resolve: (rootValue: any, args?: any, context?: any, info?: GraphQLResolveInfo): Promise<any> => {
@@ -234,8 +234,8 @@ export class GraphQLApi implements IGraphQLApi {
                             if (args.offset) {
                                 readOptions.offset = args.offset;
                             }
-                            if (args.order_by) {
-                                readOptions.order_by = args.order_by;
+                            if (args.orderBy) {
+                                readOptions.orderBy = args.orderBy;
                             }
                         }
                         return models.read(modelMeta.ctor, whereClause, readOptions);

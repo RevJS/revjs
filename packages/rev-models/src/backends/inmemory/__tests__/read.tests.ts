@@ -80,7 +80,7 @@ describe('rev.backends.inmemory', () => {
                     expect(res.meta).to.deep.equal({
                         limit: DEFAULT_READ_OPTIONS.limit,
                         offset: DEFAULT_READ_OPTIONS.offset,
-                        total_count: 5
+                        totalCount: 5
                     });
                 });
         });
@@ -161,9 +161,9 @@ describe('rev.backends.inmemory', () => {
             });
         });
 
-        it('sorts results by a single order_by field', () => {
+        it('sorts results by a single orderBy field', () => {
             return backend.read(manager, TestModel, {}, readResult, getReadOpts({
-                order_by: ['name']
+                orderBy: ['name']
             }))
                 .then((res) => {
                     expect(res.success).to.be.true;
@@ -177,9 +177,9 @@ describe('rev.backends.inmemory', () => {
                 });
         });
 
-        it('sorts results by two order_by fields', () => {
+        it('sorts results by two orderBy fields', () => {
             return backend.read(manager, TestModel, {}, readResult, getReadOpts({
-                order_by: ['gender desc', 'name']
+                orderBy: ['gender desc', 'name']
             }))
                 .then((res) => {
                     expect(res.success).to.be.true;
@@ -193,9 +193,9 @@ describe('rev.backends.inmemory', () => {
                 });
         });
 
-        it('returns raw values when options.raw_values is set', () => {
+        it('returns raw values when options.rawValues is set', () => {
             return backend.read(manager, TestModel, {}, readResult, getReadOpts({
-                raw_values: ['id']
+                rawValues: ['id']
             }))
                 .then((res) => {
                     expect(res.success).to.be.true;
@@ -204,10 +204,10 @@ describe('rev.backends.inmemory', () => {
                     expect(res.results[0]).to.be.instanceof(TestModel);
                     expect(res.results[1]).to.be.instanceof(TestModel);
                     expect(res.results[2]).to.be.instanceof(TestModel);
-                    expect(res.meta.raw_values).to.exist;
-                    expect(res.meta.raw_values).to.have.length(5);
-                    expect(res.meta.raw_values[1].id).to.equal(1);
-                    expect(res.meta.raw_values[2].id).to.equal(2);
+                    expect(res.meta.rawValues).to.exist;
+                    expect(res.meta.rawValues).to.have.length(5);
+                    expect(res.meta.rawValues[1].id).to.equal(1);
+                    expect(res.meta.rawValues[2].id).to.equal(2);
                 });
         });
 

@@ -38,7 +38,7 @@ describe('GraphQL query type - top-level objects', () => {
                     meta {
                         limit
                         offset
-                        total_count
+                        totalCount
                     }
                 }
             }
@@ -53,7 +53,7 @@ describe('GraphQL query type - top-level objects', () => {
             meta: {
                 limit: 20,
                 offset: 0,
-                total_count: 3
+                totalCount: 3
             }
         });
     });
@@ -73,7 +73,7 @@ describe('GraphQL query type - top-level objects', () => {
                     meta {
                         limit
                         offset
-                        total_count
+                        totalCount
                     }
                 }
             }
@@ -100,7 +100,7 @@ describe('GraphQL query type - top-level objects', () => {
             meta: {
                 limit: 20,
                 offset: 0,
-                total_count: 3
+                totalCount: 3
             }
         });
     });

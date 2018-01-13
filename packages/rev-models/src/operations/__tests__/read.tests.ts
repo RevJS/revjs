@@ -110,9 +110,9 @@ describe('rev.operations.read()', () => {
             });
     });
 
-    it('rejects if order_by option is invalid', () => {
+    it('rejects if orderBy option is invalid', () => {
         return rwRead.read(manager, TestModel, whereClause, {
-            order_by: ['star_sign']
+            orderBy: ['star_sign']
         })
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
@@ -208,61 +208,61 @@ describe('validateOrderBy()', () => {
         testMeta = manager.getModelMeta(TestModel);
     });
 
-    it('does no throw when order_by is a single field', () => {
+    it('does no throw when orderBy is a single field', () => {
         expect(() => {
             read.validateOrderBy(TestModel, testMeta, ['name']);
         }).to.not.throw();
     });
 
-    it('does no throw when order_by contains multiple fields', () => {
+    it('does no throw when orderBy contains multiple fields', () => {
         expect(() => {
             read.validateOrderBy(TestModel, testMeta, ['name', 'age']);
         }).to.not.throw();
     });
 
-    it('does no throw when order_by specifies asc', () => {
+    it('does no throw when orderBy specifies asc', () => {
         expect(() => {
             read.validateOrderBy(TestModel, testMeta, ['name asc', 'age']);
         }).to.not.throw();
     });
 
-    it('does no throw when order_by specifies desc', () => {
+    it('does no throw when orderBy specifies desc', () => {
         expect(() => {
             read.validateOrderBy(TestModel, testMeta, ['name', 'age desc']);
         }).to.not.throw();
     });
 
-    it('throws when order_by is not an array', () => {
+    it('throws when orderBy is not an array', () => {
         expect(() => {
             read.validateOrderBy(TestModel, testMeta, { name: -1 });
         }).to.throw('must be an array');
     });
 
-    it('throws when order_by has no items', () => {
+    it('throws when orderBy has no items', () => {
         expect(() => {
             read.validateOrderBy(TestModel, testMeta, []);
         }).to.throw('must be an array');
     });
 
-    it('throws when order_by contains a non-string', () => {
+    it('throws when orderBy contains a non-string', () => {
         expect(() => {
             read.validateOrderBy(TestModel, testMeta, ['name', 27]);
         }).to.throw('array contains a non-string value');
     });
 
-    it('throws when order_by entry has too many tokens', () => {
+    it('throws when orderBy entry has too many tokens', () => {
         expect(() => {
             read.validateOrderBy(TestModel, testMeta, ['name asc desc', 'age']);
         }).to.throw('invalid entry');
     });
 
-    it('throws when order_by entry has invalid tokens', () => {
+    it('throws when orderBy entry has invalid tokens', () => {
         expect(() => {
             read.validateOrderBy(TestModel, testMeta, ['name dasc', 'age']);
         }).to.throw('invalid entry');
     });
 
-    it('throws when order_by entry does not match a field name', () => {
+    it('throws when orderBy entry does not match a field name', () => {
         expect(() => {
             read.validateOrderBy(TestModel, testMeta, ['name', 'star_sign']);
         }).to.throw(`field 'star_sign' does not exist in model`);

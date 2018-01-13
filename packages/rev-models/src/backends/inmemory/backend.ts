@@ -82,7 +82,7 @@ export class InMemoryBackend implements IBackend {
                 updateCount++;
             }
         }
-        result.setMeta({ total_count: updateCount });
+        result.setMeta({ totalCount: updateCount });
         return result;
     }
 
@@ -130,9 +130,9 @@ export class InMemoryBackend implements IBackend {
                     }
                 }
 
-                if (options.raw_values) {
+                if (options.rawValues) {
                     let rawValueObj = {};
-                    for (let fieldName of options.raw_values) {
+                    for (let fieldName of options.rawValues) {
                         rawValueObj[fieldName] = record[fieldName];
                     }
                     rawValues.push(rawValueObj);
@@ -171,17 +171,17 @@ export class InMemoryBackend implements IBackend {
             }
         }
 
-        if (options.raw_values) {
-            result.setMeta({ raw_values: rawValues });
+        if (options.rawValues) {
+            result.setMeta({ rawValues: rawValues });
         }
-        if (options.order_by) {
-            result.results = sortRecords(result.results, options.order_by) as T[];
-            result.setMeta({ order_by: options.order_by });
+        if (options.orderBy) {
+            result.results = sortRecords(result.results, options.orderBy) as T[];
+            result.setMeta({ orderBy: options.orderBy });
         }
         result.setMeta({
             offset: options.offset,
             limit: options.limit,
-            total_count: result.results.length
+            totalCount: result.results.length
         });
         result.results = result.results.slice(
             result.meta.offset,
@@ -212,7 +212,7 @@ export class InMemoryBackend implements IBackend {
             }
         }
         this._setModelStorage(meta, newStorage);
-        result.setMeta({ total_count: removeCount });
+        result.setMeta({ totalCount: removeCount });
         return result;
     }
 
@@ -334,7 +334,7 @@ export class InMemoryBackend implements IBackend {
                 let relatedMeta = manager.getModelMeta(field.options.model);
                 let readOptions: IReadOptions = {
                     // NOTE: Number of results limited to the default number of results
-                    raw_values: [field.options.field],
+                    rawValues: [field.options.field],
                     related: this._getChildRelatedFieldNames(options, fieldName)
                 };
                 modelListFields.push(fieldName);
@@ -356,7 +356,7 @@ export class InMemoryBackend implements IBackend {
         modelListFields.forEach((fieldName, i) => {
             relatedModelListInstances[fieldName] = {};
             results[i].results.forEach((instance, resultIdx) => {
-                let fkValue = results[i].meta.raw_values[resultIdx][modelListFieldFKs[i]];
+                let fkValue = results[i].meta.rawValues[resultIdx][modelListFieldFKs[i]];
                 if (!relatedModelListInstances[fieldName][fkValue]) {
                     relatedModelListInstances[fieldName][fkValue] = [];
                 }

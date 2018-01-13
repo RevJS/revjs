@@ -1,7 +1,7 @@
 
-export function sortRecords(records: object[], order_by: string[]) {
+export function sortRecords(records: object[], orderBy: string[]) {
     return records.sort((r1, r2) => {
-        for (let order_spec of order_by) {
+        for (let order_spec of orderBy) {
             let tokens = order_spec.split(' ');
             let val1 = (typeof r1[tokens[0]] == 'string') ?
                 r1[tokens[0]].toLowerCase() : r1[tokens[0]];

@@ -22,8 +22,8 @@ export async function read<T extends IModel>(manager: IModelManager, model: new(
         if (options.related) {
             validateRelated(model, meta, options.related);
         }
-        if (options.order_by) {
-            validateOrderBy(model, meta, options.order_by);
+        if (options.orderBy) {
+            validateOrderBy(model, meta, options.orderBy);
         }
     }
 
@@ -59,25 +59,25 @@ export function validateRelated<T extends IModel>(model: new() => T, meta: IMode
     }
 }
 
-export function validateOrderBy<T extends IModel>(model: new() => T, meta: IModelMeta<T>, order_by: any) {
+export function validateOrderBy<T extends IModel>(model: new() => T, meta: IModelMeta<T>, orderBy: any) {
 
-    if (typeof order_by != 'object'
-            || !(order_by instanceof Array)
-            || order_by.length == 0) {
-        throw new Error('read(): order_by: must be an array with at least one item');
+    if (typeof orderBy != 'object'
+            || !(orderBy instanceof Array)
+            || orderBy.length == 0) {
+        throw new Error('read(): orderBy: must be an array with at least one item');
     }
 
-    for (let ob_entry of order_by) {
+    for (let ob_entry of orderBy) {
         if (typeof ob_entry != 'string') {
-            throw new Error('read(): order_by: array contains a non-string value');
+            throw new Error('read(): orderBy: array contains a non-string value');
         }
         let ob_tokens = ob_entry.split(' ');
         if (ob_tokens.length > 2
             || (ob_tokens.length == 2 && ['asc', 'desc'].indexOf(ob_tokens[1]) == -1)) {
-            throw new Error(`read(): order_by: invalid entry '${ob_entry}'`);
+            throw new Error(`read(): orderBy: invalid entry '${ob_entry}'`);
         }
         if (!(ob_tokens[0] in meta.fieldsByName)) {
-            throw new Error(`read(): order_by: field '${ob_tokens[0]}' does not exist in model`);
+            throw new Error(`read(): orderBy: field '${ob_tokens[0]}' does not exist in model`);
         }
     }
 }

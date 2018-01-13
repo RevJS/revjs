@@ -25,7 +25,7 @@ describe('rev.backends.inmemory', () => {
 
     describe('update() - with no data', () => {
 
-        it('returns with total_count = 0 when there is no data and where clause = {}', () => {
+        it('returns with totalCount = 0 when there is no data and where clause = {}', () => {
             let model = new TestModel();
             model.id = 1;
             model.name = 'bob';
@@ -34,11 +34,11 @@ describe('rev.backends.inmemory', () => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
                     expect(res.results).to.be.undefined;
-                    expect(res.meta.total_count).to.equal(0);
+                    expect(res.meta.totalCount).to.equal(0);
                 });
         });
 
-        it('returns with total_count = 0 when there is no data and where clause sets a filter', () => {
+        it('returns with totalCount = 0 when there is no data and where clause sets a filter', () => {
             let model = new TestModel();
             model.id = 1;
             model.name = 'bob';
@@ -47,7 +47,7 @@ describe('rev.backends.inmemory', () => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
                     expect(res.results).to.be.undefined;
-                    expect(res.meta.total_count).to.equal(0);
+                    expect(res.meta.totalCount).to.equal(0);
                 });
         });
 
@@ -75,7 +75,7 @@ describe('rev.backends.inmemory', () => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
                     expect(res.results).to.be.undefined;
-                    expect(res.meta.total_count).to.equal(testData.length);
+                    expect(res.meta.totalCount).to.equal(testData.length);
                     expect(storage[0].name).to.equal(model.name);
                     expect(storage[1].name).to.equal(model.name);
                     expect(storage[2].name).to.equal(model.name);
@@ -97,7 +97,7 @@ describe('rev.backends.inmemory', () => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
                     expect(res.results).to.be.undefined;
-                    expect(res.meta.total_count).to.equal(2);
+                    expect(res.meta.totalCount).to.equal(2);
                     expect(storage[0].name).to.equal(testData[0].name);
                     expect(storage[1].name).to.equal(model.name);
                     expect(storage[2].name).to.equal(model.name);
@@ -125,7 +125,7 @@ describe('rev.backends.inmemory', () => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
                     expect(res.results).to.be.undefined;
-                    expect(res.meta.total_count).to.equal(1);
+                    expect(res.meta.totalCount).to.equal(1);
                     expect(storage[2].id).to.equal(testData[2].id);
                     expect(storage[2].name).to.equal(testData[2].name);
                     expect(storage[2].gender).to.equal(testData[2].gender);

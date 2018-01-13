@@ -40,10 +40,10 @@ import { createJobs } from './02_creating_related_model_data';
     });
     console.log(jobsWithNoDeveloper.results);
 
-    console.log('\nYou can alternatively read raw ID values using the "raw_values" option...');
+    console.log('\nYou can alternatively read raw ID values using the "rawValues" option...');
 
     const jobsWithRawIds = await models.read(Job, {}, {
-        raw_values: [ 'company', 'developer' ]
+        rawValues: [ 'company', 'developer' ]
     });
     console.log(jobsWithRawIds.results);
     console.log(jobsWithRawIds.meta);
