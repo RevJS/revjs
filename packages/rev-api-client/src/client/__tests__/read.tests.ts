@@ -74,13 +74,31 @@ describe('ModelApiBackend - read()', () => {
 
     it('returns read metadata', async () => {
         const result = await apiBackend.read(
-            manager, Post, {}, readResult, readOptions
+            manager, Post, {}, readResult, {
+                offset: 0,
+                limit: 10
+            }
         );
         expect(result.success).to.be.true;
         expect(result.meta).to.deep.equal({
-            offset: readOptions.offset,
-            limit: readOptions.limit,
+            offset: 0,
+            limit: 10,
             total_count: 3
+        });
+    });
+
+    it('offset and limit options work as expected', async () => {
+        const result = await apiBackend.read(
+            manager, Post, {}, readResult, {
+                offset: 1,
+                limit: 1
+            }
+        );
+        expect(result.success).to.be.true;
+        expect(result.results).to.have.length(1);
+        expect(result.results[0]).to.be.instanceof(Post);
+        expectToHaveProperties(result.results[0], {
+            id: 2, title: 'JavaScript is Awesome'
         });
     });
 
