@@ -53,7 +53,8 @@ const styles: StyleRules = {
         alignItems: 'center'
     },
     table: {
-    },
+        cursor: 'default'
+    }
 };
 
 class ModelListC extends React.Component<IModelListProps & WithStyles, IModelListState> {
