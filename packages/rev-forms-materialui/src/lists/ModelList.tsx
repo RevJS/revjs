@@ -24,7 +24,7 @@ export interface IModelListProps {
 }
 
 export interface IModelListState {
-    loadState: 'not_loaded' | 'loading' | 'loaded' | 'load_error';
+    loadState: 'loading' | 'loaded' | 'load_error';
     modelData?: IModelOperationResult<any, IReadMeta>;
     limit: number;
     offset: number;
@@ -83,22 +83,84 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
         }
 
         this.state = {
-            loadState: 'not_loaded',
+            loadState: 'loading',
             limit: props.maxRecords || 20,
             offset: 0
         };
+    }
+
+    onNextPageButtonPressed() {
+        this.loadData(this.state.limit, this.state.offset + this.state.limit);
+    }
+
+    async loadData(limit: number, offset: number) {
+        this.setState({
+            loadState: 'loading'
+        });
+        const modelData = await this.context.modelManager.read(
+            this.modelMeta.ctor, {}, { limit, offset });
+        if (modelData.success && modelData.results) {
+            this.setState({
+                loadState: 'loaded',
+                modelData,
+                limit,
+                offset
+            });
+        }
     }
 
     render() {
 
         const title = this.props.title ? this.props.title : this.modelMeta.label + ' List';
 
-        if (this.state.loadState == 'not_loaded') {
+        let paginationText = 'Loading...';
+        let backButtonDisabled = true;
+        let forwardButtonDisabled = true;
+
+        if (this.state.loadState == 'loaded') {
+            const readMeta = this.state.modelData.meta;
+            const firstRecordNumber = readMeta.offset + 1;
+            const lastRecordNumber = Math.min(
+                readMeta.offset + readMeta.limit,
+                readMeta.total_count
+            );
+            readMeta.total_count;
+            paginationText = `Records ${firstRecordNumber}-${lastRecordNumber} of ${readMeta.total_count}`;
+            if (lastRecordNumber < readMeta.total_count) {
+                forwardButtonDisabled = false;
+            }
+            if (firstRecordNumber > 1) {
+                backButtonDisabled = false;
+            }
+        }
+
+        const toolbar = (
+            <Toolbar className={this.props.classes.toolbar}>
+                <Typography type="title">{title}</Typography>
+                <div className={this.props.classes.pagination}>
+                    <Typography type="caption">
+                        {paginationText}
+                    </Typography>
+                    <IconButton
+                        onClick={() => {}}
+                        disabled={backButtonDisabled}
+                    >
+                        <KeyboardArrowLeft titleAccess="Previous Page" />
+                    </IconButton>
+                    <IconButton
+                        onClick={() => this.onNextPageButtonPressed()}
+                        disabled={forwardButtonDisabled}
+                    >
+                        <KeyboardArrowRight titleAccess="Next Page" />
+                    </IconButton>
+                </div>
+            </Toolbar>
+        );
+
+        if (this.state.loadState == 'loading') {
             return (
                 <Paper className={this.props.classes.root}>
-                    <Toolbar className={this.props.classes.toolbar}>
-                        <Typography type="title">{title}</Typography>
-                    </Toolbar>
+                    {toolbar}
                     <div className={this.props.classes.progressWrapper}>
                         <Typography type="subheading">Loading...</Typography>
                         <LinearProgress className={this.props.classes.progressBar} />
@@ -107,37 +169,6 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
             );
         }
         else {
-
-            const readMeta = this.state.modelData.meta;
-            const firstRecordNumber = readMeta.offset + 1;
-            const lastRecordNumber = Math.min(
-                readMeta.offset + readMeta.limit,
-                readMeta.total_count
-            );
-            const recordCount = readMeta.total_count;
-
-            const toolbar = (
-                <Toolbar className={this.props.classes.toolbar}>
-                    <Typography type="title">{title}</Typography>
-                    <div className={this.props.classes.pagination}>
-                        <Typography type="caption">
-                            {`Records ${firstRecordNumber}-${lastRecordNumber} of ${recordCount}`}
-                        </Typography>
-                        <IconButton
-                            onClick={() => {}}
-                            disabled={true}
-                        >
-                            <KeyboardArrowLeft />
-                        </IconButton>
-                        <IconButton
-                            onClick={() => {}}
-                            disabled={false}
-                        >
-                            <KeyboardArrowRight />
-                        </IconButton>
-                    </div>
-                </Toolbar>
-            );
 
             const tableHead = (
                 <TableHead>
@@ -181,17 +212,8 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
     }
 
     async componentDidMount() {
-        if (lifecycleOptions.enableComponentDidMount && this.state.loadState == 'not_loaded') {
-            const modelData = await this.context.modelManager.read(
-                this.modelMeta.ctor, {}, {
-                    limit: this.state.limit
-                });
-            if (modelData.success && modelData.results) {
-                this.setState({
-                    loadState: 'loaded',
-                    modelData: modelData
-                });
-            }
+        if (lifecycleOptions.enableComponentDidMount) {
+            this.loadData(this.state.limit, this.state.offset);
         }
     }
 
