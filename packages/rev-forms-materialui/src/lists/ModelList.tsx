@@ -38,12 +38,6 @@ const styles: StyleRules = {
         width: '100%',
         overflowX: 'auto',
     },
-    progressWrapper: {
-        margin: 20
-    },
-    progressBar: {
-        marginTop: 20
-    },
     toolbar: {
         justifyContent: 'space-between',
         borderBottom: '1px solid #EBEBEB'
