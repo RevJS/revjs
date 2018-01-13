@@ -287,14 +287,14 @@ describe('ModelList', () => {
                 </ModelProvider>);
             await sleep(10);
             wrapper.update();
-
             pagination = wrapper.find('div.' + classes.pagination).at(0);
-            backButton = pagination.find('button').at(0);
             forwardButton = pagination.find('button').at(1);
-
             forwardButton.simulate('click');
             await sleep(10);
             wrapper.update();
+            pagination = wrapper.find('div.' + classes.pagination).at(0);
+            backButton = pagination.find('button').at(0);
+            forwardButton = pagination.find('button').at(1);
         });
 
         it('remders the current offset and total record count', () => {
@@ -302,63 +302,37 @@ describe('ModelList', () => {
             expect(paginationText).to.equal('Records 4-6 of 7');
         });
 
-        // it('remders the go-forward and go-back buttons', () => {
-        //     expect(paginationButtons).to.have.length(2);
-        // });
+        it('the go-back button is not disabled', () => {
+            expect(backButton.prop('disabled')).to.be.false;
+        });
 
-        // it('the go-back button is disabled', () => {
-        //     expect(paginationButtons.at(0).prop('disabled')).to.be.true;
-        // });
+        it('the go-forward button is not disabled', () => {
+            expect(forwardButton.prop('disabled')).to.be.false;
+        });
 
-        // it('the go-forward button is not disabled', () => {
-        //     expect(paginationButtons.at(1).prop('disabled')).to.be.false;
-        // });
+        it('renders "maxRecords" rows of data', () => {
+            expect(
+                wrapper.find('tbody')
+                .at(0).find('tr')
+            ).to.have.length(maxRecords);
+        });
 
+        it('renders the correct data, starting from the specified offset', () => {
+            for (let i = 0; i < maxRecords; i++) {
+                const postIdx = i + maxRecords;
+                const post = expectedData.posts[postIdx];
+                const row = wrapper.find('tbody')
+                    .at(0).find('tr').at(i);
 
-        // describe('table data', () => {
+                fields.forEach((fieldName, fieldIdx) => {
+                    const td = row.find('td').at(fieldIdx);
 
-        //     it('renders all column headings', () => {
-        //         expect(wrapper.find('th')).to.have.length(fields.length);
-        //     });
-
-        //     it('renders columns heading labels in correct order', () => {
-        //         fields.forEach((fieldName, idx) => {
-        //             const th = wrapper.find('th').at(idx);
-        //             expect(th.text()).to.equal(
-        //                 meta.fieldsByName[fieldName].options.label
-        //                 || meta.fieldsByName[fieldName].name
-        //             );
-        //         });
-        //     });
-
-        //     it('renders table body', () => {
-        //         expect(wrapper.find('tbody')).to.have.length(1);
-        //     });
-
-        //     it('renders up to "maxRecords" rows of data', () => {
-        //         expect(
-        //             wrapper.find('tbody')
-        //             .at(0).find('tr')
-        //         ).to.have.length(maxRecords);
-        //     });
-
-        //     it('renders the correct data in each cell', () => {
-        //         for (let i = 0; i < maxRecords; i++) {
-        //             const post = expectedData.posts[i];
-        //             const row = wrapper.find('tbody')
-        //                 .at(0).find('tr').at(i);
-
-        //             fields.forEach((fieldName, fieldIdx) => {
-        //                 const td = row.find('td').at(fieldIdx);
-
-        //                 expect(td.text()).to.equal(
-        //                     post[fieldName].toString()
-        //                 );
-        //             });
-        //         }
-        //     });
-
-        // });
+                    expect(td.text()).to.equal(
+                        post[fieldName].toString()
+                    );
+                });
+            }
+        });
 
         /**
          *  When there is no data I do a thing...
