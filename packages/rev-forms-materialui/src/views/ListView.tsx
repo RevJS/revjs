@@ -169,20 +169,18 @@ class ListViewC extends React.Component<IListViewProps & WithStyles, IListViewSt
                 </TableRow>
             </TableHead>);
 
-        const tableBody = (
+        const tableBody = this.state.modelData && (
             <TableBody>
-                {this.state.modelData && this.state.modelData.results.map((record, rowIdx) => {
-                    return (
-                        <TableRow key={rowIdx} hover>
-                            {this.props.fields.map((fieldName, colIdx) => {
-                                const data = record[fieldName].toString();
-                                return (
-                                    <TableCell key={colIdx} padding="dense">{data}</TableCell>
-                                );
-                            })}
-                        </TableRow>
-                    );
-                })}
+                {this.state.modelData.results.map((record, rowIdx) => (
+                    <TableRow key={rowIdx} hover>
+                        {this.props.fields.map((fieldName, colIdx) => {
+                            const data = record[fieldName].toString();
+                            return (
+                                <TableCell key={colIdx} padding="dense">{data}</TableCell>
+                            );
+                    })}
+                    </TableRow>
+                ))}
             </TableBody>
         );
 

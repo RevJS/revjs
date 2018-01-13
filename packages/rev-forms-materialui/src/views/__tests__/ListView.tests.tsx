@@ -67,7 +67,7 @@ describe('ModelList', () => {
         });
     });
 
-    describe.only('initial state - no data loaded', () => {
+    describe('initial state - no data loaded', () => {
         const fields = ['id', 'title', 'published', 'post_date'];
         let meta: IModelMeta<models.Post>;
         let wrapper: ReactWrapper;
@@ -128,9 +128,8 @@ describe('ModelList', () => {
                 });
             });
 
-            it('renders an empty table body', () => {
-                expect(wrapper.find('tbody')).to.have.length(1);
-                expect(wrapper.find('tbody').at(0).children()).to.have.length(0);
+            it('does not render a table body', () => {
+                expect(wrapper.find('tbody')).to.have.length(0);
             });
 
         });
