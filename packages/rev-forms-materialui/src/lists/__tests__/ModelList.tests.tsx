@@ -8,7 +8,6 @@ import { ModelList, lifecycleOptions } from '../ModelList';
 import * as models from '../../__fixtures__/models';
 import { ModelManager, IModelMeta } from 'rev-models';
 import { ModelProvider } from '../../provider/ModelProvider';
-import { LinearProgress } from 'material-ui/Progress';
 import Table from 'material-ui/Table';
 import { getClasses } from 'material-ui/test-utils';
 import { createData, IModelTestData } from '../../__fixtures__/modeldata';
@@ -63,12 +62,14 @@ describe('ModelList', () => {
     describe('initial state - no data loaded', () => {
         const model = 'Post';
         const fields = ['id', 'title', 'published', 'post_date'];
+        let meta: IModelMeta<models.Post>;
         let wrapper: ReactWrapper;
         let pagination: ReactWrapper;
         let paginationButtons: ReactWrapper;
 
         before(() => {
             modelManager = models.getModelManager();
+            meta = modelManager.getModelMeta(models.Post);
             lifecycleOptions.enableComponentDidMount = false;
             wrapper = mount(
                 <ModelProvider modelManager={modelManager}>
@@ -81,32 +82,51 @@ describe('ModelList', () => {
             paginationButtons = pagination.find('button');
         });
 
-        it('renders the list title', () => {
-            const listTitle = wrapper.find('h2');
-            expect(listTitle).to.have.length(1);
-            expect(listTitle.at(0).text()).to.equal('Test List');
-        });
+        describe('main elements', () => {
 
-        it('renders "Loading..." in the pagination area', () => {
-            const paginationText = pagination.childAt(0).text();
-            expect(paginationText).to.equal('Loading...');
-        });
+            it('renders the list title', () => {
+                const listTitle = wrapper.find('h2');
+                expect(listTitle).to.have.length(1);
+                expect(listTitle.at(0).text()).to.equal('Test List');
+            });
 
-        it('remders the go-forward and go-back buttons', () => {
-            expect(paginationButtons).to.have.length(2);
-        });
+            it('renders "Loading..." in the pagination area', () => {
+                const paginationText = pagination.childAt(0).text();
+                expect(paginationText).to.equal('Loading...');
+            });
 
-        it('the go-forward and go-back buttons are disabled', () => {
-            expect(paginationButtons.at(0).prop('disabled')).to.be.true;
-            expect(paginationButtons.at(1).prop('disabled')).to.be.true;
-        });
+            it('remders the go-forward and go-back buttons', () => {
+                expect(paginationButtons).to.have.length(2);
+            });
 
-        it('renders a loading progress indicator', () => {
-            expect(wrapper.find(LinearProgress)).to.have.length(1);
-        });
+            it('the go-forward and go-back buttons are disabled', () => {
+                expect(paginationButtons.at(0).prop('disabled')).to.be.true;
+                expect(paginationButtons.at(1).prop('disabled')).to.be.true;
+            });
 
-        it('does not render the table', () => {
-            expect(wrapper.find(Table)).to.have.length(0);
+            it('renders the table', () => {
+                expect(wrapper.find(Table)).to.have.length(1);
+            });
+
+            it('renders all column headings', () => {
+                expect(wrapper.find('th')).to.have.length(fields.length);
+            });
+
+            it('renders columns heading labels in correct order', () => {
+                fields.forEach((fieldName, idx) => {
+                    const th = wrapper.find('th').at(idx);
+                    expect(th.text()).to.equal(
+                        meta.fieldsByName[fieldName].options.label
+                        || meta.fieldsByName[fieldName].name
+                    );
+                });
+            });
+
+            it('renders an empty table body', () => {
+                expect(wrapper.find('tbody')).to.have.length(1);
+                expect(wrapper.find('tbody').at(0).children()).to.have.length(0);
+            });
+
         });
 
     });
@@ -172,10 +192,6 @@ describe('ModelList', () => {
 
             it('remders the pagination area', () => {
                 expect(wrapper.find('div.' + classes.pagination)).to.have.length(1);
-            });
-
-            it('does not render a loading progress indicator', () => {
-                expect(wrapper.find(LinearProgress)).to.have.length(0);
             });
 
             it('renders the table', () => {
@@ -521,10 +537,6 @@ describe('ModelList', () => {
 
             it('remders the pagination area', () => {
                 expect(wrapper.find('div.' + classes.pagination)).to.have.length(1);
-            });
-
-            it('does not render a loading progress indicator', () => {
-                expect(wrapper.find(LinearProgress)).to.have.length(0);
             });
 
             it('renders the table', () => {

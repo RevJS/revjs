@@ -11,7 +11,6 @@ import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
 import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
 import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
-import { LinearProgress } from 'material-ui/Progress';
 import Table, { TableHead, TableBody, TableRow, TableCell } from 'material-ui/Table';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
@@ -162,58 +161,44 @@ class ModelListC extends React.Component<IModelListProps & WithStyles, IModelLis
             </Toolbar>
         );
 
-        if (this.state.loadState == 'loading') {
-            return (
-                <Paper className={this.props.classes.root}>
-                    {toolbar}
-                    <div className={this.props.classes.progressWrapper}>
-                        <Typography type="subheading">Loading...</Typography>
-                        <LinearProgress className={this.props.classes.progressBar} />
-                    </div>
-                </Paper>
-            );
-        }
-        else {
-
-            const tableHead = (
-                <TableHead>
-                    <TableRow>
-                        {this.props.fields.map((fieldName, idx) => {
-                            const field = this.modelMeta.fieldsByName[fieldName];
-                            return (
-                                <TableCell key={idx} padding="dense">{field.options.label || field.name}</TableCell>
-                            );
-                        })}
-                    </TableRow>
-                </TableHead>);
-
-            const tableBody = (
-                <TableBody>
-                    {this.state.modelData.results.map((record, rowIdx) => {
+        const tableHead = (
+            <TableHead>
+                <TableRow>
+                    {this.props.fields.map((fieldName, idx) => {
+                        const field = this.modelMeta.fieldsByName[fieldName];
                         return (
-                            <TableRow key={rowIdx} hover>
-                                {this.props.fields.map((fieldName, colIdx) => {
-                                    const data = record[fieldName].toString();
-                                    return (
-                                        <TableCell key={colIdx} padding="dense">{data}</TableCell>
-                                    );
-                                })}
-                            </TableRow>
+                            <TableCell key={idx} padding="dense">{field.options.label || field.name}</TableCell>
                         );
                     })}
-                </TableBody>
-            );
+                </TableRow>
+            </TableHead>);
 
-            return (
-                <Paper className={this.props.classes.root}>
-                    {toolbar}
-                    <Table className={this.props.classes.table}>
-                        {tableHead}
-                        {tableBody}
-                    </Table>
-                </Paper>
-            );
-        }
+        const tableBody = (
+            <TableBody>
+                {this.state.modelData && this.state.modelData.results.map((record, rowIdx) => {
+                    return (
+                        <TableRow key={rowIdx} hover>
+                            {this.props.fields.map((fieldName, colIdx) => {
+                                const data = record[fieldName].toString();
+                                return (
+                                    <TableCell key={colIdx} padding="dense">{data}</TableCell>
+                                );
+                            })}
+                        </TableRow>
+                    );
+                })}
+            </TableBody>
+        );
+
+        return (
+            <Paper className={this.props.classes.root}>
+                {toolbar}
+                <Table className={this.props.classes.table}>
+                    {tableHead}
+                    {tableBody}
+                </Table>
+            </Paper>
+        );
     }
 
     async componentDidMount() {
