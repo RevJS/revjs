@@ -264,7 +264,6 @@ describe('ModelList', () => {
         const fields = ['id', 'title', 'published', 'post_date'];
         const maxRecords = 3;
         let wrapper: ReactWrapper;
-        let meta: IModelMeta<models.Post>;
         let expectedData: IModelTestData;
         let pagination: ReactWrapper;
         let backButton: ReactWrapper;
@@ -272,7 +271,6 @@ describe('ModelList', () => {
 
         before(async () => {
             modelManager = models.getModelManager();
-            meta = modelManager.getModelMeta(models.Post);
             expectedData = await createData(modelManager);
 
             lifecycleOptions.enableComponentDidMount = true;
@@ -341,7 +339,6 @@ describe('ModelList', () => {
         const fields = ['id', 'title', 'published', 'post_date'];
         const maxRecords = 3;
         let wrapper: ReactWrapper;
-        let meta: IModelMeta<models.Post>;
         let expectedData: IModelTestData;
         let pagination: ReactWrapper;
         let backButton: ReactWrapper;
@@ -349,7 +346,6 @@ describe('ModelList', () => {
 
         before(async () => {
             modelManager = models.getModelManager();
-            meta = modelManager.getModelMeta(models.Post);
             expectedData = await createData(modelManager);
 
             lifecycleOptions.enableComponentDidMount = true;
@@ -419,7 +415,6 @@ describe('ModelList', () => {
         const fields = ['id', 'title', 'published', 'post_date'];
         const maxRecords = 3;
         let wrapper: ReactWrapper;
-        let meta: IModelMeta<models.Post>;
         let expectedData: IModelTestData;
         let pagination: ReactWrapper;
         let backButton: ReactWrapper;
@@ -427,7 +422,6 @@ describe('ModelList', () => {
 
         before(async () => {
             modelManager = models.getModelManager();
-            meta = modelManager.getModelMeta(models.Post);
             expectedData = await createData(modelManager);
 
             lifecycleOptions.enableComponentDidMount = true;
