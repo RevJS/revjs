@@ -14,53 +14,66 @@ export interface IViewManagerState {
     dirty: boolean;
 }
 
-export interface IViewManagerContext {
-    viewContext: {
-        model: IModel;
-        modelMeta: IModelMeta<any>;
-        validation: ModelValidationResult;
-        dirty: boolean;
-        initModel(model?: IModel): void;
-        isNew(): boolean;
-        setDirty(dirty: boolean): void;
-        validate(): Promise<ModelValidationResult>;
-        save(): IModelOperationResult<any, any>;
-    };
-}
-
-export class ViewManager extends React.Component<IViewManagerProps, IViewManagerState> {
-
+export interface IViewContext {
     model: IModel;
     modelMeta: IModelMeta<any>;
     validation: ModelValidationResult;
+    dirty: boolean;
+    initModel(model?: IModel): void;
+    isNew(): boolean;
+    setDirty(dirty: boolean): void;
+    validate(): Promise<ModelValidationResult>;
+    save(): IModelOperationResult<any, any>;
+}
+
+export interface IViewManagerContext {
+    viewContext: IViewContext;
+}
+
+export class ViewManager extends React.Component<IViewManagerProps, IViewManagerState> {
 
     context: IModelProviderContext;
     static contextTypes = {
         modelManager: PropTypes.object
     };
 
+    viewContext: IViewContext;
+
     constructor(props: IViewManagerProps, context: any) {
         super(props, context);
 
-        this.modelMeta = this.context.modelManager.getModelMeta(this.props.model);
-        if (!this.modelMeta.primaryKey) {
+        const modelMeta = this.context.modelManager.getModelMeta(this.props.model);
+        if (!modelMeta.primaryKey) {
             throw new Error('ViewManager Error: can only be used with models with a primaryKey defined');
         }
+
+        this.viewContext = {
+            model: null,
+            modelMeta,
+            validation: null,
+            dirty: false,
+            initModel: (model) => this.initModel(model),
+            isNew: () => this.isNew(),
+            setDirty: (dirty) => this.setDirty(dirty),
+            validate: () => this.validate(),
+            save: () => null
+        };
         this.state = {
             dirty: false
         };
     }
 
     initModel(model?: IModel) {
-        if (model || !this.model) {
+        const ctx = this.viewContext;
+        if (model || !ctx.model) {
             if (model) {
-                this.model = model;
+                ctx.model = model;
             }
             else {
-                this.model = new this.modelMeta.ctor();
-                this.model[this.modelMeta.primaryKey] = this.props.primaryKeyValue;
+                ctx.model = new ctx.modelMeta.ctor();
+                ctx.model[ctx.modelMeta.primaryKey] = this.props.primaryKeyValue;
             }
-            this.validation = new ModelValidationResult();
+            ctx.validation = new ModelValidationResult();
             this.setState({
                 dirty: false
             });
@@ -68,16 +81,21 @@ export class ViewManager extends React.Component<IViewManagerProps, IViewManager
     }
 
     isNew() {
-        return typeof this.model[this.modelMeta.primaryKey] == 'undefined';
+        const ctx = this.viewContext;
+        return !ctx.model || typeof ctx.model[ctx.modelMeta.primaryKey] == 'undefined';
     }
 
     setDirty(dirty: boolean) {
-        this.setState({ dirty });
+        if (dirty != this.viewContext.dirty) {
+            this.setState({ dirty });
+            this.viewContext.dirty = dirty;
+        }
     }
 
     async validate() {
-        this.validation = await this.context.modelManager.validate(this.model);
-        return this.validation;
+        const ctx = this.viewContext;
+        ctx.validation = await this.context.modelManager.validate(ctx.model);
+        return ctx.validation;
     }
 
     static childContextTypes = {
@@ -86,17 +104,7 @@ export class ViewManager extends React.Component<IViewManagerProps, IViewManager
 
     getChildContext(): IViewManagerContext {
         return {
-            viewContext: {
-                model: this.model,
-                modelMeta: this.modelMeta,
-                validation: this.validation,
-                dirty: this.state.dirty,
-                initModel: (model) => this.initModel(model),
-                isNew: () => this.isNew(),
-                setDirty: (dirty) => this.setDirty(dirty),
-                validate: () => this.validate(),
-                save: () => null
-            }
+            viewContext: this.viewContext
         };
     }
 

@@ -55,6 +55,7 @@ export class Field extends React.Component<IFieldProps, IFieldState> {
 
     onChange(value: any) {
         this.context.viewContext.model[this.modelField.name] = value;
+        this.context.viewContext.setDirty(true);
         this.setState({ value });
     }
 
