@@ -10,10 +10,6 @@ export interface IViewManagerProps {
     primaryKeyValue?: string;
 }
 
-export interface IViewManagerState {
-    dirty: boolean;
-}
-
 export interface IViewContext {
     model: IModel;
     modelMeta: IModelMeta<any>;
@@ -30,7 +26,7 @@ export interface IViewManagerContext {
     viewContext: IViewContext;
 }
 
-export class ViewManager extends React.Component<IViewManagerProps, IViewManagerState> {
+export class ViewManager extends React.Component<IViewManagerProps> {
 
     context: IModelProviderContext;
     static contextTypes = {
@@ -82,19 +78,22 @@ export class ViewManager extends React.Component<IViewManagerProps, IViewManager
 
     isNew() {
         const ctx = this.viewContext;
-        return !ctx.model || typeof ctx.model[ctx.modelMeta.primaryKey] == 'undefined';
+        return !ctx.model
+            || typeof ctx.model[ctx.modelMeta.primaryKey] == 'undefined'
+            || ctx.model[ctx.modelMeta.primaryKey] === null;
     }
 
     setDirty(dirty: boolean) {
         if (dirty != this.viewContext.dirty) {
-            this.setState({ dirty });
             this.viewContext.dirty = dirty;
+            this.forceUpdate();
         }
     }
 
     async validate() {
         const ctx = this.viewContext;
         ctx.validation = await this.context.modelManager.validate(ctx.model);
+        this.forceUpdate();
         return ctx.validation;
     }
 

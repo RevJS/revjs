@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 
-import { FormControl } from 'material-ui/Form';
+import { FormControl, FormHelperText } from 'material-ui/Form';
 import Input, { InputLabel } from 'material-ui/Input';
 
 import { IModelFieldComponentProps } from './types';
@@ -15,10 +15,10 @@ export const TextField: React.StatelessComponent<IModelFieldComponentProps> = (p
         type = 'password';
     }
 
-    // let errorText = '';
-    // props.errors.forEach((err) => {
-    //     errorText += err.message + '. ';
-    // });
+    let errorText = '';
+    props.errors.forEach((err) => {
+        errorText += err.message + '. ';
+    });
 
     return (
         <FormControl fullWidth>
@@ -34,11 +34,10 @@ export const TextField: React.StatelessComponent<IModelFieldComponentProps> = (p
                 onFocus={props.onFocus}
                 onBlur={props.onBlur}
             />
-            {/* <FormHelperText
-                id={props.field.name + '--helper-text'}
-            >
-                {errorText}
-            </FormHelperText> */}
+            {errorText &&
+                <FormHelperText id={props.field.name + '--helper-text'}>
+                    {errorText}
+                </FormHelperText>}
         </FormControl>
     );
 };
