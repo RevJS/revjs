@@ -4,7 +4,6 @@ import * as PropTypes from 'prop-types';
 
 import Grid from 'material-ui/Grid';
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { IFieldError, IModelError, ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 import { IViewManagerContext } from './ViewManager';
 
 export interface IFormViewProps {
@@ -12,18 +11,7 @@ export interface IFormViewProps {
 }
 
 export interface IFormViewState {
-    fieldValues: {
-        [fieldName: string]: any
-    };
-    fieldErrors: {
-        [fieldName: string]: IFieldError[]
-    };
-    dirtyFields: {
-        [fieldName: string]: boolean;
-    };
-    valid: boolean;
     disabled: boolean;
-    modelErrors: IModelError[];
 }
 
 export interface IFormViewContext {
@@ -38,7 +26,7 @@ export class FormView extends React.Component<IFormViewProps, IFormViewState> {
         viewContext: PropTypes.object
     };
 
-    constructor(props: IFormViewProps, context: IModelProviderContext) {
+    constructor(props: IFormViewProps, context: any) {
         super(props, context);
         if (!this.context.modelManager) {
             throw new Error('FormView Error: must be nested inside a ModelProvider.');
@@ -53,13 +41,9 @@ export class FormView extends React.Component<IFormViewProps, IFormViewState> {
         if (modelMeta.name != props.model) {
             throw new Error('FormView Error: model prop must currently be the same as ViewManager model.');
         }
+        this.context.viewContext.initModel();
         this.state = {
-            valid: false,
-            disabled: false,
-            fieldValues: {},
-            fieldErrors: {},
-            dirtyFields: {},
-            modelErrors: []
+            disabled: false
         };
     }
 
@@ -71,32 +55,6 @@ export class FormView extends React.Component<IFormViewProps, IFormViewState> {
                 </Grid>
             </form>
         );
-    }
-
-    updateFieldValue(fieldName: string, value: string) {
-        const fieldValues = { ...this.state.fieldValues, [fieldName]: value};
-        const fieldErrors = { ...this.state.fieldErrors };
-        delete fieldErrors[fieldName];
-        const dirtyFields = { ...this.state.dirtyFields, [fieldName]: true };
-        this.context.viewContext.setDirty(true);
-        this.setState({
-            fieldValues,
-            fieldErrors,
-            dirtyFields
-        });
-    }
-
-    updateValidationState(validationResult: ModelValidationResult) {
-        this.setState({
-            valid: validationResult.valid,
-            fieldErrors: validationResult.fieldErrors,
-            modelErrors: validationResult.modelErrors
-        });
-    }
-
-    async validate() {
-        const model = this.context.modelManager.hydrate(this.context.viewContext.modelMeta.ctor, this.state.fieldValues);
-        return this.context.modelManager.validate(model);
     }
 
     disable(isDisabled: boolean) {

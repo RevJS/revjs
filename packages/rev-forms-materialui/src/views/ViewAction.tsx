@@ -4,8 +4,8 @@ import * as PropTypes from 'prop-types';
 
 import Button from 'material-ui/Button';
 import { IExecArgs, IExecOptions } from 'rev-models/lib/models/types';
-import { ModelManager } from 'rev-models';
-import { FormView } from './FormView';
+import { IModelProviderContext } from '../provider/ModelProvider';
+import { IViewManagerContext } from './ViewManager';
 
 export type FormActionType = 'post' | 'method';
 const defaultActionType: FormActionType = 'method';
@@ -22,26 +22,21 @@ export interface IFormActionProps {
     onFailure?: (error: Error) => void;
 }
 
-export interface IFormActionContext {
-    modelForm: FormView;
-    modelManager: ModelManager;
-}
-
 export class ViewAction extends React.Component<IFormActionProps> {
 
-    context: IFormActionContext;
+    context: IModelProviderContext & IViewManagerContext;
     static contextTypes = {
-        modelForm: PropTypes.object,
-        modelManager: PropTypes.object
+        modelManager: PropTypes.object,
+        viewContext: PropTypes.object
     };
 
-    constructor(props: IFormActionProps, context: IFormActionContext) {
+    constructor(props: IFormActionProps, context: any) {
         super(props, context);
-        if (!this.context.modelForm) {
-            throw new Error('ModelAction Error: must be nested inside a ModelForm');
-        }
         if (!this.context.modelManager) {
-            throw new Error('ModelAction Error: must be nested inside a ModelProvider.');
+            throw new Error('ViewAction Error: must be nested inside a ModelProvider.');
+        }
+        if (!this.context.viewContext) {
+            throw new Error('ViewAction Error: must be nested inside a ViewManager');
         }
     }
 
@@ -50,15 +45,14 @@ export class ViewAction extends React.Component<IFormActionProps> {
         console.log('onAction', this);
         console.log('type', actionType);
 
-        const validationResult = await this.context.modelForm.validate();
-        this.context.modelForm.updateValidationState(validationResult);
+        const validationResult = await this.context.viewContext.validate();
 
         if (validationResult.valid) {
             if (actionType == 'post') {
                 if (!this.props.url) {
                     throw new Error('ModelAction Error: you must specify the url property when type is "post"');
                 }
-                this.context.modelForm.disable(true);
+                // this.context.modelForm.disable(true);
                 return fetch(this.props.url, {
                     method: 'post',
                     headers: {
@@ -66,36 +60,34 @@ export class ViewAction extends React.Component<IFormActionProps> {
                         'Content-Type': 'application/json'
                     },
                     credentials: 'same-origin',
-                    body: JSON.stringify(this.context.modelForm.state.fieldValues)
+                    body: JSON.stringify(this.context.viewContext.model)
                 })
                 .then((res) => {
                     if (res.status < 200 || res.status > 299) {
                         throw new Error('Got status ' + res.status);
                     }
                     if (this.props.onSuccess) {
-                        this.context.modelForm.disable(false);
+                        // this.context.modelForm.disable(false);
                         this.props.onSuccess(res);
                     }
                 })
                 .catch((err) => {
                     if (this.props.onFailure) {
-                        this.context.modelForm.disable(false);
+                        // this.context.modelForm.disable(false);
                         this.props.onFailure(err);
                     }
                 });
             }
             else {
-                let modelMeta = this.context.modelManager.getModelMeta(this.context.modelForm.props.model);
-                let model = this.context.modelManager.hydrate(modelMeta.ctor, this.context.modelForm.state.fieldValues);
-                console.log(model);
-                this.context.modelForm.disable(true);
+                // this.context.modelForm.disable(true);
+                const model = this.context.viewContext.model;
                 return this.context.modelManager.exec(model, this.props.method, this.props.args, this.props.options)
                 .then((res) => {
-                    this.context.modelForm.disable(false);
+                    // this.context.modelForm.disable(false);
                     console.log('exec result', res);
                 })
                 .catch((err) => {
-                    this.context.modelForm.disable(false);
+                    // this.context.modelForm.disable(false);
                     console.log('exec failure', err);
                 });
             }
@@ -107,7 +99,7 @@ export class ViewAction extends React.Component<IFormActionProps> {
         return (
             <Button raised color="primary"
                 type={type}
-                onClick={this.onAction.bind(this)}
+                onClick={() => this.onAction()}
                 style={{ margin: 12 }}>
                 {this.props.label}
             </Button>

@@ -22,7 +22,11 @@ export interface IFieldProps {
     colspanWide?: number;
 }
 
-export class Field extends React.Component<IFieldProps> {
+export interface IFieldState {
+    value: any;
+}
+
+export class Field extends React.Component<IFieldProps, IFieldState> {
 
     context: IModelProviderContext & IViewManagerContext & IFormViewContext;
     static contextTypes = {
@@ -37,11 +41,11 @@ export class Field extends React.Component<IFieldProps> {
     constructor(props: IFieldProps, context: IModelProviderContext & IFormViewContext) {
         super(props, context);
         if (!this.context.modelForm) {
-            throw new Error('ModelField Error: must be nested inside a ModelForm.');
+            throw new Error('Field Error: must be nested inside a ModelForm.');
         }
         this.modelMeta = this.context.viewContext.modelMeta;
         if (!(props.name in this.modelMeta.fieldsByName)) {
-            throw new Error(`ModelField Error: Model '${this.modelMeta.name}' does not have a field called '${props.name}'.`);
+            throw new Error(`Field Error: Model '${this.modelMeta.name}' does not have a field called '${props.name}'.`);
         }
         this.modelField = this.modelMeta.fieldsByName[props.name];
     }
@@ -50,20 +54,21 @@ export class Field extends React.Component<IFieldProps> {
     onBlur() {}
 
     onChange(value: any) {
-        this.context.modelForm.updateFieldValue(this.modelField.name, value);
+        this.context.viewContext.model[this.modelField.name] = value;
+        this.setState({ value });
     }
 
     render() {
 
         let fieldErrors: IFieldError[] = [];
-        if (this.modelField.name in this.context.modelForm.state.fieldErrors) {
-            fieldErrors = this.context.modelForm.state.fieldErrors[this.modelField.name];
+        if (this.modelField.name in this.context.viewContext.validation.fieldErrors) {
+            fieldErrors = this.context.viewContext.validation.fieldErrors[this.modelField.name];
         }
 
         let modelFieldProps: IModelFieldComponentProps = {
             modelMeta: this.modelMeta,
             field: this.modelField,
-            value: this.context.modelForm.state.fieldValues[this.modelField.name],
+            value: this.context.viewContext.model[this.modelField.name],
             errors: fieldErrors,
             disabled: this.context.modelForm.state.disabled,
             onFocus: () => this.onFocus(),

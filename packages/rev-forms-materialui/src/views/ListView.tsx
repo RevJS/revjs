@@ -58,7 +58,7 @@ class ListViewC extends React.Component<IListViewProps & WithStyles, IListViewSt
 
     modelMeta: IModelMeta<any>;
 
-    constructor(props: IListViewProps & WithStyles, context: IModelProviderContext) {
+    constructor(props: IListViewProps & WithStyles, context: any) {
         super(props, context);
         this.context.modelManager = context.modelManager;
         if (!this.context.modelManager) {
