@@ -25,7 +25,7 @@ export class ModelProvider extends React.Component<IModelProviderProps> {
     }
 
     render() {
-        return React.Children.only(this.props.children);
+        return this.props.children;
     }
 
 }
