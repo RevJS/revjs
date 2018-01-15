@@ -38,9 +38,12 @@ export class ViewManager extends React.Component<IViewManagerProps> {
     constructor(props: IViewManagerProps, context: any) {
         super(props, context);
 
+        if (!this.context.modelManager) {
+            throw new Error('ViewManager Error: must be nested inside a ModelProvider.');
+        }
         const modelMeta = this.context.modelManager.getModelMeta(this.props.model);
         if (!modelMeta.primaryKey) {
-            throw new Error('ViewManager Error: can only be used with models with a primaryKey defined');
+            throw new Error('ViewManager Error: can only be used with models that have a primaryKey');
         }
 
         this.viewContext = {
