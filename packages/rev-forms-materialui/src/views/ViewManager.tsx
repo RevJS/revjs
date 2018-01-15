@@ -10,12 +10,14 @@ export interface IViewManagerProps {
     primaryKeyValue?: string;
 }
 
+export type IViewLoadState = 'LOADING' | 'SAVING' | 'NONE';
+
 export interface IViewContext {
+    loadState: IViewLoadState;
     model: IModel;
     modelMeta: IModelMeta<any>;
     validation: ModelValidationResult;
     dirty: boolean;
-    initModel(model?: IModel): void;
     isNew(): boolean;
     setDirty(dirty: boolean): void;
     validate(): Promise<ModelValidationResult>;
@@ -46,12 +48,16 @@ export class ViewManager extends React.Component<IViewManagerProps> {
             throw new Error('ViewManager Error: can only be used with models that have a primaryKey');
         }
 
+        // TODO: Based on whether there is a primaryKey value, either
+        // trigger a load to fetch the specified model, or create a
+        // new instance of the specified model
+
         this.viewContext = {
+            loadState: 'NONE',
             model: null,
             modelMeta,
             validation: null,
             dirty: false,
-            initModel: (model) => this.initModel(model),
             isNew: () => this.isNew(),
             setDirty: (dirty) => this.setDirty(dirty),
             validate: () => this.validate(),
@@ -62,22 +68,16 @@ export class ViewManager extends React.Component<IViewManagerProps> {
         };
     }
 
-    initModel(model?: IModel) {
-        const ctx = this.viewContext;
-        if (model || !ctx.model) {
-            if (model) {
-                ctx.model = model;
-            }
-            else {
-                ctx.model = new ctx.modelMeta.ctor();
-                ctx.model[ctx.modelMeta.primaryKey] = this.props.primaryKeyValue;
-            }
-            ctx.validation = new ModelValidationResult();
-            this.setState({
-                dirty: false
-            });
-        }
-    }
+    // initModel() {
+    //     const ctx = this.viewContext;
+    //     if (!ctx.model) {
+    //         ctx.model = new ctx.modelMeta.ctor();
+    //     }
+    //     ctx.validation = new ModelValidationResult();
+    //     this.setState({
+    //         dirty: false
+    //     });
+    // }
 
     isNew() {
         const ctx = this.viewContext;

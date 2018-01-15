@@ -1,36 +1,36 @@
 
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
+// import * as PropTypes from 'prop-types';
 import * as sinon from 'sinon';
 import * as models from '../../__fixtures__/models';
 import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
-import { IViewContext, ViewManager } from '../ViewManager';
+import { ViewManager } from '../ViewManager';
 
-describe('ModelProvider', () => {
+describe('ViewManager', () => {
 
     let modelManager: rev.ModelManager;
-    let receivedViewContext: IViewContext;
+    // let receivedViewContext: IViewContext;
 
     before(() => {
         modelManager = new rev.ModelManager();
     });
 
-    class TestView extends React.Component {
-        static contextTypes = {
-            modelManager: PropTypes.object,
-            viewContext: PropTypes.object
-        };
-        constructor(props: any, context: any) {
-            super(props, context);
-            receivedViewContext = this.context.viewContext;
-        }
-        render() {
-            return <p>SpyComponent</p>;
-        }
-    }
+    // class TestView extends React.Component {
+    //     static contextTypes = {
+    //         modelManager: PropTypes.object,
+    //         viewContext: PropTypes.object
+    //     };
+    //     constructor(props: any, context: any) {
+    //         super(props, context);
+    //         receivedViewContext = this.context.viewContext;
+    //     }
+    //     render() {
+    //         return <p>SpyComponent</p>;
+    //     }
+    // }
 
     describe('construction', () => {
         let errorStub: sinon.SinonStub;
@@ -73,5 +73,8 @@ describe('ModelProvider', () => {
 
     });
 
+    describe('initial viewContext', () => {
+
+    });
 
 });

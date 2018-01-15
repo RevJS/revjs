@@ -41,7 +41,6 @@ export class FormView extends React.Component<IFormViewProps, IFormViewState> {
         if (modelMeta.name != props.model) {
             throw new Error('FormView Error: model prop must currently be the same as ViewManager model.');
         }
-        this.context.viewContext.initModel();
         this.state = {
             disabled: false
         };
