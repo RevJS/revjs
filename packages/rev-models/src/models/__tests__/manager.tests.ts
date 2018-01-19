@@ -8,9 +8,9 @@ import { InMemoryBackend } from '../../backends/inmemory/backend';
 import { IModelMeta } from '../../models/types';
 
 class TestModel {
-    id: number = 1;
-    name: string = 'A Test Model';
-    date: Date = new Date();
+    id: number;
+    name: string;
+    date: Date;
 }
 
 class TestModel2 {}
@@ -36,7 +36,8 @@ describe('ModelManager', () => {
                 new IntegerField('id'),
                 new TextField('name'),
                 new DateField('date')
-            ]
+            ],
+            primaryKey: 'id'
         };
         testMeta2 = { fields: [] };
     });
@@ -259,6 +260,40 @@ describe('ModelManager', () => {
             expect(() => {
                 testReg.getBackend('non-configured-backend');
             }).to.throw('has has not been configured');
+        });
+
+    });
+
+    describe('isNew()', () => {
+
+        beforeEach(() => {
+            testReg.registerBackend('default', testBackend);
+            testReg.register(TestModel, testMeta);
+            testReg.register(TestModel2, testMeta2);
+        });
+
+        it('throws if specified model does not have a primaryKey field', () => {
+            const model = new TestModel2();
+            expect(() => {
+                testReg.isNew(model);
+            }).to.throw('isNew() can only be used with models that have a primaryKey field');
+        });
+
+        it('returns true if the primaryKey field is undefined', () => {
+            const model = new TestModel();
+            expect(testReg.isNew(model)).to.be.true;
+        });
+
+        it('returns true if the primaryKey field is null', () => {
+            const model = new TestModel();
+            model.id = null;
+            expect(testReg.isNew(model)).to.be.true;
+        });
+
+        it('returns false if the primaryKey field for a model has a value', () => {
+            const model = new TestModel();
+            model.id = 0;
+            expect(testReg.isNew(model)).to.be.false;
         });
 
     });

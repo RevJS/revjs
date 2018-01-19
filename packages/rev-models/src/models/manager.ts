@@ -14,6 +14,7 @@ import { validate, IValidationOptions } from '../operations/validate';
 import { ModelValidationResult } from '../validation/validationresult';
 import { hydrate } from '../operations/hydrate';
 import { IModelManager, ICreateOptions, ICreateMeta, IUpdateOptions, IUpdateMeta, IRemoveOptions, IRemoveMeta, IReadOptions, IReadMeta, IExecArgs, IExecOptions } from './types';
+import { isSet } from '../utils';
 
 /**
  * A **Model Manager** has the following responsibilities:
@@ -195,6 +196,22 @@ export class ModelManager implements IModelManager {
      */
     getBackendNames(): string[] {
         return Object.keys(this._backends);
+    }
+
+    /**
+     * Returns true if the model has no primaryKey value set (i.e. it is a 'new'
+     * record)
+     *
+     * Throws an error if the model does not have a primaryKey field specified
+     *
+     * @param model An instance of a registered model to check
+     */
+    isNew<T extends IModel>(model: T) {
+        const meta = this.getModelMeta(model);
+        if (!meta.primaryKey) {
+            throw new Error('ModelManagerError: isNew() can only be used with models that have a primaryKey field');
+        }
+        return !isSet(model[meta.primaryKey]);
     }
 
     /* Model CRUD Functions */
