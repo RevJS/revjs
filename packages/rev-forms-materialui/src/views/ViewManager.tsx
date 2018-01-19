@@ -4,13 +4,14 @@ import * as PropTypes from 'prop-types';
 import { IModelProviderContext } from '../provider/ModelProvider';
 import { IModel, IModelMeta, IModelOperationResult } from 'rev-models';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
+import { isSet } from '../utils';
 
 export interface IViewManagerProps {
     model: string;
     primaryKeyValue?: string;
 }
 
-export type IViewLoadState = 'LOADING' | 'SAVING' | 'NONE';
+export type IViewLoadState = 'NONE' | 'LOADING' | 'SAVING' ;
 
 export interface IViewContext {
     loadState: IViewLoadState;
@@ -18,8 +19,9 @@ export interface IViewContext {
     modelMeta: IModelMeta<any>;
     validation: ModelValidationResult;
     dirty: boolean;
-    isNew(): boolean;
+    setModel(model: IModel): void;
     setDirty(dirty: boolean): void;
+    isNew(): boolean;
     validate(): Promise<ModelValidationResult>;
     save(): IModelOperationResult<any, any>;
 }
@@ -58,29 +60,38 @@ export class ViewManager extends React.Component<IViewManagerProps> {
             modelMeta,
             validation: null,
             dirty: false,
-            isNew: () => this.isNew(),
+            setModel: (model) => this.setModel(model),
             setDirty: (dirty) => this.setDirty(dirty),
+            isNew: () => this.isNew(),
             validate: () => this.validate(),
             save: () => null
         };
+
+        if (isSet(props.primaryKeyValue)) {
+            this.loadModel();
+        }
     }
 
-    // initModel() {
-    //     const ctx = this.viewContext;
-    //     if (!ctx.model) {
-    //         ctx.model = new ctx.modelMeta.ctor();
-    //     }
-    //     ctx.validation = new ModelValidationResult();
-    //     this.setState({
-    //         dirty: false
-    //     });
-    // }
+    async loadModel() {
+        this.viewContext.loadState = 'LOADING';
+        const meta = this.viewContext.modelMeta;
+        const result = await this.context.modelManager.read(
+            meta.ctor,
+            { [meta.primaryKey]: this.props.primaryKeyValue },
+            { limit: 1 }
+        );
+        if (this.viewContext.loadState == 'LOADING') {
+            this.viewContext.loadState = 'NONE';
+            if (result.results.length == 1) {
+                this.setModel(result.results[0]);
+            }
+        }
+    }
 
-    isNew() {
-        const ctx = this.viewContext;
-        return !ctx.model
-            || typeof ctx.model[ctx.modelMeta.primaryKey] == 'undefined'
-            || ctx.model[ctx.modelMeta.primaryKey] === null;
+    setModel(model: IModel) {
+        this.viewContext.model = model;
+        this.viewContext.dirty = false;
+        this.forceUpdate();
     }
 
     setDirty(dirty: boolean) {
@@ -88,6 +99,11 @@ export class ViewManager extends React.Component<IViewManagerProps> {
             this.viewContext.dirty = dirty;
             this.forceUpdate();
         }
+    }
+
+    isNew() {
+        const ctx = this.viewContext;
+        return !ctx.model || !isSet(ctx.model[ctx.modelMeta.primaryKey]);
     }
 
     async validate() {

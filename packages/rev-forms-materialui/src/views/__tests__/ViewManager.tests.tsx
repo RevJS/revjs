@@ -3,11 +3,13 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import * as sinon from 'sinon';
 import * as models from '../../__fixtures__/models';
+import { createData, IModelTestData } from '../../__fixtures__/modeldata';
 import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
 import { ViewManager, IViewContext } from '../ViewManager';
+import { sleep } from '../../__test_utils__/utils';
 
 describe('ViewManager', () => {
 
@@ -69,7 +71,7 @@ describe('ViewManager', () => {
         }
     }
 
-    describe('initial viewContext - when no primaryKeyValue is specified', () => {
+    describe('initial viewContext - when primaryKeyValue is not specified', () => {
         let modelManager: rev.ModelManager;
         let wrapper: ReactWrapper;
 
@@ -111,4 +113,98 @@ describe('ViewManager', () => {
 
     });
 
+    describe('initial viewContext - when primaryKeyValue is specified', () => {
+        let modelManager: rev.ModelManager;
+        let wrapper: ReactWrapper;
+
+        before(() => {
+            receivedViewContext = null;
+            modelManager = models.getModelManager();
+            const backend = modelManager.getBackend('default') as rev.InMemoryBackend;
+            backend.OPERATION_DELAY = 10;
+            wrapper = mount(
+                <ModelProvider modelManager={modelManager}>
+                    <ViewManager model="Post" primaryKeyValue="1">
+                        <TestView />
+                    </ViewManager>
+                </ModelProvider>
+            );
+        });
+
+        it('passes viewContext to contained Views', () => {
+            expect(receivedViewContext).not.to.be.null;
+        });
+
+        it('loadState is LOADING', () => {
+            expect(receivedViewContext.loadState).to.equal('LOADING');
+        });
+
+        it('model data is initially null', () => {
+            expect(receivedViewContext.model).to.be.null;
+        });
+
+        it('modelMeta is set', () => {
+            expect(receivedViewContext.modelMeta).to.deep.equal(modelManager.getModelMeta('Post'));
+        });
+
+        it('validation information is null', () => {
+            expect(receivedViewContext.validation).to.be.null;
+        });
+
+        it('dirty is false', () => {
+            expect(receivedViewContext.dirty).to.be.false;
+        });
+
+    });
+
+    describe('viewContext after successful model load', () => {
+        let modelManager: rev.ModelManager;
+        let wrapper: ReactWrapper;
+        let expectedData: IModelTestData;
+
+        before(async () => {
+            receivedViewContext = null;
+            modelManager = models.getModelManager();
+            expectedData = await createData(modelManager);
+            wrapper = mount(
+                <ModelProvider modelManager={modelManager}>
+                    <ViewManager model="Post" primaryKeyValue="1">
+                        <TestView />
+                    </ViewManager>
+                </ModelProvider>
+            );
+            await sleep(10);
+            wrapper.update();
+        });
+
+        it('loadState is set back to NONE', () => {
+            expect(receivedViewContext.loadState).to.equal('NONE');
+        });
+
+        it('model data is the requested model instance', () => {
+            const ctx = receivedViewContext;
+            expect(ctx.model).to.be.instanceof(models.Post);
+            expect(ctx.model.id).to.equal(expectedData.posts[0].id);
+            expect(ctx.model.title).to.equal(expectedData.posts[0].title);
+        });
+
+        it('modelMeta is set', () => {
+            expect(receivedViewContext.modelMeta).to.deep.equal(modelManager.getModelMeta('Post'));
+        });
+
+        it('validation information is null', () => {
+            expect(receivedViewContext.validation).to.be.null;
+        });
+
+        it('dirty is false', () => {
+            expect(receivedViewContext.dirty).to.be.false;
+        });
+
+    });
+
+    /**
+     * TODO
+     *  - test when a slow load completes during a save
+     *     OR make sure you cant save during a load
+     */
 });
