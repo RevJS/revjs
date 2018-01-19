@@ -6,7 +6,7 @@ import {
 
 export class User {
     @IntegerField({ primaryKey: true })
-        id: number = 1;
+        id: number;
     @TextField()
         name: string = 'A Test Model';
     @DateField()
@@ -21,7 +21,7 @@ export class User {
 
 export class Post {
     @IntegerField({ primaryKey: true })
-        id: number = 10;
+        id: number;
     @TextField()
         title: string;
     @TextField()

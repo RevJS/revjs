@@ -19,17 +19,22 @@ export interface IViewContext {
     modelMeta: IModelMeta<any>;
     validation: ModelValidationResult;
     dirty: boolean;
-    setModel(model: IModel): void;
     setDirty(dirty: boolean): void;
-    isNew(): boolean;
     validate(): Promise<ModelValidationResult>;
-    save(): IModelOperationResult<any, any>;
 }
 
 export interface IViewManagerContext {
     viewContext: IViewContext;
 }
 
+/**
+ * Wrapper object that enables multiple sub-views to view / modify
+ * the same model instance information
+ *
+ * if the primaryKeyValue property is specified, that model is loaded
+ * when the component is initialised. Otherwise viewContext.model is
+ * set to a new model instance
+ */
 export class ViewManager extends React.Component<IViewManagerProps> {
 
     context: IModelProviderContext;
@@ -50,25 +55,21 @@ export class ViewManager extends React.Component<IViewManagerProps> {
             throw new Error('ViewManager Error: can only be used with models that have a primaryKey');
         }
 
-        // TODO: Based on whether there is a primaryKey value, either
-        // trigger a load to fetch the specified model, or create a
-        // new instance of the specified model
-
         this.viewContext = {
             loadState: 'NONE',
             model: null,
             modelMeta,
             validation: null,
             dirty: false,
-            setModel: (model) => this.setModel(model),
             setDirty: (dirty) => this.setDirty(dirty),
-            isNew: () => this.isNew(),
-            validate: () => this.validate(),
-            save: () => null
+            validate: () => this.validate()
         };
 
         if (isSet(props.primaryKeyValue)) {
             this.loadModel();
+        }
+        else {
+            this.setModel(new modelMeta.ctor());
         }
     }
 
@@ -91,7 +92,6 @@ export class ViewManager extends React.Component<IViewManagerProps> {
     setModel(model: IModel) {
         this.viewContext.model = model;
         this.viewContext.dirty = false;
-        this.forceUpdate();
     }
 
     setDirty(dirty: boolean) {
@@ -99,11 +99,6 @@ export class ViewManager extends React.Component<IViewManagerProps> {
             this.viewContext.dirty = dirty;
             this.forceUpdate();
         }
-    }
-
-    isNew() {
-        const ctx = this.viewContext;
-        return !ctx.model || !isSet(ctx.model[ctx.modelMeta.primaryKey]);
     }
 
     async validate() {

@@ -56,6 +56,7 @@ describe('ViewManager', () => {
     });
 
     let receivedViewContext: IViewContext;
+    let renderCount: number;
 
     class TestView extends React.Component {
         static contextTypes = {
@@ -67,8 +68,14 @@ describe('ViewManager', () => {
             receivedViewContext = this.context.viewContext;
         }
         render() {
+            renderCount++;
             return <p>SpyComponent</p>;
         }
+    }
+
+    function resetTestView() {
+        receivedViewContext = null;
+        renderCount = 0;
     }
 
     describe('initial viewContext - when primaryKeyValue is not specified', () => {
@@ -76,7 +83,7 @@ describe('ViewManager', () => {
         let wrapper: ReactWrapper;
 
         before(() => {
-            receivedViewContext = null;
+            resetTestView();
             modelManager = models.getModelManager();
             wrapper = mount(
                 <ModelProvider modelManager={modelManager}>
@@ -95,8 +102,10 @@ describe('ViewManager', () => {
             expect(receivedViewContext.loadState).to.equal('NONE');
         });
 
-        it('model data is null', () => {
-            expect(receivedViewContext.model).to.be.null;
+        it('a new model instance is created', () => {
+            expect(receivedViewContext.model).not.to.be.null;
+            expect(receivedViewContext.model).to.be.instanceof(models.Post);
+            expect(modelManager.isNew(receivedViewContext.model)).to.be.true;
         });
 
         it('modelMeta is set', () => {
@@ -118,7 +127,7 @@ describe('ViewManager', () => {
         let wrapper: ReactWrapper;
 
         before(() => {
-            receivedViewContext = null;
+            resetTestView();
             modelManager = models.getModelManager();
             const backend = modelManager.getBackend('default') as rev.InMemoryBackend;
             backend.OPERATION_DELAY = 10;
@@ -163,7 +172,7 @@ describe('ViewManager', () => {
         let expectedData: IModelTestData;
 
         before(async () => {
-            receivedViewContext = null;
+            resetTestView();
             modelManager = models.getModelManager();
             expectedData = await createData(modelManager);
             wrapper = mount(
@@ -198,6 +207,47 @@ describe('ViewManager', () => {
 
         it('dirty is false', () => {
             expect(receivedViewContext.dirty).to.be.false;
+        });
+
+    });
+
+    describe('setDirty()', () => {
+        let modelManager: rev.ModelManager;
+        let wrapper: ReactWrapper;
+
+        before(() => {
+            resetTestView();
+            modelManager = models.getModelManager();
+            wrapper = mount(
+                <ModelProvider modelManager={modelManager}>
+                    <ViewManager model="Post">
+                        <TestView />
+                    </ViewManager>
+                </ModelProvider>
+            );
+        });
+
+        it('setDirty() is passed in viewContext', () => {
+            expect(receivedViewContext.setDirty).to.be.a('function');
+        });
+
+        it('viewContext.dirty is false by default', () => {
+            expect(receivedViewContext.dirty).to.be.false;
+        });
+
+        it('initial render has completed', () => {
+            expect(renderCount).to.equal(1);
+        });
+
+        it('setDirty() changes the value of dirty and forces a re-render', () => {
+            receivedViewContext.setDirty(true);
+            expect(receivedViewContext.dirty).to.equal(true);
+            expect(renderCount).to.equal(2);
+        });
+
+        it('setDirty() does not force a re-render if dirty value has not changed', () => {
+            receivedViewContext.setDirty(true);
+            expect(renderCount).to.equal(2);
         });
 
     });
