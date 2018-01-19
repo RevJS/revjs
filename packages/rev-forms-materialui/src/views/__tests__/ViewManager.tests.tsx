@@ -10,6 +10,7 @@ import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
 import { ViewManager, IViewContext } from '../ViewManager';
 import { sleep } from '../../__test_utils__/utils';
+import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 
 describe('ViewManager', () => {
 
@@ -251,6 +252,44 @@ describe('ViewManager', () => {
         });
 
     });
+
+    describe('validate()', () => {
+        let modelManager: rev.ModelManager;
+        let wrapper: ReactWrapper;
+
+        before(() => {
+            resetTestView();
+            modelManager = models.getModelManager();
+            wrapper = mount(
+                <ModelProvider modelManager={modelManager}>
+                    <ViewManager model="Post">
+                        <TestView />
+                    </ViewManager>
+                </ModelProvider>
+            );
+        });
+
+        it('validate() is passed in viewContext', () => {
+            expect(receivedViewContext.setDirty).to.be.a('function');
+        });
+
+        it('viewContext.validation is null by default', () => {
+            expect(receivedViewContext.validation).to.be.null;
+        });
+
+        it('initial render has completed', () => {
+            expect(renderCount).to.equal(1);
+        });
+
+        it('validate() triggers validation of the model, re-renders, and returns result', async () => {
+            let result = await receivedViewContext.validate();
+            expect(result).to.be.instanceof(ModelValidationResult);
+            expect(receivedViewContext.validation).to.equal(result);
+            expect(renderCount).to.equal(2);
+        });
+
+    });
+
 
     /**
      * TODO
