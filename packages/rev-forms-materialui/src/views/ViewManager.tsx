@@ -63,9 +63,6 @@ export class ViewManager extends React.Component<IViewManagerProps> {
             validate: () => this.validate(),
             save: () => null
         };
-        this.state = {
-            dirty: false
-        };
     }
 
     // initModel() {
