@@ -6,6 +6,7 @@ import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
 import { sortRecords } from './sort';
 import { AutoNumberField, RelatedModelField, RelatedModelListField } from '../../fields';
+import { sleep } from '../../__test_utils__';
 
 interface IForeignKeyValues {
     [fieldName: string]: any[];
@@ -32,6 +33,7 @@ export class InMemoryBackend implements IBackend {
             [fieldName: string]: number
         }
     } = {};
+    OPERATION_DELAY = 0;  // Useful for testing
 
     constructor() {
         this._storage = {};
@@ -53,6 +55,10 @@ export class InMemoryBackend implements IBackend {
 
     async create<T extends IModel>(manager: IModelManager, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
 
+        if (this.OPERATION_DELAY) {
+            await sleep(this.OPERATION_DELAY);
+        }
+
         let meta = manager.getModelMeta(model);
         let modelStorage = this._getModelStorage(meta);
 
@@ -65,8 +71,13 @@ export class InMemoryBackend implements IBackend {
     }
 
     async update<T extends IModel>(manager: IModelManager, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+
         if (!where) {
             throw new Error('update() requires the \'where\' parameter');
+        }
+
+        if (this.OPERATION_DELAY) {
+            await sleep(this.OPERATION_DELAY);
         }
 
         let meta = manager.getModelMeta(model);
@@ -87,6 +98,11 @@ export class InMemoryBackend implements IBackend {
     }
 
     async read<T extends IModel>(manager: IModelManager, model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+
+        if (this.OPERATION_DELAY) {
+            await sleep(this.OPERATION_DELAY);
+        }
+
         let meta = manager.getModelMeta(model);
         let modelStorage = this._getModelStorage(meta);
         let parser = new QueryParser(manager);
@@ -191,8 +207,13 @@ export class InMemoryBackend implements IBackend {
     }
 
     async remove<T extends IModel>(manager: IModelManager, model: T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+
         if (!where) {
             throw new Error('remove() requires the \'where\' parameter');
+        }
+
+        if (this.OPERATION_DELAY) {
+            await sleep(this.OPERATION_DELAY);
         }
 
         let meta = manager.getModelMeta(model);
@@ -216,7 +237,7 @@ export class InMemoryBackend implements IBackend {
         return result;
     }
 
-    exec<R>(manager: IModelManager, model: IModel, method: string, argObj: IExecArgs, result: ModelOperationResult<R, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
+    async exec<R>(manager: IModelManager, model: IModel, method: string, argObj: IExecArgs, result: ModelOperationResult<R, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
         return Promise.reject(new Error('InMemoryBackend.exec() not supported'));
     }
 
