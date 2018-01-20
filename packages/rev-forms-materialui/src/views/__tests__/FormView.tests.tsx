@@ -347,13 +347,8 @@ describe('FormView', () => {
             );
         });
 
-        it('renders a form tag', () => {
-            expect(wrapper.find('form')).to.have.length(1);
-        });
-
-        it('the form tag wraps the specified children', () => {
-            const form = wrapper.find('form').at(0);
-            expect(form.childAt(0).text()).to.equal('content');
+        it('renders children directly', () => {
+            expect(wrapper.at(0).text()).to.equal('content');
         });
 
     });

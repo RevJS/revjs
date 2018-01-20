@@ -110,10 +110,6 @@ export class FormView extends React.Component<IFormViewProps> {
     }
 
     render() {
-        return (
-            <form onSubmit={(e) => e.preventDefault()}>
-                {this.props.children}
-            </form>
-        );
+        return this.props.children;
     }
 }

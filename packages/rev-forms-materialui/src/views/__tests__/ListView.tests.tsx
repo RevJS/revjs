@@ -11,7 +11,6 @@ import { ModelProvider } from '../../provider/ModelProvider';
 import Table from 'material-ui/Table';
 import { getClasses } from 'material-ui/test-utils';
 import { createData, IModelTestData } from '../../__fixtures__/modeldata';
-import { FormView } from '../FormView';
 
 describe('ListView', () => {
 
@@ -29,9 +28,7 @@ describe('ListView', () => {
     function getWrapper(component: React.ReactNode) {
         return mount(
             <ModelProvider modelManager={modelManager}>
-                <FormView model={model}>
-                    {component}
-                </FormView>
+                {component}
             </ModelProvider>
         );
     }

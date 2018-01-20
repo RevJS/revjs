@@ -45,22 +45,24 @@ class FieldC extends React.Component<IFieldProps & IModelContextProp, IFieldStat
     onBlur() {}
 
     onChange(value: any) {
-        this.context.modelContext.model[this.modelField.name] = value;
-        this.context.modelContext.setDirty(true);
+        this.props.modelContext.model[this.modelField.name] = value;
+        this.props.modelContext.setDirty(true);
         this.setState({ value });
     }
 
     render() {
 
+        const ctx = this.props.modelContext;
         let fieldErrors: IFieldError[] = [];
-        if (this.modelField.name in this.context.modelContext.validation.fieldErrors) {
-            fieldErrors = this.context.modelContext.validation.fieldErrors[this.modelField.name];
+        if (ctx.validation
+            && this.modelField.name in ctx.validation.fieldErrors) {
+            fieldErrors = ctx.validation.fieldErrors[this.modelField.name];
         }
 
         let modelFieldProps: IFieldComponentProps = {
-            modelMeta: this.props.modelContext.modelMeta,
+            modelMeta: ctx.modelMeta,
             field: this.modelField,
-            value: this.context.modelContext.model[this.modelField.name],
+            value: ctx.model[this.modelField.name],
             errors: fieldErrors,
             disabled: false,  // TODO
             onFocus: () => this.onFocus(),

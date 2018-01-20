@@ -14,7 +14,6 @@ import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
 import Table, { TableHead, TableBody, TableRow, TableCell } from 'material-ui/Table';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
-import { IModelContextProp } from './FormView';
 
 export interface IListViewProps {
     model: string;
@@ -50,10 +49,9 @@ const styles: StyleRules = {
 
 class ListViewC extends React.Component<IListViewProps & WithStyles, IListViewState> {
 
-    context: IModelProviderContext & IModelContextProp;
+    context: IModelProviderContext;
     static contextTypes = {
         modelManager: PropTypes.object,
-        modelContext: PropTypes.object
     };
 
     modelMeta: IModelMeta<any>;
@@ -64,13 +62,10 @@ class ListViewC extends React.Component<IListViewProps & WithStyles, IListViewSt
         if (!this.context.modelManager) {
             throw new Error('ListView Error: must be nested inside a ModelProvider.');
         }
-        if (!this.context.modelContext) {
-            throw new Error('ListView Error: must be nested inside a FormView.');
-        }
         if (!props.model || !this.context.modelManager.isRegistered(props.model)) {
             throw new Error(`ListView Error: Model '${props.model}' is not registered.`);
         }
-        this.modelMeta = this.context.modelContext.modelMeta;
+        this.modelMeta = this.context.modelManager.getModelMeta(this.props.model);
         for (const fieldName of props.fields) {
             if (!(fieldName in this.modelMeta.fieldsByName)) {
                 throw new Error(`ListView Error: Model '${props.model}' does not have a field called '${fieldName}'.`);

@@ -3,17 +3,14 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import { expect } from 'chai';
 import { ModelManager } from 'rev-models';
-import { mount } from 'enzyme';
+import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../ModelProvider';
 
 describe('ModelProvider', () => {
 
     let modelManager: ModelManager;
     let passedModelManager: ModelManager;
-
-    before(() => {
-        modelManager = new ModelManager();
-    });
+    let wrapper: ReactWrapper;
 
     class SpyComponent extends React.Component {
         static contextTypes = {
@@ -28,13 +25,21 @@ describe('ModelProvider', () => {
         }
     }
 
-    it('passes down the specified ModelManager via React Context', () => {
-        mount(
+    before(() => {
+        modelManager = new ModelManager();
+        wrapper = mount(
             <ModelProvider modelManager={modelManager}>
                 <SpyComponent />
             </ModelProvider>
         );
+    });
+
+    it('passes down the specified ModelManager via React Context', () => {
         expect(passedModelManager).to.equal(modelManager);
+    });
+
+    it('renders children directly', () => {
+        expect(wrapper.at(0).text()).to.equal('SpyComponent');
     });
 
 });
