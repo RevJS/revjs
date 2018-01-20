@@ -2,34 +2,30 @@
 import * as React from 'react';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { mount, ReactWrapper } from 'enzyme';
+import { mount } from 'enzyme';
 import { sleep } from '../../__test_utils__/utils';
-import { ListView, lifecycleOptions } from '../ListView';
+import { ListView, lifecycleOptions, IListViewComponentProps } from '../ListView';
 import * as models from '../../__fixtures__/models';
-import { ModelManager, IModelMeta } from 'rev-models';
+import { ModelManager, IModelMeta, fields } from 'rev-models';
 import { ModelProvider } from '../../provider/ModelProvider';
-import Table from 'material-ui/Table';
-import { getClasses } from 'material-ui/test-utils';
 import { createData, IModelTestData } from '../../__fixtures__/modeldata';
-
-import { UI_COMPONENTS } from '../../config';
-import { MUIListView } from '../../MUIListView';
 
 describe('ListView', () => {
 
     let modelManager: ModelManager;
     const model = 'Post';
-    let classes: any;
+    let receivedProps: IListViewComponentProps;
+
+    const SpyComponent: React.SFC<IListViewComponentProps> = (props) => {
+        receivedProps = props;
+        return <p>SpyComponent</p>;
+    };
 
     before(() => {
-        UI_COMPONENTS.views.ListView = MUIListView;
         modelManager = models.getModelManager();
-        classes = getClasses(
-            React.createElement(MUIListView)
-        );
     });
 
-    function getWrapper(component: React.ReactNode) {
+    function mountComponent(component: React.ReactNode) {
         return mount(
             <ModelProvider modelManager={modelManager}>
                 {component}
@@ -57,543 +53,377 @@ describe('ListView', () => {
 
         it('throws error when specified model does not exist', () => {
             expect(() => {
-                getWrapper(<ListView model="NonExistey" fields={['name']} />);
+                mountComponent(<ListView model="NonExistey" fields={['name']} />);
             }).to.throw(`Model 'NonExistey' is not registered`);
         });
 
         it('throws error when field name does not exist on model', () => {
             expect(() => {
-                getWrapper(<ListView model="Post" fields={['flannel']} />);
+                mountComponent(<ListView model="Post" fields={['flannel']} />);
             }).to.throw(`Model 'Post' does not have a field called 'flannel'`);
         });
     });
 
-    describe('initial state - no data loaded', () => {
-        const fields = ['id', 'title', 'published', 'post_date'];
+    describe('initial component props - no data loaded', () => {
+        const fieldList = ['id', 'title', 'published'];
         let meta: IModelMeta<models.Post>;
-        let wrapper: ReactWrapper;
-        let pagination: ReactWrapper;
-        let paginationButtons: ReactWrapper;
+        let expectedFields: fields.Field[];
 
         before(() => {
             modelManager = models.getModelManager();
             meta = modelManager.getModelMeta(models.Post);
+            expectedFields = [
+                meta.fieldsByName['id'],
+                meta.fieldsByName['title'],
+                meta.fieldsByName['published']
+            ];
             lifecycleOptions.enableComponentDidMount = false;
-            wrapper = getWrapper(
+            receivedProps = null;
+            mountComponent(
                 <ListView
                     title="Test List"
                     model={model}
-                    fields={fields} />
+                    fields={fieldList}
+                    component={SpyComponent} />
             );
-            pagination = wrapper.find('div.' + classes.pagination).at(0);
-            paginationButtons = pagination.find('button');
         });
 
-        describe('main elements', () => {
+        it('passes the list title', () => {
+            expect(receivedProps.title).to.equal('Test List');
+        });
 
-            it('renders the list title', () => {
-                const listTitle = wrapper.find('h2');
-                expect(listTitle).to.have.length(1);
-                expect(listTitle.at(0).text()).to.equal('Test List');
-            });
+        it('passes the fields list', () => {
+            expect(receivedProps.fields).to.deep.equal(expectedFields);
+        });
 
-            it('renders "Loading..." in the pagination area', () => {
-                const paginationText = pagination.childAt(0).text();
-                expect(paginationText).to.equal('Loading...');
-            });
+        it('passes an empty records list', () => {
+            expect(receivedProps.records).to.deep.equal([]);
+        });
 
-            it('remders the go-forward and go-back buttons', () => {
-                expect(paginationButtons).to.have.length(2);
-            });
+        it('record numbers are zeros', () => {
+            expect(receivedProps.firstRecordNumber).to.equal(0);
+            expect(receivedProps.lastRecordNumber).to.equal(0);
+            expect(receivedProps.totalCount).to.equal(0);
+        });
 
-            it('the go-forward and go-back buttons are disabled', () => {
-                expect(paginationButtons.at(0).prop('disabled')).to.be.true;
-                expect(paginationButtons.at(1).prop('disabled')).to.be.true;
-            });
+        it('backButtonDisabled = true', () => {
+            expect(receivedProps.backButtonDisabled).to.be.true;
+        });
 
-            it('renders the table', () => {
-                expect(wrapper.find(Table)).to.have.length(1);
-            });
+        it('backButtonDisabled = true', () => {
+            expect(receivedProps.forwardButtonDisabled).to.be.true;
+        });
 
-            it('renders all column headings', () => {
-                expect(wrapper.find('th')).to.have.length(fields.length);
-            });
-
-            it('renders columns heading labels in correct order', () => {
-                fields.forEach((fieldName, idx) => {
-                    const th = wrapper.find('th').at(idx);
-                    expect(th.text()).to.equal(
-                        meta.fieldsByName[fieldName].options.label
-                        || meta.fieldsByName[fieldName].name
-                    );
-                });
-            });
-
-            it('does not render a table body', () => {
-                expect(wrapper.find('tbody')).to.have.length(0);
-            });
-
+        it('passes event handlers', () => {
+            expect(receivedProps.onBackButtonPress).to.be.a('function');
+            expect(receivedProps.onForwardButtonPress).to.be.a('function');
+            expect(receivedProps.onRecordPress).to.be.a('function');
         });
 
     });
 
-    describe('ModelList title prop - when not set', () => {
-        const fields = ['id', 'title', 'published', 'post_date'];
-        let wrapper: ReactWrapper;
+    describe('title prop - when not set', () => {
+        const fieldList = ['id', 'title', 'published'];
 
         before(() => {
             modelManager = models.getModelManager();
             lifecycleOptions.enableComponentDidMount = false;
-            wrapper = getWrapper(
+            receivedProps = null;
+            mountComponent(
                 <ListView
                     model={model}
-                    fields={fields} />);
+                    fields={fieldList}
+                    component={SpyComponent} />);
         });
 
-        it('renders the model label + " List"', () => {
-            const listTitle = wrapper.find('h2');
-            expect(listTitle).to.have.length(1);
-            expect(listTitle.at(0).text()).to.equal('Post List');
+        it('sets title to the model name + " List"', () => {
+            expect(receivedProps.title).to.equal('Post List');
         });
 
     });
 
-    describe('when data has loaded - first page', () => {
-        const fields = ['id', 'title', 'published', 'post_date'];
+    describe('component props - when data has loaded - first page', () => {
+        const fieldList = ['id', 'title', 'published', 'post_date'];
         const rowLimit = 3;
-        let wrapper: ReactWrapper;
         let meta: IModelMeta<models.Post>;
-        let expectedData: IModelTestData;
+        let modelData: IModelTestData;
+        let expectedData: models.Post[];
+        let expectedFields: fields.Field[];
 
         before(async () => {
             modelManager = models.getModelManager();
             meta = modelManager.getModelMeta(models.Post);
-            expectedData = await createData(modelManager);
+            modelData = await createData(modelManager);
+            expectedData = modelData.posts.slice(0, 3);
+            expectedFields = [
+                meta.fieldsByName['id'],
+                meta.fieldsByName['title'],
+                meta.fieldsByName['published'],
+                meta.fieldsByName['post_date']
+            ];
 
             lifecycleOptions.enableComponentDidMount = true;
-            wrapper = getWrapper(
+            receivedProps = null;
+            const wrapper = mountComponent(
                 <ListView
                     title="List with Data Loaded..."
                     model={model}
-                    fields={fields}
-                    rowLimit={rowLimit} />
+                    fields={fieldList}
+                    rowLimit={rowLimit}
+                    component={SpyComponent} />
             );
             await sleep(10);
             wrapper.update();
         });
 
-        describe('main elements', () => {
-
-            it('renders the list title', () => {
-                const listTitle = wrapper.find('h2');
-                expect(listTitle).to.have.length(1);
-                expect(listTitle.at(0).text()).to.equal('List with Data Loaded...');
-            });
-
-            it('remders the pagination area', () => {
-                expect(wrapper.find('div.' + classes.pagination)).to.have.length(1);
-            });
-
-            it('renders the table', () => {
-                expect(wrapper.find(Table)).to.have.length(1);
-            });
-
+        it('record numbers are set based on offset + limut', () => {
+            expect(receivedProps.firstRecordNumber).to.equal(1);
+            expect(receivedProps.lastRecordNumber).to.equal(3);
+            expect(receivedProps.totalCount).to.equal(modelData.posts.length);
         });
 
-        describe('pagination', () => {
-            let pagination: ReactWrapper;
-            let paginationButtons: ReactWrapper;
-
-            before(() => {
-                pagination = wrapper.find('div.' + classes.pagination).at(0);
-                paginationButtons = pagination.find('button');
-            });
-
-            it('remders the current offset and total record count', () => {
-                const paginationText = pagination.childAt(0).text();
-                expect(paginationText).to.equal('Records 1-3 of 7');
-            });
-
-            it('remders the go-forward and go-back buttons', () => {
-                expect(paginationButtons).to.have.length(2);
-            });
-
-            it('the go-back button is disabled', () => {
-                expect(paginationButtons.at(0).prop('disabled')).to.be.true;
-            });
-
-            it('the go-forward button is not disabled', () => {
-                expect(paginationButtons.at(1).prop('disabled')).to.be.false;
-            });
-
+        it('the go-back button is disabled', () => {
+            expect(receivedProps.backButtonDisabled).to.be.true;
         });
 
-        describe('table data', () => {
+        it('the go-forward button is not disabled', () => {
+            expect(receivedProps.forwardButtonDisabled).to.be.false;
+        });
 
-            it('renders all column headings', () => {
-                expect(wrapper.find('th')).to.have.length(fields.length);
-            });
+        it('passes the fields list', () => {
+            expect(receivedProps.fields).to.deep.equal(expectedFields);
+        });
 
-            it('renders columns heading labels in correct order', () => {
-                fields.forEach((fieldName, idx) => {
-                    const th = wrapper.find('th').at(idx);
-                    expect(th.text()).to.equal(
-                        meta.fieldsByName[fieldName].options.label
-                        || meta.fieldsByName[fieldName].name
-                    );
+        it('passes the correct record data', () => {
+            expectedData.forEach((record, recordIdx) => {
+                fieldList.forEach((fieldName) => {
+                    expect(receivedProps.records[recordIdx][fieldName])
+                        .to.equal(record[fieldName]);
                 });
             });
-
-            it('renders table body', () => {
-                expect(wrapper.find('tbody')).to.have.length(1);
-            });
-
-            it('renders up to "rowLimit" rows of data', () => {
-                expect(
-                    wrapper.find('tbody')
-                    .at(0).find('tr')
-                ).to.have.length(rowLimit);
-            });
-
-            it('renders the correct data in each cell', () => {
-                for (let i = 0; i < rowLimit; i++) {
-                    const post = expectedData.posts[i];
-                    const row = wrapper.find('tbody')
-                        .at(0).find('tr').at(i);
-
-                    fields.forEach((fieldName, fieldIdx) => {
-                        const td = row.find('td').at(fieldIdx);
-
-                        expect(td.text()).to.equal(
-                            post[fieldName].toString()
-                        );
-                    });
-                }
-            });
-
         });
 
     });
 
     describe('when data has loaded, and I go to the 2nd page', () => {
-        const fields = ['id', 'title', 'published', 'post_date'];
+        const fieldList = ['id', 'title', 'published', 'post_date'];
         const rowLimit = 3;
-        let wrapper: ReactWrapper;
-        let expectedData: IModelTestData;
-        let pagination: ReactWrapper;
-        let backButton: ReactWrapper;
-        let forwardButton: ReactWrapper;
+        let modelData: IModelTestData;
+        let expectedData: models.Post[];
 
         before(async () => {
             modelManager = models.getModelManager();
-            expectedData = await createData(modelManager);
+            modelData = await createData(modelManager);
+            expectedData = modelData.posts.slice(3, 6);
 
             lifecycleOptions.enableComponentDidMount = true;
-            wrapper = getWrapper(
+            receivedProps = null;
+            const wrapper = mountComponent(
                 <ListView
                     title="List with Data Loaded..."
                     model={model}
-                    fields={fields}
+                    fields={fieldList}
                     rowLimit={rowLimit}
+                    component={SpyComponent}
                 />);
             await sleep(10);
             wrapper.update();
-            pagination = wrapper.find('div.' + classes.pagination).at(0);
-            forwardButton = pagination.find('button').at(1);
-            forwardButton.simulate('click');
+            receivedProps.onForwardButtonPress();
             await sleep(10);
             wrapper.update();
-            pagination = wrapper.find('div.' + classes.pagination).at(0);
-            backButton = pagination.find('button').at(0);
-            forwardButton = pagination.find('button').at(1);
         });
 
-        it('remders the current offset and total record count', () => {
-            const paginationText = pagination.childAt(0).text();
-            expect(paginationText).to.equal('Records 4-6 of 7');
+        it('record numbers are set based on offset + limut', () => {
+            expect(receivedProps.firstRecordNumber).to.equal(4);
+            expect(receivedProps.lastRecordNumber).to.equal(6);
+            expect(receivedProps.totalCount).to.equal(modelData.posts.length);
         });
 
         it('the go-back button is not disabled', () => {
-            expect(backButton.prop('disabled')).to.be.false;
+            expect(receivedProps.backButtonDisabled).to.be.false;
         });
 
         it('the go-forward button is not disabled', () => {
-            expect(forwardButton.prop('disabled')).to.be.false;
+            expect(receivedProps.forwardButtonDisabled).to.be.false;
         });
 
-        it('renders "rowLimit" rows of data', () => {
-            expect(
-                wrapper.find('tbody')
-                .at(0).find('tr')
-            ).to.have.length(rowLimit);
-        });
-
-        it('renders the correct data, starting from the specified offset', () => {
-            for (let i = 0; i < rowLimit; i++) {
-                const postIdx = i + rowLimit;
-                const post = expectedData.posts[postIdx];
-                const row = wrapper.find('tbody')
-                    .at(0).find('tr').at(i);
-
-                fields.forEach((fieldName, fieldIdx) => {
-                    const td = row.find('td').at(fieldIdx);
-
-                    expect(td.text()).to.equal(
-                        post[fieldName].toString()
-                    );
+        it('passes the correct record data', () => {
+            expectedData.forEach((record, recordIdx) => {
+                fieldList.forEach((fieldName) => {
+                    expect(receivedProps.records[recordIdx][fieldName])
+                        .to.equal(record[fieldName]);
                 });
-            }
+            });
         });
 
     });
 
     describe('when data has loaded, and I go to the 3rd page', () => {
-        const fields = ['id', 'title', 'published', 'post_date'];
+        const fieldList = ['id', 'title', 'published', 'post_date'];
         const rowLimit = 3;
-        let wrapper: ReactWrapper;
-        let expectedData: IModelTestData;
-        let pagination: ReactWrapper;
-        let backButton: ReactWrapper;
-        let forwardButton: ReactWrapper;
+        let modelData: IModelTestData;
+        let expectedData: models.Post[];
 
         before(async () => {
             modelManager = models.getModelManager();
-            expectedData = await createData(modelManager);
+            modelData = await createData(modelManager);
+            expectedData = modelData.posts.slice(6);
 
             lifecycleOptions.enableComponentDidMount = true;
-            wrapper = getWrapper(
+            receivedProps = null;
+            const wrapper = mountComponent(
                 <ListView
                     title="List with Data Loaded..."
                     model={model}
-                    fields={fields}
+                    fields={fieldList}
                     rowLimit={rowLimit}
+                    component={SpyComponent}
                 />);
             await sleep(10);
             wrapper.update();
-            pagination = wrapper.find('div.' + classes.pagination).at(0);
-            forwardButton = pagination.find('button').at(1);
-            forwardButton.simulate('click');
+            receivedProps.onForwardButtonPress();
             await sleep(10);
             wrapper.update();
-            pagination = wrapper.find('div.' + classes.pagination).at(0);
-            forwardButton = pagination.find('button').at(1);
-            forwardButton.simulate('click');
+            receivedProps.onForwardButtonPress();
             await sleep(10);
             wrapper.update();
-            pagination = wrapper.find('div.' + classes.pagination).at(0);
-            backButton = pagination.find('button').at(0);
-            forwardButton = pagination.find('button').at(1);
         });
 
-        it('remders the current offset and total record count', () => {
-            const paginationText = pagination.childAt(0).text();
-            expect(paginationText).to.equal('Records 7-7 of 7');
+        it('record numbers are set based on offset + limut', () => {
+            expect(receivedProps.firstRecordNumber).to.equal(7);
+            expect(receivedProps.lastRecordNumber).to.equal(modelData.posts.length);
+            expect(receivedProps.totalCount).to.equal(modelData.posts.length);
         });
 
         it('the go-back button is not disabled', () => {
-            expect(backButton.prop('disabled')).to.be.false;
+            expect(receivedProps.backButtonDisabled).to.be.false;
         });
 
         it('the go-forward button is disabled', () => {
-            expect(forwardButton.prop('disabled')).to.be.true;
+            expect(receivedProps.forwardButtonDisabled).to.be.true;
         });
 
-        it('renders the last row of data', () => {
-            expect(
-                wrapper.find('tbody')
-                .at(0).find('tr')
-            ).to.have.length(1);
-        });
-
-        it('renders the correct data, starting from the specified offset', () => {
-            const post = expectedData.posts[6];
-            const row = wrapper.find('tbody')
-                .at(0).find('tr').at(0);
-
-            fields.forEach((fieldName, fieldIdx) => {
-                const td = row.find('td').at(fieldIdx);
-
-                expect(td.text()).to.equal(
-                    post[fieldName].toString()
-                );
+        it('passes the correct record data', () => {
+            expectedData.forEach((record, recordIdx) => {
+                fieldList.forEach((fieldName) => {
+                    expect(receivedProps.records[recordIdx][fieldName])
+                        .to.equal(record[fieldName]);
+                });
             });
         });
+
     });
 
     describe('when data has loaded, and I go to the 2nd page, then back to the first', () => {
-        const fields = ['id', 'title', 'published', 'post_date'];
+        const fieldList = ['id', 'title', 'published', 'post_date'];
         const rowLimit = 3;
-        let wrapper: ReactWrapper;
-        let expectedData: IModelTestData;
-        let pagination: ReactWrapper;
-        let backButton: ReactWrapper;
-        let forwardButton: ReactWrapper;
+        let modelData: IModelTestData;
+        let expectedData: models.Post[];
 
         before(async () => {
             modelManager = models.getModelManager();
-            expectedData = await createData(modelManager);
+            modelData = await createData(modelManager);
+            expectedData = modelData.posts.slice(0, 3);
 
             lifecycleOptions.enableComponentDidMount = true;
-            wrapper = getWrapper(
+            receivedProps = null;
+            const wrapper = mountComponent(
                 <ListView
                     title="List with Data Loaded..."
                     model={model}
-                    fields={fields}
+                    fields={fieldList}
                     rowLimit={rowLimit}
+                    component={SpyComponent}
                 />);
             await sleep(10);
             wrapper.update();
-            pagination = wrapper.find('div.' + classes.pagination).at(0);
-            forwardButton = pagination.find('button').at(1);
-            forwardButton.simulate('click');
+            receivedProps.onForwardButtonPress();
             await sleep(10);
             wrapper.update();
-            pagination = wrapper.find('div.' + classes.pagination).at(0);
-            backButton = pagination.find('button').at(0);
-            backButton.simulate('click');
+            receivedProps.onBackButtonPress();
             await sleep(10);
             wrapper.update();
-            pagination = wrapper.find('div.' + classes.pagination).at(0);
-            backButton = pagination.find('button').at(0);
-            forwardButton = pagination.find('button').at(1);
         });
 
-        it('remders the current offset and total record count', () => {
-            const paginationText = pagination.childAt(0).text();
-            expect(paginationText).to.equal('Records 1-3 of 7');
+        it('record numbers are set based on offset + limut', () => {
+            expect(receivedProps.firstRecordNumber).to.equal(1);
+            expect(receivedProps.lastRecordNumber).to.equal(3);
+            expect(receivedProps.totalCount).to.equal(modelData.posts.length);
         });
 
         it('the go-back button is disabled', () => {
-            expect(backButton.prop('disabled')).to.be.true;
+            expect(receivedProps.backButtonDisabled).to.be.true;
         });
 
         it('the go-forward button is not disabled', () => {
-            expect(forwardButton.prop('disabled')).to.be.false;
+            expect(receivedProps.forwardButtonDisabled).to.be.false;
         });
 
-        it('renders up to "rowLimit" rows of data', () => {
-            expect(
-                wrapper.find('tbody')
-                .at(0).find('tr')
-            ).to.have.length(rowLimit);
-        });
-
-        it('renders the correct data in each cell', () => {
-            for (let i = 0; i < rowLimit; i++) {
-                const post = expectedData.posts[i];
-                const row = wrapper.find('tbody')
-                    .at(0).find('tr').at(i);
-
-                fields.forEach((fieldName, fieldIdx) => {
-                    const td = row.find('td').at(fieldIdx);
-
-                    expect(td.text()).to.equal(
-                        post[fieldName].toString()
-                    );
+        it('passes the correct record data', () => {
+            expectedData.forEach((record, recordIdx) => {
+                fieldList.forEach((fieldName) => {
+                    expect(receivedProps.records[recordIdx][fieldName])
+                        .to.equal(record[fieldName]);
                 });
-            }
+            });
         });
+
     });
 
     describe('when data has loaded but there are no results', () => {
-        const fields = ['id', 'title', 'published', 'post_date'];
-        let wrapper: ReactWrapper;
-        let meta: IModelMeta<models.Post>;
+        const fieldList = ['id', 'title', 'published'];
+        let expectedFields: fields.Field[];
 
         before(async () => {
             modelManager = models.getModelManager();
-            meta = modelManager.getModelMeta(models.Post);
+            const meta = modelManager.getModelMeta(models.Post);
+            expectedFields = [
+                meta.fieldsByName['id'],
+                meta.fieldsByName['title'],
+                meta.fieldsByName['published']
+            ];
 
             lifecycleOptions.enableComponentDidMount = true;
-            wrapper = getWrapper(
+            receivedProps = null;
+            const wrapper = mountComponent(
                 <ListView
                     title="List with Data Loaded..."
                     model={model}
-                    fields={fields}
+                    fields={fieldList}
+                    component={SpyComponent}
                 />);
             await sleep(10);
             wrapper.update();
         });
 
-        describe('main elements', () => {
-
-            it('renders the list title', () => {
-                const listTitle = wrapper.find('h2');
-                expect(listTitle).to.have.length(1);
-                expect(listTitle.at(0).text()).to.equal('List with Data Loaded...');
-            });
-
-            it('remders the pagination area', () => {
-                expect(wrapper.find('div.' + classes.pagination)).to.have.length(1);
-            });
-
-            it('renders the table', () => {
-                expect(wrapper.find(Table)).to.have.length(1);
-            });
-
+        it('record numbers are set to zero', () => {
+            expect(receivedProps.firstRecordNumber).to.equal(0);
+            expect(receivedProps.lastRecordNumber).to.equal(0);
+            expect(receivedProps.totalCount).to.equal(0);
         });
 
-        describe('pagination', () => {
-            let pagination: ReactWrapper;
-            let paginationButtons: ReactWrapper;
-
-            before(() => {
-                pagination = wrapper.find('div.' + classes.pagination).at(0);
-                paginationButtons = pagination.find('button');
-            });
-
-            it('remders the current offset and total record count', () => {
-                const paginationText = pagination.childAt(0).text();
-                expect(paginationText).to.equal('Records 0-0 of 0');
-            });
-
-            it('remders the go-forward and go-back buttons', () => {
-                expect(paginationButtons).to.have.length(2);
-            });
-
-            it('the go-back button is disabled', () => {
-                expect(paginationButtons.at(0).prop('disabled')).to.be.true;
-            });
-
-            it('the go-forward button is disabled', () => {
-                expect(paginationButtons.at(1).prop('disabled')).to.be.true;
-            });
-
+        it('the go-back button is disabled', () => {
+            expect(receivedProps.backButtonDisabled).to.be.true;
         });
 
-        describe('table data', () => {
+        it('the go-forward button is disabled', () => {
+            expect(receivedProps.forwardButtonDisabled).to.be.true;
+        });
 
-            it('renders columns headings', () => {
-                fields.forEach((fieldName, idx) => {
-                    const th = wrapper.find('th').at(idx);
-                    expect(th.text()).to.equal(
-                        meta.fieldsByName[fieldName].options.label
-                        || meta.fieldsByName[fieldName].name
-                    );
-                });
-            });
+        it('passes the fields list', () => {
+            expect(receivedProps.fields).to.deep.equal(expectedFields);
+        });
 
-            it('does not render table body', () => {
-                expect(wrapper.find('tbody')).to.have.length(0);
-            });
-
-            it('does not render any rows', () => {
-                expect(
-                    wrapper.find('tbody')
-                    .at(0).find('tr')
-                ).to.have.length(0);
-            });
-
+        it('passes empty record data', () => {
+            expect(receivedProps.records).to.deep.equal([]);
         });
 
     });
 
     describe('Event Handlers', () => {
-        const fields = ['id', 'title', 'published', 'post_date'];
-        let wrapper: ReactWrapper;
+        const fieldList = ['id', 'title', 'published', 'post_date'];
         let expectedData: IModelTestData;
 
-        let tableBody: ReactWrapper;
         let onRecordClickSpy = sinon.stub();
 
         before(async () => {
@@ -601,22 +431,21 @@ describe('ListView', () => {
             expectedData = await createData(modelManager);
 
             lifecycleOptions.enableComponentDidMount = true;
-            wrapper = getWrapper(
-                <ListView model={model} fields={fields}
-                    onRecordClick={onRecordClickSpy}
+            receivedProps = null;
+            const wrapper = mountComponent(
+                <ListView model={model} fields={fieldList}
+                    onRecordPress={onRecordClickSpy}
+                    component={SpyComponent}
                 />
             );
             await sleep(10);
             wrapper.update();
-
-            tableBody = wrapper.find('tbody').at(0);
         });
 
         describe('onRecordClick()', () => {
 
             it('called with record data when a row is clicked', () => {
-                const secondRow = tableBody.find('tr').at(1);
-                secondRow.simulate('click');
+                receivedProps.onRecordPress(expectedData.posts[1]);
 
                 expect(onRecordClickSpy.callCount).to.equal(1);
 

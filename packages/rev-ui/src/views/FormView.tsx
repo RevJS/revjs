@@ -10,6 +10,7 @@ import { UI_COMPONENTS } from '../config';
 export interface IFormViewProps {
     model: string;
     primaryKeyValue?: string;
+    component?: React.ComponentType;
 }
 
 export type IModelLoadState = 'NONE' | 'LOADING' | 'SAVING' ;
@@ -112,6 +113,7 @@ export class FormView extends React.Component<IFormViewProps> {
     }
 
     render() {
-        return <UI_COMPONENTS.views.DetailView {...this.props} />;
+        const Component = this.props.component || UI_COMPONENTS.views.DetailView;
+        return <Component {...this.props} />;
     }
 }

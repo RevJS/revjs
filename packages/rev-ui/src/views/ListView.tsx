@@ -13,7 +13,9 @@ export interface IListViewProps {
     title?: string;
     rowLimit?: number;
 
-    onRecordClick?: (model: IModel) => void;
+    onRecordPress?: (model: IModel) => void;
+
+    component?: React.ComponentType<IListViewComponentProps>;
 }
 
 export type IListViewLoadState = 'loading' | 'loaded' | 'load_error';
@@ -29,9 +31,9 @@ export interface IListViewComponentProps {
     backButtonDisabled: boolean;
     forwardButtonDisabled: boolean;
 
-    onBackButtonPressed(): void;
-    onForwardButtonPressed(): void;
-    onRecordClick(model: IModel): void;
+    onBackButtonPress(): void;
+    onForwardButtonPress(): void;
+    onRecordPress(model: IModel): void;
 }
 
 export interface IListViewState {
@@ -73,18 +75,18 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
         };
     }
 
-    onForwardButtonPressed() {
+    onForwardButtonPress() {
         this.loadData(this.state.limit, this.state.offset + this.state.limit);
     }
 
-    onBackButtonPressed() {
+    onBackButtonPress() {
         const offset = Math.max(this.state.offset - this.state.limit, 0);
         this.loadData(this.state.limit, offset);
     }
 
-    onRecordClick(record: IModel) {
-        if (this.props.onRecordClick) {
-            this.props.onRecordClick(record);
+    onRecordPress(record: IModel) {
+        if (this.props.onRecordPress) {
+            this.props.onRecordPress(record);
         }
     }
 
@@ -121,9 +123,9 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
             backButtonDisabled: true,
             forwardButtonDisabled: true,
 
-            onBackButtonPressed: () => this.onBackButtonPressed(),
-            onForwardButtonPressed: () => this.onForwardButtonPressed(),
-            onRecordClick: (record: IModel) => this.onRecordClick(record)
+            onBackButtonPress: () => this.onBackButtonPress(),
+            onForwardButtonPress: () => this.onForwardButtonPress(),
+            onRecordPress: (record: IModel) => this.onRecordPress(record)
         };
 
         if (this.state.loadState == 'loaded') {
@@ -143,8 +145,8 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
             cProps.records = this.state.modelData.results;
         }
 
-        return <UI_COMPONENTS.views.ListView {...cProps} />;
-
+        const Component = this.props.component || UI_COMPONENTS.views.ListView;
+        return <Component {...cProps} />;
     }
 
     async componentDidMount() {
