@@ -584,4 +584,46 @@ describe('ListView', () => {
 
     });
 
+
+    describe('Event Handlers', () => {
+        const fields = ['id', 'title', 'published', 'post_date'];
+        let wrapper: ReactWrapper;
+        let expectedData: IModelTestData;
+
+        let tableBody: ReactWrapper;
+        let onRecordClickSpy = sinon.stub();
+
+        before(async () => {
+            modelManager = models.getModelManager();
+            expectedData = await createData(modelManager);
+
+            lifecycleOptions.enableComponentDidMount = true;
+            wrapper = getWrapper(
+                <ListView model={model} fields={fields}
+                    onRecordClick={onRecordClickSpy}
+                />
+            );
+            await sleep(10);
+            wrapper.update();
+
+            tableBody = wrapper.find('tbody').at(0);
+        });
+
+        describe('onRecordClick()', () => {
+
+            it('called with record data when a row is clicked', () => {
+                const secondRow = tableBody.find('tr').at(1);
+                secondRow.simulate('click');
+
+                expect(onRecordClickSpy.callCount).to.equal(1);
+
+                const passedRecord = onRecordClickSpy.getCall(0).args[0];
+                expect(passedRecord.id).to.equal(expectedData.posts[1].id);
+                expect(passedRecord.title).to.equal(expectedData.posts[1].title);
+            });
+
+        });
+
+    });
+
 });

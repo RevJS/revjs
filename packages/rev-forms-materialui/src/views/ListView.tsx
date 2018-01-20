@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { IModelMeta, IModelOperationResult } from 'rev-models';
+import { IModelMeta, IModelOperationResult, IModel } from 'rev-models';
 import { IReadMeta } from 'rev-models/lib/models/types';
 
 import { withStyles, WithStyles, StyleRules, StyledComponentProps } from 'material-ui/styles';
@@ -20,6 +20,8 @@ export interface IListViewProps {
     fields: string[];
     title?: string;
     rowLimit?: number;
+
+    onRecordClick?: (model: IModel) => void;
 }
 
 export interface IListViewState {
@@ -167,14 +169,23 @@ class ListViewC extends React.Component<IListViewProps & WithStyles, IListViewSt
         const tableBody = this.state.modelData && (
             <TableBody>
                 {this.state.modelData.results.map((record, rowIdx) => (
-                    <TableRow key={rowIdx} hover>
+
+                    <TableRow
+                        key={rowIdx} hover
+                        onClick={() => {
+                            if (this.props.onRecordClick) {
+                                this.props.onRecordClick(record);
+                            }
+                        }}
+                    >
                         {this.props.fields.map((fieldName, colIdx) => {
                             const data = record[fieldName].toString();
                             return (
                                 <TableCell key={colIdx} padding="dense">{data}</TableCell>
                             );
-                    })}
+                        })}
                     </TableRow>
+
                 ))}
             </TableBody>
         );
