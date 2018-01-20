@@ -3,17 +3,9 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { IModelMeta, IModelOperationResult, IModel } from 'rev-models';
+import { IModelMeta, IModelOperationResult, IModel, fields } from 'rev-models';
 import { IReadMeta } from 'rev-models/lib/models/types';
-
-import { withStyles, WithStyles, StyleRules, StyledComponentProps } from 'material-ui/styles';
-import Paper from 'material-ui/Paper';
-import IconButton from 'material-ui/IconButton';
-import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
-import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
-import Table, { TableHead, TableBody, TableRow, TableCell } from 'material-ui/Table';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
+import { UI_COMPONENTS } from '../config';
 
 export interface IListViewProps {
     model: string;
@@ -24,32 +16,32 @@ export interface IListViewProps {
     onRecordClick?: (model: IModel) => void;
 }
 
+export type IListViewLoadState = 'loading' | 'loaded' | 'load_error';
+
+export interface IListViewComponentProps {
+    title: string;
+    loadState: IListViewLoadState;
+    fields: fields.Field[];
+    records: IModel[];
+    firstRecordNumber: number;
+    lastRecordNumber: number;
+    totalCount: number;
+    backButtonDisabled: boolean;
+    forwardButtonDisabled: boolean;
+
+    onBackButtonPressed(): void;
+    onForwardButtonPressed(): void;
+    onRecordClick(model: IModel): void;
+}
+
 export interface IListViewState {
-    loadState: 'loading' | 'loaded' | 'load_error';
+    loadState: IListViewLoadState;
     modelData?: IModelOperationResult<any, IReadMeta>;
     limit: number;
     offset: number;
 }
 
-const styles: StyleRules = {
-    root: {
-        width: '100%',
-        overflowX: 'auto',
-    },
-    toolbar: {
-        justifyContent: 'space-between',
-        borderBottom: '1px solid #EBEBEB'
-    },
-    pagination: {
-        display: 'flex',
-        alignItems: 'center'
-    },
-    table: {
-        cursor: 'default'
-    }
-};
-
-class ListViewC extends React.Component<IListViewProps & WithStyles, IListViewState> {
+export class ListView extends React.Component<IListViewProps, IListViewState> {
 
     context: IModelProviderContext;
     static contextTypes = {
@@ -58,7 +50,7 @@ class ListViewC extends React.Component<IListViewProps & WithStyles, IListViewSt
 
     modelMeta: IModelMeta<any>;
 
-    constructor(props: IListViewProps & WithStyles, context: any) {
+    constructor(props: IListViewProps, context: any) {
         super(props, context);
         this.context.modelManager = context.modelManager;
         if (!this.context.modelManager) {
@@ -90,6 +82,12 @@ class ListViewC extends React.Component<IListViewProps & WithStyles, IListViewSt
         this.loadData(this.state.limit, offset);
     }
 
+    onRecordClick(record: IModel) {
+        if (this.props.onRecordClick) {
+            this.props.onRecordClick(record);
+        }
+    }
+
     async loadData(limit: number, offset: number) {
         this.setState({
             loadState: 'loading'
@@ -108,97 +106,45 @@ class ListViewC extends React.Component<IListViewProps & WithStyles, IListViewSt
 
     render() {
 
-        const title = this.props.title ? this.props.title : this.modelMeta.label + ' List';
+        const listFields = this.props.fields.map((fieldName) =>
+            this.modelMeta.fieldsByName[fieldName]
+        );
 
-        let paginationText = 'Loading...';
-        let backButtonDisabled = true;
-        let forwardButtonDisabled = true;
+        const cProps: IListViewComponentProps & {children?: any} = {
+            loadState: this.state.loadState,
+            title: this.props.title ? this.props.title : this.modelMeta.label + ' List',
+            fields: listFields,
+            records: [],
+            firstRecordNumber: 0,
+            lastRecordNumber: 0,
+            totalCount: 0,
+            backButtonDisabled: true,
+            forwardButtonDisabled: true,
+
+            onBackButtonPressed: () => this.onBackButtonPressed(),
+            onForwardButtonPressed: () => this.onForwardButtonPressed(),
+            onRecordClick: (record: IModel) => this.onRecordClick(record)
+        };
 
         if (this.state.loadState == 'loaded') {
             const readMeta = this.state.modelData.meta;
-            const firstRecordNumber = readMeta.totalCount ? readMeta.offset + 1 : 0;
-            const lastRecordNumber = Math.min(
+            cProps.firstRecordNumber = readMeta.totalCount ? readMeta.offset + 1 : 0;
+            cProps.lastRecordNumber = Math.min(
                 readMeta.offset + readMeta.limit,
                 readMeta.totalCount
             );
-            readMeta.totalCount;
-            paginationText = `Records ${firstRecordNumber}-${lastRecordNumber} of ${readMeta.totalCount}`;
-            if (lastRecordNumber < readMeta.totalCount) {
-                forwardButtonDisabled = false;
+            if (cProps.lastRecordNumber < readMeta.totalCount) {
+                cProps.forwardButtonDisabled = false;
             }
-            if (firstRecordNumber > 1) {
-                backButtonDisabled = false;
+            if (cProps.firstRecordNumber > 1) {
+                cProps.backButtonDisabled = false;
             }
+            cProps.totalCount = readMeta.totalCount;
+            cProps.records = this.state.modelData.results;
         }
 
-        const toolbar = (
-            <Toolbar className={this.props.classes.toolbar}>
-                <Typography type="title">{title}</Typography>
-                <div className={this.props.classes.pagination}>
-                    <Typography type="caption">
-                        {paginationText}
-                    </Typography>
-                    <IconButton
-                        onClick={() => this.onBackButtonPressed()}
-                        disabled={backButtonDisabled}
-                    >
-                        <KeyboardArrowLeft titleAccess="Previous Page" />
-                    </IconButton>
-                    <IconButton
-                        onClick={() => this.onForwardButtonPressed()}
-                        disabled={forwardButtonDisabled}
-                    >
-                        <KeyboardArrowRight titleAccess="Next Page" />
-                    </IconButton>
-                </div>
-            </Toolbar>
-        );
+        return <UI_COMPONENTS.views.ListView {...cProps} />;
 
-        const tableHead = (
-            <TableHead>
-                <TableRow>
-                    {this.props.fields.map((fieldName, idx) => {
-                        const field = this.modelMeta.fieldsByName[fieldName];
-                        return (
-                            <TableCell key={idx} padding="dense">{field.options.label || field.name}</TableCell>
-                        );
-                    })}
-                </TableRow>
-            </TableHead>);
-
-        const tableBody = this.state.modelData && (
-            <TableBody>
-                {this.state.modelData.results.map((record, rowIdx) => (
-
-                    <TableRow
-                        key={rowIdx} hover
-                        onClick={() => {
-                            if (this.props.onRecordClick) {
-                                this.props.onRecordClick(record);
-                            }
-                        }}
-                    >
-                        {this.props.fields.map((fieldName, colIdx) => {
-                            const data = record[fieldName].toString();
-                            return (
-                                <TableCell key={colIdx} padding="dense">{data}</TableCell>
-                            );
-                        })}
-                    </TableRow>
-
-                ))}
-            </TableBody>
-        );
-
-        return (
-            <Paper className={this.props.classes.root}>
-                {toolbar}
-                <Table className={this.props.classes.table}>
-                    {tableHead}
-                    {tableBody}
-                </Table>
-            </Paper>
-        );
     }
 
     async componentDidMount() {
@@ -208,9 +154,6 @@ class ListViewC extends React.Component<IListViewProps & WithStyles, IListViewSt
     }
 
 }
-
-export const ListView: React.ComponentType<IListViewProps & StyledComponentProps>
-    = withStyles(styles)(ListViewC);
 
 export const lifecycleOptions = {
     enableComponentDidMount: true

@@ -12,6 +12,9 @@ import Table from 'material-ui/Table';
 import { getClasses } from 'material-ui/test-utils';
 import { createData, IModelTestData } from '../../__fixtures__/modeldata';
 
+import { UI_COMPONENTS } from '../../config';
+import { MUIListView } from '../../MUIListView';
+
 describe('ListView', () => {
 
     let modelManager: ModelManager;
@@ -19,9 +22,10 @@ describe('ListView', () => {
     let classes: any;
 
     before(() => {
+        UI_COMPONENTS.views.ListView = MUIListView;
         modelManager = models.getModelManager();
         classes = getClasses(
-            <ListView model="Post" fields={['id']} />
+            React.createElement(MUIListView)
         );
     });
 
@@ -569,8 +573,8 @@ describe('ListView', () => {
                 });
             });
 
-            it('renders table body', () => {
-                expect(wrapper.find('tbody')).to.have.length(1);
+            it('does not render table body', () => {
+                expect(wrapper.find('tbody')).to.have.length(0);
             });
 
             it('does not render any rows', () => {

@@ -1,9 +1,14 @@
 
-import * as React from 'react';
-import { BasicFormView } from './views/components/BasicFormView';
+const PassthroughComponent: any = (props: any) => {
+    return props.children;
+};
 
 export const UI_COMPONENTS = {
     views: {
-        DetailView: BasicFormView as React.SFC,
+        DetailView: PassthroughComponent,
+        ListView: PassthroughComponent,
+    },
+    fields: {
+
     }
 };
