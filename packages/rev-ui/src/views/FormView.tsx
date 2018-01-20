@@ -5,6 +5,7 @@ import { IModelProviderContext } from '../provider/ModelProvider';
 import { IModel, IModelMeta, IModelManager } from 'rev-models';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 import { isSet } from '../utils';
+import { UI_COMPONENTS } from '../config';
 
 export interface IFormViewProps {
     model: string;
@@ -111,6 +112,6 @@ export class FormView extends React.Component<IFormViewProps> {
     }
 
     render() {
-        return this.props.children;
+        return <UI_COMPONENTS.views.DetailView {...this.props} />;
     }
 }
