@@ -1,0 +1,37 @@
+{
+  "name": "rev-ui-materialui",
+  "version": "0.0.1",
+  "description": "React MaterialUI components for RevJS",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "run-bin tslint -p . && run-bin tsc",
+    "build-watch": "run-bin tsc --watch",
+    "test": "run-bin mocha -r ./testsetup -r ts-node/register --recursive \"./src/**/__tests__/*\"",
+    "test-ci": "run-bin mocha -r ./testsetup -r ts-node/register --recursive \"./src/**/__tests__/*\" --reporter mocha-circleci-reporter",
+    "test-watch": "run-bin mocha -r ./testsetup -r ts-node/register --recursive \"./src/**/__tests__/*\" --watch --watch-extensions ts,tsx",
+    "mocha": "run-bin mocha -r ./testsetup -r ts-node/register",
+    "pack": "npm pack"
+  },
+  "author": "Russell Briggs <russ@paraflyer.net>",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RevJS/revjs.git"
+  },
+  "typings": "lib/index.d.ts",
+  "dependencies": {
+    "material-ui": "1.0.0-beta.29",
+    "material-ui-icons": "1.0.0-beta.17",
+    "prop-types": "^15.6.0",
+    "react": "^16.0.0",
+    "rev-models": "^0.2.0",
+    "rev-ui": "^0.2.0",
+    "tslib": "1.x"
+  },
+  "devDependencies": {
+    "@types/prop-types": "^15.5.2",
+    "@types/react": "^16.0.0",
+    "run-bin": "^1.0.0"
+  }
+}
