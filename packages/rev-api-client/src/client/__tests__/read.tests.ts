@@ -87,6 +87,20 @@ describe('ModelApiBackend - read()', () => {
         });
     });
 
+    it('where clause works as expected', async () => {
+        const result = await apiBackend.read(
+            manager, Post, {
+                id: 3,
+            }, readResult, readOptions
+        );
+        expect(result.success).to.be.true;
+        expect(result.results).to.have.length(1);
+        expect(result.results[0]).to.be.instanceof(Post);
+        expectToHaveProperties(result.results[0], {
+            id: 3, title: 'Ruby Sucks'
+        });
+    });
+
     it('offset and limit options work as expected', async () => {
         const result = await apiBackend.read(
             manager, Post, {}, readResult, {

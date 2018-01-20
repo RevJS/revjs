@@ -30,7 +30,7 @@ export class ModelApiBackend implements IBackend {
         return error;
     }
 
-    _buildGraphQLQuery(meta: IModelMeta<any>, offset: number, limit: number) {
+    _buildGraphQLQuery(meta: IModelMeta<any>, where: object, offset: number, limit: number) {
         const fieldObj: any = {};
         for (const field of meta.fields) {
             if (!(field instanceof fields.RelatedModelFieldBase)) {
@@ -41,6 +41,7 @@ export class ModelApiBackend implements IBackend {
             query: {
                 [meta.name]: {
                     __args: {
+                        where,
                         offset,
                         limit
                     },
@@ -69,7 +70,7 @@ export class ModelApiBackend implements IBackend {
 
     async read<T extends IModel>(manager: ModelManager, model: new() => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
         const meta = manager.getModelMeta(model);
-        const query = this._buildGraphQLQuery(meta, options.offset, options.limit);
+        const query = this._buildGraphQLQuery(meta, where, options.offset, options.limit);
         const httpResult = await this._httpClient({
             url: this.apiUrl,
             method: 'POST',
