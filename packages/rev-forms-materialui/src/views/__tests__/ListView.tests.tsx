@@ -13,7 +13,7 @@ import { getClasses } from 'material-ui/test-utils';
 import { createData, IModelTestData } from '../../__fixtures__/modeldata';
 import { FormView } from '../FormView';
 
-describe('ModelList', () => {
+describe('ListView', () => {
 
     let modelManager: ModelManager;
     const model = 'Post';

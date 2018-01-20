@@ -6,10 +6,10 @@ import Input, { InputLabel } from 'material-ui/Input';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 
-import { IModelFieldComponentProps } from './types';
+import { IFieldComponentProps } from './types';
 import * as fields from 'rev-models/lib/fields';
 
-export const SelectionField: React.StatelessComponent<IModelFieldComponentProps> = (props) => {
+export const SelectionField: React.StatelessComponent<IFieldComponentProps> = (props) => {
 
     let field = props.field as fields.SelectionField;
 

@@ -4,9 +4,9 @@ import * as React from 'react';
 import { FormControl, FormHelperText } from 'material-ui/Form';
 import Input, { InputLabel } from 'material-ui/Input';
 
-import { IModelFieldComponentProps } from './types';
+import { IFieldComponentProps } from './types';
 
-export const NumberField: React.StatelessComponent<IModelFieldComponentProps> = (props) => {
+export const NumberField: React.StatelessComponent<IFieldComponentProps> = (props) => {
 
     let errorText = '';
     props.errors.forEach((err) => {

@@ -102,6 +102,10 @@ describe('FormView', () => {
             expect(receivedViewContext.loadState).to.equal('NONE');
         });
 
+        it('contains the current ModelManager', () => {
+            expect(receivedViewContext.manager).to.equal(modelManager);
+        });
+
         it('a new model instance is created', () => {
             expect(receivedViewContext.model).not.to.be.null;
             expect(receivedViewContext.model).to.be.instanceof(models.Post);
@@ -145,6 +149,10 @@ describe('FormView', () => {
 
         it('loadState is LOADING', () => {
             expect(receivedViewContext.loadState).to.equal('LOADING');
+        });
+
+        it('contains the current ModelManager', () => {
+            expect(receivedViewContext.manager).to.equal(modelManager);
         });
 
         it('model data is initially null', () => {
@@ -211,12 +219,11 @@ describe('FormView', () => {
 
     describe('setDirty()', () => {
         let modelManager: rev.ModelManager;
-        let wrapper: ReactWrapper;
 
         before(() => {
             resetTestView();
             modelManager = models.getModelManager();
-            wrapper = mount(
+            mount(
                 <ModelProvider modelManager={modelManager}>
                     <FormView model="Post">
                         <TestView />

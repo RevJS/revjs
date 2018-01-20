@@ -14,7 +14,7 @@ import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
 import Table, { TableHead, TableBody, TableRow, TableCell } from 'material-ui/Table';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
-import { IFormViewContext } from './FormView';
+import { IModelContextProp } from './FormView';
 
 export interface IListViewProps {
     model: string;
@@ -50,7 +50,7 @@ const styles: StyleRules = {
 
 class ListViewC extends React.Component<IListViewProps & WithStyles, IListViewState> {
 
-    context: IModelProviderContext & IFormViewContext;
+    context: IModelProviderContext & IModelContextProp;
     static contextTypes = {
         modelManager: PropTypes.object,
         modelContext: PropTypes.object

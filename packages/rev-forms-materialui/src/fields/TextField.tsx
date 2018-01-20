@@ -4,10 +4,10 @@ import * as React from 'react';
 import { FormControl, FormHelperText } from 'material-ui/Form';
 import Input, { InputLabel } from 'material-ui/Input';
 
-import { IModelFieldComponentProps } from './types';
+import { IFieldComponentProps } from './types';
 import * as fields from 'rev-models/lib/fields';
 
-export const TextField: React.StatelessComponent<IModelFieldComponentProps> = (props) => {
+export const TextField: React.StatelessComponent<IFieldComponentProps> = (props) => {
 
     let type = 'text';
 

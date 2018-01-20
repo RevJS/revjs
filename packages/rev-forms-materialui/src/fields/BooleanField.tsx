@@ -3,9 +3,9 @@ import * as React from 'react';
 
 import { FormControlLabel } from 'material-ui/Form';
 import Checkbox from 'material-ui/Checkbox';
-import { IModelFieldComponentProps } from './types';
+import { IFieldComponentProps } from './types';
 
-export const BooleanField: React.StatelessComponent<IModelFieldComponentProps> = (props) => {
+export const BooleanField: React.StatelessComponent<IFieldComponentProps> = (props) => {
 
     let checked = props.value ? true : false;
 

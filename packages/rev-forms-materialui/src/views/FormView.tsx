@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { IModel, IModelMeta } from 'rev-models';
+import { IModel, IModelMeta, IModelManager } from 'rev-models';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 import { isSet } from '../utils';
 
@@ -15,6 +15,7 @@ export type IModelLoadState = 'NONE' | 'LOADING' | 'SAVING' ;
 
 export interface IModelContext {
     loadState: IModelLoadState;
+    manager: IModelManager;
     model: IModel;
     modelMeta: IModelMeta<any>;
     validation: ModelValidationResult;
@@ -23,7 +24,7 @@ export interface IModelContext {
     validate(): Promise<ModelValidationResult>;
 }
 
-export interface IFormViewContext {
+export interface IModelContextProp {
     modelContext: IModelContext;
 }
 
@@ -49,6 +50,7 @@ export class FormView extends React.Component<IFormViewProps> {
 
         this.modelContext = {
             loadState: 'NONE',
+            manager: this.context.modelManager,
             model: null,
             modelMeta,
             validation: null,
@@ -104,7 +106,7 @@ export class FormView extends React.Component<IFormViewProps> {
         modelContext: PropTypes.object
     };
 
-    getChildContext(): IFormViewContext {
+    getChildContext(): IModelContextProp {
         return {
             modelContext: this.modelContext
         };

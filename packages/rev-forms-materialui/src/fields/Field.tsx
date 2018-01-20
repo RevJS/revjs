@@ -1,7 +1,6 @@
 
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
-import { IModelMeta, fields } from 'rev-models';
+import { fields } from 'rev-models';
 
 import Grid from 'material-ui/Grid';
 import { TextField } from './TextField';
@@ -10,9 +9,10 @@ import { DateField } from './DateField';
 import { NumberField } from './NumberField';
 import { SelectionField } from './SelectionField';
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { IFormViewContext } from '../views/FormView';
-import { IModelFieldComponentProps } from './types';
+import { IModelContextProp } from '../views/FormView';
+import { IFieldComponentProps } from './types';
 import { IFieldError } from 'rev-models/lib/validation/validationresult';
+import { withModelContext } from '../views/withModelContext';
 
 export interface IFieldProps {
     name: string;
@@ -25,27 +25,20 @@ export interface IFieldState {
     value: any;
 }
 
-export class Field extends React.Component<IFieldProps, IFieldState> {
+class FieldC extends React.Component<IFieldProps & IModelContextProp, IFieldState> {
 
-    context: IModelProviderContext & IFormViewContext;
-    static contextTypes = {
-        modelManager: PropTypes.object,
-        modelContext: PropTypes.object
-    };
-
-    modelMeta: IModelMeta<any>;
     modelField: fields.Field;
 
-    constructor(props: IFieldProps, context: IModelProviderContext & IFormViewContext) {
+    constructor(props: IFieldProps & IModelContextProp, context: IModelProviderContext & IModelContextProp) {
         super(props, context);
-        if (!this.context.modelContext) {
+        if (!this.props.modelContext) {
             throw new Error('Field Error: must be nested inside a FormView.');
         }
-        this.modelMeta = this.context.modelContext.modelMeta;
-        if (!(props.name in this.modelMeta.fieldsByName)) {
-            throw new Error(`Field Error: Model '${this.modelMeta.name}' does not have a field called '${props.name}'.`);
+        const meta = this.props.modelContext.modelMeta;
+        if (!(props.name in meta.fieldsByName)) {
+            throw new Error(`Field Error: Model '${meta.name}' does not have a field called '${props.name}'.`);
         }
-        this.modelField = this.modelMeta.fieldsByName[props.name];
+        this.modelField = meta.fieldsByName[props.name];
     }
 
     onFocus() {}
@@ -64,8 +57,8 @@ export class Field extends React.Component<IFieldProps, IFieldState> {
             fieldErrors = this.context.modelContext.validation.fieldErrors[this.modelField.name];
         }
 
-        let modelFieldProps: IModelFieldComponentProps = {
-            modelMeta: this.modelMeta,
+        let modelFieldProps: IFieldComponentProps = {
+            modelMeta: this.props.modelContext.modelMeta,
             field: this.modelField,
             value: this.context.modelContext.model[this.modelField.name],
             errors: fieldErrors,
@@ -106,3 +99,5 @@ export class Field extends React.Component<IFieldProps, IFieldState> {
     }
 
 }
+
+export const Field = withModelContext(FieldC);

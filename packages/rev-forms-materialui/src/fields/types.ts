@@ -1,7 +1,7 @@
 import { IModelMeta, fields } from 'rev-models';
 import { IFieldError } from 'rev-models/lib/validation/validationresult';
 
-export interface IModelFieldComponentProps  {
+export interface IFieldComponentProps  {
     modelMeta: IModelMeta<any>;
     field: fields.Field;
     value: any;
