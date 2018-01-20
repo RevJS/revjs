@@ -15,7 +15,7 @@ export const SelectionField: React.StatelessComponent<IFieldComponentProps> = (p
 
     return (
         <FormControl fullWidth>
-            <InputLabel htmlFor={props.field.name + '--id'}>
+            <InputLabel htmlFor={props.field.name + '--id'} shrink={props.value}>
                 {props.field.options.label || props.field.name}
             </InputLabel>
             <Select

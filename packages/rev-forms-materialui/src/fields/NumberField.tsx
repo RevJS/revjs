@@ -15,7 +15,7 @@ export const NumberField: React.StatelessComponent<IFieldComponentProps> = (prop
 
     return (
         <FormControl fullWidth>
-            <InputLabel htmlFor={props.field.name + '--id'}>
+            <InputLabel htmlFor={props.field.name + '--id'} shrink={props.value}>
                 {props.field.options.label || props.field.name}
             </InputLabel>
             <Input
