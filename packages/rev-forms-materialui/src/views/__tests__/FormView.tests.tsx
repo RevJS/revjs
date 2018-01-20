@@ -8,11 +8,11 @@ import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
-import { ViewManager, IViewContext } from '../ViewManager';
+import { FormView, IModelContext } from '../FormView';
 import { sleep } from '../../__test_utils__/utils';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 
-describe('ViewManager', () => {
+describe('FormView', () => {
 
     describe('construction', () => {
         let modelManager: rev.ModelManager;
@@ -29,14 +29,14 @@ describe('ViewManager', () => {
 
         it('throws error when not nested inside a ModelProvider', () => {
             expect(() => {
-                mount(<ViewManager model="Post" />);
+                mount(<FormView model="Post" />);
             }).to.throw('must be nested inside a ModelProvider');
         });
 
         it('throws error when specified model does not exist', () => {
             expect(() => {
                 mount(<ModelProvider modelManager={modelManager}>
-                    <ViewManager model="NonExistey" />
+                    <FormView model="NonExistey" />
                 </ModelProvider>);
             }).to.throw(`Model 'NonExistey' is not registered`);
         });
@@ -49,24 +49,24 @@ describe('ViewManager', () => {
             modelManager.register(ModelNoPK);
             expect(() => {
                 mount(<ModelProvider modelManager={modelManager}>
-                    <ViewManager model="ModelNoPK" />
+                    <FormView model="ModelNoPK" />
                 </ModelProvider>);
             }).to.throw(`can only be used with models that have a primaryKey`);
         });
 
     });
 
-    let receivedViewContext: IViewContext;
+    let receivedViewContext: IModelContext;
     let renderCount: number;
 
     class TestView extends React.Component {
         static contextTypes = {
             modelManager: PropTypes.object,
-            viewContext: PropTypes.object
+            modelContext: PropTypes.object
         };
         constructor(props: any, context: any) {
             super(props, context);
-            receivedViewContext = this.context.viewContext;
+            receivedViewContext = this.context.modelContext;
         }
         render() {
             renderCount++;
@@ -79,23 +79,22 @@ describe('ViewManager', () => {
         renderCount = 0;
     }
 
-    describe('initial viewContext - when primaryKeyValue is not specified', () => {
+    describe('initial modelContext - when primaryKeyValue is not specified', () => {
         let modelManager: rev.ModelManager;
-        let wrapper: ReactWrapper;
 
         before(() => {
             resetTestView();
             modelManager = models.getModelManager();
-            wrapper = mount(
+            mount(
                 <ModelProvider modelManager={modelManager}>
-                    <ViewManager model="Post">
+                    <FormView model="Post">
                         <TestView />
-                    </ViewManager>
+                    </FormView>
                 </ModelProvider>
             );
         });
 
-        it('passes viewContext to contained Views', () => {
+        it('passes modelContext to contained Views', () => {
             expect(receivedViewContext).not.to.be.null;
         });
 
@@ -123,25 +122,24 @@ describe('ViewManager', () => {
 
     });
 
-    describe('initial viewContext - when primaryKeyValue is specified', () => {
+    describe('initial modelContext - when primaryKeyValue is specified', () => {
         let modelManager: rev.ModelManager;
-        let wrapper: ReactWrapper;
 
         before(() => {
             resetTestView();
             modelManager = models.getModelManager();
             const backend = modelManager.getBackend('default') as rev.InMemoryBackend;
             backend.OPERATION_DELAY = 10;
-            wrapper = mount(
+            mount(
                 <ModelProvider modelManager={modelManager}>
-                    <ViewManager model="Post" primaryKeyValue="1">
+                    <FormView model="Post" primaryKeyValue="1">
                         <TestView />
-                    </ViewManager>
+                    </FormView>
                 </ModelProvider>
             );
         });
 
-        it('passes viewContext to contained Views', () => {
+        it('passes modelContext to contained Views', () => {
             expect(receivedViewContext).not.to.be.null;
         });
 
@@ -167,20 +165,19 @@ describe('ViewManager', () => {
 
     });
 
-    describe('viewContext after successful model load', () => {
+    describe('modelContext after successful model load', () => {
         let modelManager: rev.ModelManager;
-        let wrapper: ReactWrapper;
         let expectedData: IModelTestData;
 
         before(async () => {
             resetTestView();
             modelManager = models.getModelManager();
             expectedData = await createData(modelManager);
-            wrapper = mount(
+            const wrapper = mount(
                 <ModelProvider modelManager={modelManager}>
-                    <ViewManager model="Post" primaryKeyValue="1">
+                    <FormView model="Post" primaryKeyValue="1">
                         <TestView />
-                    </ViewManager>
+                    </FormView>
                 </ModelProvider>
             );
             await sleep(10);
@@ -221,18 +218,18 @@ describe('ViewManager', () => {
             modelManager = models.getModelManager();
             wrapper = mount(
                 <ModelProvider modelManager={modelManager}>
-                    <ViewManager model="Post">
+                    <FormView model="Post">
                         <TestView />
-                    </ViewManager>
+                    </FormView>
                 </ModelProvider>
             );
         });
 
-        it('setDirty() is passed in viewContext', () => {
+        it('setDirty() is passed in modelContext', () => {
             expect(receivedViewContext.setDirty).to.be.a('function');
         });
 
-        it('viewContext.dirty is false by default', () => {
+        it('modelContext.dirty is false by default', () => {
             expect(receivedViewContext.dirty).to.be.false;
         });
 
@@ -255,25 +252,24 @@ describe('ViewManager', () => {
 
     describe('validate()', () => {
         let modelManager: rev.ModelManager;
-        let wrapper: ReactWrapper;
 
         before(() => {
             resetTestView();
             modelManager = models.getModelManager();
-            wrapper = mount(
+            mount(
                 <ModelProvider modelManager={modelManager}>
-                    <ViewManager model="Post">
+                    <FormView model="Post">
                         <TestView />
-                    </ViewManager>
+                    </FormView>
                 </ModelProvider>
             );
         });
 
-        it('validate() is passed in viewContext', () => {
+        it('validate() is passed in modelContext', () => {
             expect(receivedViewContext.setDirty).to.be.a('function');
         });
 
-        it('viewContext.validation is null by default', () => {
+        it('modelContext.validation is null by default', () => {
             expect(receivedViewContext.validation).to.be.null;
         });
 
@@ -290,6 +286,31 @@ describe('ViewManager', () => {
 
     });
 
+    describe('rendering', () => {
+        let modelManager: rev.ModelManager;
+        let wrapper: ReactWrapper;
+
+        before(() => {
+            modelManager = models.getModelManager();
+            wrapper = mount(
+                <ModelProvider modelManager={modelManager}>
+                    <FormView model="Post">
+                        <span>content</span>
+                    </FormView>
+                </ModelProvider>
+            );
+        });
+
+        it('renders a form tag', () => {
+            expect(wrapper.find('form')).to.have.length(1);
+        });
+
+        it('the form tag wraps the specified children', () => {
+            const form = wrapper.find('form').at(0);
+            expect(form.childAt(0).text()).to.equal('content');
+        });
+
+    });
 
     /**
      * TODO

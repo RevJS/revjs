@@ -5,7 +5,7 @@ import * as PropTypes from 'prop-types';
 import Button from 'material-ui/Button';
 import { IExecArgs, IExecOptions } from 'rev-models/lib/models/types';
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { IViewManagerContext } from './ViewManager';
+import { IFormViewContext } from './FormView';
 
 export type FormActionType = 'post' | 'method';
 const defaultActionType: FormActionType = 'method';
@@ -24,10 +24,10 @@ export interface IFormActionProps {
 
 export class ViewAction extends React.Component<IFormActionProps> {
 
-    context: IModelProviderContext & IViewManagerContext;
+    context: IModelProviderContext & IFormViewContext;
     static contextTypes = {
         modelManager: PropTypes.object,
-        viewContext: PropTypes.object
+        modelContext: PropTypes.object
     };
 
     constructor(props: IFormActionProps, context: any) {
@@ -35,8 +35,8 @@ export class ViewAction extends React.Component<IFormActionProps> {
         if (!this.context.modelManager) {
             throw new Error('ViewAction Error: must be nested inside a ModelProvider.');
         }
-        if (!this.context.viewContext) {
-            throw new Error('ViewAction Error: must be nested inside a ViewManager');
+        if (!this.context.modelContext) {
+            throw new Error('ViewAction Error: must be nested inside a FormView');
         }
     }
 
@@ -45,7 +45,7 @@ export class ViewAction extends React.Component<IFormActionProps> {
         console.log('onAction', this);
         console.log('type', actionType);
 
-        const validationResult = await this.context.viewContext.validate();
+        const validationResult = await this.context.modelContext.validate();
 
         if (validationResult.valid) {
             if (actionType == 'post') {
@@ -60,7 +60,7 @@ export class ViewAction extends React.Component<IFormActionProps> {
                         'Content-Type': 'application/json'
                     },
                     credentials: 'same-origin',
-                    body: JSON.stringify(this.context.viewContext.model)
+                    body: JSON.stringify(this.context.modelContext.model)
                 })
                 .then((res) => {
                     if (res.status < 200 || res.status > 299) {
@@ -80,7 +80,7 @@ export class ViewAction extends React.Component<IFormActionProps> {
             }
             else {
                 // this.context.modelForm.disable(true);
-                const model = this.context.viewContext.model;
+                const model = this.context.modelContext.model;
                 return this.context.modelManager.exec(model, this.props.method, this.props.args, this.props.options)
                 .then((res) => {
                     // this.context.modelForm.disable(false);

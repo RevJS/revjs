@@ -11,7 +11,7 @@ import { ModelProvider } from '../../provider/ModelProvider';
 import Table from 'material-ui/Table';
 import { getClasses } from 'material-ui/test-utils';
 import { createData, IModelTestData } from '../../__fixtures__/modeldata';
-import { ViewManager } from '../ViewManager';
+import { FormView } from '../FormView';
 
 describe('ModelList', () => {
 
@@ -29,9 +29,9 @@ describe('ModelList', () => {
     function getWrapper(component: React.ReactNode) {
         return mount(
             <ModelProvider modelManager={modelManager}>
-                <ViewManager model={model}>
+                <FormView model={model}>
                     {component}
-                </ViewManager>
+                </FormView>
             </ModelProvider>
         );
     }

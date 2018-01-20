@@ -1,74 +1,120 @@
-
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
-import Grid from 'material-ui/Grid';
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { IViewManagerContext } from './ViewManager';
+import { IModel, IModelMeta } from 'rev-models';
+import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
+import { isSet } from '../utils';
 
 export interface IFormViewProps {
     model: string;
+    primaryKeyValue?: string;
 }
 
-export interface IFormViewState {
-    disabled: boolean;
+export type IModelLoadState = 'NONE' | 'LOADING' | 'SAVING' ;
+
+export interface IModelContext {
+    loadState: IModelLoadState;
+    model: IModel;
+    modelMeta: IModelMeta<any>;
+    validation: ModelValidationResult;
+    dirty: boolean;
+    setDirty(dirty: boolean): void;
+    validate(): Promise<ModelValidationResult>;
 }
 
 export interface IFormViewContext {
-    modelForm: FormView;
+    modelContext: IModelContext;
 }
 
-export class FormView extends React.Component<IFormViewProps, IFormViewState> {
+export class FormView extends React.Component<IFormViewProps> {
 
-    context: IModelProviderContext & IViewManagerContext;
+    context: IModelProviderContext;
     static contextTypes = {
-        modelManager: PropTypes.object,
-        viewContext: PropTypes.object
+        modelManager: PropTypes.object
     };
+
+    modelContext: IModelContext;
 
     constructor(props: IFormViewProps, context: any) {
         super(props, context);
+
         if (!this.context.modelManager) {
             throw new Error('FormView Error: must be nested inside a ModelProvider.');
         }
-        if (!this.context.viewContext) {
-            throw new Error('FormView Error: must be nested inside a ViewManager.');
+        const modelMeta = this.context.modelManager.getModelMeta(this.props.model);
+        if (!modelMeta.primaryKey) {
+            throw new Error('FormView Error: can only be used with models that have a primaryKey');
         }
-        if (!props.model || !this.context.modelManager.isRegistered(props.model)) {
-            throw new Error(`FormView Error: Model '${props.model}' is not registered.`);
+
+        this.modelContext = {
+            loadState: 'NONE',
+            model: null,
+            modelMeta,
+            validation: null,
+            dirty: false,
+            setDirty: (dirty) => this.setDirty(dirty),
+            validate: () => this.validate()
+        };
+
+        if (isSet(props.primaryKeyValue)) {
+            this.loadModel();
         }
-        const modelMeta = this.context.viewContext.modelMeta;
-        if (modelMeta.name != props.model) {
-            throw new Error('FormView Error: model prop must currently be the same as ViewManager model.');
+        else {
+            this.setModel(new modelMeta.ctor());
         }
-        this.state = {
-            disabled: false
+    }
+
+    async loadModel() {
+        this.modelContext.loadState = 'LOADING';
+        const meta = this.modelContext.modelMeta;
+        const result = await this.context.modelManager.read(
+            meta.ctor,
+            { [meta.primaryKey]: this.props.primaryKeyValue },
+            { limit: 1 }
+        );
+        if (this.modelContext.loadState == 'LOADING') {
+            this.modelContext.loadState = 'NONE';
+            if (result.results.length == 1) {
+                this.setModel(result.results[0]);
+            }
+        }
+    }
+
+    setModel(model: IModel) {
+        this.modelContext.model = model;
+        this.modelContext.dirty = false;
+    }
+
+    setDirty(dirty: boolean) {
+        if (dirty != this.modelContext.dirty) {
+            this.modelContext.dirty = dirty;
+            this.forceUpdate();
+        }
+    }
+
+    async validate() {
+        const ctx = this.modelContext;
+        ctx.validation = await this.context.modelManager.validate(ctx.model);
+        this.forceUpdate();
+        return ctx.validation;
+    }
+
+    static childContextTypes = {
+        modelContext: PropTypes.object
+    };
+
+    getChildContext(): IFormViewContext {
+        return {
+            modelContext: this.modelContext
         };
     }
 
     render() {
         return (
             <form onSubmit={(e) => e.preventDefault()}>
-                <Grid container spacing={8}>
-                    {this.props.children}
-                </Grid>
+                {this.props.children}
             </form>
         );
-    }
-
-    disable(isDisabled: boolean) {
-        this.setState({
-            disabled: isDisabled
-        });
-    }
-
-    static childContextTypes = {
-        modelForm: PropTypes.object
-    };
-
-    getChildContext(): IFormViewContext {
-        return {
-            modelForm: this
-        };
     }
 }

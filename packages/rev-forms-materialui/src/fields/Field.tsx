@@ -13,7 +13,6 @@ import { IModelProviderContext } from '../provider/ModelProvider';
 import { IFormViewContext } from '../views/FormView';
 import { IModelFieldComponentProps } from './types';
 import { IFieldError } from 'rev-models/lib/validation/validationresult';
-import { IViewManagerContext } from '../views/ViewManager';
 
 export interface IFieldProps {
     name: string;
@@ -28,11 +27,10 @@ export interface IFieldState {
 
 export class Field extends React.Component<IFieldProps, IFieldState> {
 
-    context: IModelProviderContext & IViewManagerContext & IFormViewContext;
+    context: IModelProviderContext & IFormViewContext;
     static contextTypes = {
         modelManager: PropTypes.object,
-        viewContext: PropTypes.object,
-        modelForm: PropTypes.object
+        modelContext: PropTypes.object
     };
 
     modelMeta: IModelMeta<any>;
@@ -40,10 +38,10 @@ export class Field extends React.Component<IFieldProps, IFieldState> {
 
     constructor(props: IFieldProps, context: IModelProviderContext & IFormViewContext) {
         super(props, context);
-        if (!this.context.modelForm) {
-            throw new Error('Field Error: must be nested inside a ModelForm.');
+        if (!this.context.modelContext) {
+            throw new Error('Field Error: must be nested inside a FormView.');
         }
-        this.modelMeta = this.context.viewContext.modelMeta;
+        this.modelMeta = this.context.modelContext.modelMeta;
         if (!(props.name in this.modelMeta.fieldsByName)) {
             throw new Error(`Field Error: Model '${this.modelMeta.name}' does not have a field called '${props.name}'.`);
         }
@@ -54,24 +52,24 @@ export class Field extends React.Component<IFieldProps, IFieldState> {
     onBlur() {}
 
     onChange(value: any) {
-        this.context.viewContext.model[this.modelField.name] = value;
-        this.context.viewContext.setDirty(true);
+        this.context.modelContext.model[this.modelField.name] = value;
+        this.context.modelContext.setDirty(true);
         this.setState({ value });
     }
 
     render() {
 
         let fieldErrors: IFieldError[] = [];
-        if (this.modelField.name in this.context.viewContext.validation.fieldErrors) {
-            fieldErrors = this.context.viewContext.validation.fieldErrors[this.modelField.name];
+        if (this.modelField.name in this.context.modelContext.validation.fieldErrors) {
+            fieldErrors = this.context.modelContext.validation.fieldErrors[this.modelField.name];
         }
 
         let modelFieldProps: IModelFieldComponentProps = {
             modelMeta: this.modelMeta,
             field: this.modelField,
-            value: this.context.viewContext.model[this.modelField.name],
+            value: this.context.modelContext.model[this.modelField.name],
             errors: fieldErrors,
-            disabled: this.context.modelForm.state.disabled,
+            disabled: false,  // TODO
             onFocus: () => this.onFocus(),
             onBlur: () => this.onBlur(),
             onChange: (value) => this.onChange(value)
