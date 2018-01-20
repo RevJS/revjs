@@ -83,6 +83,7 @@ export class FormView extends React.Component<IFormViewProps> {
     setModel(model: IModel) {
         this.modelContext.model = model;
         this.modelContext.dirty = false;
+        this.forceUpdate();
     }
 
     setDirty(dirty: boolean) {

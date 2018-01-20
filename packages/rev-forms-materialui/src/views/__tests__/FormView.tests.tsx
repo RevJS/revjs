@@ -220,7 +220,7 @@ describe('FormView', () => {
             resetTestView();
             modelManager = models.getModelManager();
             expectedData = await createData(modelManager);
-            const wrapper = mount(
+            mount(
                 <ModelProvider modelManager={modelManager}>
                     <FormView model="Post" primaryKeyValue="1">
                         <TestView />
@@ -228,7 +228,10 @@ describe('FormView', () => {
                 </ModelProvider>
             );
             await sleep(10);
-            wrapper.update();
+        });
+
+        it('component has rendered twice', () => {
+            expect(renderCount).to.equal(2);
         });
 
         it('loadState is set back to NONE', () => {

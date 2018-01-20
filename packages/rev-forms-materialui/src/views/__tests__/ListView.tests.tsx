@@ -584,7 +584,6 @@ describe('ListView', () => {
 
     });
 
-
     describe('Event Handlers', () => {
         const fields = ['id', 'title', 'published', 'post_date'];
         let wrapper: ReactWrapper;

@@ -62,7 +62,7 @@ class FieldC extends React.Component<IFieldProps & IModelContextProp, IFieldStat
         let modelFieldProps: IFieldComponentProps = {
             modelMeta: ctx.modelMeta,
             field: this.modelField,
-            value: ctx.model[this.modelField.name],
+            value: ctx.model ? ctx.model[this.modelField.name] : null,
             errors: fieldErrors,
             disabled: false,  // TODO
             onFocus: () => this.onFocus(),
