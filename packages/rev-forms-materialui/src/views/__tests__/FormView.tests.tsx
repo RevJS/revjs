@@ -41,19 +41,6 @@ describe('FormView', () => {
             }).to.throw(`Model 'NonExistey' is not registered`);
         });
 
-        it('throws error when specified model does not define a primaryKey', () => {
-            class ModelNoPK {
-                @rev.TextField()
-                    name: string;
-            }
-            modelManager.register(ModelNoPK);
-            expect(() => {
-                mount(<ModelProvider modelManager={modelManager}>
-                    <FormView model="ModelNoPK" />
-                </ModelProvider>);
-            }).to.throw(`can only be used with models that have a primaryKey`);
-        });
-
     });
 
     let receivedViewContext: IModelContext;
@@ -78,6 +65,58 @@ describe('FormView', () => {
         receivedViewContext = null;
         renderCount = 0;
     }
+
+    describe('initial modelContext - when model does not have a primaryKey field', () => {
+        let modelManager: rev.ModelManager;
+
+        class ModelNoPK {
+            @rev.TextField()
+                name: string;
+        }
+
+        before(() => {
+            resetTestView();
+            modelManager = models.getModelManager();
+            modelManager.register(ModelNoPK);
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <FormView model="ModelNoPK">
+                        <TestView />
+                    </FormView>
+                </ModelProvider>
+            );
+        });
+
+        it('passes modelContext to contained Views', () => {
+            expect(receivedViewContext).not.to.be.null;
+        });
+
+        it('does not trigger a data load', () => {
+            expect(receivedViewContext.loadState).to.equal('NONE');
+        });
+
+        it('contains the current ModelManager', () => {
+            expect(receivedViewContext.manager).to.equal(modelManager);
+        });
+
+        it('a new model instance is created', () => {
+            expect(receivedViewContext.model).not.to.be.null;
+            expect(receivedViewContext.model).to.be.instanceof(ModelNoPK);
+        });
+
+        it('modelMeta is set', () => {
+            expect(receivedViewContext.modelMeta).to.deep.equal(modelManager.getModelMeta('ModelNoPK'));
+        });
+
+        it('validation information is null', () => {
+            expect(receivedViewContext.validation).to.be.null;
+        });
+
+        it('dirty is false', () => {
+            expect(receivedViewContext.dirty).to.be.false;
+        });
+
+    });
 
     describe('initial modelContext - when primaryKeyValue is not specified', () => {
         let modelManager: rev.ModelManager;

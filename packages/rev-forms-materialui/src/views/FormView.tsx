@@ -44,9 +44,6 @@ export class FormView extends React.Component<IFormViewProps> {
             throw new Error('FormView Error: must be nested inside a ModelProvider.');
         }
         const modelMeta = this.context.modelManager.getModelMeta(this.props.model);
-        if (!modelMeta.primaryKey) {
-            throw new Error('FormView Error: can only be used with models that have a primaryKey');
-        }
 
         this.modelContext = {
             loadState: 'NONE',
@@ -59,7 +56,7 @@ export class FormView extends React.Component<IFormViewProps> {
             validate: () => this.validate()
         };
 
-        if (isSet(props.primaryKeyValue)) {
+        if (modelMeta.primaryKey && isSet(props.primaryKeyValue)) {
             this.loadModel();
         }
         else {
