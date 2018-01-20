@@ -1,5 +1,6 @@
 
 export { ModelProvider, IModelProviderContext } from './provider/ModelProvider';
+export { withModelManager } from './provider/withModelManager';
 
 export { FormView, IModelContextProp } from './views/FormView';
 export { ListView } from './views/ListView';

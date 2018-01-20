@@ -4,7 +4,7 @@ import * as PropTypes from 'prop-types';
 
 import { ModelManager } from 'rev-models';
 
-export interface IModelProviderProps {
+export interface IModelManagerProp {
     modelManager: ModelManager;
 }
 
@@ -12,7 +12,7 @@ export interface IModelProviderContext {
     modelManager: ModelManager;
 }
 
-export class ModelProvider extends React.Component<IModelProviderProps> {
+export class ModelProvider extends React.Component<IModelManagerProp> {
 
     static childContextTypes = {
         modelManager: PropTypes.object
