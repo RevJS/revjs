@@ -43,7 +43,7 @@ describe('DetailView', () => {
 
     });
 
-    let receivedViewContext: IModelContext;
+    let receivedModelContext: IModelContext;
     let renderCount: number;
 
     class TestView extends React.Component {
@@ -53,7 +53,7 @@ describe('DetailView', () => {
         };
         constructor(props: any, context: any) {
             super(props, context);
-            receivedViewContext = this.context.modelContext;
+            receivedModelContext = this.context.modelContext;
         }
         render() {
             renderCount++;
@@ -62,7 +62,7 @@ describe('DetailView', () => {
     }
 
     function resetTestView() {
-        receivedViewContext = null;
+        receivedModelContext = null;
         renderCount = 0;
     }
 
@@ -88,32 +88,32 @@ describe('DetailView', () => {
         });
 
         it('passes modelContext to contained Views', () => {
-            expect(receivedViewContext).not.to.be.null;
+            expect(receivedModelContext).not.to.be.null;
         });
 
         it('does not trigger a data load', () => {
-            expect(receivedViewContext.loadState).to.equal('NONE');
+            expect(receivedModelContext.loadState).to.equal('NONE');
         });
 
         it('contains the current ModelManager', () => {
-            expect(receivedViewContext.manager).to.equal(modelManager);
+            expect(receivedModelContext.manager).to.equal(modelManager);
         });
 
         it('a new model instance is created', () => {
-            expect(receivedViewContext.model).not.to.be.null;
-            expect(receivedViewContext.model).to.be.instanceof(ModelNoPK);
+            expect(receivedModelContext.model).not.to.be.null;
+            expect(receivedModelContext.model).to.be.instanceof(ModelNoPK);
         });
 
         it('modelMeta is set', () => {
-            expect(receivedViewContext.modelMeta).to.deep.equal(modelManager.getModelMeta('ModelNoPK'));
+            expect(receivedModelContext.modelMeta).to.deep.equal(modelManager.getModelMeta('ModelNoPK'));
         });
 
         it('validation information is null', () => {
-            expect(receivedViewContext.validation).to.be.null;
+            expect(receivedModelContext.validation).to.be.null;
         });
 
         it('dirty is false', () => {
-            expect(receivedViewContext.dirty).to.be.false;
+            expect(receivedModelContext.dirty).to.be.false;
         });
 
     });
@@ -134,33 +134,33 @@ describe('DetailView', () => {
         });
 
         it('passes modelContext to contained Views', () => {
-            expect(receivedViewContext).not.to.be.null;
+            expect(receivedModelContext).not.to.be.null;
         });
 
         it('does not trigger a data load', () => {
-            expect(receivedViewContext.loadState).to.equal('NONE');
+            expect(receivedModelContext.loadState).to.equal('NONE');
         });
 
         it('contains the current ModelManager', () => {
-            expect(receivedViewContext.manager).to.equal(modelManager);
+            expect(receivedModelContext.manager).to.equal(modelManager);
         });
 
         it('a new model instance is created', () => {
-            expect(receivedViewContext.model).not.to.be.null;
-            expect(receivedViewContext.model).to.be.instanceof(models.Post);
-            expect(modelManager.isNew(receivedViewContext.model)).to.be.true;
+            expect(receivedModelContext.model).not.to.be.null;
+            expect(receivedModelContext.model).to.be.instanceof(models.Post);
+            expect(modelManager.isNew(receivedModelContext.model)).to.be.true;
         });
 
         it('modelMeta is set', () => {
-            expect(receivedViewContext.modelMeta).to.deep.equal(modelManager.getModelMeta('Post'));
+            expect(receivedModelContext.modelMeta).to.deep.equal(modelManager.getModelMeta('Post'));
         });
 
         it('validation information is null', () => {
-            expect(receivedViewContext.validation).to.be.null;
+            expect(receivedModelContext.validation).to.be.null;
         });
 
         it('dirty is false', () => {
-            expect(receivedViewContext.dirty).to.be.false;
+            expect(receivedModelContext.dirty).to.be.false;
         });
 
     });
@@ -183,31 +183,31 @@ describe('DetailView', () => {
         });
 
         it('passes modelContext to contained Views', () => {
-            expect(receivedViewContext).not.to.be.null;
+            expect(receivedModelContext).not.to.be.null;
         });
 
         it('loadState is LOADING', () => {
-            expect(receivedViewContext.loadState).to.equal('LOADING');
+            expect(receivedModelContext.loadState).to.equal('LOADING');
         });
 
         it('contains the current ModelManager', () => {
-            expect(receivedViewContext.manager).to.equal(modelManager);
+            expect(receivedModelContext.manager).to.equal(modelManager);
         });
 
         it('model data is initially null', () => {
-            expect(receivedViewContext.model).to.be.null;
+            expect(receivedModelContext.model).to.be.null;
         });
 
         it('modelMeta is set', () => {
-            expect(receivedViewContext.modelMeta).to.deep.equal(modelManager.getModelMeta('Post'));
+            expect(receivedModelContext.modelMeta).to.deep.equal(modelManager.getModelMeta('Post'));
         });
 
         it('validation information is null', () => {
-            expect(receivedViewContext.validation).to.be.null;
+            expect(receivedModelContext.validation).to.be.null;
         });
 
         it('dirty is false', () => {
-            expect(receivedViewContext.dirty).to.be.false;
+            expect(receivedModelContext.dirty).to.be.false;
         });
 
     });
@@ -235,26 +235,26 @@ describe('DetailView', () => {
         });
 
         it('loadState is set back to NONE', () => {
-            expect(receivedViewContext.loadState).to.equal('NONE');
+            expect(receivedModelContext.loadState).to.equal('NONE');
         });
 
         it('model data is the requested model instance', () => {
-            const ctx = receivedViewContext;
+            const ctx = receivedModelContext;
             expect(ctx.model).to.be.instanceof(models.Post);
             expect(ctx.model.id).to.equal(expectedData.posts[0].id);
             expect(ctx.model.title).to.equal(expectedData.posts[0].title);
         });
 
         it('modelMeta is set', () => {
-            expect(receivedViewContext.modelMeta).to.deep.equal(modelManager.getModelMeta('Post'));
+            expect(receivedModelContext.modelMeta).to.deep.equal(modelManager.getModelMeta('Post'));
         });
 
         it('validation information is null', () => {
-            expect(receivedViewContext.validation).to.be.null;
+            expect(receivedModelContext.validation).to.be.null;
         });
 
         it('dirty is false', () => {
-            expect(receivedViewContext.dirty).to.be.false;
+            expect(receivedModelContext.dirty).to.be.false;
         });
 
     });
@@ -275,11 +275,11 @@ describe('DetailView', () => {
         });
 
         it('setDirty() is passed in modelContext', () => {
-            expect(receivedViewContext.setDirty).to.be.a('function');
+            expect(receivedModelContext.setDirty).to.be.a('function');
         });
 
         it('modelContext.dirty is false by default', () => {
-            expect(receivedViewContext.dirty).to.be.false;
+            expect(receivedModelContext.dirty).to.be.false;
         });
 
         it('initial render has completed', () => {
@@ -287,13 +287,13 @@ describe('DetailView', () => {
         });
 
         it('setDirty() changes the value of dirty and forces a re-render', () => {
-            receivedViewContext.setDirty(true);
-            expect(receivedViewContext.dirty).to.equal(true);
+            receivedModelContext.setDirty(true);
+            expect(receivedModelContext.dirty).to.equal(true);
             expect(renderCount).to.equal(2);
         });
 
         it('setDirty() does not force a re-render if dirty value has not changed', () => {
-            receivedViewContext.setDirty(true);
+            receivedModelContext.setDirty(true);
             expect(renderCount).to.equal(2);
         });
 
@@ -315,11 +315,11 @@ describe('DetailView', () => {
         });
 
         it('validate() is passed in modelContext', () => {
-            expect(receivedViewContext.setDirty).to.be.a('function');
+            expect(receivedModelContext.setDirty).to.be.a('function');
         });
 
         it('modelContext.validation is null by default', () => {
-            expect(receivedViewContext.validation).to.be.null;
+            expect(receivedModelContext.validation).to.be.null;
         });
 
         it('initial render has completed', () => {
@@ -327,9 +327,9 @@ describe('DetailView', () => {
         });
 
         it('validate() triggers validation of the model, re-renders, and returns result', async () => {
-            let result = await receivedViewContext.validate();
+            let result = await receivedModelContext.validate();
             expect(result).to.be.instanceof(ModelValidationResult);
-            expect(receivedViewContext.validation).to.equal(result);
+            expect(receivedModelContext.validation).to.equal(result);
             expect(renderCount).to.equal(2);
         });
 
