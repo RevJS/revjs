@@ -2,7 +2,6 @@
 import * as React from 'react';
 
 import { withStyles, StyledComponentProps } from 'material-ui/styles';
-import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
 import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
 import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
@@ -94,13 +93,13 @@ export const MUIListView = styles<IMUIListViewProps>((props) => {
     );
 
     return (
-        <Paper className={props.classes.root}>
+        <div className={props.classes.root}>
             {toolbar}
             <Table className={props.classes.table}>
                 {tableHead}
                 {tableBody}
             </Table>
-        </Paper>
+        </div>
     );
 
 });
