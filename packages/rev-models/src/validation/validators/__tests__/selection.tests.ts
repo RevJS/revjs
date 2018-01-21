@@ -35,8 +35,7 @@ let hobbiesField = new fld.SelectField('hobbies', {
             ['ironing', 'Ironing'],
             ['extreme_ironing', 'Extreme Ironing'],
             ['naked_ironing', 'Naked Ironing']
-        ],
-        multiple: true
+        ]
     });
 
 let manager = new ModelManager();

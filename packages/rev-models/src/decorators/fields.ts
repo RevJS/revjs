@@ -84,6 +84,13 @@ export function SelectField(options: ISelectFieldOptions)
     };
 }
 
+export function MultiSelectField(options: ISelectFieldOptions)
+{
+    return function(target: any, propName: string) {
+        addFieldMeta(target, propName, new fld.MultiSelectField(propName, options));
+    };
+}
+
 // Date & Time Fields
 
 export function DateField(options?: IFieldOptions)

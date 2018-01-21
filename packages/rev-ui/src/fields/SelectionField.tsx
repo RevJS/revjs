@@ -9,9 +9,9 @@ import { MenuItem } from 'material-ui/Menu';
 import { IFieldComponentProps } from './types';
 import * as fields from 'rev-models/lib/fields';
 
-export const SelectionField: React.StatelessComponent<IFieldComponentProps> = (props) => {
+export const SelectField: React.StatelessComponent<IFieldComponentProps> = (props) => {
 
-    let field = props.field as fields.SelectionField;
+    let field = props.field as fields.SelectField;
 
     return (
         <FormControl fullWidth>

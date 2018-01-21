@@ -98,6 +98,14 @@ describe('rev.decorators.fields', () => {
             expectFieldMeta(MyClass, 'test', f.SelectField);
         });
 
+        it('MultiSelectField', () => {
+            class MyClass {
+                @d.MultiSelectField({selection: selection})
+                    test: string;
+            }
+            expectFieldMeta(MyClass, 'test', f.MultiSelectField);
+        });
+
     });
 
     describe('Date & Time Fields', () => {

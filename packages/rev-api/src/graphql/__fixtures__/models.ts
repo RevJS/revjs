@@ -1,7 +1,7 @@
 import {
     fields, ModelManager, InMemoryBackend,
     IntegerField, TextField, DateField, BooleanField, DateTimeField,
-    AutoNumberField, NumberField, SelectionField, TimeField,
+    AutoNumberField, NumberField, SelectField, TimeField,
     RelatedModel, RelatedModelList
 } from 'rev-models';
 
@@ -100,7 +100,7 @@ export class ModelWithAllScalarFields {
         textField: string = 'A test model with all default field types';
     @BooleanField()
         booleanField: boolean = true;
-    @SelectionField({ selection: [['Y', 'Yes'], ['N', 'No']] })
+    @SelectField({ selection: [['Y', 'Yes'], ['N', 'No']] })
         selectionField: string = 'Y';
     @DateField()
         dateField: string = '2017-12-25';

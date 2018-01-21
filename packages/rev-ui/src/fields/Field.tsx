@@ -7,7 +7,7 @@ import { TextField } from './TextField';
 import { BooleanField } from './BooleanField';
 import { DateField } from './DateField';
 import { NumberField } from './NumberField';
-import { SelectionField } from './SelectionField';
+import { SelectField } from './SelectionField';
 import { IModelProviderContext } from '../provider/ModelProvider';
 import { IModelContextProp } from '../views/DetailView';
 import { IFieldComponentProps } from './types';
@@ -81,8 +81,8 @@ class FieldC extends React.Component<IFieldProps & IModelContextProp, IFieldStat
         else if (this.modelField instanceof fields.BooleanField) {
             component = <BooleanField {...modelFieldProps} />;
         }
-        else if (this.modelField instanceof fields.SelectionField) {
-            component = <SelectionField {...modelFieldProps} />;
+        else if (this.modelField instanceof fields.SelectField) {
+            component = <SelectField {...modelFieldProps} />;
         }
         else if (this.modelField instanceof fields.DateField) {
             component = <DateField {...modelFieldProps} />;
