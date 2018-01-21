@@ -11,7 +11,6 @@ describe('MUIDetailView', () => {
 
     let props: IDetailViewProps;
     let wrapper: ReactWrapper;
-    let classes: any;
 
     function getComponentProps(): IDetailViewProps {
         return {
