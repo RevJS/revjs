@@ -1,6 +1,6 @@
 {
   "name": "rev-ui",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "React UI base components for RevJS",
   "main": "lib/index.js",
   "scripts": {

@@ -1,6 +1,6 @@
 {
   "name": "rev-api-client",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "RevJS Isomorphic Data Library - API Client Library",
   "main": "lib/index.js",
   "scripts": {
@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@types/graphql": "^0.9.1",
-    "rev-api": "^0.3.0",
+    "rev-api": "^0.4.0",
     "run-bin": "^1.0.0"
   }
 }
