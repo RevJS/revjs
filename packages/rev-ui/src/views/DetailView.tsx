@@ -43,7 +43,7 @@ export class DetailView extends React.Component<IDetailViewProps> {
         super(props, context);
 
         if (!this.context.modelManager) {
-            throw new Error('FormView Error: must be nested inside a ModelProvider.');
+            throw new Error('DetailView Error: must be nested inside a ModelProvider.');
         }
         const modelMeta = this.context.modelManager.getModelMeta(this.props.model);
 

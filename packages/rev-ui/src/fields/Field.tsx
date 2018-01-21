@@ -3,11 +3,6 @@ import * as React from 'react';
 import { fields } from 'rev-models';
 
 import Grid from 'material-ui/Grid';
-import { TextField } from './TextField';
-import { BooleanField } from './BooleanField';
-import { DateField } from './DateField';
-import { NumberField } from './NumberField';
-import { SelectField } from './SelectionField';
 import { IModelProviderContext } from '../provider/ModelProvider';
 import { IModelContextProp } from '../views/DetailView';
 import { IFieldComponentProps } from './types';
@@ -32,7 +27,7 @@ class FieldC extends React.Component<IFieldProps & IModelContextProp, IFieldStat
     constructor(props: IFieldProps & IModelContextProp, context: IModelProviderContext & IModelContextProp) {
         super(props, context);
         if (!this.props.modelContext) {
-            throw new Error('Field Error: must be nested inside a FormView.');
+            throw new Error('Field Error: must be nested inside a DetailView.');
         }
         const meta = this.props.modelContext.modelMeta;
         if (!(props.name in meta.fieldsByName)) {
@@ -70,23 +65,23 @@ class FieldC extends React.Component<IFieldProps & IModelContextProp, IFieldStat
             onChange: (value) => this.onChange(value)
         };
 
-        let component: React.ReactNode;
+        let component: React.ReactNode = null;
 
-        if (this.modelField instanceof fields.TextField) {
-            component = <TextField {...modelFieldProps} />;
-        }
-        else if (this.modelField instanceof fields.NumberField) {
-            component = <NumberField {...modelFieldProps} />;
-        }
-        else if (this.modelField instanceof fields.BooleanField) {
-            component = <BooleanField {...modelFieldProps} />;
-        }
-        else if (this.modelField instanceof fields.SelectField) {
-            component = <SelectField {...modelFieldProps} />;
-        }
-        else if (this.modelField instanceof fields.DateField) {
-            component = <DateField {...modelFieldProps} />;
-        }
+        // if (this.modelField instanceof fields.TextField) {
+        //     component = <TextField {...modelFieldProps} />;
+        // }
+        // else if (this.modelField instanceof fields.NumberField) {
+        //     component = <NumberField {...modelFieldProps} />;
+        // }
+        // else if (this.modelField instanceof fields.BooleanField) {
+        //     component = <BooleanField {...modelFieldProps} />;
+        // }
+        // else if (this.modelField instanceof fields.SelectField) {
+        //     component = <SelectField {...modelFieldProps} />;
+        // }
+        // else if (this.modelField instanceof fields.DateField) {
+        //     component = <DateField {...modelFieldProps} />;
+        // }
 
         const widthProps: any = {
             xs: this.props.colspanNarrow || 12,
