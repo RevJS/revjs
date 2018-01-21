@@ -32,7 +32,7 @@ export const testData = [
         age: 20,
         gender: 'male',
         newsletter: true,
-        date_registered: new Date('2016-05-26')
+        date_registered: '2016-05-26'
     },
     {
         id: 1,
@@ -40,7 +40,7 @@ export const testData = [
         age: 23,
         gender: 'female',
         newsletter: true,
-        date_registered: new Date('2017-01-01')
+        date_registered: '2017-01-01'
     },
     {
         id: 2,
@@ -48,7 +48,7 @@ export const testData = [
         age: 3,
         gender: 'male',
         newsletter: false,
-        date_registered: new Date('2016-12-03')
+        date_registered: '2016-12-03'
     },
     {
         id: 3,
@@ -56,7 +56,7 @@ export const testData = [
         age: 45,
         gender: 'male',
         newsletter: true,
-        date_registered: new Date('2015-06-11')
+        date_registered: '2015-06-11'
     },
     {
         id: 4,
@@ -64,6 +64,6 @@ export const testData = [
         age: 28,
         gender: 'female',
         newsletter: false,
-        date_registered: new Date('2016-12-25')
+        date_registered: '2016-12-25'
     }
 ];

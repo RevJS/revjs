@@ -9,7 +9,7 @@ import { IModelMeta } from '../types';
 class TestModel {
     id: number = 1;
     name: string = 'A Test Model';
-    date: Date = new Date();
+    date: string = '2018-01-02';
 }
 
 class TestModel2 {}

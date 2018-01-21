@@ -17,7 +17,7 @@ describe('validate()', () => {
         @d.TextField()
             name: string;
         @d.DateField({ required: false })
-            date: Date;
+            date: string;
 
         testMethod() {
             return true;
@@ -49,7 +49,7 @@ describe('validate()', () => {
         let test = new TestModel({
             id: 11,
             name: 'Harry',
-            date: new Date()
+            date: '2018-01-02'
         });
 
         return validate(manager, test, {operation: 'create'})
@@ -73,7 +73,7 @@ describe('validate()', () => {
         let test = new TestModel({
             id: 11,
             name: 'Harry',
-            date: new Date(),
+            date: '2018-01-02',
             extra: 'stuff'
         });
 
@@ -91,7 +91,7 @@ describe('validate()', () => {
         let test = new TestModel({
             id: 2,
             name: 'Harry',
-            date: new Date()
+            date: '2018-01-02'
         });
 
         return validate(manager, test, {operation: 'create'})

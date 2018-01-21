@@ -18,7 +18,7 @@ let record1 = {
     name: 'John Doe',
     job_title: '',
     score: 27,
-    registration_date: new Date('2017-03-04'),
+    registration_date: '2017-03-04',
     active: true
 };
 
@@ -26,7 +26,7 @@ let record2 = {
     name: 'Jane Doe',
     job_title: 'Registrar',
     score: 33,
-    registration_date: new Date('2016-11-08'),
+    registration_date: '2016-11-08',
     active: false
 };
 

@@ -62,11 +62,11 @@ describe('rev.fields.validators.datetime', () => {
             expect(vResult.valid).to.equal(true);
         });
 
-        it('returns valid = true when a date object is passed', () => {
+        it('returns valid = false when a date object is passed', () => {
             let test = new TestModel();
             test.registered = new Date('2016-12-01');
             vld.dateOnlyValidator(manager, test, dateField, op, vResult, opts);
-            expect(vResult.valid).to.equal(true);
+            expectValidationFailure('not_a_date', dateField.name, msg.not_a_date(dateField.name), vResult);
         });
 
         it('returns valid = true when a date in the correct format is passed', () => {
@@ -128,11 +128,11 @@ describe('rev.fields.validators.datetime', () => {
             expect(vResult.valid).to.equal(true);
         });
 
-        it('returns valid = true when a date object is passed', () => {
+        it('returns valid = false when a date object is passed', () => {
             let test = new TestModel();
-            test.registered = new Date('2016-12-01T12:11:01');
+            test.registered = new Date('2016-12-01');
             vld.timeOnlyValidator(manager, test, dateField, op, vResult, opts);
-            expect(vResult.valid).to.equal(true);
+            expectValidationFailure('not_a_time', dateField.name, msg.not_a_time(dateField.name), vResult);
         });
 
         it('returns valid = true when a time in the correct format is passed', () => {
@@ -194,11 +194,11 @@ describe('rev.fields.validators.datetime', () => {
             expect(vResult.valid).to.equal(true);
         });
 
-        it('returns valid = true when a date object is passed', () => {
+        it('returns valid = false when a date object is passed', () => {
             let test = new TestModel();
-            test.registered = new Date('2016-12-01T12:22:33');
+            test.registered = new Date('2016-12-01');
             vld.dateTimeValidator(manager, test, dateField, op, vResult, opts);
-            expect(vResult.valid).to.equal(true);
+            expectValidationFailure('not_a_datetime', dateField.name, msg.not_a_datetime(dateField.name), vResult);
         });
 
         it('returns valid = true when a datetime in the correct format is passed', () => {

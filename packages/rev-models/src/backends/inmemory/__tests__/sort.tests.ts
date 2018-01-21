@@ -6,27 +6,32 @@ let testRecords = [
     {
         name: 'Zelda',
         score: 12,
-        registered: new Date('2017-01-01')
+        registered: '2017-01-01',
+        category: 'A'
     },
     {
         name: 'max Payne',
         score: 28,
-        registered: new Date('2015-01-01')
+        registered: '2015-01-01',
+        category: 'B'
     },
     {
         name: 'Duke Nukem',
         score: 52,
-        registered: new Date('2005-01-01')
+        registered: '2005-01-01',
+        category: 'B'
     },
     {
         name: 'Mario',
         score: 12,
-        registered: new Date('2012-01-01')
+        registered: '2012-01-01',
+        category: 'A'
     },
     {
         name: 'lara Croft',
         score: 34,
-        registered: new Date('2005-01-01')
+        registered: '2005-01-02',
+        category: 'A'
     },
 ];
 
@@ -106,14 +111,14 @@ describe('sortRecords()', () => {
         ]);
     });
 
-    it('date grouping works', () => {
-        let res = sortRecords(testRecords, ['registered', 'name desc']);
+    it('category grouping and sorting works', () => {
+        let res = sortRecords(testRecords, ['category', 'registered desc']);
         expectOrder(res, 'name', [
-            'lara Croft',   // registered: 2005
-            'Duke Nukem',   // registered: 2005
-            'Mario',        // registered: 2012
-            'max Payne',    // registered: 2015
-            'Zelda',        // registered: 2017
+            'Zelda',        // cat: A, registered: 2017
+            'Mario',        // cat: A, registered: 2012
+            'lara Croft',   // cat: A, registered: 2005
+            'max Payne',    // cat: B, registered: 2015
+            'Duke Nukem',   // cat: B, registered: 2005
         ]);
     });
 

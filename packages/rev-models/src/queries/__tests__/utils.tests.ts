@@ -7,7 +7,7 @@ let validFieldValues = [
     'aaa',
     true,
     false,
-    new Date(),
+    '2018-01-02',
     null
 ];
 

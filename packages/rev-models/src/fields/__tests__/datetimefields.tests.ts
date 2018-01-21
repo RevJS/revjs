@@ -56,15 +56,6 @@ describe('rev.fields.datetimefields', () => {
 
         it('successfully validates a date value', () => {
             let test = new DateField('value', { required: true });
-            testModel.value = new Date(2016, 12, 23);
-            return test.validate(manager, testModel, testOp, result)
-                .then((res) => {
-                    expect(res.valid).to.be.true;
-                });
-        });
-
-        it('successfully validates a date value in a string', () => {
-            let test = new DateField('value', { required: true });
             testModel.value = '2016-12-23';
             return test.validate(manager, testModel, testOp, result)
                 .then((res) => { expect(res.valid).to.be.true; });
@@ -121,14 +112,7 @@ describe('rev.fields.datetimefields', () => {
             expect(test.validators[1]).to.equal(timeOnlyValidator);
         });
 
-        it('successfully validates a date object value', () => {
-            let test = new TimeField('value', { required: true });
-            testModel.value = new Date(2016, 12, 23, 15, 27, 32);
-            return test.validate(manager, testModel, testOp, result)
-                .then((res) => { expect(res.valid).to.be.true; });
-        });
-
-        it('successfully validates a time value in a string', () => {
+        it('successfully validates a time value', () => {
             let test = new TimeField('value', { required: true });
             testModel.value = '15:27:32';
             return test.validate(manager, testModel, testOp, result)
@@ -186,14 +170,7 @@ describe('rev.fields.datetimefields', () => {
             expect(test.validators[1]).to.equal(dateTimeValidator);
         });
 
-        it('successfully validates a date and time value', () => {
-            let test = new DateTimeField('value', { required: true });
-            testModel.value = new Date(2016, 12, 23, 11, 22, 33);
-            return test.validate(manager, testModel, testOp, result)
-                .then((res) => { expect(res.valid).to.be.true; });
-        });
-
-        it('successfully validates a date time value in a string', () => {
+        it('successfully validates a date time value', () => {
             let test = new DateTimeField('value', { required: true });
             testModel.value = '2016-12-23T21:32:43';
             return test.validate(manager, testModel, testOp, result)

@@ -12,9 +12,6 @@ let dateTimeRegex = /^[0-9]{4}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][
 
 export function dateOnlyValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
-        if (typeof model[field.name] == 'object' && model[field.name] instanceof Date) {
-            return;
-        }
         if (typeof model[field.name] != 'string'
                 || !(model[field.name].match(dateOnlyRegex))
                 || !Date.parse(model[field.name])) {
@@ -29,9 +26,6 @@ export function dateOnlyValidator<T extends IModel>(manager: IModelManager, mode
 
 export function timeOnlyValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
-        if (typeof model[field.name] == 'object' && model[field.name] instanceof Date) {
-            return;
-        }
         if (typeof model[field.name] != 'string'
                 || !(model[field.name].match(timeOnlyRegex))
                 || !Date.parse('2000-01-01T' + model[field.name])) {
@@ -46,9 +40,6 @@ export function timeOnlyValidator<T extends IModel>(manager: IModelManager, mode
 
 export function dateTimeValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
-        if (typeof model[field.name] == 'object' && model[field.name] instanceof Date) {
-            return;
-        }
         if (typeof model[field.name] != 'string'
                 || !(model[field.name].match(dateTimeRegex))
                 || !Date.parse(model[field.name])) {
