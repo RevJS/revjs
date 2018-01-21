@@ -22,7 +22,7 @@
   "dependencies": {
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
-    "rev-models": "^0.2.0",
+    "rev-models": "0.4.0",
     "tslib": "1.x"
   },
   "devDependencies": {
