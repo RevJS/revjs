@@ -1,6 +1,6 @@
 {
   "name": "rev-ui",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "React UI base components for RevJS",
   "main": "lib/index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   "dependencies": {
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
-    "rev-models": "0.4.0",
+    "rev-models": "^0.4.1",
     "tslib": "1.x"
   },
   "devDependencies": {
