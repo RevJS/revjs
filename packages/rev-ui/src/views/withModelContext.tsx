@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import { IModelContextProp } from './FormView';
+import { IModelContextProp } from './DetailView';
 
 export function withModelContext<P>(component: React.ComponentType<P & IModelContextProp>): React.ComponentType<P> {
 

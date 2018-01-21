@@ -8,11 +8,11 @@ import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
-import { FormView, IModelContext } from '../FormView';
+import { DetailView, IModelContext } from '../DetailView';
 import { sleep } from '../../__test_utils__/utils';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 
-describe('FormView', () => {
+describe('DetailView', () => {
 
     describe('construction', () => {
         let modelManager: rev.ModelManager;
@@ -29,14 +29,14 @@ describe('FormView', () => {
 
         it('throws error when not nested inside a ModelProvider', () => {
             expect(() => {
-                mount(<FormView model="Post" />);
+                mount(<DetailView model="Post" />);
             }).to.throw('must be nested inside a ModelProvider');
         });
 
         it('throws error when specified model does not exist', () => {
             expect(() => {
                 mount(<ModelProvider modelManager={modelManager}>
-                    <FormView model="NonExistey" />
+                    <DetailView model="NonExistey" />
                 </ModelProvider>);
             }).to.throw(`Model 'NonExistey' is not registered`);
         });
@@ -80,9 +80,9 @@ describe('FormView', () => {
             modelManager.register(ModelNoPK);
             mount(
                 <ModelProvider modelManager={modelManager}>
-                    <FormView model="ModelNoPK">
+                    <DetailView model="ModelNoPK">
                         <TestView />
-                    </FormView>
+                    </DetailView>
                 </ModelProvider>
             );
         });
@@ -126,9 +126,9 @@ describe('FormView', () => {
             modelManager = models.getModelManager();
             mount(
                 <ModelProvider modelManager={modelManager}>
-                    <FormView model="Post">
+                    <DetailView model="Post">
                         <TestView />
-                    </FormView>
+                    </DetailView>
                 </ModelProvider>
             );
         });
@@ -175,9 +175,9 @@ describe('FormView', () => {
             backend.OPERATION_DELAY = 10;
             mount(
                 <ModelProvider modelManager={modelManager}>
-                    <FormView model="Post" primaryKeyValue="1">
+                    <DetailView model="Post" primaryKeyValue="1">
                         <TestView />
-                    </FormView>
+                    </DetailView>
                 </ModelProvider>
             );
         });
@@ -222,9 +222,9 @@ describe('FormView', () => {
             expectedData = await createData(modelManager);
             mount(
                 <ModelProvider modelManager={modelManager}>
-                    <FormView model="Post" primaryKeyValue="1">
+                    <DetailView model="Post" primaryKeyValue="1">
                         <TestView />
-                    </FormView>
+                    </DetailView>
                 </ModelProvider>
             );
             await sleep(10);
@@ -267,9 +267,9 @@ describe('FormView', () => {
             modelManager = models.getModelManager();
             mount(
                 <ModelProvider modelManager={modelManager}>
-                    <FormView model="Post">
+                    <DetailView model="Post">
                         <TestView />
-                    </FormView>
+                    </DetailView>
                 </ModelProvider>
             );
         });
@@ -307,9 +307,9 @@ describe('FormView', () => {
             modelManager = models.getModelManager();
             mount(
                 <ModelProvider modelManager={modelManager}>
-                    <FormView model="Post">
+                    <DetailView model="Post">
                         <TestView />
-                    </FormView>
+                    </DetailView>
                 </ModelProvider>
             );
         });
@@ -343,9 +343,9 @@ describe('FormView', () => {
             modelManager = models.getModelManager();
             wrapper = mount(
                 <ModelProvider modelManager={modelManager}>
-                    <FormView model="Post">
+                    <DetailView model="Post">
                         <span>content</span>
-                    </FormView>
+                    </DetailView>
                 </ModelProvider>
             );
         });

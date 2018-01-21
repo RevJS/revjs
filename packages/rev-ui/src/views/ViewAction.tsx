@@ -5,7 +5,7 @@ import * as PropTypes from 'prop-types';
 import Button from 'material-ui/Button';
 import { IExecArgs, IExecOptions } from 'rev-models/lib/models/types';
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { IModelContextProp } from './FormView';
+import { IModelContextProp } from './DetailView';
 
 export type FormActionType = 'post' | 'method';
 const defaultActionType: FormActionType = 'method';
@@ -36,7 +36,7 @@ export class ViewAction extends React.Component<IFormActionProps> {
             throw new Error('ViewAction Error: must be nested inside a ModelProvider.');
         }
         if (!this.context.modelContext) {
-            throw new Error('ViewAction Error: must be nested inside a FormView');
+            throw new Error('ViewAction Error: must be nested inside a DetailView');
         }
     }
 

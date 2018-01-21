@@ -7,7 +7,7 @@ import { ModelValidationResult } from 'rev-models/lib/validation/validationresul
 import { isSet } from '../utils';
 import { UI_COMPONENTS } from '../config';
 
-export interface IFormViewProps {
+export interface IDetailViewProps {
     model: string;
     primaryKeyValue?: string;
     component?: React.ComponentType;
@@ -30,7 +30,7 @@ export interface IModelContextProp {
     modelContext: IModelContext;
 }
 
-export class FormView extends React.Component<IFormViewProps> {
+export class DetailView extends React.Component<IDetailViewProps> {
 
     context: IModelProviderContext;
     static contextTypes = {
@@ -39,7 +39,7 @@ export class FormView extends React.Component<IFormViewProps> {
 
     modelContext: IModelContext;
 
-    constructor(props: IFormViewProps, context: any) {
+    constructor(props: IDetailViewProps, context: any) {
         super(props, context);
 
         if (!this.context.modelManager) {

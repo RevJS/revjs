@@ -2,7 +2,7 @@
 export { ModelProvider, IModelManagerProp } from './provider/ModelProvider';
 export { withModelManager } from './provider/withModelManager';
 
-export { FormView, IModelContextProp } from './views/FormView';
+export { DetailView, IModelContextProp } from './views/DetailView';
 export { ListView } from './views/ListView';
 export { withModelContext } from './views/withModelContext';
 

@@ -5,7 +5,7 @@ import { mount } from 'enzyme';
 import * as models from '../../__fixtures__/models';
 import { ModelManager } from 'rev-models';
 import { ModelProvider } from '../../provider/ModelProvider';
-import { FormView, IModelContextProp } from '../FormView';
+import { DetailView, IModelContextProp } from '../DetailView';
 import { withModelContext } from '../withModelContext';
 
 interface ISpyComponentProps {
@@ -36,9 +36,9 @@ describe('withModelContext()', () => {
         modelManager = models.getModelManager();
         mount(
             <ModelProvider modelManager={modelManager}>
-                <FormView model="Post">
+                <DetailView model="Post">
                     <SpyComponent prop1="prop1" prop2="prop2" />
-                </FormView>
+                </DetailView>
             </ModelProvider>
         );
     });
