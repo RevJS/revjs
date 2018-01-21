@@ -3,7 +3,7 @@
   "packages": [
     "packages/*"
   ],
-  "version": "independent",
+  "version": "0.3.2",
   "concurrency": 1,
   "hoist": true
 }
