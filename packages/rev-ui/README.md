@@ -3,6 +3,11 @@
 RevJS is a rapid application development toolkit designed to simplify creation
 of data-driven JS apps.
 
-This module provides a set of React components for rendering user
-interfaces based on RevJS models. These can be combined with other rev-ui-*
-modules for different UI frameworks, or yor own components.
+This module provides the base set of React components for rendering UIs based on RevJS
+models. These components should be combined with anoother rev-ui-* module for
+youe chosen UI framework, or yor own components.
+
+**PLEASE NOTE: This project is currently in alpha**
+
+Breaking API changes are possible while we refine the way the modules interoperate.
+Once we reach version 1.0.0 then we will be following strict semantic versioning

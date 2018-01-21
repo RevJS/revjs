@@ -6,9 +6,9 @@ of data-driven JS apps.
 The `rev-api` module provides the API layer for RevJS - allowing you to expose
 your models easily via a GraphQL API.
 
-**NOTICE: This project is currently in the alpha stage!**
+**PLEASE NOTE: This project is currently in alpha**
 
-Breaking API changes are possible without a major version bump. Once we reach
-v1.0.0 then we'll be following SemVer :)
+Breaking API changes are possible while we refine the way the modules interoperate.
+Once we reach version 1.0.0 then we will be following strict semantic versioning.
 
 Full documentation TODO - check out the `examples` folder to get started!

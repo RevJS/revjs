@@ -1,6 +1,6 @@
 {
   "name": "rev-api",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "description": "RevJS Isomorphic Data Library - API Library",
   "main": "lib/index.js",
   "scripts": {

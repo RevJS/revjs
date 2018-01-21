@@ -7,10 +7,10 @@ The `rev-models` module is the core component of RevJS, which includes a model m
 registry, field types, CRUD functions and simple in-memory data storage to help new
 users get up and running quickly.
 
-**NOTICE: This project is currently in the alpha stage!**
+**PLEASE NOTE: This project is currently in alpha**
 
-Breaking API changes are possible without a major version bump. Once we reach
-v1.0.0 then we'll be following SemVer :)
+Breaking API changes are possible while we refine the way the modules interoperate.
+Once we reach version 1.0.0 then we will be following strict semantic versioning.
 
 The basic idea is, this code:
 
