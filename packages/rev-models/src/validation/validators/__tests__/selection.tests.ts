@@ -24,13 +24,13 @@ let nameField = new fld.TextField('name', {
     minValue: 'ddd', maxValue: 'jjj',
     regEx: /^abc\d.$/  // abc[number][anything]
 });
-let genderField = new fld.SelectionField('gender', {
+let genderField = new fld.SelectField('gender', {
         selection: [
             ['male', 'Male'],
             ['female', 'Female']
         ]
     });
-let hobbiesField = new fld.SelectionField('hobbies', {
+let hobbiesField = new fld.SelectField('hobbies', {
         selection: [
             ['ironing', 'Ironing'],
             ['extreme_ironing', 'Extreme Ironing'],

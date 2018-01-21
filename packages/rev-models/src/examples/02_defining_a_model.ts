@@ -13,7 +13,7 @@ export class Person {
 
     @rev.AutoNumberField({ primaryKey: true })
         id: number;
-    @rev.SelectionField({label: 'Title', selection: TITLES, required: false })
+    @rev.SelectField({label: 'Title', selection: TITLES, required: false })
         title: string;
     @rev.TextField({label: 'First Name'})
         first_name: string;

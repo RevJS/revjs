@@ -90,12 +90,12 @@ describe('rev.decorators.fields', () => {
             ['option_2', 'Two']
         ];
 
-        it('SelectionField', () => {
+        it('SelectField', () => {
             class MyClass {
-                @d.SelectionField({selection: selection})
+                @d.SelectField({selection: selection})
                     test: string;
             }
-            expectFieldMeta(MyClass, 'test', f.SelectionField);
+            expectFieldMeta(MyClass, 'test', f.SelectField);
         });
 
     });
@@ -128,9 +128,9 @@ describe('rev.decorators.fields', () => {
 
     });
 
-    describe('Selection Fields', () => {
+    describe('Related Model Fields', () => {
 
-        it('ReccordField', () => {
+        it('RelatedModelField', () => {
             class MyClass {
                 @d.RelatedModel({ model: 'TestRelatedModel' })
                     test: string;
@@ -138,7 +138,7 @@ describe('rev.decorators.fields', () => {
             expectFieldMeta(MyClass, 'test', f.RelatedModelField);
         });
 
-        it('ReccordListField', () => {
+        it('RelatedModelListField', () => {
             class MyClass {
                 @d.RelatedModelList({ model: 'TestRelatedModel', field: 'foreignKeyField' })
                     test: string;

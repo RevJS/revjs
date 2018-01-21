@@ -17,7 +17,7 @@ let GENDERS = [
 class TestModel {
     @d.TextField({ primaryKey: true })
         name: string;
-    @d.SelectionField({ selection: GENDERS })
+    @d.SelectField({ selection: GENDERS })
         gender: string;
     @d.IntegerField({ required: false, minValue: 10 })
         age: number;

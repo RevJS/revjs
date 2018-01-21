@@ -2,7 +2,7 @@
 import { Field, IFieldOptions } from './field';
 import * as validators from '../validation/validators';
 
-export interface ISelectionFieldOptions extends IFieldOptions {
+export interface ISelectFieldOptions extends IFieldOptions {
     selection: string[][];
     multiple?: boolean;
 }
@@ -14,12 +14,12 @@ export class BooleanField extends Field {
     }
 }
 
-export class SelectionField extends Field {
-    options: ISelectionFieldOptions;
+export class SelectField extends Field {
+    options: ISelectFieldOptions;
 
     constructor(
             name: string,
-            options: ISelectionFieldOptions) {
+            options: ISelectFieldOptions) {
         super(name, options);
         const selection = this.options.selection;
         if (typeof selection != 'object' || !(selection instanceof Array)) {

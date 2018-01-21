@@ -13,7 +13,7 @@ export class TestModel {
         name: string;
     @d.IntegerField({ required: false })
         age: number;
-    @d.SelectionField({ required: false, selection: GENDERS })
+    @d.SelectField({ required: false, selection: GENDERS })
         gender: string;
     @d.BooleanField({ required: false })
         newsletter: boolean;

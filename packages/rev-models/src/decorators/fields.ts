@@ -2,7 +2,7 @@ import * as fld from '../fields';
 import { ITextFieldOptions } from '../fields/textfields';
 import { INumberFieldOptions } from '../fields/numberfields';
 import { IFieldOptions } from '../fields/field';
-import { ISelectionFieldOptions } from '../fields/selectionfields';
+import { ISelectFieldOptions } from '../fields/selectionfields';
 
 /* RevModel Field Decorators */
 
@@ -77,10 +77,10 @@ export function BooleanField(options?: IFieldOptions)
     };
 }
 
-export function SelectionField(options: ISelectionFieldOptions)
+export function SelectField(options: ISelectFieldOptions)
 {
     return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.SelectionField(propName, options));
+        addFieldMeta(target, propName, new fld.SelectField(propName, options));
     };
 }
 
