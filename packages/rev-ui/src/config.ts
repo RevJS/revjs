@@ -9,6 +9,18 @@ export const UI_COMPONENTS = {
         ListView: PassthroughComponent,
     },
     fields: {
-
+        DateField: PassthroughComponent,
+        TimeField: PassthroughComponent,
+        DateTimeField: PassthroughComponent,
+        IntegerField: PassthroughComponent,
+        NumberField: PassthroughComponent,
+        RelatedModelField: PassthroughComponent,
+        RelatedModelListField: PassthroughComponent,
+        BooleanField: PassthroughComponent,
+        SelectField: PassthroughComponent,
+        EmailField: PassthroughComponent,
+        URLField: PassthroughComponent,
+        PasswordField: PassthroughComponent,
+        TextField: PassthroughComponent
     }
 };
