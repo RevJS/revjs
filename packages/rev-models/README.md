@@ -40,8 +40,8 @@ rev.create(bob);
 
  * Create, Read, Update, Delete access to Person records from a database
 
- * A full GraphQL API (with a swagger specification)
+ * A full GraphQL API
 
- * Fully-customiseable, automatically generated forms for a variety of UI frameworks
+ * Fully-customiseable UI components for Web & Mobile
 
  * Data-validation and other model methods shared between client and server (write once, validate everywhere :) )

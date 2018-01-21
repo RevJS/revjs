@@ -1,6 +1,6 @@
 {
   "name": "revjs",
-  "version": "0.3.2",
+  "version": "0.0.1",
   "scripts": {
     "postinstall": "lerna bootstrap",
     "build": "lerna run build",
