@@ -19,6 +19,8 @@ export interface IActionComponentProps {
     label: string;
     disabled: boolean;
     doAction(): Promise<Response>;
+
+    children?: React.ReactNode;
 }
 
 class PostActionC extends React.Component<IPostActionProps & IModelContextProp> {
@@ -74,7 +76,8 @@ class PostActionC extends React.Component<IPostActionProps & IModelContextProp> 
         const cProps: IActionComponentProps = {
             label: this.props.label,
             disabled: this.props.modelContext.loadState != 'NONE',
-            doAction: () => this.doAction()
+            doAction: () => this.doAction(),
+            children: this.props.children
         };
 
         const Component = this.props.component || UI_COMPONENTS.actions.PostAction;

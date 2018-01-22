@@ -4,7 +4,7 @@ import * as sinon from 'sinon';
 import * as models from '../../__fixtures__/models';
 import { expect } from 'chai';
 import * as rev from 'rev-models';
-import { mount } from 'enzyme';
+import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
 import { DetailView, IModelContextProp } from '../../views/DetailView';
 import { PostAction, IActionComponentProps } from '../PostAction';
@@ -50,12 +50,40 @@ describe.only('PostAction', () => {
 
     const SpyComponent = withModelContext<IActionComponentProps>((props) => {
         receivedProps = props;
-        return <p>SpyComponent</p>;
+        return props.children ? props.children as any : <p>SpyComponent</p>;
     });
 
     function resetSpyComponent() {
         receivedProps = null;
     }
+
+    describe('rendering', () => {
+        let modelManager: rev.ModelManager;
+        let wrapper: ReactWrapper;
+
+        before(() => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            wrapper = mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post">
+                        <PostAction
+                            label="Submit"
+                            url="/api"
+                            component={SpyComponent}
+                        >
+                            Post The Thing!
+                        </PostAction>
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
+
+        it('renders any content passed as a child', () => {
+            expect(wrapper.text()).to.equal('Post The Thing!');
+        });
+
+    });
 
     describe('IActionComponentProps - model loaded', () => {
         let modelManager: rev.ModelManager;
@@ -158,6 +186,14 @@ describe.only('PostAction', () => {
             delete global.fetch;
         });
 
+        function setupValidModel() {
+            const user = new models.User({
+                id: 100, name: 'Bob'
+            });
+            receivedProps.modelContext.model = user;
+            return user;
+        }
+
         it('sets loadState = "SAVING" when the action is triggered', () => {
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
             receivedProps.doAction().catch((e) => null);
@@ -181,10 +217,7 @@ describe.only('PostAction', () => {
         });
 
         it('calls fetch() with model data if model is valid', async () => {
-            const user = new models.User({
-                id: 100, name: 'Bob'
-            });
-            receivedProps.modelContext.model = user;
+            const user = setupValidModel();
 
             await receivedProps.doAction();
 
@@ -203,11 +236,8 @@ describe.only('PostAction', () => {
 
         it('resets loadState, calls onResponse() and returns response if fetch is successful', async () => {
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
-            const user = new models.User({
-                id: 100, name: 'Bob'
-            });
-            receivedProps.modelContext.model = user;
 
+            setupValidModel();
             const expectedResponse = { status: 200 };
             fetchStub.returns(Promise.resolve(expectedResponse));
 
@@ -218,6 +248,24 @@ describe.only('PostAction', () => {
             expect(onResponseCallback.callCount).to.equal(1);
             expect(onResponseCallback.getCall(0).args[0]).to.equal(expectedResponse);
         });
+
+        it('resets loadState, calls onError() and throws the error if fetch throws an error', async () => {
+            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            setupValidModel();
+            const expectedError = new Error('Boom!!!');
+            fetchStub.returns(Promise.reject(expectedError));
+            try {
+                await receivedProps.doAction();
+                throw new Error('expected to throw');
+            }
+            catch (e) {
+                expect(e).to.equal(expectedError);
+                expect(onErrorCallback.callCount).to.equal(1);
+                expect(onErrorCallback.getCall(0).args[0]).to.equal(e);
+                expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            }
+        });
+
     });
 
 });
