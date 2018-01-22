@@ -8,11 +8,13 @@ import { IFieldError } from 'rev-models/lib/validation/validationresult';
 import { withModelContext } from '../views/withModelContext';
 import { UI_COMPONENTS } from '../config';
 
+export type ColspanOptions = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+
 export interface IFieldProps {
     name: string;
-    colspanNarrow?: number;
-    colspan?: number;
-    colspanWide?: number;
+    colspanNarrow?: ColspanOptions;
+    colspan?: ColspanOptions;
+    colspanWide?: ColspanOptions;
 
     component?: React.ComponentType<IFieldComponentProps>;
 }
@@ -24,9 +26,9 @@ export interface IFieldState {
 export interface IFieldComponentProps  {
     field: fields.Field;
     label: string;
-    colspanNarrow: number;
-    colspan: number;
-    colspanWide: number;
+    colspanNarrow: ColspanOptions;
+    colspan: ColspanOptions;
+    colspanWide: ColspanOptions;
     value: any;
     errors: IFieldError[];
     disabled: boolean;
