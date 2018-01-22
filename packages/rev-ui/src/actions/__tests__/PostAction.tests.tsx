@@ -7,11 +7,11 @@ import * as rev from 'rev-models';
 import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
 import { DetailView, IModelContextProp } from '../../views/DetailView';
-import { PostAction, IActionComponentProps } from '../PostAction';
+import { PostAction, IActionComponentProps, IPostActionProps } from '../PostAction';
 import { withModelContext } from '../../views/withModelContext';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 
-describe.only('PostAction', () => {
+describe('PostAction', () => {
 
     describe('construction', () => {
         let errorStub: sinon.SinonStub;
@@ -50,7 +50,7 @@ describe.only('PostAction', () => {
 
     const SpyComponent = withModelContext<IActionComponentProps>((props) => {
         receivedProps = props;
-        return props.children ? props.children as any : <p>SpyComponent</p>;
+        return props.children as any || <p>SpyComponent</p>;
     });
 
     function resetSpyComponent() {
@@ -158,6 +158,17 @@ describe.only('PostAction', () => {
         let fetchStub: sinon.SinonStub;
         let onResponseCallback: sinon.SinonSpy;
         let onErrorCallback: sinon.SinonSpy;
+        let props: IPostActionProps;
+
+        function render() {
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="User">
+                        <PostAction {...props} />
+                    </DetailView>
+                </ModelProvider>
+            );
+        }
 
         beforeEach(() => {
             fetchStub = sinon.stub();
@@ -167,19 +178,14 @@ describe.only('PostAction', () => {
 
             resetSpyComponent();
             modelManager = models.getModelManager();
-            mount(
-                <ModelProvider modelManager={modelManager}>
-                    <DetailView model="User">
-                        <PostAction
-                            label="Submit"
-                            url="/api"
-                            onResponse={onResponseCallback}
-                            onError={onErrorCallback}
-                            component={SpyComponent}
-                        />
-                    </DetailView>
-                </ModelProvider>
-            );
+            props = {
+                label: 'Submit',
+                url: '/api',
+                onResponse: onResponseCallback,
+                onError: onErrorCallback,
+                component: SpyComponent
+            };
+            render();
         });
 
         afterEach(() => {
@@ -232,6 +238,20 @@ describe.only('PostAction', () => {
                 },
                 credentials: 'same-origin',
             });
+        });
+
+        it('calls fetch() with alternative url and method if they are set', async () => {
+            props.url = 'http://www.othersite.com/api';
+            props.httpMethod = 'put';
+            render();
+            setupValidModel();
+
+            await receivedProps.doAction();
+
+            expect(fetchStub.callCount).to.equal(1);
+
+            expect(fetchStub.getCall(0).args[0]).to.equal(props.url);
+            expect(fetchStub.getCall(0).args[1].method).to.equal('put');
         });
 
         it('resets loadState, calls onResponse() and returns response if fetch is successful', async () => {

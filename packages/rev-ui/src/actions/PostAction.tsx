@@ -48,7 +48,7 @@ class PostActionC extends React.Component<IPostActionProps & IModelContextProp> 
             }
             else {
                 const res = await fetch(this.props.url, {
-                    method: 'post',
+                    method: this.props.httpMethod || 'post',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'

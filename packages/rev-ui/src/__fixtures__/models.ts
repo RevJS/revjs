@@ -1,6 +1,6 @@
 import {
     ModelManager, InMemoryBackend,
-    IntegerField, TextField, DateField, BooleanField, DateTimeField,
+    IntegerField, TextField, BooleanField, DateTimeField,
     RelatedModel, RelatedModelList
 } from 'rev-models';
 

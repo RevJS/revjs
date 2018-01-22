@@ -12,13 +12,11 @@ export async function createData(manager: ModelManager): Promise<IModelTestData>
     const users = [
         new User({
             id: 1,
-            name: 'Billy Bob',
-            date_registered: '2012-03-20'
+            name: 'Billy Bob'
         }),
         new User({
             id: 2,
-            name: 'Mike Portnoy',
-            date_registered: '2017-10-02'
+            name: 'Mike Portnoy'
         })
     ];
 
