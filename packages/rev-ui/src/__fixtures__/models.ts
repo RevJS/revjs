@@ -9,8 +9,6 @@ export class User {
         id: number;
     @TextField()
         name: string;
-    @DateField()
-        date_registered: string;
     @RelatedModelList({ model: 'Post', field: 'user' })
         posts: Post[];
 

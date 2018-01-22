@@ -127,17 +127,26 @@ describe.only('PostAction', () => {
 
     describe('doAction()', () => {
         let modelManager: rev.ModelManager;
+        let fetchStub: sinon.SinonStub;
+        let onResponseCallback: sinon.SinonSpy;
+        let onErrorCallback: sinon.SinonSpy;
 
         beforeEach(() => {
-            global.fetch = sinon.stub();
+            fetchStub = sinon.stub();
+            onResponseCallback = sinon.spy();
+            onErrorCallback = sinon.spy();
+            global.fetch = fetchStub;
+
             resetSpyComponent();
             modelManager = models.getModelManager();
             mount(
                 <ModelProvider modelManager={modelManager}>
-                    <DetailView model="Post">
+                    <DetailView model="User">
                         <PostAction
                             label="Submit"
                             url="/api"
+                            onResponse={onResponseCallback}
+                            onError={onErrorCallback}
                             component={SpyComponent}
                         />
                     </DetailView>
@@ -155,12 +164,15 @@ describe.only('PostAction', () => {
             expect(receivedProps.modelContext.loadState).to.equal('SAVING');
         });
 
-        it('resets loadState and throws an error if model is not valid', async () => {
+        it('resets loadState, calls onError() and throws the error if model is not valid', async () => {
+            expect(receivedProps.modelContext.loadState).to.equal('NONE');
             try {
                 await receivedProps.doAction();
                 throw new Error('expected to throw');
             }
             catch (e) {
+                expect(onErrorCallback.callCount).to.equal(1);
+                expect(onErrorCallback.getCall(0).args[0]).to.equal(e);
                 expect(e.message).to.equal('ValidationError');
                 expect(e.validation).to.be.instanceof(ModelValidationResult);
                 expect(e.validation.valid).to.be.false;
@@ -168,6 +180,44 @@ describe.only('PostAction', () => {
             }
         });
 
+        it('calls fetch() with model data if model is valid', async () => {
+            const user = new models.User({
+                id: 100, name: 'Bob'
+            });
+            receivedProps.modelContext.model = user;
+
+            await receivedProps.doAction();
+
+            expect(fetchStub.callCount).to.equal(1);
+            expect(fetchStub.getCall(0).args[0]).to.equal('/api');
+            expect(fetchStub.getCall(0).args[1]).to.deep.equal({
+                method: 'post',
+                body: JSON.stringify(user),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin',
+            });
+        });
+
+        it('resets loadState, calls onResponse() and returns response if fetch is successful', async () => {
+            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            const user = new models.User({
+                id: 100, name: 'Bob'
+            });
+            receivedProps.modelContext.model = user;
+
+            const expectedResponse = { status: 200 };
+            fetchStub.returns(Promise.resolve(expectedResponse));
+
+            const result = await receivedProps.doAction();
+
+            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            expect(result).to.equal(expectedResponse);
+            expect(onResponseCallback.callCount).to.equal(1);
+            expect(onResponseCallback.getCall(0).args[0]).to.equal(expectedResponse);
+        });
     });
 
 });

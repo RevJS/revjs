@@ -38,14 +38,13 @@ class PostActionC extends React.Component<IPostActionProps & IModelContextProp> 
         this.props.modelContext.setLoadState('SAVING');
         const validationResult = await this.props.modelContext.validate();
 
-        if (!validationResult.valid) {
-            this.props.modelContext.setLoadState('NONE');
-            let err: any = new Error('ValidationError');
-            err.validation = validationResult;
-            throw err;
-        }
-        else {
-            try {
+        try {
+            if (!validationResult.valid) {
+                let err: any = new Error('ValidationError');
+                err.validation = validationResult;
+                throw err;
+            }
+            else {
                 const res = await fetch(this.props.url, {
                     method: 'post',
                     headers: {
@@ -53,15 +52,21 @@ class PostActionC extends React.Component<IPostActionProps & IModelContextProp> 
                         'Content-Type': 'application/json'
                     },
                     credentials: 'same-origin',
-                    body: JSON.stringify(this.context.modelContext.model)
+                    body: JSON.stringify(this.props.modelContext.model)
                 });
-                this.props.onResponse(res);
+                this.props.modelContext.setLoadState('NONE');
+                if (this.props.onResponse) {
+                    this.props.onResponse(res);
+                }
                 return res;
             }
-            catch (e) {
+        }
+        catch (e) {
+            this.props.modelContext.setLoadState('NONE');
+            if (this.props.onError) {
                 this.props.onError(e);
-                throw e;
             }
+            throw e;
         }
     }
 
