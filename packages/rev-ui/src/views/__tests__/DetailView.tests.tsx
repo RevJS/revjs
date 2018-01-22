@@ -259,6 +259,46 @@ describe('DetailView', () => {
 
     });
 
+    describe('setLoadState()', () => {
+        let modelManager: rev.ModelManager;
+
+        before(() => {
+            resetTestView();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post">
+                        <TestView />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
+
+        it('setLoadState() is passed in modelContext', () => {
+            expect(receivedModelContext.setLoadState).to.be.a('function');
+        });
+
+        it('modelContext.loadState is "NONE" by default', () => {
+            expect(receivedModelContext.loadState).to.equal('NONE');
+        });
+
+        it('initial render has completed', () => {
+            expect(renderCount).to.equal(1);
+        });
+
+        it('setLoadState() changes the loadState and forces a re-render', () => {
+            receivedModelContext.setLoadState('SAVING');
+            expect(receivedModelContext.loadState).to.equal('SAVING');
+            expect(renderCount).to.equal(2);
+        });
+
+        it('setLoadState() does not force a re-render if loadState value has not changed', () => {
+            receivedModelContext.setLoadState('SAVING');
+            expect(renderCount).to.equal(2);
+        });
+
+    });
+
     describe('setDirty()', () => {
         let modelManager: rev.ModelManager;
 

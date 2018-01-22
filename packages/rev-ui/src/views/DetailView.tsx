@@ -22,6 +22,7 @@ export interface IModelContext {
     modelMeta: IModelMeta<any>;
     validation: ModelValidationResult;
     dirty: boolean;
+    setLoadState(state: IModelLoadState): void;
     setDirty(dirty: boolean): void;
     validate(): Promise<ModelValidationResult>;
 }
@@ -54,6 +55,7 @@ export class DetailView extends React.Component<IDetailViewProps> {
             modelMeta,
             validation: null,
             dirty: false,
+            setLoadState: (state) => this.setLoadState(state),
             setDirty: (dirty) => this.setDirty(dirty),
             validate: () => this.validate()
         };
@@ -86,6 +88,13 @@ export class DetailView extends React.Component<IDetailViewProps> {
     setModel(model: IModel) {
         this.modelContext.model = model;
         this.modelContext.dirty = false;
+    }
+
+    setLoadState(state: IModelLoadState) {
+        if (state != this.modelContext.loadState) {
+            this.modelContext.loadState = state;
+            this.forceUpdate();
+        }
     }
 
     setDirty(dirty: boolean) {
