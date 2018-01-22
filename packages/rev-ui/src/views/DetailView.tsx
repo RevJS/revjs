@@ -78,6 +78,7 @@ export class DetailView extends React.Component<IDetailViewProps> {
             this.modelContext.loadState = 'NONE';
             if (result.results.length == 1) {
                 this.setModel(result.results[0]);
+                this.forceUpdate();
             }
         }
     }
@@ -85,7 +86,6 @@ export class DetailView extends React.Component<IDetailViewProps> {
     setModel(model: IModel) {
         this.modelContext.model = model;
         this.modelContext.dirty = false;
-        this.forceUpdate();
     }
 
     setDirty(dirty: boolean) {
