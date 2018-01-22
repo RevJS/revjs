@@ -5,19 +5,33 @@ import { fields } from 'rev-models';
 import Grid from 'material-ui/Grid';
 import { IModelProviderContext } from '../provider/ModelProvider';
 import { IModelContextProp } from '../views/DetailView';
-import { IFieldComponentProps } from './types';
 import { IFieldError } from 'rev-models/lib/validation/validationresult';
 import { withModelContext } from '../views/withModelContext';
+import { UI_COMPONENTS } from '../config';
 
 export interface IFieldProps {
     name: string;
     colspanNarrow?: number;
     colspan?: number;
     colspanWide?: number;
+
+    component?: React.ComponentType<IFieldComponentProps>;
 }
 
 export interface IFieldState {
     value: any;
+}
+
+export interface IFieldComponentProps  {
+    field: fields.Field;
+    label: string;
+    colspanNarrow: number;
+    colspan: number;
+    colspanWide: number;
+    value: any;
+    errors: IFieldError[];
+    disabled: boolean;
+    onChange: (value: any) => void;
 }
 
 class FieldC extends React.Component<IFieldProps & IModelContextProp, IFieldState> {
@@ -36,9 +50,6 @@ class FieldC extends React.Component<IFieldProps & IModelContextProp, IFieldStat
         this.modelField = meta.fieldsByName[props.name];
     }
 
-    onFocus() {}
-    onBlur() {}
-
     onChange(value: any) {
         this.props.modelContext.model[this.modelField.name] = value;
         this.props.modelContext.setDirty(true);
@@ -53,45 +64,24 @@ class FieldC extends React.Component<IFieldProps & IModelContextProp, IFieldStat
             && this.modelField.name in ctx.validation.fieldErrors) {
             fieldErrors = ctx.validation.fieldErrors[this.modelField.name];
         }
+        const disabled = this.props.modelContext.loadState != 'NONE';
 
-        let modelFieldProps: IFieldComponentProps = {
-            modelMeta: ctx.modelMeta,
+        let cProps: IFieldComponentProps = {
             field: this.modelField,
+            label: this.modelField.options.label || this.modelField.name,
+            colspanNarrow: this.props.colspanNarrow || 12,
+            colspan: this.props.colspan || 6,
+            colspanWide: this.props.colspanWide || this.props.colspan || 6,
             value: ctx.model ? ctx.model[this.modelField.name] : null,
             errors: fieldErrors,
-            disabled: false,  // TODO
-            onFocus: () => this.onFocus(),
-            onBlur: () => this.onBlur(),
+            disabled,
             onChange: (value) => this.onChange(value)
         };
 
-        let component: React.ReactNode = null;
+        const fieldComponentName = this.modelField.constructor.name;
 
-        // if (this.modelField instanceof fields.TextField) {
-        //     component = <TextField {...modelFieldProps} />;
-        // }
-        // else if (this.modelField instanceof fields.NumberField) {
-        //     component = <NumberField {...modelFieldProps} />;
-        // }
-        // else if (this.modelField instanceof fields.BooleanField) {
-        //     component = <BooleanField {...modelFieldProps} />;
-        // }
-        // else if (this.modelField instanceof fields.SelectField) {
-        //     component = <SelectField {...modelFieldProps} />;
-        // }
-        // else if (this.modelField instanceof fields.DateField) {
-        //     component = <DateField {...modelFieldProps} />;
-        // }
-
-        const widthProps: any = {
-            xs: this.props.colspanNarrow || 12,
-            md: this.props.colspan || 6,
-        };
-        if (this.props.colspanWide) {
-            widthProps.lg = this.props.colspanWide;
-        }
-
-        return <Grid item {...widthProps}>{component}</Grid>;
+        const Component = this.props.component || UI_COMPONENTS.fields[fieldComponentName];
+        return <Component {...cProps} />;
 
     }
 
