@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { mount, ReactWrapper } from 'enzyme';
 
 import { MUIDetailView } from '../MUIDetailView';
-import { IDetailViewProps } from '../../../../rev-ui/lib/views/DetailView';
+import { IDetailViewProps } from 'rev-ui/lib/views/DetailView';
 import Grid from 'material-ui/Grid';
 
 describe('MUIDetailView', () => {
