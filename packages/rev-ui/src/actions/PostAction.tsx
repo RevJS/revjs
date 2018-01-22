@@ -18,7 +18,7 @@ export interface IPostActionProps {
 export interface IActionComponentProps {
     label: string;
     disabled: boolean;
-    doAction(): Promise<Response>;
+    doAction(): Promise<void>;
 
     children?: React.ReactNode;
 }
@@ -40,14 +40,28 @@ class PostActionC extends React.Component<IPostActionProps & IModelContextProp> 
         this.props.modelContext.setLoadState('SAVING');
         const validationResult = await this.props.modelContext.validate();
 
-        try {
-            if (!validationResult.valid) {
-                let err: any = new Error('ValidationError');
-                err.validation = validationResult;
-                throw err;
+        const success = (res: any) => {
+            this.props.modelContext.setLoadState('NONE');
+            if (this.props.onResponse) {
+                this.props.onResponse(res);
             }
-            else {
-                const res = await fetch(this.props.url, {
+        };
+        const failure = (err: any) => {
+            this.props.modelContext.setLoadState('NONE');
+            if (this.props.onError) {
+                this.props.onError(err);
+            }
+        };
+
+        if (!validationResult.valid) {
+            let err: any = new Error('ValidationError');
+            err.validation = validationResult;
+            failure(err);
+        }
+        else {
+            let res: Response;
+            try {
+                res = await fetch(this.props.url, {
                     method: this.props.httpMethod || 'post',
                     headers: {
                         'Accept': 'application/json',
@@ -56,19 +70,12 @@ class PostActionC extends React.Component<IPostActionProps & IModelContextProp> 
                     credentials: 'same-origin',
                     body: JSON.stringify(this.props.modelContext.model)
                 });
-                this.props.modelContext.setLoadState('NONE');
-                if (this.props.onResponse) {
-                    this.props.onResponse(res);
-                }
-                return res;
             }
-        }
-        catch (e) {
-            this.props.modelContext.setLoadState('NONE');
-            if (this.props.onError) {
-                this.props.onError(e);
+            catch (e) {
+                failure(e);
+                return;
             }
-            throw e;
+            success(res);
         }
     }
 

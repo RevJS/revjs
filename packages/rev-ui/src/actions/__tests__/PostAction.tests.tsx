@@ -206,20 +206,18 @@ describe('PostAction', () => {
             expect(receivedProps.modelContext.loadState).to.equal('SAVING');
         });
 
-        it('resets loadState, calls onError() and throws the error if model is not valid', async () => {
+        it('resets loadState and calls onError() if model is not valid', async () => {
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
-            try {
-                await receivedProps.doAction();
-                throw new Error('expected to throw');
-            }
-            catch (e) {
-                expect(onErrorCallback.callCount).to.equal(1);
-                expect(onErrorCallback.getCall(0).args[0]).to.equal(e);
-                expect(e.message).to.equal('ValidationError');
-                expect(e.validation).to.be.instanceof(ModelValidationResult);
-                expect(e.validation.valid).to.be.false;
-                expect(receivedProps.modelContext.loadState).to.equal('NONE');
-            }
+
+            await receivedProps.doAction();
+
+            expect(onErrorCallback.callCount).to.equal(1);
+            const err = onErrorCallback.getCall(0).args[0];
+            expect(err).to.be.instanceof(Error);
+            expect(err.message).to.equal('ValidationError');
+            expect(err.validation).to.be.instanceof(ModelValidationResult);
+            expect(err.validation.valid).to.be.false;
+            expect(receivedProps.modelContext.loadState).to.equal('NONE');
         });
 
         it('calls fetch() with model data if model is valid', async () => {
@@ -254,36 +252,32 @@ describe('PostAction', () => {
             expect(fetchStub.getCall(0).args[1].method).to.equal('put');
         });
 
-        it('resets loadState, calls onResponse() and returns response if fetch is successful', async () => {
+        it('resets loadState and calls onResponse() if fetch is successful', async () => {
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
 
             setupValidModel();
             const expectedResponse = { status: 200 };
             fetchStub.returns(Promise.resolve(expectedResponse));
 
-            const result = await receivedProps.doAction();
+            await receivedProps.doAction();
 
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
-            expect(result).to.equal(expectedResponse);
             expect(onResponseCallback.callCount).to.equal(1);
             expect(onResponseCallback.getCall(0).args[0]).to.equal(expectedResponse);
         });
 
-        it('resets loadState, calls onError() and throws the error if fetch throws an error', async () => {
+        it('resets loadState and calls onError() if fetch throws an error', async () => {
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
             setupValidModel();
+
             const expectedError = new Error('Boom!!!');
             fetchStub.returns(Promise.reject(expectedError));
-            try {
-                await receivedProps.doAction();
-                throw new Error('expected to throw');
-            }
-            catch (e) {
-                expect(e).to.equal(expectedError);
-                expect(onErrorCallback.callCount).to.equal(1);
-                expect(onErrorCallback.getCall(0).args[0]).to.equal(e);
-                expect(receivedProps.modelContext.loadState).to.equal('NONE');
-            }
+
+            await receivedProps.doAction();
+
+            expect(onErrorCallback.callCount).to.equal(1);
+            expect(onErrorCallback.getCall(0).args[0]).to.equal(expectedError);
+            expect(receivedProps.modelContext.loadState).to.equal('NONE');
         });
 
     });
