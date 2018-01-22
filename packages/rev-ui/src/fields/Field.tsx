@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { fields } from 'rev-models';
 
-import Grid from 'material-ui/Grid';
 import { IModelProviderContext } from '../provider/ModelProvider';
 import { IModelContextProp } from '../views/DetailView';
 import { IFieldError } from 'rev-models/lib/validation/validationresult';

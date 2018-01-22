@@ -1,20 +1,18 @@
 
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
 import * as sinon from 'sinon';
 import * as models from '../../__fixtures__/models';
 import { createData, IModelTestData } from '../../__fixtures__/modeldata';
 import { expect } from 'chai';
 import * as rev from 'rev-models';
-import { mount, ReactWrapper } from 'enzyme';
+import { mount } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
 import { Field, IFieldComponentProps } from '../Field';
 import { sleep } from '../../__test_utils__/utils';
-import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 import { DetailView, IModelContextProp } from '../../views/DetailView';
 import { withModelContext } from '../../views/withModelContext';
 
-describe.only('Field', () => {
+describe('Field', () => {
 
     describe('construction', () => {
         let modelManager: rev.ModelManager;
@@ -181,8 +179,6 @@ describe.only('Field', () => {
 
     describe('colspan properties', () => {
         let modelManager: rev.ModelManager;
-        let meta: rev.IModelMeta<models.Post>;
-        let modelData: IModelTestData;
 
         function doMount(component: any) {
             modelManager = models.getModelManager();
@@ -247,12 +243,10 @@ describe.only('Field', () => {
 
     describe('Event Handlers', () => {
         let modelManager: rev.ModelManager;
-        let meta: rev.IModelMeta<models.Post>;
 
         beforeEach(() => {
             resetSpyComponent();
             modelManager = models.getModelManager();
-            meta = modelManager.getModelMeta('Post');
             mount(
                 <ModelProvider modelManager={modelManager}>
                     <DetailView model="Post">
