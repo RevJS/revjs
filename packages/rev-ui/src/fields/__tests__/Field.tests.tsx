@@ -11,7 +11,8 @@ import { ModelProvider } from '../../provider/ModelProvider';
 import { Field, IFieldComponentProps } from '../Field';
 import { sleep } from '../../__test_utils__/utils';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
-import { DetailView } from '../../views/DetailView';
+import { DetailView, IModelContextProp } from '../../views/DetailView';
+import { withModelContext } from '../../views/withModelContext';
 
 describe.only('Field', () => {
 
@@ -46,18 +47,22 @@ describe.only('Field', () => {
 
     });
 
-    let receivedProps: IFieldComponentProps;
+    type SpyComponentProps = IFieldComponentProps & IModelContextProp;
+    let receivedProps: SpyComponentProps;
+    let renderCount: number;
 
-    const SpyComponent: React.SFC<IFieldComponentProps> = (props) => {
+    const SpyComponent = withModelContext<IFieldComponentProps>((props) => {
         receivedProps = props;
+        renderCount++;
         return <p>SpyComponent</p>;
-    };
+    });
 
     function resetSpyComponent() {
         receivedProps = null;
+        renderCount = 0;
     }
 
-    describe('field props - before model has loaded', () => {
+    describe('IFieldComponentProps - before model data has loaded', () => {
         let modelManager: rev.ModelManager;
         let meta: rev.IModelMeta<models.Post>;
 
@@ -95,8 +100,8 @@ describe.only('Field', () => {
             expect(receivedProps.colspanWide).to.equal(6);
         });
 
-        it('passes null value', () => {
-            expect(receivedProps.value).to.be.null;
+        it('passes undefined value', () => {
+            expect(receivedProps.value).to.be.undefined;
         });
 
         it('passes empty list of field errors', () => {
@@ -113,195 +118,168 @@ describe.only('Field', () => {
 
     });
 
-    // describe('initial modelContext - when primaryKeyValue is not specified', () => {
-    //     let modelManager: rev.ModelManager;
+    describe('IFieldComponentProps - when model data has loaded', () => {
+        let modelManager: rev.ModelManager;
+        let meta: rev.IModelMeta<models.Post>;
+        let modelData: IModelTestData;
 
-    //     before(() => {
-    //         resetSpyComponent();
-    //         modelManager = models.getModelManager();
-    //         mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post">
-    //                     <TestView />
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //     });
+        before(async () => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            modelData = await createData(modelManager);
+            meta = modelManager.getModelMeta('Post');
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post" primaryKeyValue="1">
+                        <Field
+                            name="title"
+                            component={SpyComponent} />
+                    </DetailView>
+                </ModelProvider>
+            );
+            await sleep(10);
+        });
 
-    //     it('passes modelContext to contained Views', () => {
-    //         expect(receivedProps).not.to.be.null;
-    //     });
+        it('component has rendered twice (loading, loaded)', () => {
+            expect(renderCount).to.equal(2);
+        });
 
-    //     it('does not trigger a data load', () => {
-    //         expect(receivedProps.loadState).to.equal('NONE');
-    //     });
+        it('passes specified field object', () => {
+            const expectedField = meta.fieldsByName['title'];
+            expect(receivedProps.field).to.equal(expectedField);
+        });
 
-    //     it('contains the current ModelManager', () => {
-    //         expect(receivedProps.manager).to.equal(modelManager);
-    //     });
+        it('passes label, which should equal the field label or field name', () => {
+            const f = meta.fieldsByName['title'];
+            const expectedLabel = f.options.label || f.name;
+            expect(receivedProps.label).to.equal(expectedLabel);
+        });
 
-    //     it('a new model instance is created', () => {
-    //         expect(receivedProps.model).not.to.be.null;
-    //         expect(receivedProps.model).to.be.instanceof(models.Post);
-    //         expect(modelManager.isNew(receivedProps.model)).to.be.true;
-    //     });
+        it('passes default colspans', () => {
+            expect(receivedProps.colspanNarrow).to.equal(12);
+            expect(receivedProps.colspan).to.equal(6);
+            expect(receivedProps.colspanWide).to.equal(6);
+        });
 
-    //     it('modelMeta is set', () => {
-    //         expect(receivedProps.modelMeta).to.deep.equal(modelManager.getModelMeta('Post'));
-    //     });
+        it('passes correct field value', () => {
+            expect(receivedProps.value).to.equal(modelData.posts[0].title);
+        });
 
-    //     it('validation information is null', () => {
-    //         expect(receivedProps.validation).to.be.null;
-    //     });
+        it('passes empty list of field errors', () => {
+            expect(receivedProps.errors).to.deep.equal([]);
+        });
 
-    //     it('dirty is false', () => {
-    //         expect(receivedProps.dirty).to.be.false;
-    //     });
+        it('disabled = false', () => {
+            expect(receivedProps.disabled).to.be.false;
+        });
 
-    // });
+        it('passes event handlers', () => {
+            expect(receivedProps.onChange).to.be.a('function');
+        });
 
-    // describe('modelContext after successful model load', () => {
-    //     let modelManager: rev.ModelManager;
-    //     let expectedData: IModelTestData;
+    });
 
-    //     before(async () => {
-    //         resetTestView();
-    //         modelManager = models.getModelManager();
-    //         expectedData = await createData(modelManager);
-    //         mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post" primaryKeyValue="1">
-    //                     <TestView />
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //         await sleep(10);
-    //     });
+    describe('colspan properties', () => {
+        let modelManager: rev.ModelManager;
+        let meta: rev.IModelMeta<models.Post>;
+        let modelData: IModelTestData;
 
-    //     it('component has rendered twice', () => {
-    //         expect(renderCount).to.equal(2);
-    //     });
+        function doMount(component: any) {
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post">
+                        {component}
+                    </DetailView>
+                </ModelProvider>
+            );
+        }
 
-    //     it('loadState is set back to NONE', () => {
-    //         expect(receivedProps.loadState).to.equal('NONE');
-    //     });
+        beforeEach(() => {
+            resetSpyComponent();
+        });
 
-    //     it('model data is the requested model instance', () => {
-    //         const ctx = receivedProps;
-    //         expect(ctx.model).to.be.instanceof(models.Post);
-    //         expect(ctx.model.id).to.equal(expectedData.posts[0].id);
-    //         expect(ctx.model.title).to.equal(expectedData.posts[0].title);
-    //     });
+        it('default colspans are 12, 6, 6', () => {
+            doMount(<Field name="title" component={SpyComponent} />);
+            expect(receivedProps.colspanNarrow).to.equal(12);
+            expect(receivedProps.colspan).to.equal(6);
+            expect(receivedProps.colspanWide).to.equal(6);
+        });
 
-    //     it('modelMeta is set', () => {
-    //         expect(receivedProps.modelMeta).to.deep.equal(modelManager.getModelMeta('Post'));
-    //     });
+        it('can override colspanNarrow', () => {
+            doMount(<Field name="title" component={SpyComponent}
+                colspanNarrow={6}
+            />);
+            expect(receivedProps.colspanNarrow).to.equal(6);
+            expect(receivedProps.colspan).to.equal(6);
+            expect(receivedProps.colspanWide).to.equal(6);
+        });
 
-    //     it('validation information is null', () => {
-    //         expect(receivedProps.validation).to.be.null;
-    //     });
+        it('can override colspan, and it also overrides colspanWide', () => {
+            doMount(<Field name="title" component={SpyComponent}
+                colspan={4}
+            />);
+            expect(receivedProps.colspanNarrow).to.equal(12);
+            expect(receivedProps.colspan).to.equal(4);
+            expect(receivedProps.colspanWide).to.equal(4);
+        });
 
-    //     it('dirty is false', () => {
-    //         expect(receivedProps.dirty).to.be.false;
-    //     });
+        it('can override colspanWide', () => {
+            doMount(<Field name="title" component={SpyComponent}
+                colspanWide={4}
+            />);
+            expect(receivedProps.colspanNarrow).to.equal(12);
+            expect(receivedProps.colspan).to.equal(6);
+            expect(receivedProps.colspanWide).to.equal(4);
+        });
 
-    // });
+        it('can override all colspans', () => {
+            doMount(<Field name="title" component={SpyComponent}
+                colspanNarrow={1}
+                colspan={2}
+                colspanWide={3}
+            />);
+            expect(receivedProps.colspanNarrow).to.equal(1);
+            expect(receivedProps.colspan).to.equal(2);
+            expect(receivedProps.colspanWide).to.equal(3);
+        });
+    });
 
-    // describe('setDirty()', () => {
-    //     let modelManager: rev.ModelManager;
+    describe('Event Handlers', () => {
+        let modelManager: rev.ModelManager;
+        let meta: rev.IModelMeta<models.Post>;
 
-    //     before(() => {
-    //         resetTestView();
-    //         modelManager = models.getModelManager();
-    //         mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post">
-    //                     <TestView />
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //     });
+        beforeEach(() => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            meta = modelManager.getModelMeta('Post');
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post">
+                        <Field
+                            name="title"
+                            component={SpyComponent} />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
 
-    //     it('setDirty() is passed in modelContext', () => {
-    //         expect(receivedProps.setDirty).to.be.a('function');
-    //     });
+        describe('onChange()', () => {
 
-    //     it('modelContext.dirty is false by default', () => {
-    //         expect(receivedProps.dirty).to.be.false;
-    //     });
+            it('updates field value', () => {
+                expect(receivedProps.value).to.be.undefined;
+                receivedProps.onChange('Awesome Post');
+                expect(receivedProps.value).to.equal('Awesome Post');
+            });
 
-    //     it('initial render has completed', () => {
-    //         expect(renderCount).to.equal(1);
-    //     });
+            it('sets the "dirty" property in the modelContext', () => {
+                expect(receivedProps.modelContext.dirty).to.be.false;
+                receivedProps.onChange('Awesome Post');
+                expect(receivedProps.modelContext.dirty).to.be.true;
+            });
 
-    //     it('setDirty() changes the value of dirty and forces a re-render', () => {
-    //         receivedProps.setDirty(true);
-    //         expect(receivedProps.dirty).to.equal(true);
-    //         expect(renderCount).to.equal(2);
-    //     });
+        });
 
-    //     it('setDirty() does not force a re-render if dirty value has not changed', () => {
-    //         receivedProps.setDirty(true);
-    //         expect(renderCount).to.equal(2);
-    //     });
-
-    // });
-
-    // describe('validate()', () => {
-    //     let modelManager: rev.ModelManager;
-
-    //     before(() => {
-    //         resetTestView();
-    //         modelManager = models.getModelManager();
-    //         mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post">
-    //                     <TestView />
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //     });
-
-    //     it('validate() is passed in modelContext', () => {
-    //         expect(receivedProps.setDirty).to.be.a('function');
-    //     });
-
-    //     it('modelContext.validation is null by default', () => {
-    //         expect(receivedProps.validation).to.be.null;
-    //     });
-
-    //     it('initial render has completed', () => {
-    //         expect(renderCount).to.equal(1);
-    //     });
-
-    //     it('validate() triggers validation of the model, re-renders, and returns result', async () => {
-    //         let result = await receivedProps.validate();
-    //         expect(result).to.be.instanceof(ModelValidationResult);
-    //         expect(receivedProps.validation).to.equal(result);
-    //         expect(renderCount).to.equal(2);
-    //     });
-
-    // });
-
-    // describe('rendering', () => {
-    //     let modelManager: rev.ModelManager;
-    //     let wrapper: ReactWrapper;
-
-    //     before(() => {
-    //         modelManager = models.getModelManager();
-    //         wrapper = mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post">
-    //                     <span>content</span>
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //     });
-
-    //     it('renders children directly', () => {
-    //         expect(wrapper.at(0).text()).to.equal('content');
-    //     });
-
-    // });
+    });
 
 });

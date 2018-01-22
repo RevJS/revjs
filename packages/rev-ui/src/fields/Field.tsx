@@ -72,7 +72,7 @@ class FieldC extends React.Component<IFieldProps & IModelContextProp, IFieldStat
             colspanNarrow: this.props.colspanNarrow || 12,
             colspan: this.props.colspan || 6,
             colspanWide: this.props.colspanWide || this.props.colspan || 6,
-            value: ctx.model ? ctx.model[this.modelField.name] : null,
+            value: ctx.model ? ctx.model[this.modelField.name] : undefined,
             errors: fieldErrors,
             disabled,
             onChange: (value) => this.onChange(value)
