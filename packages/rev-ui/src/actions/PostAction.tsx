@@ -6,11 +6,11 @@ import { withModelContext } from '../views/withModelContext';
 import { UI_COMPONENTS } from '../config';
 
 export interface IPostActionProps {
-    label: string;
+    label?: string;
     url: string;
     httpMethod?: 'post' | 'put';
-    onSuccess?: (result: Response) => void;
-    onFailure?: (error: Error) => void;
+    onResponse?: (response: Response) => void;
+    onError?: (error: Error) => void;
 
     component?: React.ComponentType;
 }
@@ -18,7 +18,7 @@ export interface IPostActionProps {
 export interface IActionComponentProps {
     label: string;
     disabled: boolean;
-    doAction(): void;
+    doAction(): Promise<Response>;
 }
 
 class PostActionC extends React.Component<IPostActionProps & IModelContextProp> {
@@ -28,43 +28,40 @@ class PostActionC extends React.Component<IPostActionProps & IModelContextProp> 
         if (!this.props.modelContext) {
             throw new Error('PostAction Error: must be nested inside a DetailView');
         }
+        if (!this.props.url) {
+            throw new Error('PostAction Error: you must specify the url property');
+        }
     }
 
     async doAction() {
 
-        const validationResult = await this.context.modelContext.validate();
+        this.props.modelContext.setLoadState('SAVING');
+        const validationResult = await this.props.modelContext.validate();
 
-        if (validationResult.valid) {
-            if (!this.props.url) {
-                throw new Error('ModelAction Error: you must specify the url property when type is "post"');
+        if (!validationResult.valid) {
+            this.props.modelContext.setLoadState('NONE');
+            let err: any = new Error('ValidationError');
+            err.validation = validationResult;
+            throw err;
+        }
+        else {
+            try {
+                const res = await fetch(this.props.url, {
+                    method: 'post',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify(this.context.modelContext.model)
+                });
+                this.props.onResponse(res);
+                return res;
             }
-            // this.context.modelForm.disable(true);
-            return fetch(this.props.url, {
-                method: 'post',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'same-origin',
-                body: JSON.stringify(this.context.modelContext.model)
-            })
-            .then((res) => {
-                if (res.status < 200 || res.status > 299) {
-                    const error: any = new Error('PostAction received status ' + res.status);
-                    error.response = res;
-                    throw error;
-                }
-                if (this.props.onSuccess) {
-                    // this.context.modelForm.disable(false);
-                    this.props.onSuccess(res);
-                }
-            })
-            .catch((err) => {
-                if (this.props.onFailure) {
-                    // this.context.modelForm.disable(false);
-                    this.props.onFailure(err);
-                }
-            });
+            catch (e) {
+                this.props.onError(e);
+                throw e;
+            }
         }
     }
 

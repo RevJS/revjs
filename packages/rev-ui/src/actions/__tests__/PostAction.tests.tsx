@@ -6,10 +6,12 @@ import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
-import { DetailView } from '../../views/DetailView';
+import { DetailView, IModelContextProp } from '../../views/DetailView';
 import { PostAction, IActionComponentProps } from '../PostAction';
+import { withModelContext } from '../../views/withModelContext';
+import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 
-describe('PostAction', () => {
+describe.only('PostAction', () => {
 
     describe('construction', () => {
         let errorStub: sinon.SinonStub;
@@ -28,14 +30,28 @@ describe('PostAction', () => {
             }).to.throw('must be nested inside a DetailView');
         });
 
+        it('throws error when the url property is not set', () => {
+            const Comp: any = PostAction;
+            const modelManager = models.getModelManager();
+            expect(() => {
+                mount(
+                    <ModelProvider modelManager={modelManager}>
+                        <DetailView model="Post">
+                            <Comp label="Submit" />
+                        </DetailView>
+                    </ModelProvider>);
+            }).to.throw('you must specify the url property');
+        });
+
     });
 
-    let receivedProps: IActionComponentProps;
+    type SpyComponentProps = IActionComponentProps & IModelContextProp;
+    let receivedProps: SpyComponentProps;
 
-    const SpyComponent: React.SFC<IActionComponentProps> = (props) => {
+    const SpyComponent = withModelContext<IActionComponentProps>((props) => {
         receivedProps = props;
         return <p>SpyComponent</p>;
-    };
+    });
 
     function resetSpyComponent() {
         receivedProps = null;
@@ -105,6 +121,51 @@ describe('PostAction', () => {
 
         it('passes through doAction() function', () => {
             expect(receivedProps.doAction).to.be.a('function');
+        });
+
+    });
+
+    describe('doAction()', () => {
+        let modelManager: rev.ModelManager;
+
+        beforeEach(() => {
+            global.fetch = sinon.stub();
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post">
+                        <PostAction
+                            label="Submit"
+                            url="/api"
+                            component={SpyComponent}
+                        />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
+
+        afterEach(() => {
+            delete global.fetch;
+        });
+
+        it('sets loadState = "SAVING" when the action is triggered', () => {
+            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            receivedProps.doAction().catch((e) => null);
+            expect(receivedProps.modelContext.loadState).to.equal('SAVING');
+        });
+
+        it('resets loadState and throws an error if model is not valid', async () => {
+            try {
+                await receivedProps.doAction();
+                throw new Error('expected to throw');
+            }
+            catch (e) {
+                expect(e.message).to.equal('ValidationError');
+                expect(e.validation).to.be.instanceof(ModelValidationResult);
+                expect(e.validation.valid).to.be.false;
+                expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            }
         });
 
     });

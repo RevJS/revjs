@@ -8,9 +8,9 @@ export class User {
     @IntegerField({ primaryKey: true })
         id: number;
     @TextField()
-        name: string = 'A Test Model';
+        name: string;
     @DateField()
-        date_registered: string = '2017-12-01';
+        date_registered: string;
     @RelatedModelList({ model: 'Post', field: 'user' })
         posts: Post[];
 
