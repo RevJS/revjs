@@ -8,6 +8,9 @@ export const UI_COMPONENTS = {
         DetailView: PassthroughComponent,
         ListView: PassthroughComponent,
     },
+    actions: {
+        PostAction: PassthroughComponent,
+    },
     fields: {
         DateField: PassthroughComponent,
         TimeField: PassthroughComponent,

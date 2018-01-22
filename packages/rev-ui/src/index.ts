@@ -7,4 +7,4 @@ export { ListView } from './views/ListView';
 export { withModelContext } from './views/withModelContext';
 
 export { Field } from './fields/Field';
-export { ViewAction } from './views/ViewAction';
+export { PostAction } from './actions/PostAction';
