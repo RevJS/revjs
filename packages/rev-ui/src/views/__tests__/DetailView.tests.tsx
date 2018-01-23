@@ -375,7 +375,7 @@ describe('DetailView', () => {
 
     });
 
-    describe.only('update()', () => {
+    describe('update()', () => {
         let modelManager: rev.ModelManager;
 
         before(() => {

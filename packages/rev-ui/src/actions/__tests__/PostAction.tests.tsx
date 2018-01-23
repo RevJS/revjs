@@ -6,7 +6,7 @@ import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
-import { DetailView, IModelContextProp } from '../../views/DetailView';
+import { DetailView, IModelContextProp, IModelContext } from '../../views/DetailView';
 import { PostAction, IPostActionProps } from '../PostAction';
 import { withModelContext } from '../../views/withModelContext';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
@@ -37,7 +37,7 @@ describe('PostAction', () => {
             expect(() => {
                 mount(
                     <ModelProvider modelManager={modelManager}>
-                        <DetailView model="Post">
+                        <DetailView model="User">
                             <Comp label="Submit" />
                         </DetailView>
                     </ModelProvider>);
@@ -46,10 +46,10 @@ describe('PostAction', () => {
 
     });
 
-    type SpyComponentProps = IActionComponentProps & IModelContextProp;
+    type SpyComponentProps = IActionComponentProps & IModelContextProp<models.User>;
     let receivedProps: SpyComponentProps;
 
-    const SpyComponent = withModelContext<IActionComponentProps>((props) => {
+    const SpyComponent = withModelContext((props: SpyComponentProps) => {
         receivedProps = props;
         return props.children as any || <p>SpyComponent</p>;
     });
@@ -67,7 +67,7 @@ describe('PostAction', () => {
             modelManager = models.getModelManager();
             wrapper = mount(
                 <ModelProvider modelManager={modelManager}>
-                    <DetailView model="Post">
+                    <DetailView model="User">
                         <PostAction
                             label="Submit"
                             url="/api"
@@ -94,7 +94,7 @@ describe('PostAction', () => {
             modelManager = models.getModelManager();
             mount(
                 <ModelProvider modelManager={modelManager}>
-                    <DetailView model="Post">
+                    <DetailView model="User">
                         <PostAction
                             label="Submit"
                             url="/api"
@@ -129,7 +129,7 @@ describe('PostAction', () => {
             backend.OPERATION_DELAY = 10;
             mount(
                 <ModelProvider modelManager={modelManager}>
-                    <DetailView model="Post" primaryKeyValue="1">
+                    <DetailView model="User" primaryKeyValue="1">
                         <PostAction
                             label="Submit"
                             url="/api"
@@ -279,6 +279,42 @@ describe('PostAction', () => {
             expect(onErrorCallback.callCount).to.equal(1);
             expect(onErrorCallback.getCall(0).args[0]).to.equal(expectedError);
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
+        });
+
+    });
+
+    describe('disabled property', () => {
+        let modelManager: rev.ModelManager;
+
+        before(() => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="User">
+                        <PostAction
+                            label="Submit"
+                            url="/api"
+
+                            disabled={(ctx: IModelContext<models.User>) => {
+                                return ctx.model.name == 'should be disabled';
+                            }}
+
+                            component={SpyComponent}
+                        />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
+
+        it('not disabled when disabled function returns false', () => {
+            expect(receivedProps.disabled).to.be.false;
+        });
+
+        it('disabled when disabled function returns true', () => {
+            receivedProps.modelContext.model.name = 'should be disabled';
+            receivedProps.modelContext.update();
+            expect(receivedProps.disabled).to.be.true;
         });
 
     });

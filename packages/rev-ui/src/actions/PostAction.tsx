@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 
-import { IModelContextProp } from '../views/DetailView';
+import { IModelContextProp, IModelContext } from '../views/DetailView';
 import { withModelContext } from '../views/withModelContext';
 import { UI_COMPONENTS } from '../config';
 import { IActionComponentProps } from './types';
@@ -12,6 +12,8 @@ export interface IPostActionProps {
     httpMethod?: 'post' | 'put';
     onResponse?: (response: Response) => void;
     onError?: (error: Error) => void;
+
+    disabled?: (context: IModelContext) => boolean;
 
     component?: React.ComponentType;
 }
@@ -29,7 +31,6 @@ class PostActionC extends React.Component<IPostActionProps & IModelContextProp> 
     }
 
     async doAction() {
-
         this.props.modelContext.setLoadState('SAVING');
         const validationResult = await this.props.modelContext.validate();
 
@@ -73,9 +74,15 @@ class PostActionC extends React.Component<IPostActionProps & IModelContextProp> 
     }
 
     render() {
+        let disabled = this.props.modelContext.loadState != 'NONE';
+
+        if (!disabled && this.props.disabled) {
+            disabled = this.props.disabled(this.props.modelContext);
+        }
+
         const cProps: IActionComponentProps = {
             label: this.props.label,
-            disabled: this.props.modelContext.loadState != 'NONE',
+            disabled,
             doAction: () => this.doAction(),
             children: this.props.children
         };
