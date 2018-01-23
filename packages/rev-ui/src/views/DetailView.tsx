@@ -15,20 +15,21 @@ export interface IDetailViewProps {
 
 export type IModelLoadState = 'NONE' | 'LOADING' | 'SAVING' ;
 
-export interface IModelContext {
+export interface IModelContext<T extends IModel = IModel> {
     loadState: IModelLoadState;
     manager: IModelManager;
-    model: IModel;
-    modelMeta: IModelMeta<any>;
+    model: T;
+    modelMeta: IModelMeta<T>;
     validation: ModelValidationResult;
     dirty: boolean;
     setLoadState(state: IModelLoadState): void;
     setDirty(dirty: boolean): void;
     validate(): Promise<ModelValidationResult>;
+    update(): void;
 }
 
-export interface IModelContextProp {
-    modelContext: IModelContext;
+export interface IModelContextProp<T extends IModel = IModel> {
+    modelContext: IModelContext<T>;
 }
 
 export class DetailView extends React.Component<IDetailViewProps> {
@@ -57,7 +58,8 @@ export class DetailView extends React.Component<IDetailViewProps> {
             dirty: false,
             setLoadState: (state) => this.setLoadState(state),
             setDirty: (dirty) => this.setDirty(dirty),
-            validate: () => this.validate()
+            validate: () => this.validate(),
+            update: () => this.forceUpdate()
         };
 
         if (modelMeta.primaryKey && isSet(props.primaryKeyValue)) {
