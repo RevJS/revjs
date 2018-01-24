@@ -53,6 +53,11 @@ class FieldC extends React.Component<IFieldProps & IModelContextProp, IFieldStat
 
     onChange(value: any) {
         this.props.modelContext.model[this.modelField.name] = value;
+        const validation = this.props.modelContext.validation;
+        if (validation && validation.fieldErrors[this.modelField.name]
+                && validation.fieldErrors[this.modelField.name].length > 0) {
+            validation.fieldErrors[this.modelField.name] = [];
+        }
         this.props.modelContext.setDirty(true);
         this.setState({ value });
     }

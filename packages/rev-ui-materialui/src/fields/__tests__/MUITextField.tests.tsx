@@ -58,10 +58,11 @@ describe('MUITextField', () => {
             expect(grid.prop('lg')).to.equal(props.colspanWide);
         });
 
-        it('renders an InputLabel component containing props.label', () => {
+        it('renders an InputLabel component containing props.label and no error', () => {
             const label = wrapper.find(InputLabel);
             expect(label).to.have.length(1);
             expect(label.text()).to.equal('Text Field');
+            expect(label.prop('error')).to.be.false;
         });
 
         it('renders an Input component', () => {
@@ -76,6 +77,7 @@ describe('MUITextField', () => {
             expect(input.prop('type')).to.equal('text');
             expect(input.prop('value')).to.equal(props.value);
             expect(input.prop('disabled')).to.equal(props.disabled);
+            expect(input.prop('error')).to.be.false;
         });
 
         it('does not render form helper text when there are no errors', () => {
@@ -101,7 +103,7 @@ describe('MUITextField', () => {
 
     });
 
-    describe('errors', () => {
+    describe('when the errors property contains items', () => {
 
         before(() => {
             props = getComponentProps();
@@ -112,9 +114,22 @@ describe('MUITextField', () => {
             render();
         });
 
-        it('renders form helper text when there are errors', () => {
+        it('InputLabel component has the error property set', () => {
+            const label = wrapper.find(InputLabel);
+            expect(label).to.have.length(1);
+            expect(label.prop('error')).to.be.true;
+        });
+
+        it('Input component has the error property set', () => {
+            const input = wrapper.find(Input);
+            expect(input).to.have.length(1);
+            expect(input.prop('error')).to.be.true;
+        });
+
+        it('renders form helper text with error property set', () => {
             const helpText = wrapper.find(FormHelperText);
             expect(helpText).to.have.length(1);
+            expect(helpText.prop('error')).to.be.true;
         });
 
         it('error messages are concetenated', () => {

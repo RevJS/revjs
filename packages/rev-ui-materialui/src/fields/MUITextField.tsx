@@ -22,6 +22,7 @@ export const MUITextField: React.StatelessComponent<IFieldComponentProps> = (pro
         type = 'password';
     }
 
+    let error = props.errors.length > 0;
     let errorText = '';
     props.errors.forEach((err) => {
         errorText += err.message + '. ';
@@ -30,7 +31,11 @@ export const MUITextField: React.StatelessComponent<IFieldComponentProps> = (pro
     return (
         <Grid item {...gridWidthProps}>
             <FormControl fullWidth>
-                <InputLabel htmlFor={fieldId} shrink={labelShrunk}>
+                <InputLabel
+                    htmlFor={fieldId}
+                    shrink={labelShrunk}
+                    error={error}
+                >
                     {props.label}
                 </InputLabel>
                 <Input
@@ -38,10 +43,11 @@ export const MUITextField: React.StatelessComponent<IFieldComponentProps> = (pro
                     type={type}
                     value={props.value}
                     onChange={(event) => props.onChange(event.target.value)}
+                    error={error}
                     disabled={props.disabled}
                 />
                 {errorText &&
-                    <FormHelperText>
+                    <FormHelperText error>
                         {errorText}
                     </FormHelperText>}
             </FormControl>
