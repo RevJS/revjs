@@ -119,11 +119,20 @@ export class DetailView extends React.Component<IDetailViewProps> {
     async save() {
         const ctx = this.modelContext;
         let result: IModelOperationResult<any, any>;
-        if (ctx.manager.isNew(ctx.model)) {
-            result = await ctx.manager.create(ctx.model);
+        try {
+            if (ctx.manager.isNew(ctx.model)) {
+                result = await ctx.manager.create(ctx.model);
+            }
+            else {
+                result = await ctx.manager.update(ctx.model);
+            }
         }
-        else {
-            result = await ctx.manager.update(ctx.model);
+        catch (e) {
+            if (e.message == 'ValidationError') {
+                ctx.validation = e.result.validation;
+                this.forceUpdate();
+            }
+            throw e;
         }
         ctx.validation = result.validation;
         this.forceUpdate();

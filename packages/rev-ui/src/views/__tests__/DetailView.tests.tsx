@@ -11,6 +11,7 @@ import { ModelProvider } from '../../provider/ModelProvider';
 import { DetailView, IModelContext } from '../DetailView';
 import { sleep } from '../../__test_utils__/utils';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
+import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
 
 describe('DetailView', () => {
 
@@ -355,7 +356,7 @@ describe('DetailView', () => {
         });
 
         it('validate() is passed in modelContext', () => {
-            expect(receivedModelContext.setDirty).to.be.a('function');
+            expect(receivedModelContext.validate).to.be.a('function');
         });
 
         it('modelContext.validation is null by default', () => {
@@ -371,6 +372,89 @@ describe('DetailView', () => {
             expect(result).to.be.instanceof(ModelValidationResult);
             expect(receivedModelContext.validation).to.equal(result);
             expect(renderCount).to.equal(2);
+        });
+
+    });
+
+    describe('save()', () => {
+        let modelManager: rev.ModelManager;
+
+        beforeEach(() => {
+            resetTestView();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post">
+                        <TestView />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
+
+        it('save() is passed in modelContext', () => {
+            expect(receivedModelContext.save).to.be.a('function');
+        });
+
+        it('modelContext.validation is null by default', () => {
+            expect(receivedModelContext.validation).to.be.null;
+        });
+
+        it('initial render has completed', () => {
+            expect(renderCount).to.equal(1);
+        });
+
+        describe('when model is not valid', () => {
+
+            it('save() triggers validation of the model, re-renders, and throws an error', async () => {
+                try {
+                    await receivedModelContext.save();
+                    throw new Error('should have thrown');
+                }
+                catch (e) {
+                    expect(e.message).to.equal('ValidationError');
+                    expect(e.result).to.be.instanceof(ModelOperationResult);
+                    const validation = e.result.validation;
+                    expect(receivedModelContext.validation).to.equal(validation);
+                    expect(renderCount).to.equal(2);
+                }
+            });
+
+        });
+
+        describe('when model is valid, and is a new record', () => {
+
+            it('save() triggers creation of the model, re-renders, and returns operation result', async () => {
+                receivedModelContext.model = new models.Post({
+                    id: null, title: 'Valid New Post', body: 'Posty Posty...'
+                });
+                const result = await receivedModelContext.save();
+                expect(result).to.be.instanceof(ModelOperationResult);
+                expect(result.operation.operation).to.equal('create');
+                expect(result.success).to.be.true;
+                expect(result.result).not.to.be.undefined;
+                expect(result.result).to.be.instanceof(models.Post);
+                expect(result.result.id).not.to.be.null;
+                expect(receivedModelContext.validation).to.equal(result.validation);
+                expect(renderCount).to.equal(2);
+            });
+
+        });
+
+        describe('when model is valid, and is an updated record', () => {
+
+            it('save() triggers update of the model, re-renders, and returns operation result', async () => {
+                receivedModelContext.model = new models.Post({
+                    id: 100, title: 'Valid New Post', body: 'Posty Posty...'
+                });
+                const result = await receivedModelContext.save();
+                expect(result).to.be.instanceof(ModelOperationResult);
+                expect(result.operation.operation).to.equal('update');
+                expect(result.operation.where).to.deep.equal({ id: 100 });
+                expect(result.success).to.be.true;
+                expect(receivedModelContext.validation).to.equal(result.validation);
+                expect(renderCount).to.equal(2);
+            });
+
         });
 
     });

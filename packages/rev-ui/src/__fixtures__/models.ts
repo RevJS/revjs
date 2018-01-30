@@ -18,17 +18,17 @@ export class User {
 }
 
 export class Post {
-    @IntegerField({ primaryKey: true })
+    @AutoNumberField({ primaryKey: true })
         id: number;
     @TextField()
         title: string;
     @TextField()
         body: string;
-    @BooleanField()
+    @BooleanField({ required: false })
         published: boolean;
-    @DateTimeField()
+    @DateTimeField({ required: false })
         post_date: string;
-    @RelatedModel({ model: 'User' })
+    @RelatedModel({ model: 'User', required: false })
         user: User;
     @RelatedModelList({ model: 'Comment', field: 'post' })
         comments: Comment[];
