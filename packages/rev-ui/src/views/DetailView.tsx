@@ -25,7 +25,7 @@ export interface IModelContext<T extends IModel = IModel> {
     setLoadState(state: IModelLoadState): void;
     setDirty(dirty: boolean): void;
     validate(): Promise<ModelValidationResult>;
-    update(): void;
+    refresh(): void;
 }
 
 export interface IModelContextProp<T extends IModel = IModel> {
@@ -59,7 +59,7 @@ export class DetailView extends React.Component<IDetailViewProps> {
             setLoadState: (state) => this.setLoadState(state),
             setDirty: (dirty) => this.setDirty(dirty),
             validate: () => this.validate(),
-            update: () => this.forceUpdate()
+            refresh: () => this.forceUpdate()
         };
 
         if (modelMeta.primaryKey && isSet(props.primaryKeyValue)) {

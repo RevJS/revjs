@@ -375,7 +375,7 @@ describe('DetailView', () => {
 
     });
 
-    describe('update()', () => {
+    describe('refresh()', () => {
         let modelManager: rev.ModelManager;
 
         before(() => {
@@ -390,16 +390,16 @@ describe('DetailView', () => {
             );
         });
 
-        it('update() is passed in modelContext', () => {
-            expect(receivedModelContext.update).to.be.a('function');
+        it('refresh() is passed in modelContext', () => {
+            expect(receivedModelContext.refresh).to.be.a('function');
         });
 
         it('initial render has completed', () => {
             expect(renderCount).to.equal(1);
         });
 
-        it('calling update() forces a re-render', () => {
-            receivedModelContext.update();
+        it('calling refresh() forces a re-render', () => {
+            receivedModelContext.refresh();
             expect(renderCount).to.equal(2);
         });
 
