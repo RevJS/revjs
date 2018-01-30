@@ -9,7 +9,6 @@ import { ModelProvider } from '../../provider/ModelProvider';
 import { DetailView, IModelContextProp, IModelContext } from '../../views/DetailView';
 import { SaveAction, ISaveActionProps } from '../SaveAction';
 import { withModelContext } from '../../views/withModelContext';
-import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
 import { IActionComponentProps } from '../types';
 
 describe('SaveAction', () => {
@@ -169,66 +168,38 @@ describe('SaveAction', () => {
             render();
         });
 
-        function setupValidModel(options: { id: number }) {
-            const user = new models.User({
-                id: options.id, name: 'Bob'
-            });
-            receivedProps.modelContext.model = user;
-            return user;
-        }
-
         it('sets loadState = "SAVING" when the action is triggered', () => {
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
             receivedProps.doAction().catch((e) => null);
             expect(receivedProps.modelContext.loadState).to.equal('SAVING');
         });
 
-        it('resets loadState and calls onError() if there was an error (e.g. model is not valid)', async () => {
+        it('resets loadState and calls onError() if an error is returned from save()', async () => {
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
+
+            const expectedError = new Error('ack!!!');
+            receivedProps.modelContext.save = () => Promise.reject(expectedError);
 
             await receivedProps.doAction();
 
             expect(onErrorCallback.callCount).to.equal(1);
             const err = onErrorCallback.getCall(0).args[0];
-            expect(err).to.be.instanceof(Error);
-            expect(err.message).to.equal('ValidationError');
-            expect(err.result).to.be.instanceof(ModelOperationResult);
-            expect(err.result.validation.valid).to.be.false;
-            expect(receivedProps.modelContext.loadState).to.equal('NONE');
-        });
-
-        it('when model is valid, and is a new record, it is created and onSuccess() is called', async () => {
-            expect(receivedProps.modelContext.loadState).to.equal('NONE');
-            setupValidModel({ id: null });
-
-            await receivedProps.doAction();
-
-            expect(onSuccessCallback.callCount).to.equal(1);
-            const result: rev.IModelOperationResult<any, any> = onSuccessCallback.getCall(0).args[0];
-
-            expect(result).to.be.instanceof(ModelOperationResult);
-            expect(result.operation.operation).to.equal('create');
-            expect(result.success).to.be.true;
-            expect(result.result).not.to.be.undefined;
-            expect(result.result).to.be.instanceof(models.User);
-            expect(result.result.id).not.to.be.null;
+            expect(err).to.equal(expectedError);
 
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
         });
 
-        it('when model is valid, and is an existing record, it is updated and onSuccess() is called', async () => {
+        it('resets loadState and calls onSuccess() if the save() method is successful', async () => {
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
-            setupValidModel({ id: 100 });
+
+            const expectedResult = 'Yay!';
+            receivedProps.modelContext.save = () => Promise.resolve(expectedResult) as any;
 
             await receivedProps.doAction();
 
             expect(onSuccessCallback.callCount).to.equal(1);
-            const result: rev.IModelOperationResult<any, any> = onSuccessCallback.getCall(0).args[0];
-
-            expect(result).to.be.instanceof(ModelOperationResult);
-            expect(result.operation.operation).to.equal('update');
-            expect(result.operation.where).to.deep.equal({ id: 100 });
-            expect(result.success).to.be.true;
+            const result = onSuccessCallback.getCall(0).args[0];
+            expect(result).to.equal(expectedResult);
 
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
         });
