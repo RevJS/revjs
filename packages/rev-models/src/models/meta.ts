@@ -12,13 +12,13 @@ function populateMetaFromClassFields<T extends IModel>(model: new(...args: any[]
     let proto = model.prototype;
     if (proto.__fields) {
         if (typeof proto.__fields != 'object' || !(proto.__fields instanceof Array)) {
-            throw new Error('MetadataError: Model __fields property must be an array.');
+            throw new Error(`MetadataError (${meta.name}): Model __fields property must be an array.`);
         }
         if (!meta.fields) {
             meta.fields = [];
         }
         if (!(meta.fields instanceof Array)) {
-            throw new Error('MetadataError: Model metadata fields entry must be an array.');
+            throw new Error(`MetadataError (${meta.name}): Model metadata fields entry must be an array.`);
         }
         for (let field of proto.__fields) {
             meta.fields.push(field);
@@ -32,26 +32,6 @@ export function initialiseMeta<T extends IModel>(manager: IModelManager, model: 
         meta = {};
     }
 
-    populateMetaFromClassFields(model, meta);
-
-    // Check fields data
-    if (!meta.fields || !(meta.fields instanceof Array)) {
-        throw new Error('MetadataError: You must define the fields metadata for the model.');
-    }
-    for (let field of meta.fields) {
-        if (!field || typeof field != 'object' || !(field instanceof Field)) {
-            throw new Error(`MetadataError: One or more entries in the fields metadata is not an instance of rev.Field.`);
-        }
-        if (DISALLOWED_FIELD_NAMES.indexOf(field.name) > -1) {
-            throw new Error(`MetadataError: Field name is not allowed: ${field.name}`);
-        }
-    }
-    if (meta.primaryKey) {
-        if (typeof meta.primaryKey != 'string') {
-            throw new Error(`MetadataError: primaryKey must be a string containing the primary key field name.`);
-        }
-    }
-
     // Populate default metadata
     meta.name = meta.name ? meta.name : model.name;
     meta.label = meta.label ? meta.label : meta.name;
@@ -62,30 +42,50 @@ export function initialiseMeta<T extends IModel>(manager: IModelManager, model: 
 
     // Check model name
     if (model.name != meta.name) {
-        throw new Error('MetadataError: Model name does not match meta.name.');
+        throw new Error(`MetadataError (${model.name}): Model name does not match meta.name.`);
     }
 
     // Validate specified back end
     let backends = manager.getBackendNames();
     if (backends.indexOf(meta.backend) < 0) {
-        throw new Error(`MetadataError: Backend "${meta.backend}" is not registered.`);
+        throw new Error(`MetadataError (${meta.name}): Backend "${meta.backend}" is not registered.`);
+    }
+
+    populateMetaFromClassFields(model, meta);
+
+    // Check fields data
+    if (!meta.fields || !(meta.fields instanceof Array)) {
+        throw new Error(`MetadataError (${meta.name}): You must define the fields metadata for the model.`);
+    }
+    for (let field of meta.fields) {
+        if (!field || typeof field != 'object' || !(field instanceof Field)) {
+            throw new Error(`MetadataError (${meta.name}): One or more entries in the fields metadata is not an instance of rev.Field.`);
+        }
+        if (DISALLOWED_FIELD_NAMES.indexOf(field.name) > -1) {
+            throw new Error(`MetadataError (${meta.name}): Field name is not allowed: ${field.name}`);
+        }
+    }
+    if (meta.primaryKey) {
+        if (typeof meta.primaryKey != 'string') {
+            throw new Error(`MetadataError (${meta.name}): primaryKey must be a string containing the primary key field name.`);
+        }
     }
 
     // Check field definitions and populate fieldsByName
     for (let field of meta.fields) {
         if (field.name in meta.fieldsByName) {
-            throw new Error(`MetadataError: Field "${field.name}" is defined more than once.`);
+            throw new Error(`MetadataError (${meta.name}): Field "${field.name}" is defined more than once.`);
         }
         meta.fieldsByName[field.name] = field;
         if (field.options.primaryKey) {
             if (meta.primaryKey) {
-                throw new Error('MetadataError: More than one field has been set as the primaryKey. Composite primary keys are not currently supported.');
+                throw new Error(`MetadataError (${meta.name}): More than one field has been set as the primaryKey. Composite primary keys are not currently supported.`);
             }
             meta.primaryKey = field.name;
         }
     }
     if (meta.primaryKey && !(meta.primaryKey in meta.fieldsByName)) {
-        throw new Error(`MetadataError: Primary key field "${meta.primaryKey}" is not defined.`);
+        throw new Error(`MetadataError (${meta.name}): Primary key field "${meta.primaryKey}" is not defined.`);
     }
 
     return meta;
