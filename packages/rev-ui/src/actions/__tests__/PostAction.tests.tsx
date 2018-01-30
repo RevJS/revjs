@@ -307,11 +307,11 @@ describe('PostAction', () => {
             );
         });
 
-        it('not disabled when disabled function returns false', () => {
+        it('control not disabled when disabled function returns false', () => {
             expect(receivedProps.disabled).to.be.false;
         });
 
-        it('disabled when disabled function returns true', () => {
+        it('control disabled when disabled function returns true', () => {
             receivedProps.modelContext.model.name = 'should be disabled';
             receivedProps.modelContext.update();
             expect(receivedProps.disabled).to.be.true;
