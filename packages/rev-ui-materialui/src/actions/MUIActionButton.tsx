@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 
-import { IActionComponentProps } from 'rev-ui/lib/actions/PostAction';
+import { IActionComponentProps } from 'rev-ui/lib/actions/types';
 import Button from 'material-ui/Button';
 
 export const MUIActionButton: React.SFC<IActionComponentProps> = (props) => {

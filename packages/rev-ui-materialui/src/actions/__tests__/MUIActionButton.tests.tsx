@@ -5,7 +5,7 @@ import * as sinon from 'sinon';
 import { mount, ReactWrapper } from 'enzyme';
 
 import { MUIActionButton } from '../MUIActionButton';
-import { IActionComponentProps } from 'rev-ui/lib/actions/PostAction';
+import { IActionComponentProps } from 'rev-ui/lib/actions/types';
 import Button from 'material-ui/Button';
 
 describe('MUIActionButton', () => {
