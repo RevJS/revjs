@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 
-import { IModelContextProp } from '../views/DetailView';
+import { IModelContextProp, IModelContext } from '../views/DetailView';
 import { withModelContext } from '../views/withModelContext';
 import { UI_COMPONENTS } from '../config';
 import { IActionComponentProps } from './types';
@@ -11,6 +11,8 @@ export interface ISaveActionProps {
     label?: string;
     onSuccess?: (result: IModelOperationResult<any, any>) => void;
     onError?: (error: Error) => void;
+
+    disabled?: (context: IModelContext) => boolean;
 
     component?: React.ComponentType;
 }
@@ -60,9 +62,15 @@ class SaveActionC extends React.Component<ISaveActionProps & IModelContextProp> 
     }
 
     render() {
+        let disabled = this.props.modelContext.loadState != 'NONE';
+
+        if (!disabled && this.props.disabled) {
+            disabled = this.props.disabled(this.props.modelContext);
+        }
+
         const cProps: IActionComponentProps = {
             label: this.props.label,
-            disabled: this.props.modelContext.loadState != 'NONE',
+            disabled,
             doAction: () => this.doAction(),
             children: this.props.children
         };

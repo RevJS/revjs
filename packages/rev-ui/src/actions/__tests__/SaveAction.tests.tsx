@@ -6,7 +6,7 @@ import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
-import { DetailView, IModelContextProp } from '../../views/DetailView';
+import { DetailView, IModelContextProp, IModelContext } from '../../views/DetailView';
 import { SaveAction, ISaveActionProps } from '../SaveAction';
 import { withModelContext } from '../../views/withModelContext';
 import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
@@ -231,6 +231,41 @@ describe('SaveAction', () => {
             expect(result.success).to.be.true;
 
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
+        });
+
+    });
+
+    describe('disabled property', () => {
+        let modelManager: rev.ModelManager;
+
+        before(() => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="User">
+                        <SaveAction
+                            label="Save"
+
+                            disabled={(ctx: IModelContext<models.User>) => {
+                                return ctx.model.name == 'should be disabled';
+                            }}
+
+                            component={SpyComponent}
+                        />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
+
+        it('control not disabled when disabled function returns false', () => {
+            expect(receivedProps.disabled).to.be.false;
+        });
+
+        it('control disabled when disabled function returns true', () => {
+            receivedProps.modelContext.model.name = 'should be disabled';
+            receivedProps.modelContext.update();
+            expect(receivedProps.disabled).to.be.true;
         });
 
     });
