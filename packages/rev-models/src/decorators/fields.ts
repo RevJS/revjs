@@ -7,9 +7,13 @@ import { ISelectFieldOptions } from '../fields/selectionfields';
 /* RevModel Field Decorators */
 
 function addFieldMeta(target: any, fieldName: string, fieldObj: fld.Field) {
-    if (!target.__fields) {
+    if (!target.hasOwnProperty('__fields')) {
+        let fields = [];
+        if (target.__fields) {
+            fields = target.__fields.slice();
+        }
         Object.defineProperty(target, '__fields', {
-            enumerable: false, value: []
+            enumerable: false, value: fields
         });
     }
     target.__fields.push(fieldObj);
