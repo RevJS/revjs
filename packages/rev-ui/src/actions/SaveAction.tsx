@@ -45,15 +45,8 @@ class SaveActionC extends React.Component<ISaveActionProps & IModelContextProp> 
         const ctx = this.props.modelContext;
         ctx.setLoadState('SAVING');
 
-        let result: IModelOperationResult<any, any>;
-
         try {
-            if (ctx.manager.isNew(ctx.model)) {
-                result = await ctx.manager.create(ctx.model);
-            }
-            else {
-                result = await ctx.manager.update(ctx.model);
-            }
+            const result = await ctx.save();
             success(result);
         }
         catch (e) {

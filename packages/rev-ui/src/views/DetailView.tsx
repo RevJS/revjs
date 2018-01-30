@@ -6,6 +6,7 @@ import { IModel, IModelMeta, IModelManager } from 'rev-models';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 import { isSet } from 'rev-models/lib/utils';
 import { UI_COMPONENTS } from '../config';
+import { IModelOperationResult } from 'rev-models/lib/operations/operationresult';
 
 export interface IDetailViewProps {
     model: string;
@@ -25,6 +26,7 @@ export interface IModelContext<T extends IModel = IModel> {
     setLoadState(state: IModelLoadState): void;
     setDirty(dirty: boolean): void;
     validate(): Promise<ModelValidationResult>;
+    save(): Promise<IModelOperationResult<T, any>>;
     refresh(): void;
 }
 
@@ -59,6 +61,7 @@ export class DetailView extends React.Component<IDetailViewProps> {
             setLoadState: (state) => this.setLoadState(state),
             setDirty: (dirty) => this.setDirty(dirty),
             validate: () => this.validate(),
+            save: () => this.save(),
             refresh: () => this.forceUpdate()
         };
 
@@ -111,6 +114,20 @@ export class DetailView extends React.Component<IDetailViewProps> {
         ctx.validation = await this.context.modelManager.validate(ctx.model);
         this.forceUpdate();
         return ctx.validation;
+    }
+
+    async save() {
+        const ctx = this.modelContext;
+        let result: IModelOperationResult<any, any>;
+        if (ctx.manager.isNew(ctx.model)) {
+            result = await ctx.manager.create(ctx.model);
+        }
+        else {
+            result = await ctx.manager.update(ctx.model);
+        }
+        ctx.validation = result.validation;
+        this.forceUpdate();
+        return result;
     }
 
     static childContextTypes = {
