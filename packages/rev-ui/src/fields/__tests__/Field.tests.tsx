@@ -272,13 +272,6 @@ describe('Field', () => {
                 expect(receivedProps.modelContext.dirty).to.be.true;
             });
 
-            it('if there were field errors, they are removed', async () => {
-                await receivedProps.modelContext.validate();
-                expect(receivedProps.errors).to.have.length(1);
-                receivedProps.onChange('Awesome Post');
-                expect(receivedProps.errors).to.have.length(0);
-            });
-
         });
 
     });
