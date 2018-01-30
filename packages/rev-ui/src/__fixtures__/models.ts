@@ -1,11 +1,11 @@
 import {
     ModelManager, InMemoryBackend,
     IntegerField, TextField, BooleanField, DateTimeField,
-    RelatedModel, RelatedModelList
+    RelatedModel, RelatedModelList, AutoNumberField
 } from 'rev-models';
 
 export class User {
-    @IntegerField({ primaryKey: true })
+    @AutoNumberField({ primaryKey: true })
         id: number;
     @TextField()
         name: string;

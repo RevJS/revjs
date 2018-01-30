@@ -7,12 +7,12 @@ import * as rev from 'rev-models';
 import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
 import { DetailView, IModelContextProp } from '../../views/DetailView';
-import { PostAction, IPostActionProps } from '../PostAction';
+import { SaveAction, ISaveActionProps } from '../SaveAction';
 import { withModelContext } from '../../views/withModelContext';
-import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
+import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
 import { IActionComponentProps } from '../types';
 
-describe('PostAction', () => {
+describe('SaveAction', () => {
 
     describe('construction', () => {
         let errorStub: sinon.SinonStub;
@@ -27,21 +27,8 @@ describe('PostAction', () => {
 
         it('throws error when not nested inside a DetailView', () => {
             expect(() => {
-                mount(<PostAction label="Submit" url="/api" />);
+                mount(<SaveAction label="Save" />);
             }).to.throw('must be nested inside a DetailView');
-        });
-
-        it('throws error when the url property is not set', () => {
-            const Comp: any = PostAction;
-            const modelManager = models.getModelManager();
-            expect(() => {
-                mount(
-                    <ModelProvider modelManager={modelManager}>
-                        <DetailView model="Post">
-                            <Comp label="Submit" />
-                        </DetailView>
-                    </ModelProvider>);
-            }).to.throw('you must specify the url property');
         });
 
     });
@@ -68,20 +55,19 @@ describe('PostAction', () => {
             wrapper = mount(
                 <ModelProvider modelManager={modelManager}>
                     <DetailView model="Post">
-                        <PostAction
-                            label="Submit"
-                            url="/api"
+                        <SaveAction
+                            label="Save"
                             component={SpyComponent}
                         >
-                            Post The Thing!
-                        </PostAction>
+                            Save Stuff
+                        </SaveAction>
                     </DetailView>
                 </ModelProvider>
             );
         });
 
         it('renders any content passed as a child', () => {
-            expect(wrapper.text()).to.equal('Post The Thing!');
+            expect(wrapper.text()).to.equal('Save Stuff');
         });
 
     });
@@ -95,9 +81,8 @@ describe('PostAction', () => {
             mount(
                 <ModelProvider modelManager={modelManager}>
                     <DetailView model="Post">
-                        <PostAction
-                            label="Submit"
-                            url="/api"
+                        <SaveAction
+                            label="Save"
                             component={SpyComponent}
                         />
                     </DetailView>
@@ -106,7 +91,7 @@ describe('PostAction', () => {
         });
 
         it('passes through label', () => {
-            expect(receivedProps.label).to.equal('Submit');
+            expect(receivedProps.label).to.equal('Save');
         });
 
         it('disabled = false', () => {
@@ -130,9 +115,8 @@ describe('PostAction', () => {
             mount(
                 <ModelProvider modelManager={modelManager}>
                     <DetailView model="Post" primaryKeyValue="1">
-                        <PostAction
-                            label="Submit"
-                            url="/api"
+                        <SaveAction
+                            label="Save"
                             component={SpyComponent}
                         />
                     </DetailView>
@@ -141,7 +125,7 @@ describe('PostAction', () => {
         });
 
         it('passes through label', () => {
-            expect(receivedProps.label).to.equal('Submit');
+            expect(receivedProps.label).to.equal('Save');
         });
 
         it('disabled = true', () => {
@@ -156,46 +140,38 @@ describe('PostAction', () => {
 
     describe('doAction()', () => {
         let modelManager: rev.ModelManager;
-        let fetchStub: sinon.SinonStub;
-        let onResponseCallback: sinon.SinonSpy;
+        let onSuccessCallback: sinon.SinonSpy;
         let onErrorCallback: sinon.SinonSpy;
-        let props: IPostActionProps;
+        let props: ISaveActionProps;
 
         function render() {
             mount(
                 <ModelProvider modelManager={modelManager}>
                     <DetailView model="User">
-                        <PostAction {...props} />
+                        <SaveAction {...props} />
                     </DetailView>
                 </ModelProvider>
             );
         }
 
         beforeEach(() => {
-            fetchStub = sinon.stub();
-            onResponseCallback = sinon.spy();
+            onSuccessCallback = sinon.spy();
             onErrorCallback = sinon.spy();
-            global.fetch = fetchStub;
 
             resetSpyComponent();
             modelManager = models.getModelManager();
             props = {
-                label: 'Submit',
-                url: '/api',
-                onResponse: onResponseCallback,
+                label: 'Save',
+                onSuccess: onSuccessCallback,
                 onError: onErrorCallback,
                 component: SpyComponent
             };
             render();
         });
 
-        afterEach(() => {
-            delete global.fetch;
-        });
-
-        function setupValidModel() {
+        function setupValidModel(options: { id: number }) {
             const user = new models.User({
-                id: 100, name: 'Bob'
+                id: options.id, name: 'Bob'
             });
             receivedProps.modelContext.model = user;
             return user;
@@ -207,7 +183,7 @@ describe('PostAction', () => {
             expect(receivedProps.modelContext.loadState).to.equal('SAVING');
         });
 
-        it('resets loadState and calls onError() if model is not valid', async () => {
+        it('resets loadState and calls onError() if there was an error (e.g. model is not valid)', async () => {
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
 
             await receivedProps.doAction();
@@ -216,68 +192,44 @@ describe('PostAction', () => {
             const err = onErrorCallback.getCall(0).args[0];
             expect(err).to.be.instanceof(Error);
             expect(err.message).to.equal('ValidationError');
-            expect(err.validation).to.be.instanceof(ModelValidationResult);
-            expect(err.validation.valid).to.be.false;
+            expect(err.result).to.be.instanceof(ModelOperationResult);
+            expect(err.result.validation.valid).to.be.false;
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
         });
 
-        it('calls fetch() with model data if model is valid', async () => {
-            const user = setupValidModel();
-
-            await receivedProps.doAction();
-
-            expect(fetchStub.callCount).to.equal(1);
-            expect(fetchStub.getCall(0).args[0]).to.equal('/api');
-            expect(fetchStub.getCall(0).args[1]).to.deep.equal({
-                method: 'post',
-                body: JSON.stringify(user),
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'same-origin',
-            });
-        });
-
-        it('calls fetch() with alternative url and method if they are set', async () => {
-            props.url = 'http://www.othersite.com/api';
-            props.httpMethod = 'put';
-            render();
-            setupValidModel();
-
-            await receivedProps.doAction();
-
-            expect(fetchStub.callCount).to.equal(1);
-
-            expect(fetchStub.getCall(0).args[0]).to.equal(props.url);
-            expect(fetchStub.getCall(0).args[1].method).to.equal('put');
-        });
-
-        it('resets loadState and calls onResponse() if fetch is successful', async () => {
+        it('when model is valid, and is a new record, it is created and onSuccess() is called', async () => {
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
-
-            setupValidModel();
-            const expectedResponse = { status: 200 };
-            fetchStub.returns(Promise.resolve(expectedResponse));
+            setupValidModel({ id: null });
 
             await receivedProps.doAction();
+
+            expect(onSuccessCallback.callCount).to.equal(1);
+            const result: rev.IModelOperationResult<any, any> = onSuccessCallback.getCall(0).args[0];
+
+            expect(result).to.be.instanceof(ModelOperationResult);
+            expect(result.operation.operation).to.equal('create');
+            expect(result.success).to.be.true;
+            expect(result.result).not.to.be.undefined;
+            expect(result.result).to.be.instanceof(models.User);
+            expect(result.result.id).not.to.be.null;
 
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
-            expect(onResponseCallback.callCount).to.equal(1);
-            expect(onResponseCallback.getCall(0).args[0]).to.equal(expectedResponse);
         });
 
-        it('resets loadState and calls onError() if fetch throws an error', async () => {
+        it('when model is valid, and is an existing record, it is updated and onSuccess() is called', async () => {
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
-            setupValidModel();
-
-            const expectedError = new Error('Boom!!!');
-            fetchStub.returns(Promise.reject(expectedError));
+            setupValidModel({ id: 100 });
 
             await receivedProps.doAction();
 
-            expect(onErrorCallback.callCount).to.equal(1);
-            expect(onErrorCallback.getCall(0).args[0]).to.equal(expectedError);
+            expect(onSuccessCallback.callCount).to.equal(1);
+            const result: rev.IModelOperationResult<any, any> = onSuccessCallback.getCall(0).args[0];
+
+            expect(result).to.be.instanceof(ModelOperationResult);
+            expect(result.operation.operation).to.equal('update');
+            expect(result.operation.where).to.deep.equal({ id: 100 });
+            expect(result.success).to.be.true;
+
             expect(receivedProps.modelContext.loadState).to.equal('NONE');
         });
 

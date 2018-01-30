@@ -8,3 +8,4 @@ export { withModelContext } from './views/withModelContext';
 
 export { Field } from './fields/Field';
 export { PostAction } from './actions/PostAction';
+export { SaveAction } from './actions/SaveAction';

@@ -4,6 +4,7 @@ import * as React from 'react';
 import { IModelContextProp } from '../views/DetailView';
 import { withModelContext } from '../views/withModelContext';
 import { UI_COMPONENTS } from '../config';
+import { IActionComponentProps } from './types';
 
 export interface IPostActionProps {
     label?: string;
@@ -13,14 +14,6 @@ export interface IPostActionProps {
     onError?: (error: Error) => void;
 
     component?: React.ComponentType;
-}
-
-export interface IActionComponentProps {
-    label: string;
-    disabled: boolean;
-    doAction(): Promise<void>;
-
-    children?: React.ReactNode;
 }
 
 class PostActionC extends React.Component<IPostActionProps & IModelContextProp> {
