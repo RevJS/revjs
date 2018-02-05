@@ -1,6 +1,6 @@
 {
   "name": "rev-models",
-  "version": "0.5.1",
+  "version": "0.6.1",
   "description": "RevJS Isomorphic Data Library - Core Data Model Components",
   "main": "lib/index.js",
   "scripts": {
