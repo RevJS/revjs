@@ -2,7 +2,7 @@ import {
     fields, ModelManager, InMemoryBackend,
     IntegerField, TextField, DateField, BooleanField, DateTimeField,
     AutoNumberField, NumberField, SelectField, TimeField,
-    RelatedModel, RelatedModelList
+    RelatedModel, RelatedModelList, MultiSelectField
 } from 'rev-models';
 
 export class User {
@@ -33,7 +33,7 @@ export class Post {
         published: boolean;
     @DateTimeField()
         post_date: string;
-    @RelatedModel({ model: 'User' })
+    @RelatedModel({ model: 'User', required: false })
         user: User;
     @RelatedModelList({ model: 'Comment', field: 'post' })
         comments: Comment[];
@@ -101,7 +101,9 @@ export class ModelWithAllScalarFields {
     @BooleanField()
         booleanField: boolean;
     @SelectField({ selection: [['Y', 'Yes'], ['N', 'No']] })
-        selectionField: string;
+        selectField: string;
+    @MultiSelectField({ selection: [['A', 'Option A'], ['B', 'Option B']] })
+        multiSelectField: string[];
     @DateField()
         dateField: string;
     @TimeField()

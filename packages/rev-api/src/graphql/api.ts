@@ -27,7 +27,7 @@ export class GraphQLApi implements IGraphQLApi {
             [fields.TextField, { type: GraphQLString, converter: (model, fieldName) => model[fieldName] }],
             [fields.BooleanField, { type: GraphQLBoolean, converter: (model, fieldName) => model[fieldName] }],
             [fields.SelectField, { type: GraphQLString, converter: (model, fieldName) => model[fieldName] }],
-            [fields.MultiSelectField, { type: GraphQLString, converter: (model, fieldName) => model[fieldName] }],  // TODO: Should be array
+            [fields.MultiSelectField, { type: new GraphQLList(GraphQLString), converter: (model, fieldName) => model[fieldName] }],
             [fields.DateField, { type: GraphQLString, converter: (model, fieldName) => model[fieldName] }],
             [fields.TimeField, { type: GraphQLString, converter: (model, fieldName) => model[fieldName] }],
             [fields.DateTimeField, { type: GraphQLString, converter: (model, fieldName) => model[fieldName] }],

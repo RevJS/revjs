@@ -114,7 +114,8 @@ describe('GraphQL query type - scalar model data', () => {
                 numberField: 3.456,
                 textField: 'A test model with all default field types',
                 booleanField: true,
-                selectionField: 'Y',
+                selectField: 'Y',
+                multiSelectField: ['A', 'B'],
                 dateField: '2017-12-25',
                 timeField: '12:13:14',
                 dateTimeField: '2017-12-25T12:13:14'
@@ -134,7 +135,8 @@ describe('GraphQL query type - scalar model data', () => {
                             numberField
                             textField
                             booleanField
-                            selectionField
+                            selectField
+                            multiSelectField
                             dateField
                             timeField
                             dateTimeField
@@ -150,7 +152,8 @@ describe('GraphQL query type - scalar model data', () => {
                 numberField: expectedData.numberField,
                 textField: expectedData.textField,
                 booleanField: expectedData.booleanField,
-                selectionField: expectedData.selectionField,
+                selectField: expectedData.selectField,
+                multiSelectField: expectedData.multiSelectField,
                 dateField: expectedData.dateField,
                 timeField: expectedData.timeField,
                 dateTimeField: expectedData.dateTimeField
@@ -185,7 +188,8 @@ describe('GraphQL query type - scalar model data', () => {
                 numberField: 3.456,
                 textField: 'I should be overridden...',
                 booleanField: true,
-                selectionField: 'Y',
+                selectField: 'Y',
+                multiSelectField: ['A', 'B'],
                 dateField: '2017-12-25',
                 timeField: '12:13:14',
                 dateTimeField: '2017-12-25T12:13:14'
@@ -205,7 +209,8 @@ describe('GraphQL query type - scalar model data', () => {
                             numberField
                             textField
                             booleanField
-                            selectionField
+                            selectField
+                            multiSelectField
                             dateField
                             timeField
                             dateTimeField
