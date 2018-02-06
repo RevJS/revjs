@@ -35,6 +35,10 @@ describe('GraphQL "mutation" type - Model_create()', () => {
                                         }
                                     }
                                 }
+                                type {
+                                    name
+                                    kind
+                                }
                             }
                         }
                     }
@@ -55,6 +59,11 @@ describe('GraphQL "mutation" type - Model_create()', () => {
             expect(signature.args[0].type.kind).to.equal('NON_NULL');
             expect(signature.args[0].type.ofType.name).to.equal('Post_input');
             expect(signature.args[0].type.ofType.kind).to.equal('INPUT_OBJECT');
+        });
+
+        it('return type is JSON (will be a ModelOperationResult)', () => {
+            expect(signature.type.name).to.equal('JSON');
+            expect(signature.type.kind).to.equal('SCALAR');
         });
 
     });
