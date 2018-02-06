@@ -107,9 +107,15 @@ export class GraphQLApi implements IGraphQLApi {
             let meta = this.getModelManager().getModelMeta(modelName);
             const fieldConfig = {};
             meta.fields.forEach((field) => {
-                fieldConfig[field.name] = {
-                    type: GraphQLString
-                };
+                if (!(field instanceof fields.RelatedModelFieldBase)) {
+                    for (const fieldMapping of this.fieldConverters) {
+                        if (field instanceof fieldMapping[0]) {
+                            fieldConfig[field.name] = {
+                                type: fieldMapping[1].type
+                            };
+                        }
+                    }
+                }
             });
             const inputObject = new GraphQLInputObjectType({
                 name: modelName + '_input',
