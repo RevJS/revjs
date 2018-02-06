@@ -19,7 +19,15 @@ export function getModelOperationMutations(api: IGraphQLApi, meta: IApiMeta): Gr
                 resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
                     const model = modelManager.hydrate(modelMeta.ctor, args.model);
                     if (operationName == 'create') {
-                        return modelManager.create(model);
+                        return modelManager.create(model)
+                            .catch((e) => {
+                                if (e.message == 'ValidationError') {
+                                    return e.result;
+                                }
+                                else {
+                                    throw e;
+                                }
+                            });
                     }
                     else {
                         throw new Error('Unrecognised operation: ' + operationName);

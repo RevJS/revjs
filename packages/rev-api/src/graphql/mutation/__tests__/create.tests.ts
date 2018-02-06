@@ -1,11 +1,11 @@
 
 import { expect } from 'chai';
-import * as sinon from 'sinon';
 import { ModelApiManager } from '../../../api/manager';
 import * as models from '../../__fixtures__/models';
 import { graphql, GraphQLSchema } from 'graphql';
 import { GraphQLApi } from '../../api';
-import { ModelManager } from 'rev-models';
+import { ModelManager, IModelOperationResult } from 'rev-models';
+import { ICreateMeta } from 'rev-models/lib/models/types';
 
 describe('GraphQL "mutation" type - Model_create()', () => {
 
@@ -75,8 +75,6 @@ describe('GraphQL "mutation" type - Model_create()', () => {
         let apiManager: ModelApiManager;
         let api: GraphQLApi;
         let schema: GraphQLSchema;
-        let createSpy: sinon.SinonSpy;
-        const expectedResult = { success: true };
 
         beforeEach(() => {
             modelManager = models.getModelManager();
@@ -84,8 +82,6 @@ describe('GraphQL "mutation" type - Model_create()', () => {
             apiManager.register(models.Post, { operations: ['create'] });
             api = new GraphQLApi(apiManager);
             schema = api.getSchema();
-            createSpy = sinon.stub().returns(Promise.resolve(expectedResult));
-            modelManager.create = createSpy;
         });
 
         it('When "model" arg is not specified, an error is returned', async () => {
@@ -99,53 +95,67 @@ describe('GraphQL "mutation" type - Model_create()', () => {
             expect(result.errors[0].message).to.contain('argument "model" of type "Post_input!" is required but not provide');
         });
 
-        it('When model arg is empty, an empty model is hydrated and passed to ModelManager.create()', async () => {
-            const query = `
-                mutation {
-                    Post_create( model: {} )
-                }
-            `;
-            await graphql(schema, query);
-            expect(createSpy.callCount).to.equal(1);
-            expect(createSpy.getCall(0).args).to.deep.equal([
-                new models.Post({})
-            ]);
-        });
-
-        it('When model arg has values, they are hydrated and passed to ModelManager.create()', async () => {
+        it('When model has validation errors, an unsuccessful result is returned with the errors', async () => {
             const query = `
                 mutation {
                     Post_create(model: {
-                        title: "GraphQL Post",
-                        body: "rev-api is really cool",
-                        published: true,
-                        post_date: "2018-02-06T16:01:27"
+                        title: "Incomplete Post...",
                     })
-                }
-            `;
-            await graphql(schema, query);
-            expect(createSpy.callCount).to.equal(1);
-            expect(createSpy.getCall(0).args).to.deep.equal([
-                new models.Post({
-                    title: 'GraphQL Post',
-                    body: 'rev-api is really cool',
-                    published: true,
-                    post_date: '2018-02-06T16:01:27'
-                })
-            ]);
-        });
-
-        it('Model_create() returns the result of modelManager.create()', async () => {
-            const query = `
-                mutation {
-                    Post_create( model: {} )
                 }
             `;
             const result = await graphql(schema, query);
             expect(result.errors).to.be.undefined;
-            expect(result.data).to.deep.equal({
-                Post_create: expectedResult
+            expect(result.data).to.be.an('object');
+            expect(result.data.Post_create).to.be.an('object');
+
+            const opResult: IModelOperationResult<any, ICreateMeta> = result.data.Post_create;
+            expect(opResult.success).to.be.false;
+            expect(opResult.validation).to.be.an('object');
+            expect(opResult.validation.fieldErrors).to.have.property('body');
+            expect(opResult.validation.fieldErrors).to.have.property('published');
+            expect(opResult.validation.fieldErrors).to.have.property('post_date');
+        });
+
+        it('When model is valid, a successful result is returned with the created model', async () => {
+            const query = `
+                mutation {
+                    Post_create(model: {
+                        title: "Awesome Post",
+                        body: "This post is valid and therefore awesome",
+                        published: true,
+                        post_date: "2018-01-01T12:01:12"
+                    })
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.errors).to.be.undefined;
+            expect(result.data).to.be.an('object');
+            expect(result.data.Post_create).to.be.an('object');
+
+            const opResult: IModelOperationResult<any, ICreateMeta> = result.data.Post_create;
+            expect(opResult.success).to.be.true;
+            expect(opResult.result).to.deep.include({
+                id: 1,
+                title: 'Awesome Post',
+                body: 'This post is valid and therefore awesome',
+                published: true,
+                post_date: '2018-01-01T12:01:12'
             });
+        });
+
+        // TODO: We should recommend some best practise for hiding error details in production
+        it('if modelManager.create() throws some other error, a graphql error is raised', async () => {
+            const expectedError = new Error('AAAAAAAaaaAaaaarrrrgh!!!!');
+            modelManager.create = () => Promise.reject(expectedError);
+
+            const query = `
+                mutation {
+                    Post_create(model: {})
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.errors).to.have.length(1);
+            expect(result.errors[0].message).to.equal(expectedError.message);
         });
 
     });
