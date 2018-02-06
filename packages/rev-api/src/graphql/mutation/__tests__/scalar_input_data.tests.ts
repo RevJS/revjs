@@ -43,7 +43,7 @@ describe('GraphQL "mutation" type - scalar input data', () => {
                     })
                 }
             `;
-            const result = await graphql(schema, query);
+            await graphql(schema, query);
             expect(createSpy.callCount).to.equal(1);
             expect(createSpy.getCall(0).args).to.deep.equal([
                 new models.ModelWithAllScalarFields({
