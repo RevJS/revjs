@@ -1,4 +1,4 @@
-import { GraphQLFieldConfigMap, GraphQLNonNull, GraphQLResolveInfo } from 'graphql';
+import { GraphQLFieldConfigMap, GraphQLNonNull, GraphQLResolveInfo, GraphQLList, GraphQLString } from 'graphql';
 import { IApiMeta } from '../../api/types';
 import * as GraphQLJSON from 'graphql-type-json';
 import { IGraphQLApi } from '../types';
@@ -9,8 +9,9 @@ export function getModelOperationMutations(api: IGraphQLApi, meta: IApiMeta): Gr
     const mutations = {};
 
     for (let operationName of meta.operations) {
-        if (operationName != 'read') {
-            let mutationName = meta.model + '_' + operationName;
+
+        if (operationName == 'create') {
+            let mutationName = meta.model + '_create';
             mutations[mutationName] = {
                 type: GraphQLJSON,
                 args: {
@@ -18,23 +19,64 @@ export function getModelOperationMutations(api: IGraphQLApi, meta: IApiMeta): Gr
                 },
                 resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
                     const model = modelManager.hydrate(modelMeta.ctor, args.model);
-                    if (operationName == 'create') {
-                        return modelManager.create(model)
-                            .catch((e) => {
-                                if (e.message == 'ValidationError') {
-                                    return e.result;
-                                }
-                                else {
-                                    throw e;
-                                }
-                            });
-                    }
-                    else {
-                        throw new Error('Unrecognised operation: ' + operationName);
-                    }
+                    return modelManager.create(model)
+                        .catch((e) => {
+                            if (e.message == 'ValidationError') {
+                                return e.result;
+                            }
+                            else {
+                                throw e;
+                            }
+                        });
                 }
             };
         }
+        else if (operationName == 'update') {
+            let mutationName = meta.model + '_update';
+            mutations[mutationName] = {
+                type: GraphQLJSON,
+                args: {
+                    model: { type: new GraphQLNonNull(api.getModelInputObject(meta.model)) },
+                    where: { type: GraphQLJSON },
+                    fields: { type: new GraphQLList(GraphQLString)}
+                },
+                resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
+                    const model = modelManager.hydrate(modelMeta.ctor, args.model);
+                    return modelManager.update(model, {
+                        where: args.where,
+                        fields: args.fields
+                    })
+                    .catch((e) => {
+                        if (e.message == 'ValidationError') {
+                            return e.result;
+                        }
+                        else {
+                            throw e;
+                        }
+                    });
+                }
+            };
+        }
+        else if (operationName == 'remove') {
+            let mutationName = meta.model + '_remove';
+            mutations[mutationName] = {
+                type: GraphQLJSON,
+                args: {
+                    model: { type: new GraphQLNonNull(api.getModelInputObject(meta.model)) },
+                    where: { type: GraphQLJSON }
+                },
+                resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
+                    // const model = modelManager.hydrate(modelMeta.ctor, args.model);
+                    // return modelManager.remove(model, {
+                    //     where: args.where
+                    // });
+                }
+            };
+        }
+        else if (operationName != 'read') {
+            throw new Error('Unrecognised operation: ' + operationName);
+        }
+
     }
 
     return mutations;
