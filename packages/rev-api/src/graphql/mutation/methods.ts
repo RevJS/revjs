@@ -1,10 +1,10 @@
-import { IApiMeta, IModelApiManager } from '../../api/types';
-import { GraphQLFieldConfigMap, GraphQLInputObjectType, GraphQLNonNull, GraphQLString, GraphQLFieldConfigArgumentMap } from 'graphql';
+import { IApiMeta } from '../../api/types';
+import { GraphQLFieldConfigMap, GraphQLNonNull, GraphQLString, GraphQLFieldConfigArgumentMap } from 'graphql';
 import * as GraphQLJSON from 'graphql-type-json';
-import { getModelInputConfig } from './model';
 import { getMethodResolver } from './resolve_method';
+import { IGraphQLApi } from '../types';
 
-export function getModelMethodMutations(manager: IModelApiManager, meta: IApiMeta): GraphQLFieldConfigMap<any, any> {
+export function getModelMethodMutations(api: IGraphQLApi, meta: IApiMeta): GraphQLFieldConfigMap<any, any> {
     let fields = {};
 
     for (let methodName in meta.methods) {
@@ -14,9 +14,9 @@ export function getModelMethodMutations(manager: IModelApiManager, meta: IApiMet
         let argsConfig: GraphQLFieldConfigArgumentMap = {};
 
         if (methodMeta.modelData) {
-            let modelTypeConfig = getModelInputConfig(manager.getModelManager().getModelMeta(meta.model));
+            let modelInputType = api.getModelInputObject(meta.model);
             argsConfig['model'] = {
-                type: new GraphQLNonNull(new GraphQLInputObjectType(modelTypeConfig))
+                type: new GraphQLNonNull(modelInputType)
             };
         }
 
@@ -31,7 +31,7 @@ export function getModelMethodMutations(manager: IModelApiManager, meta: IApiMet
         fields[mutationName] = {
             type: GraphQLJSON,
             args: argsConfig,
-            resolve: getMethodResolver(manager, meta.model, methodName)
+            resolve: getMethodResolver(api.getApiManager(), meta.model, methodName)
         };
     }
 

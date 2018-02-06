@@ -1,6 +1,6 @@
 import { fields, IModelManager } from 'rev-models';
 
-import { GraphQLSchema, GraphQLObjectType, GraphQLResolveInfo, GraphQLList, FieldNode, GraphQLType } from 'graphql';
+import { GraphQLSchema, GraphQLObjectType, GraphQLResolveInfo, GraphQLList, FieldNode, GraphQLType, GraphQLInputObjectType } from 'graphql';
 import { GraphQLInt, GraphQLFloat, GraphQLString, GraphQLBoolean } from 'graphql/type/scalars';
 import * as GraphQLJSON from 'graphql-type-json';
 import { getMutationConfig } from './mutation/mutation';
@@ -12,6 +12,7 @@ import { IModelOperationResult } from '../../../rev-models/lib/operations/operat
 export class GraphQLApi implements IGraphQLApi {
     fieldConverters: Array<[new(...args: any[]) => fields.Field, IGraphQLFieldConverter]>;
     modelObjectTypes: { [modelName: string]: GraphQLObjectType } = {};
+    modelInputTypes: { [modelName: string]: GraphQLInputObjectType } = {};
 
     constructor(private manager: IModelApiManager) {
         if (!manager || typeof manager.getApiMeta != 'function') {
@@ -94,6 +95,27 @@ export class GraphQLApi implements IGraphQLApi {
 
     getModelObject(modelName: string): GraphQLObjectType {
         return this.modelObjectTypes[modelName];
+    }
+
+    getModelInputObject(modelName: string): GraphQLInputObjectType {
+        if (modelName in this.modelInputTypes) {
+            return this.modelInputTypes[modelName];
+        }
+        else {
+            let meta = this.getModelManager().getModelMeta(modelName);
+            const fieldConfig = {};
+            meta.fields.forEach((field) => {
+                fieldConfig[field.name] = {
+                    type: GraphQLString
+                };
+            });
+            const inputObject = new GraphQLInputObjectType({
+                name: modelName + '_input',
+                fields: fieldConfig
+            });
+            this.modelInputTypes[modelName] = inputObject;
+            return inputObject;
+        }
     }
 
     getModelQueryResultsObject(modelName: string, metaObject: GraphQLObjectType): GraphQLObjectType {
@@ -254,7 +276,7 @@ export class GraphQLApi implements IGraphQLApi {
             this.modelObjectTypes[modelName] = this.generateModelObject(modelName);
         });
 
-        const mutations = getMutationConfig(this.manager);
+        const mutations = getMutationConfig(this);
 
         return new GraphQLSchema({
             query: this.getSchemaQueryObject(),

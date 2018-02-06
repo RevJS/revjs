@@ -1,8 +1,9 @@
-import { GraphQLFieldConfigMap, GraphQLNonNull, GraphQLInt, GraphQLResolveInfo } from 'graphql';
-import { IApiMeta, IModelApiManager } from '../../api/types';
+import { GraphQLFieldConfigMap, GraphQLNonNull, GraphQLResolveInfo } from 'graphql';
+import { IApiMeta } from '../../api/types';
 import * as GraphQLJSON from 'graphql-type-json';
+import { IGraphQLApi } from '../types';
 
-export function getModelOperationMutations(manager: IModelApiManager, meta: IApiMeta): GraphQLFieldConfigMap<any, any> {
+export function getModelOperationMutations(api: IGraphQLApi, meta: IApiMeta): GraphQLFieldConfigMap<any, any> {
     let fields = {};
 
     for (let operationName of meta.operations) {
@@ -11,7 +12,7 @@ export function getModelOperationMutations(manager: IModelApiManager, meta: IApi
             fields[mutationName] = {
                 type: GraphQLJSON,
                 args: {
-                    id: { type: new GraphQLNonNull(GraphQLInt) }
+                    model: { type: new GraphQLNonNull(api.getModelInputObject(meta.model)) }
                 },
                 resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
                     return {
