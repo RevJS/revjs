@@ -102,15 +102,24 @@ describe('GraphQL query type - scalar model data', () => {
         let apiManager: ModelApiManager;
         let schema: GraphQLSchema;
         let modelManager: ModelManager;
-        let data: models.ModelWithAllScalarFields;
+        let expectedData: models.ModelWithAllScalarFields;
 
         beforeEach(async () => {
             modelManager = models.getModelManager();
             apiManager = new ModelApiManager(modelManager);
             apiManager.register(models.ModelWithAllScalarFields, { operations: ['read'] });
 
-            data = new models.ModelWithAllScalarFields();
-            await modelManager.create(data);
+            expectedData = new models.ModelWithAllScalarFields({
+                integerField: 2,
+                numberField: 3.456,
+                textField: 'A test model with all default field types',
+                booleanField: true,
+                selectionField: 'Y',
+                dateField: '2017-12-25',
+                timeField: '12:13:14',
+                dateTimeField: '2017-12-25T12:13:14'
+            });
+            await modelManager.create(expectedData);
 
             schema = apiManager.getGraphQLSchema();
         });
@@ -137,14 +146,14 @@ describe('GraphQL query type - scalar model data', () => {
             expect(result.data.ModelWithAllScalarFields.results).to.have.length(1);
             expect(result.data.ModelWithAllScalarFields.results[0]).to.deep.equal({
                 autoNumberField: 1,
-                integerField: 2,
-                numberField: 3.456,
-                textField: 'A test model with all default field types',
-                booleanField: true,
-                selectionField: 'Y',
-                dateField: '2017-12-25',
-                timeField: '12:13:14',
-                dateTimeField: '2017-12-25T12:13:14'
+                integerField: expectedData.integerField,
+                numberField: expectedData.numberField,
+                textField: expectedData.textField,
+                booleanField: expectedData.booleanField,
+                selectionField: expectedData.selectionField,
+                dateField: expectedData.dateField,
+                timeField: expectedData.timeField,
+                dateTimeField: expectedData.dateTimeField
             });
         });
 
@@ -171,7 +180,16 @@ describe('GraphQL query type - scalar model data', () => {
                 }
             });
 
-            data = new models.ModelWithAllScalarFields();
+            data = new models.ModelWithAllScalarFields({
+                integerField: 2,
+                numberField: 3.456,
+                textField: 'I should be overridden...',
+                booleanField: true,
+                selectionField: 'Y',
+                dateField: '2017-12-25',
+                timeField: '12:13:14',
+                dateTimeField: '2017-12-25T12:13:14'
+            });
             await modelManager.create(data);
 
             schema = api.getSchema();

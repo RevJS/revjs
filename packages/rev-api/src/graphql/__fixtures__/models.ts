@@ -6,12 +6,12 @@ import {
 } from 'rev-models';
 
 export class User {
-    @IntegerField({ primaryKey: true })
-        id: number = 1;
+    @AutoNumberField({ primaryKey: true })
+        id: number;
     @TextField()
-        name: string = 'A Test Model';
+        name: string;
     @DateField()
-        date_registered: string = '2017-12-01';
+        date_registered: string;
     @RelatedModelList({ model: 'Post', field: 'user' })
         posts: Post[];
 
@@ -23,8 +23,8 @@ export class User {
 }
 
 export class Post {
-    @IntegerField({ primaryKey: true })
-        id: number = 10;
+    @AutoNumberField({ primaryKey: true })
+        id: number;
     @TextField()
         title: string;
     @TextField()
@@ -48,7 +48,7 @@ export class Post {
 }
 
 export class Comment {
-    @IntegerField({ primaryKey: true })
+    @AutoNumberField({ primaryKey: true })
         id: number;
     @RelatedModel({ model: 'Post' })
         post: Post;
@@ -64,9 +64,9 @@ export class Comment {
 
 export class UnrelatedModel {
     @AutoNumberField({ primaryKey: true })
-        id: number = 1;
+        id: number;
     @TextField()
-        name: string = 'A model that doesnt have any relational links';
+        name: string;
 
     constructor(data?: Partial<User>) {
         Object.assign(this, data);
@@ -77,10 +77,10 @@ export class UnknownField extends fields.Field {}
 
 export class ModelWithUnknownField {
     unknownField: string;
-    @IntegerField()
-        id: number = 1;
+    @AutoNumberField()
+        id: number;
     @TextField()
-        name: string = 'A test model with a weird field type';
+        name: string;
 
     constructor(data?: Partial<User>) {
         Object.assign(this, data);
@@ -93,23 +93,23 @@ export class ModelWithAllScalarFields {
     @AutoNumberField()
         autoNumberField: number;
     @IntegerField()
-        integerField: number = 2;
+        integerField: number;
     @NumberField()
-        numberField: number = 3.456;
+        numberField: number;
     @TextField()
-        textField: string = 'A test model with all default field types';
+        textField: string;
     @BooleanField()
-        booleanField: boolean = true;
+        booleanField: boolean;
     @SelectField({ selection: [['Y', 'Yes'], ['N', 'No']] })
-        selectionField: string = 'Y';
+        selectionField: string;
     @DateField()
-        dateField: string = '2017-12-25';
+        dateField: string;
     @TimeField()
-        timeField: string = '12:13:14';
+        timeField: string;
     @DateTimeField()
-        dateTimeField: string = '2017-12-25T12:13:14';
+        dateTimeField: string;
 
-    constructor(data?: Partial<User>) {
+    constructor(data?: Partial<ModelWithAllScalarFields>) {
         Object.assign(this, data);
     }
 
