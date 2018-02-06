@@ -5,8 +5,10 @@ import { GraphQLInt, GraphQLFloat, GraphQLString, GraphQLBoolean } from 'graphql
 import * as GraphQLJSON from 'graphql-type-json';
 import { getMutationConfig } from './mutation/mutation';
 import { IModelApiManager } from '../api/types';
+import { NoModelsObjectType } from './types/NoModels';
+import { ApiReadMetaObjectType } from './types/ApiReadMeta';
 import { IGraphQLApi, IGraphQLFieldConverter } from './types';
-import { IReadOptions, IModelMeta, IReadMeta } from 'rev-models/lib/models/types';
+import { IReadOptions, IModelMeta } from 'rev-models/lib/models/types';
 import { IModelOperationResult } from '../../../rev-models/lib/operations/operationresult';
 
 export class GraphQLApi implements IGraphQLApi {
@@ -118,7 +120,7 @@ export class GraphQLApi implements IGraphQLApi {
         }
     }
 
-    getModelQueryResultsObject(modelName: string, metaObject: GraphQLObjectType): GraphQLObjectType {
+    getModelQueryResultsObject(modelName: string): GraphQLObjectType {
         let modelType = this.getModelObject(modelName);
         const objectConfig = {
             name: modelName + '_results',
@@ -128,45 +130,12 @@ export class GraphQLApi implements IGraphQLApi {
                     resolve: (rootValue: IModelOperationResult<any, any>) => rootValue.results
                 },
                 meta: {
-                    type: metaObject,
+                    type: ApiReadMetaObjectType,
                     resolve: (rootValue: IModelOperationResult<any, any>) => rootValue.meta
                 }
             }
         };
         return new GraphQLObjectType(objectConfig);
-    }
-
-    getQueryMetaObject(): GraphQLObjectType {
-        const objectConfig = {
-            name: 'RevApi_meta',
-            fields: {
-                limit: {
-                    type: GraphQLInt,
-                    resolve: (rootValue: IReadMeta) => rootValue.limit
-                },
-                offset: {
-                    type: GraphQLInt,
-                    resolve: (rootValue: IReadMeta) => rootValue.offset
-                },
-                totalCount: {
-                    type: GraphQLInt,
-                    resolve: (rootValue: IReadMeta) => rootValue.totalCount
-                },
-            }
-        };
-        return new GraphQLObjectType(objectConfig);
-    }
-
-    getNoModelsObject(): GraphQLObjectType {
-        return new GraphQLObjectType({
-            name: 'query',
-            fields: { no_models: {
-                type: GraphQLString,
-                resolve() {
-                    return 'No models have been registered for read access';
-                }}
-            }
-        });
     }
 
     _findRelationalFieldNodes(node: FieldNode, meta: IModelMeta<any>, relatedNodes: any) {
@@ -217,9 +186,8 @@ export class GraphQLApi implements IGraphQLApi {
 
     getSchemaQueryObject(): GraphQLObjectType {
         const readableModels = this.getReadableModels();
-        const queryMetaObject = this.getQueryMetaObject();
         if (readableModels.length == 0) {
-            return this.getNoModelsObject();
+            return NoModelsObjectType;
         }
         else {
             const models = this.getModelManager();
@@ -230,7 +198,7 @@ export class GraphQLApi implements IGraphQLApi {
             for (let modelName of readableModels) {
                 let modelMeta = models.getModelMeta(modelName);
                 queryObjectConfig.fields[modelName] = {
-                    type: this.getModelQueryResultsObject(modelName, queryMetaObject),
+                    type: this.getModelQueryResultsObject(modelName),
                     args: {
                         where: { type: GraphQLJSON },
                         limit: { type: GraphQLInt },
