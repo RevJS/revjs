@@ -1,6 +1,6 @@
 
 import { IBackend } from '../';
-import { IModel, IModelMeta, IModelManager, ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IReadMeta, IReadOptions, IRemoveMeta, IRemoveOptions, IExecArgs, IExecMeta, IExecOptions, IRawValues } from '../../models/types';
+import { IModel, IModelMeta, IModelManager, ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IReadMeta, IReadOptions, IRemoveMeta, IRemoveOptions, IExecMeta, IExecOptions, IRawValues } from '../../models/types';
 import { ModelOperationResult, IModelOperationResult } from '../../operations/operationresult';
 import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
@@ -39,7 +39,11 @@ export class InMemoryBackend implements IBackend {
         this._storage = {};
     }
 
-    async load<T extends IModel>(manager: IModelManager, model: new(...args: any[]) => T, data: any[]): Promise<void> {
+    async load<T extends IModel>(
+            manager: IModelManager,
+            model: new(...args: any[]) => T,
+            data: any[]): Promise<void> {
+
         let meta = manager.getModelMeta(model);
         let modelStorage = this._getModelStorage(meta);
 
@@ -53,7 +57,11 @@ export class InMemoryBackend implements IBackend {
         }
     }
 
-    async create<T extends IModel>(manager: IModelManager, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
+    async create<T extends IModel>(
+            manager: IModelManager,
+            model: T,
+            options: ICreateOptions,
+            result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
 
         if (this.OPERATION_DELAY) {
             await sleep(this.OPERATION_DELAY);
@@ -70,9 +78,13 @@ export class InMemoryBackend implements IBackend {
         return result;
     }
 
-    async update<T extends IModel>(manager: IModelManager, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+    async update<T extends IModel>(
+            manager: IModelManager,
+            model: T,
+            options: IUpdateOptions,
+            result: ModelOperationResult<T, IUpdateMeta>): Promise<ModelOperationResult<T, IUpdateMeta>> {
 
-        if (!where) {
+        if (!options.where) {
             throw new Error('update() requires the \'where\' parameter');
         }
 
@@ -82,7 +94,7 @@ export class InMemoryBackend implements IBackend {
 
         let meta = manager.getModelMeta(model);
         let parser = new QueryParser(manager);
-        let queryNode = parser.getQueryNodeForQuery(meta.ctor, where);
+        let queryNode = parser.getQueryNodeForQuery(meta.ctor, options.where);
         let query = new InMemoryQuery(queryNode);
 
         let modelStorage = this._getModelStorage(meta);
@@ -97,7 +109,11 @@ export class InMemoryBackend implements IBackend {
         return result;
     }
 
-    async read<T extends IModel>(manager: IModelManager, model: new(...args: any[]) => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+    async read<T extends IModel>(
+            manager: IModelManager,
+            model: new(...args: any[]) => T,
+            options: IReadOptions,
+            result: ModelOperationResult<T, IReadMeta>): Promise<ModelOperationResult<T, IReadMeta>> {
 
         if (this.OPERATION_DELAY) {
             await sleep(this.OPERATION_DELAY);
@@ -106,7 +122,7 @@ export class InMemoryBackend implements IBackend {
         let meta = manager.getModelMeta(model);
         let modelStorage = this._getModelStorage(meta);
         let parser = new QueryParser(manager);
-        let queryNode = parser.getQueryNodeForQuery(model, where);
+        let queryNode = parser.getQueryNodeForQuery(model, options.where);
         let query = new InMemoryQuery(queryNode);
 
         const primaryKeyValues: any[] = [];
@@ -206,10 +222,14 @@ export class InMemoryBackend implements IBackend {
         return result;
     }
 
-    async remove<T extends IModel>(manager: IModelManager, model: T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+    async remove<T extends IModel>(
+            manager: IModelManager,
+            model: T,
+            options: IRemoveOptions,
+            result: ModelOperationResult<T, IRemoveMeta>): Promise<ModelOperationResult<T, IRemoveMeta>> {
 
-        if (!where) {
-            throw new Error('remove() requires the \'where\' parameter');
+        if (!options.where) {
+            throw new Error('remove() requires the \'where\' option to be set');
         }
 
         if (this.OPERATION_DELAY) {
@@ -218,7 +238,7 @@ export class InMemoryBackend implements IBackend {
 
         let meta = manager.getModelMeta(model);
         let parser = new QueryParser(manager);
-        let queryNode = parser.getQueryNodeForQuery(meta.ctor, where);
+        let queryNode = parser.getQueryNodeForQuery(meta.ctor, options.where);
         let query = new InMemoryQuery(queryNode);
 
         let modelStorage = this._getModelStorage(meta);
@@ -237,7 +257,7 @@ export class InMemoryBackend implements IBackend {
         return result;
     }
 
-    async exec<R>(manager: IModelManager, model: IModel, method: string, argObj: IExecArgs, result: ModelOperationResult<R, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
+    async exec<R>(manager: IModelManager, model: IModel, options: IExecOptions, result: ModelOperationResult<R, IExecMeta>): Promise<ModelOperationResult<R, IExecMeta>> {
         return Promise.reject(new Error('InMemoryBackend.exec() not supported'));
     }
 
@@ -322,9 +342,11 @@ export class InMemoryBackend implements IBackend {
                     manager.read(
                         relatedMeta.ctor,
                         {
-                            [relatedMeta.primaryKey]: { _in: foreignKeyValues[fieldName] }
-                        },
-                        readOptions
+                            where: {
+                                [relatedMeta.primaryKey]: { _in: foreignKeyValues[fieldName] }
+                            },
+                            ...readOptions
+                        }
                     ));
             }
         }
@@ -364,9 +386,11 @@ export class InMemoryBackend implements IBackend {
                     manager.read(
                         relatedMeta.ctor,
                         {
-                            [field.options.field]: { _in: primaryKeyValues }
-                        },
-                        readOptions
+                            where: {
+                                [field.options.field]: { _in: primaryKeyValues }
+                            },
+                            ...readOptions
+                        }
                     ));
             }
         }

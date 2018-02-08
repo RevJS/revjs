@@ -12,15 +12,16 @@ export interface IMethodContext<T> {
 }
 
 export const DEFAULT_EXEC_OPTIONS: IExecOptions = {
-    // For future use
+    method: null,
+    args: null
 };
 
-export async function exec<R>(manager: IModelManager, model: IModel, method: string, args?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
+export async function exec<R>(manager: IModelManager, model: IModel, options?: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
 
     if (typeof model != 'object') {
         throw new Error('Specified model is not a Model instance');
     }
-    if (!method || typeof method != 'string') {
+    if (!options.method || typeof options.method != 'string') {
         throw new Error('Specified method name is not valid');
     }
 
@@ -28,21 +29,21 @@ export async function exec<R>(manager: IModelManager, model: IModel, method: str
     let opts: IExecOptions = Object.assign({}, DEFAULT_EXEC_OPTIONS, options);
 
     let operation: IModelOperation = {
-        operation: method
+        operation: options.method
     };
     let result = new ModelOperationResult<R, IExecMeta>(operation);
-    let ctx: IMethodContext<R> = { manager, args, result, options };
+    let ctx: IMethodContext<R> = { manager, args: options.args, result, options };
 
     let callResult: any;
-    if (model[method]) {
-        if (typeof model[method] != 'function') {
-            throw new Error(`${model.constructor.name}.${method} is not a function`);
+    if (model[options.method]) {
+        if (typeof model[options.method] != 'function') {
+            throw new Error(`${model.constructor.name}.${options.method} is not a function`);
         }
-        callResult = await model[method].call(model, ctx);
+        callResult = await model[options.method].call(model, ctx);
     }
     else {
         let backend = manager.getBackend(meta.backend);
-        callResult = await backend.exec(manager, model, method, args, result, opts);
+        callResult = await backend.exec(manager, model, opts, result);
     }
 
     if (!isSet(callResult)) {

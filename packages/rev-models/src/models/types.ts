@@ -53,6 +53,7 @@ export interface IRemoveMeta extends IOperationMeta {
 }
 
 export interface IReadOptions {
+    where?: object;
     orderBy?: string[];
     limit?: number;
     offset?: number;
@@ -77,7 +78,8 @@ export interface IExecArgs {
 }
 
 export interface IExecOptions {
-    // For future use
+    method: string;
+    args: IExecArgs;
 }
 
 export interface IExecMeta extends IOperationMeta {
@@ -99,9 +101,9 @@ export interface IModelManager {
     create: <T extends IModel>(model: T, options?: ICreateOptions) => Promise<IModelOperationResult<T, ICreateMeta>>;
     update: <T extends IModel>(model: T, options?: IUpdateOptions) => Promise<IModelOperationResult<T, IUpdateMeta>>;
     remove: <T extends IModel>(model: T, options?: IRemoveOptions) => Promise<IModelOperationResult<T, IRemoveMeta>>;
-    read: <T extends IModel>(model: new() => T, where?: object, options?: IReadOptions) => Promise<IModelOperationResult<T, IReadMeta>>;
+    read: <T extends IModel>(model: new() => T, options?: IReadOptions) => Promise<IModelOperationResult<T, IReadMeta>>;
     validate: <T extends IModel>(model: T, options?: IValidationOptions) => Promise<ModelValidationResult>;
-    exec: <R>(model: IModel, method: string, argObj?: IExecArgs, options?: IExecOptions) => Promise<IModelOperationResult<R, any>>;
+    exec: <R>(model: IModel, options?: IExecOptions) => Promise<IModelOperationResult<R, any>>;
 
     hydrate: <T extends IModel>(model: new() => T, data: any) => T;
 }

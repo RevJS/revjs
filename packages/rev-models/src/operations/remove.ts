@@ -30,6 +30,6 @@ export async function remove<T extends IModel>(manager: IModelManager, model: T,
         where: opts.where
     };
     let operationResult = new ModelOperationResult<T, IRemoveMeta>(operation);
-    return backend.remove<T>(manager, model, opts.where, operationResult, opts);
+    return backend.remove<T>(manager, model, opts, operationResult);
 
 }

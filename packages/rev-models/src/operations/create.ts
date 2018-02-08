@@ -34,6 +34,6 @@ export async function create<T extends IModel>(manager: IModelManager, model: T,
         operationResult.validation = validationResult;
     }
 
-    return backend.create(manager, model, operationResult, opts);
+    return backend.create(manager, model, opts, operationResult);
 
 }

@@ -55,5 +55,5 @@ export async function update<T extends IModel>(manager: IModelManager, model: T,
         operationResult.validation = validationResult;
     }
 
-    return backend.update<typeof model>(manager, model, opts.where, operationResult, opts);
+    return backend.update<typeof model>(manager, model, opts, operationResult);
 }

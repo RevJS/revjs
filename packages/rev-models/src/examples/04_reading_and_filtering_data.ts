@@ -9,18 +9,18 @@ import { loadTestData } from './load_test_data';
     const allRecords = await models.read(Person);
     console.log('All records:', allRecords.results);
 
-    const last3Records = await models.read(Person, {}, { offset: 2, limit: 3 });
+    const last3Records = await models.read(Person, { offset: 2, limit: 3 });
     console.log('Last 3 records:', last3Records.results);
 
-    const subscribers = await models.read(Person, { newsletter: true });
+    const subscribers = await models.read(Person, { where: { newsletter: true }});
     console.log('Newsletter Subscribers Only:', subscribers.results);
 
-    const agedPeople = await models.read(Person, {
+    const agedPeople = await models.read(Person, { where: {
         _or: [
             { age: { _lt: 21 }},
             { age: { _gt: 40 }}
         ]
-    });
+    }});
     console.log('Aged less than 21 or over 40:', agedPeople.results);
 
 })();

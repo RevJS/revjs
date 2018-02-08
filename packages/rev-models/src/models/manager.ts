@@ -13,7 +13,7 @@ import { ModelOperationResult } from '../operations/operationresult';
 import { validate, IValidationOptions } from '../operations/validate';
 import { ModelValidationResult } from '../validation/validationresult';
 import { hydrate } from '../operations/hydrate';
-import { IModelManager, ICreateOptions, ICreateMeta, IUpdateOptions, IUpdateMeta, IRemoveOptions, IRemoveMeta, IReadOptions, IReadMeta, IExecArgs, IExecOptions } from './types';
+import { IModelManager, ICreateOptions, ICreateMeta, IUpdateOptions, IUpdateMeta, IRemoveOptions, IRemoveMeta, IReadOptions, IReadMeta, IExecOptions } from './types';
 import { isSet } from '../utils';
 
 /**
@@ -295,8 +295,8 @@ export class ModelManager implements IModelManager {
      * @param where The where clause (documentation of the query language TODO!)
      * @param options Options for record retrieval (e.g. record limit)
      */
-    read<T extends IModel>(model: new() => T, where?: object, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
-        return read(this, model, where, options);
+    read<T extends IModel>(model: new() => T, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+        return read(this, model, options);
     }
 
     /**
@@ -330,8 +330,8 @@ export class ModelManager implements IModelManager {
      * @param argObj Any additional arguments to be passed to the method
      * @param options Additional options
      */
-    exec<R>(model: IModel, method: string, argObj?: IExecArgs, options?: IExecOptions): Promise<ModelOperationResult<R, any>> {
-        return exec(this, model, method, argObj, options);
+    exec<R>(model: IModel, options?: IExecOptions): Promise<ModelOperationResult<R, any>> {
+        return exec(this, model, options);
     }
 
     /**
