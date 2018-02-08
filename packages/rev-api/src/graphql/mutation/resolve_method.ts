@@ -26,7 +26,10 @@ export function getMethodResolver(manager: IModelApiManager, modelName: string, 
                 return result;
             }
             else {
-                return models.exec(instance, methodName, execArgs);
+                return models.exec(instance, {
+                    method: methodName,
+                    args: execArgs
+                });
             }
         });
     };

@@ -214,8 +214,8 @@ export class GraphQLApi implements IGraphQLApi {
                     },
                     resolve: (rootValue: any, args?: any, context?: any, info?: GraphQLResolveInfo): Promise<any> => {
                         let selectedRelationalFields = this.getQueryRelatedFieldList(info, modelMeta);
-                        let whereClause = {};
                         let readOptions: IReadOptions = {
+                            where: {},
                             related: selectedRelationalFields
                         };
                         if (args) {
@@ -223,7 +223,7 @@ export class GraphQLApi implements IGraphQLApi {
                                 if (typeof args.where != 'object') {
                                     throw new Error(`GraphQLApi Error: The "where" argument must be an object.`);
                                 }
-                                whereClause = args.where;
+                                readOptions.where = args.where;
                             }
                             if (args.limit) {
                                 readOptions.limit = args.limit;
@@ -235,7 +235,7 @@ export class GraphQLApi implements IGraphQLApi {
                                 readOptions.orderBy = args.orderBy;
                             }
                         }
-                        return models.read(modelMeta.ctor, whereClause, readOptions);
+                        return models.read(modelMeta.ctor, readOptions);
                     }
                 };
             }
