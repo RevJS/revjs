@@ -30,6 +30,7 @@ describe('ModelApiBackend - read()', () => {
         }
         apiBackend = new ModelApiBackend('/api', mockHttpClient);
         readOptions = {
+            where: {},
             offset: 0,
             limit: 20
         };
@@ -42,7 +43,7 @@ describe('ModelApiBackend - read()', () => {
 
     it('reads all scalar fields from graphql api (Comments)', async () => {
         const result = await apiBackend.read(
-            manager, Comment, {}, readResult, readOptions
+            manager, Comment, readOptions, readResult
         );
         expect(result.success).to.be.true;
         expect(result.results).to.deep.equal([
@@ -55,7 +56,7 @@ describe('ModelApiBackend - read()', () => {
 
     it('reads all scalar fields from graphql api (Posts)', async () => {
         const result = await apiBackend.read(
-            manager, Post, {}, readResult, readOptions
+            manager, Post, readOptions, readResult
         );
         expect(result.success).to.be.true;
         expect(result.results[0]).to.be.instanceof(Post);
@@ -74,11 +75,11 @@ describe('ModelApiBackend - read()', () => {
 
     it('returns read metadata', async () => {
         const result = await apiBackend.read(
-            manager, Post, {}, readResult, {
+            manager, Post, {
+                where: {},
                 offset: 0,
                 limit: 10
-            }
-        );
+            }, readResult);
         expect(result.success).to.be.true;
         expect(result.meta).to.deep.equal({
             offset: 0,
@@ -90,8 +91,12 @@ describe('ModelApiBackend - read()', () => {
     it('where clause works as expected', async () => {
         const result = await apiBackend.read(
             manager, Post, {
-                id: 3,
-            }, readResult, readOptions
+                where: {
+                    id: 3
+                },
+                offset: 0,
+                limit: 10
+            }, readResult
         );
         expect(result.success).to.be.true;
         expect(result.results).to.have.length(1);
@@ -103,10 +108,11 @@ describe('ModelApiBackend - read()', () => {
 
     it('offset and limit options work as expected', async () => {
         const result = await apiBackend.read(
-            manager, Post, {}, readResult, {
+            manager, Post, {
+                where: {},
                 offset: 1,
                 limit: 1
-            }
+            }, readResult
         );
         expect(result.success).to.be.true;
         expect(result.results).to.have.length(1);
@@ -123,7 +129,7 @@ describe('ModelApiBackend - read()', () => {
         };
         setup({ responseType: 'mock', mockResponse: mockResponse });
 
-        return apiBackend.read(manager, Comment, {}, readResult, readOptions)
+        return apiBackend.read(manager, Comment, readOptions, readResult)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('Received no data from the API');
@@ -142,7 +148,7 @@ describe('ModelApiBackend - read()', () => {
         };
         setup({ responseType: 'mock', mockResponse: mockResponse });
 
-        return apiBackend.read(manager, Comment, {}, readResult, readOptions)
+        return apiBackend.read(manager, Comment, readOptions, readResult)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('GraphQL errors were returned');
@@ -157,7 +163,7 @@ describe('ModelApiBackend - read()', () => {
         };
         setup({ responseType: 'mock', mockResponse: mockResponse });
 
-        return apiBackend.read(manager, Comment, {}, readResult, readOptions)
+        return apiBackend.read(manager, Comment, readOptions, readResult)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('GraphQL response did not contain the expected model results');
@@ -178,7 +184,7 @@ describe('ModelApiBackend - read()', () => {
         };
         setup({ responseType: 'mock', mockResponse: mockResponse });
 
-        return apiBackend.read(manager, Comment, {}, readResult, readOptions)
+        return apiBackend.read(manager, Comment, readOptions, readResult)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('GraphQL response did not contain the expected model results');

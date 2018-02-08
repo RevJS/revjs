@@ -6,7 +6,7 @@ import { IBackend } from 'rev-models/lib/backends/backend';
 import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
 import {
     ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IRemoveMeta,
-    IRemoveOptions, IReadMeta, IReadOptions, IExecArgs, IExecMeta, IExecOptions, IModelMeta
+    IRemoveOptions, IReadMeta, IReadOptions, IExecMeta, IExecOptions, IModelMeta
 } from 'rev-models/lib/models/types';
 import { jsonToGraphQLQuery } from 'json-to-graphql-query';
 
@@ -56,21 +56,21 @@ export class ModelApiBackend implements IBackend {
         };
     }
 
-    async create<T extends IModel>(manager: ModelManager, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
+    async create<T extends IModel>(manager: ModelManager, model: T, options: ICreateOptions, result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
         return Promise.reject(new Error('Not yet implemented'));
     }
 
-    async update<T extends IModel>(manager: ModelManager, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+    async update<T extends IModel>(manager: ModelManager, model: T, options: IUpdateOptions, result: ModelOperationResult<T, IUpdateMeta>): Promise<ModelOperationResult<T, IUpdateMeta>> {
         return Promise.reject(new Error('Not yet implemented'));
     }
 
-    async remove<T extends IModel>(manager: ModelManager, model: T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+    async remove<T extends IModel>(manager: ModelManager, model: T, options: IRemoveOptions, result: ModelOperationResult<T, IRemoveMeta>): Promise<ModelOperationResult<T, IRemoveMeta>> {
         return Promise.reject(new Error('Not yet implemented'));
     }
 
-    async read<T extends IModel>(manager: ModelManager, model: new() => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+    async read<T extends IModel>(manager: ModelManager, model: new() => T, options: IReadOptions, result: ModelOperationResult<T, IReadMeta>): Promise<ModelOperationResult<T, IReadMeta>> {
         const meta = manager.getModelMeta(model);
-        const query = this._buildGraphQLQuery(meta, where, options.offset, options.limit);
+        const query = this._buildGraphQLQuery(meta, options.where, options.offset, options.limit);
         const httpResult = await this._httpClient({
             url: this.apiUrl,
             method: 'POST',
@@ -97,7 +97,7 @@ export class ModelApiBackend implements IBackend {
         return result;
     }
 
-    async exec<R>(manager: ModelManager, model: IModel, method: string, argObj: IExecArgs, result: ModelOperationResult<R, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
+    async exec<R>(manager: ModelManager, model: IModel, options: IExecOptions, result: ModelOperationResult<R, IExecMeta>): Promise<ModelOperationResult<R, IExecMeta>> {
         return Promise.reject(new Error('Not yet implemented'));
     }
 
