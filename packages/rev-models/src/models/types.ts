@@ -79,7 +79,7 @@ export interface IExecArgs {
 
 export interface IExecOptions {
     method: string;
-    args: IExecArgs;
+    args?: IExecArgs;
 }
 
 export interface IExecMeta extends IOperationMeta {

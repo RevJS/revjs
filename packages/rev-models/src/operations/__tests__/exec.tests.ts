@@ -39,7 +39,11 @@ let manager: ModelManager;
 describe('rev.operations.exec()', () => {
 
     let callSpy: sinon.SinonSpy;
-    let testArgs = { someArg: 1 };
+    const testArgs = { someArg: 1 };
+    const options: IExecOptions = {
+        method: 'testMethod',
+        args: testArgs
+    };
 
     beforeEach(() => {
         callSpy = sinon.spy();
@@ -52,7 +56,7 @@ describe('rev.operations.exec()', () => {
     describe('validation', () => {
 
         it('rejects when model is not an object', () => {
-            return rwExec.exec(manager, 'test' as any, 'testMethod')
+            return rwExec.exec(manager, 'test' as any, options)
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('Specified model is not a Model instance');
@@ -61,7 +65,7 @@ describe('rev.operations.exec()', () => {
 
         it('rejects when method is not a string', () => {
             let model = new TestModel();
-            return rwExec.exec(manager, model, 22 as any)
+            return rwExec.exec(manager, model, { method: 22 as any })
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('Specified method name is not valid');
@@ -70,7 +74,7 @@ describe('rev.operations.exec()', () => {
 
         it('rejects if model is not registered', () => {
             let model = new UnregisteredModel();
-            return rwExec.exec(manager, model, 'testMethod')
+            return rwExec.exec(manager, model, options)
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('is not registered');
@@ -80,12 +84,7 @@ describe('rev.operations.exec()', () => {
         it('does not reject if model meta.stored is false', () => {
             manager.register(TestModel2, { stored: false });
             let model = new TestModel2();
-            return rwExec.exec(manager, model, 'testMethod');
-        });
-
-        it('does not fail validation for invalid model', () => {
-            let model = new TestModel();
-            return rwExec.exec(manager, model, 'testMethod', null, { validate: false });
+            return rwExec.exec(manager, model, options);
         });
 
     });
@@ -96,7 +95,7 @@ describe('rev.operations.exec()', () => {
             let model = new TestModel();
             model.name = 'Joe';
             model.testMethod = callSpy;
-            return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
+            return rwExec.exec(manager, model, options)
                 .then((res) => {
                     expect(callSpy.callCount).to.equal(1);
                     expect(callSpy.args[0][0]).to.deep.equal({
@@ -113,7 +112,7 @@ describe('rev.operations.exec()', () => {
             let model = new TestModel();
             model.name = 'Joe';
             model.testMethod = 'oh deary me' as any;
-            return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
+            return rwExec.exec(manager, model, options)
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.equal('TestModel.testMethod is not a function');
@@ -124,7 +123,7 @@ describe('rev.operations.exec()', () => {
             let model = new TestModel();
             model.name = 'Joe';
             model.testMethod = () => undefined;
-            return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
+            return rwExec.exec(manager, model, options)
                 .then((res) => {
                     expect(res).to.be.instanceof(ModelOperationResult);
                     expect(res.success).to.be.true;
@@ -136,7 +135,7 @@ describe('rev.operations.exec()', () => {
             let model = new TestModel();
             model.name = 'Joe';
             model.testMethod = () => 'gerrald';
-            return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
+            return rwExec.exec(manager, model, options)
                 .then((res) => {
                     expect(res).to.be.instanceof(ModelOperationResult);
                     expect(res.success).to.be.true;
@@ -152,7 +151,7 @@ describe('rev.operations.exec()', () => {
                 mc.result.result = 'some custom result';
                 return mc.result;
             };
-            return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
+            return rwExec.exec(manager, model, options)
                 .then((res) => {
                     expect(res).to.be.instanceof(ModelOperationResult);
                     expect(res.success).to.be.false;
@@ -166,7 +165,7 @@ describe('rev.operations.exec()', () => {
             model.testMethod = () => {
                 throw new Error('sync error');
             };
-            return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
+            return rwExec.exec(manager, model, options)
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('sync error');
@@ -181,7 +180,7 @@ describe('rev.operations.exec()', () => {
             let model = new TestModel();
             model.name = 'Joe';
             model.testMethod = () => Promise.resolve();
-            return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
+            return rwExec.exec(manager, model, options)
                 .then((res) => {
                     expect(res).to.be.instanceof(ModelOperationResult);
                     expect(res.success).to.be.true;
@@ -193,7 +192,7 @@ describe('rev.operations.exec()', () => {
             let model = new TestModel();
             model.name = 'Joe';
             model.testMethod = () => Promise.resolve('gerrald');
-            return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
+            return rwExec.exec(manager, model, options)
                 .then((res) => {
                     expect(res).to.be.instanceof(ModelOperationResult);
                     expect(res.success).to.be.true;
@@ -209,7 +208,7 @@ describe('rev.operations.exec()', () => {
                 mc.result.result = 'some custom result';
                 return Promise.resolve(mc.result);
             };
-            return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
+            return rwExec.exec(manager, model, options)
                 .then((res) => {
                     expect(res).to.be.instanceof(ModelOperationResult);
                     expect(res.success).to.be.false;
@@ -221,7 +220,7 @@ describe('rev.operations.exec()', () => {
             let model = new TestModel();
             model.name = 'Joe';
             model.testMethod = () => Promise.reject(new Error('async error'));
-            return rwExec.exec(manager, model, 'testMethod', testArgs, { validate: false })
+            return rwExec.exec(manager, model, options)
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('async error');
@@ -236,23 +235,14 @@ describe('rev.operations.exec()', () => {
         it('if model does not contain method, backend.exec() is called instead', () => {
             let model = new TestModel();
             model.name = 'Joe';
-            let args = { someArg: 'wheeeeee!' };
-            let opts: IExecOptions = {
-                validate: true,
-                validation: {
-                    timeout: 200
-                }
-            };
-            return rwExec.exec(manager, model, 'backendMethod', args, opts)
+            return rwExec.exec(manager, model, options)
                 .then(() => {
                     expect(mockBackend.execStub.callCount).to.equal(1);
                     let execCall = mockBackend.execStub.getCall(0);
                     expect(execCall.args[0]).to.equal(manager);
                     expect(execCall.args[1]).to.equal(model);
-                    expect(execCall.args[2]).to.equal('backendMethod');
-                    expect(execCall.args[3]).to.equal(args);
-                    expect(execCall.args[4]).to.be.instanceof(ModelOperationResult);
-                    expect(execCall.args[5]).to.deep.equal(opts);
+                    expect(execCall.args[2]).to.equal(options);
+                    expect(execCall.args[3]).to.be.instanceof(ModelOperationResult);
                 });
         });
 

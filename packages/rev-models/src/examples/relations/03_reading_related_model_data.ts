@@ -14,19 +14,19 @@ import { createJobs } from './02_creating_related_model_data';
 
     console.log('\nRelated data can be loaded using the "related" read option...');
 
-    const jobsWithRelated = await models.read(Job, {}, {
+    const jobsWithRelated = await models.read(Job, {
         related: [ 'company', 'developer' ]
     });
     console.log(jobsWithRelated.results);
 
-    const developersWithJobs = await models.read(Developer, {}, {
+    const developersWithJobs = await models.read(Developer, {
         related: [ 'jobs' ]
     });
     console.log(developersWithJobs.results[0]);
 
     console.log('\nYou can also load deeply nested data by using dot notation with the "related" option...');
 
-    const jobsWithDeepData = await models.read(Job, {}, {
+    const jobsWithDeepData = await models.read(Job, {
         related: [ 'company.city' ]
     });
     console.log(jobsWithDeepData.results);
@@ -34,15 +34,16 @@ import { createJobs } from './02_creating_related_model_data';
     console.log('\nYou can filter based on related record IDs...');
 
     const jobsWithNoDeveloper = await models.read(Job, {
-        developer: { _eq: null }
-    }, {
+        where: {
+            developer: { _eq: null }
+        },
         related: [ 'company', 'developer' ]
     });
     console.log(jobsWithNoDeveloper.results);
 
     console.log('\nYou can alternatively read raw ID values using the "rawValues" option...');
 
-    const jobsWithRawIds = await models.read(Job, {}, {
+    const jobsWithRawIds = await models.read(Job, {
         rawValues: [ 'company', 'developer' ]
     });
     console.log(jobsWithRawIds.results);

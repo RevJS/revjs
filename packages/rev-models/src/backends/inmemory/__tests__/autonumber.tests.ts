@@ -41,8 +41,8 @@ describe('rev.backends.inmemory', () => {
             model2.name = 'record 2';
 
             return Promise.all([
-                backend.create(manager, model1, createResult, DEFAULT_CREATE_OPTIONS),
-                backend.create(manager, model2, createResult2, DEFAULT_CREATE_OPTIONS)
+                backend.create(manager, model1, DEFAULT_CREATE_OPTIONS, createResult),
+                backend.create(manager, model2, DEFAULT_CREATE_OPTIONS, createResult2)
             ])
                 .then((res) => {
                     expect(res[0].result).to.be.instanceof(TestModel);
@@ -61,8 +61,8 @@ describe('rev.backends.inmemory', () => {
             model2.name = 'record 2';
 
             return Promise.all([
-                backend.create(manager, model1, createResult, DEFAULT_CREATE_OPTIONS),
-                backend.create(manager, model2, createResult2, DEFAULT_CREATE_OPTIONS)
+                backend.create(manager, model1, DEFAULT_CREATE_OPTIONS, createResult),
+                backend.create(manager, model2, DEFAULT_CREATE_OPTIONS, createResult2)
             ])
                 .then((res) => {
                     expect(res[0].result).to.be.instanceof(TestModel);
@@ -102,7 +102,7 @@ describe('rev.backends.inmemory', () => {
                     model.name = 'Frank';
                     return backend.update(manager,
                         model,
-                        {}, updateResult, {});
+                        {}, updateResult);
                 })
                 .then(() => {
                     expect(backend._storage['TestModel'])

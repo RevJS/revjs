@@ -6,7 +6,7 @@ import { ModelOperationResult } from '../operationresult';
 import {
     IModel, ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions,
     IRemoveMeta, IRemoveOptions, IReadMeta, IReadOptions,
-    IExecArgs, IExecMeta, IExecOptions
+    IExecMeta, IExecOptions
 } from '../../models/types';
 
 export class MockBackend implements IBackend {
@@ -20,32 +20,32 @@ export class MockBackend implements IBackend {
     errorToThrow: Error = null;
     results: any[] = null;
 
-    create<T extends IModel>(manager: ModelManager, model: T, result: ModelOperationResult<T, ICreateMeta>, options: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
+    create<T extends IModel>(manager: ModelManager, model: T, options: ICreateOptions, result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
         this.addErrors(result);
         this.createStub.apply(null, arguments);
         return this.getReturnValue(result);
     }
 
-    update<T extends IModel>(manager: ModelManager, model: T, where: object, result: ModelOperationResult<T, IUpdateMeta>, options: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+    update<T extends IModel>(manager: ModelManager, model: T, options: IUpdateOptions, result: ModelOperationResult<T, IUpdateMeta>): Promise<ModelOperationResult<T, IUpdateMeta>> {
         this.addErrors(result);
         this.updateStub.apply(null, arguments);
         return this.getReturnValue(result);
     }
 
-    remove<T extends IModel>(manager: ModelManager, model: T, where: object, result: ModelOperationResult<T, IRemoveMeta>, options: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+    remove<T extends IModel>(manager: ModelManager, model: T, options: IRemoveOptions, result: ModelOperationResult<T, IRemoveMeta>): Promise<ModelOperationResult<T, IRemoveMeta>> {
         this.addErrors(result);
         this.removeStub.apply(null, arguments);
         return this.getReturnValue(result);
     }
 
-    read<T extends IModel>(manager: ModelManager, model: new() => T, where: object, result: ModelOperationResult<T, IReadMeta>, options: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+    read<T extends IModel>(manager: ModelManager, model: new() => T, options: IReadOptions, result: ModelOperationResult<T, IReadMeta>): Promise<ModelOperationResult<T, IReadMeta>> {
         result.results = this.results;
         this.addErrors(result);
         this.readStub.apply(null, arguments);
         return this.getReturnValue(result);
     }
 
-    exec<R>(manager: ModelManager, model: IModel, method: string, argObj: IExecArgs, result: ModelOperationResult<R, IExecMeta>, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
+    exec<R>(manager: ModelManager, model: IModel, options: IExecOptions, result: ModelOperationResult<R, IExecMeta>): Promise<ModelOperationResult<R, IExecMeta>> {
         this.addErrors(result);
         this.execStub.apply(null, arguments);
         return this.getReturnValue(result);

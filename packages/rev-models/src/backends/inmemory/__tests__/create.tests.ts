@@ -30,7 +30,7 @@ describe('rev.backends.inmemory', () => {
             let model = new TestModel();
             model.name = 'test model';
             model.age = 20;
-            return backend.create(manager, model, createResult, DEFAULT_CREATE_OPTIONS)
+            return backend.create(manager, model, DEFAULT_CREATE_OPTIONS, createResult)
                 .then((res) => {
                     expect(backend._storage['TestModel']).to.deep.equal([
                         {
@@ -55,8 +55,8 @@ describe('rev.backends.inmemory', () => {
             model2.name = 'test model 2';
             model2.age = 22;
             return Promise.all([
-                backend.create(manager, model1, createResult, DEFAULT_CREATE_OPTIONS),
-                backend.create(manager, model2, createResult2, DEFAULT_CREATE_OPTIONS)
+                backend.create(manager, model1, DEFAULT_CREATE_OPTIONS, createResult),
+                backend.create(manager, model2, DEFAULT_CREATE_OPTIONS, createResult2)
             ])
                 .then((res) => {
                     expect(backend._storage['TestModel']).to.deep.equal([

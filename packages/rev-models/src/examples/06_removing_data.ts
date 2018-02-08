@@ -11,8 +11,10 @@ import { loadTestData } from './load_test_data';
 
     // Retrieve Jane Doe's record
     const jane = await models.read(Person, {
-        first_name: 'Jane',
-        last_name: 'Doe'
+        where: {
+            first_name: 'Jane',
+            last_name: 'Doe'
+        }
     });
 
     // Remove Jane Doe's record

@@ -19,9 +19,9 @@ class TestModel {
         name: string;
     @d.SelectField({ selection: GENDERS })
         gender: string;
-    @d.IntegerField({ required: false, minValue: 10 })
+    @d.IntegerField({ minValue: 10 })
         age: number;
-    @d.EmailField({ required: false })
+    @d.EmailField()
         email: string;
 }
 
@@ -63,6 +63,8 @@ describe('rev.operations.update()', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
+        model.age = 23;
+        model.email = 'bob@test.com';
         return rwUpdate.update(manager, model, options)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
@@ -71,6 +73,9 @@ describe('rev.operations.update()', () => {
                 expect(res.success).to.be.true;
                 expect(res.validation).to.be.instanceOf(ModelValidationResult);
                 expect(res.validation.valid).to.be.true;
+            })
+            .catch((e) => {
+                console.log(e.result.validation);
             });
     });
 
@@ -177,7 +182,7 @@ describe('rev.operations.update()', () => {
             });
     });
 
-    it('rejects when options.fields contains an invalid fiel name', () => {
+    it('rejects when options.fields contains an invalid field name', () => {
         let model = new TestModel();
         Object.assign(model, { name: 'bob', gender: 'male' });
         options = {

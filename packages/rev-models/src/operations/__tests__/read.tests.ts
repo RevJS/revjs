@@ -80,7 +80,7 @@ describe('rev.operations.read()', () => {
     });
 
     it('calls backend.read() with DEFAULT_READ_OPTIONS if no options are set', () => {
-        return rwRead.read(manager, TestModel, whereClause, null)
+        return rwRead.read(manager, TestModel)
             .then((res) => {
                 expect(mockBackend.readStub.callCount).to.equal(1);
                 let readCall = mockBackend.readStub.getCall(0);
@@ -91,7 +91,7 @@ describe('rev.operations.read()', () => {
     });
 
     it('calls backend.read() with overridden options if they are set', () => {
-        return rwRead.read(manager, TestModel, whereClause, { offset: 10 })
+        return rwRead.read(manager, TestModel, { offset: 10 })
             .then((res) => {
                 expect(mockBackend.readStub.callCount).to.equal(1);
                 let readCall = mockBackend.readStub.getCall(0);
@@ -111,7 +111,7 @@ describe('rev.operations.read()', () => {
     });
 
     it('rejects if orderBy option is invalid', () => {
-        return rwRead.read(manager, TestModel, whereClause, {
+        return rwRead.read(manager, TestModel, {
             orderBy: ['star_sign']
         })
             .then(() => { throw new Error('expected to reject'); })
@@ -121,7 +121,7 @@ describe('rev.operations.read()', () => {
     });
 
     it('rejects if "related" option does not match a field', () => {
-        return rwRead.read(manager, TestModel, whereClause, {
+        return rwRead.read(manager, TestModel, {
             related: ['flibble']
         })
             .then(() => { throw new Error('expected to reject'); })
@@ -131,7 +131,7 @@ describe('rev.operations.read()', () => {
     });
 
     it('rejects if "related" option does not match a related model field', () => {
-        return rwRead.read(manager, TestModel, whereClause, {
+        return rwRead.read(manager, TestModel, {
             related: ['name']
         })
             .then(() => { throw new Error('expected to reject'); })
@@ -141,7 +141,7 @@ describe('rev.operations.read()', () => {
     });
 
     it('throws an error if options.limit == 0', () => {
-        return rwRead.read(manager, TestModel, {}, {
+        return rwRead.read(manager, TestModel, {
                 offset: 2,
                 limit: 0
             })
@@ -152,7 +152,7 @@ describe('rev.operations.read()', () => {
     });
 
     it('throws an error if options.limit is negative', () => {
-        return rwRead.read(manager, TestModel, {}, {
+        return rwRead.read(manager, TestModel, {
                 offset: 2,
                 limit: -12
             })
@@ -163,7 +163,7 @@ describe('rev.operations.read()', () => {
     });
 
     it('throws an error if options.offset is negative', () => {
-        return rwRead.read(manager, TestModel, {}, {
+        return rwRead.read(manager, TestModel, {
                 offset: -10,
                 limit: 10
             })
@@ -175,7 +175,7 @@ describe('rev.operations.read()', () => {
 
     it('rejects with any operation errors added by the backend', () => {
         mockBackend.errorsToAdd = ['some_backend_error'];
-        return rwRead.read(manager, TestModel, whereClause)
+        return rwRead.read(manager, TestModel)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);

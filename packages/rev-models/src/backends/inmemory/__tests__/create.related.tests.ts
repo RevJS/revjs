@@ -29,7 +29,7 @@ describe('rev.backends.inmemory - create() related field tests', () => {
         let model = new Developer();
         model.id = 1;
         model.name = 'Test Developer';
-        return backend.create(manager, model, developerCreateResult, DEFAULT_CREATE_OPTIONS)
+        return backend.create(manager, model, DEFAULT_CREATE_OPTIONS, developerCreateResult)
             .then((res) => {
                 expect(backend._storage['Developer']).to.deep.equal([
                     {
@@ -50,7 +50,7 @@ describe('rev.backends.inmemory - create() related field tests', () => {
         model.id = 1;
         model.name = 'Test Developer';
         model.company = null;
-        return backend.create(manager, model, developerCreateResult, DEFAULT_CREATE_OPTIONS)
+        return backend.create(manager, model, DEFAULT_CREATE_OPTIONS, developerCreateResult)
             .then((res) => {
                 expect(backend._storage['Developer']).to.deep.equal([
                     {
@@ -75,7 +75,7 @@ describe('rev.backends.inmemory - create() related field tests', () => {
         model.id = 1;
         model.name = 'Test Developer';
         model.company = company;
-        return backend.create(manager, model, developerCreateResult, DEFAULT_CREATE_OPTIONS)
+        return backend.create(manager, model, DEFAULT_CREATE_OPTIONS, developerCreateResult)
             .then((res) => {
                 expect(backend._storage['Developer']).to.deep.equal([
                     {
@@ -103,7 +103,7 @@ describe('rev.backends.inmemory - create() related field tests', () => {
         model.id = 1;
         model.name = 'Bobs Builders Ltd';
         model.developers = [developer1, developer2];
-        return backend.create(manager, model, companyCreateResult, DEFAULT_CREATE_OPTIONS)
+        return backend.create(manager, model, DEFAULT_CREATE_OPTIONS, companyCreateResult)
             .then((res) => {
                 expect(backend._storage['Company']).to.deep.equal([
                     {

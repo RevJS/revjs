@@ -27,7 +27,7 @@ describe('rev.backends.inmemory', () => {
 
         it('returns with totalCount = 0 when there is no data and where clause = {}', () => {
             let model = new TestModel();
-            return backend.remove(manager, model, {}, removeResult, options)
+            return backend.remove(manager, model, options, removeResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -39,7 +39,7 @@ describe('rev.backends.inmemory', () => {
         it('returns with totalCount = 0 when there is no data and where clause sets a filter', () => {
             let model = new TestModel();
             model.id = 1;
-            return backend.remove(manager, model, { id: 1 }, removeResult, {})
+            return backend.remove(manager, model, { where: { id: 1 } }, removeResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -67,7 +67,7 @@ describe('rev.backends.inmemory', () => {
             let model = new TestModel();
             model.name = 'bob';
             expect(backend._storage['TestModel']).to.have.length(5);
-            return backend.remove(manager, model, {}, removeResult, options)
+            return backend.remove(manager, model, options, removeResult)
                 .then((res) => {
                     let storage = backend._storage['TestModel'];
                     expect(res.success).to.be.true;
@@ -81,8 +81,8 @@ describe('rev.backends.inmemory', () => {
         it('removes filtered records when where clause is set', () => {
             let model = new TestModel();
             return backend.remove(manager, model, {
-                id: { _in: [2, 3] }
-            }, removeResult, {})
+                where: { id: { _in: [2, 3] } }
+            }, removeResult)
                 .then((res) => {
                     let storage = backend._storage['TestModel'];
                     expect(res.success).to.be.true;
@@ -97,18 +97,18 @@ describe('rev.backends.inmemory', () => {
 
         it('throws an error if where clause is not provided', () => {
             let model = new TestModel();
-            return backend.remove(manager, model, null, removeResult, {})
+            return backend.remove(manager, model, { where: null }, removeResult)
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
-                    expect(err.message).to.contain('remove() requires the \'where\' parameter');
+                    expect(err.message).to.contain('remove() requires the \'where\' option11');
                 });
         });
 
         it('throws when an invalid query is specified', () => {
             let model = new TestModel();
-            return backend.remove(manager, model, {
+            return backend.remove(manager, model, { where: {
                     non_existent_field: 42
-                }, removeResult, {})
+                }}, removeResult)
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('not a recognised field');

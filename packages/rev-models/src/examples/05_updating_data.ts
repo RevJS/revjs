@@ -8,8 +8,10 @@ import { loadTestData } from './load_test_data';
 
     // Retrieve Jane Doe's record
     const jane = await models.read(Person, {
-        first_name: 'Jane',
-        last_name: 'Doe'
+        where: {
+            first_name: 'Jane',
+            last_name: 'Doe'
+        }
     });
     console.log('Original Record:', jane.results[0]);
 
@@ -21,8 +23,10 @@ import { loadTestData } from './load_test_data';
 
     // Check that Jane Doe's record has been updated
     const janeRetrieved = await models.read(Person, {
-        first_name: 'Jane',
-        last_name: 'Doe'
+        where: {
+            first_name: 'Jane',
+            last_name: 'Doe'
+        }
     });
     console.log('Updated Record:', janeRetrieved.results[0]);
 

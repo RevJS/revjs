@@ -31,7 +31,7 @@ describe('rev.backends.inmemory', () => {
     describe('read() - with no data', () => {
 
         it('returns a successful, empty result when where clause = {}', () => {
-            return backend.read(manager, TestModel, {}, readResult, getReadOpts())
+            return backend.read(manager, TestModel, getReadOpts(), readResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -40,7 +40,9 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('returns a successful, empty result when where clause sets a filter', () => {
-            return backend.read(manager, TestModel, { name: { _like: '% Doe' } }, readResult, getReadOpts())
+            return backend.read(manager, TestModel, getReadOpts({
+                where: { name: { _like: '% Doe' } }
+            }), readResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -57,7 +59,7 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('returns all records when where clause = {}', () => {
-            return backend.read(manager, TestModel, {}, readResult, getReadOpts())
+            return backend.read(manager, TestModel, getReadOpts({ where: {} }), readResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -72,7 +74,7 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('returns IReadMeta matching DEFAULT_READ_OPTIONS', () => {
-            return backend.read(manager, TestModel, {}, readResult, getReadOpts())
+            return backend.read(manager, TestModel, getReadOpts({ where: {} }), readResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -86,9 +88,9 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('returns filtered records when where clause is set', () => {
-            return backend.read(manager, TestModel, {
-                name: { _like: '% Doe' }
-            }, readResult, getReadOpts())
+            return backend.read(manager, TestModel, getReadOpts({
+                where: { name: { _like: '% Doe' }}
+            }), readResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -99,9 +101,9 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('returns limited number of records when limit is set', () => {
-            return backend.read(manager, TestModel, {}, readResult, getReadOpts({
+            return backend.read(manager, TestModel, getReadOpts({
                 limit: 3
-            }))
+            }), readResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -113,9 +115,9 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('offset option works as expected', () => {
-            return backend.read(manager, TestModel, {}, readResult, getReadOpts({
+            return backend.read(manager, TestModel, getReadOpts({
                 offset: 2
-            }))
+            }), readResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -127,10 +129,10 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('limit and offset work together', () => {
-            return backend.read(manager, TestModel, {}, readResult, getReadOpts({
+            return backend.read(manager, TestModel, getReadOpts({
                 offset: 3,
                 limit: 1
-            }))
+            }), readResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -141,14 +143,14 @@ describe('rev.backends.inmemory', () => {
 
         it('out of range limit and offset do not cause errors', () => {
             return Promise.all([
-                backend.read(manager, TestModel, {}, readResult, getReadOpts({
+                backend.read(manager, TestModel, getReadOpts({
                     offset: 100,
                     limit: 5
-                })),
-                backend.read(manager, TestModel, {}, readResult2, getReadOpts({
+                }), readResult),
+                backend.read(manager, TestModel, getReadOpts({
                     offset: 0,
                     limit: 40
-                })),
+                }), readResult2),
             ]).then((res) => {
                 expect(res[0].success).to.be.true;
                 expect(res[0].results).to.deep.equal([]);
@@ -162,9 +164,9 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('sorts results by a single orderBy field', () => {
-            return backend.read(manager, TestModel, {}, readResult, getReadOpts({
+            return backend.read(manager, TestModel, getReadOpts({
                 orderBy: ['name']
-            }))
+            }), readResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.results).to.have.length(5);
@@ -178,9 +180,9 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('sorts results by two orderBy fields', () => {
-            return backend.read(manager, TestModel, {}, readResult, getReadOpts({
+            return backend.read(manager, TestModel, getReadOpts({
                 orderBy: ['gender desc', 'name']
-            }))
+            }), readResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.results).to.have.length(5);
@@ -194,9 +196,9 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('returns raw values when options.rawValues is set', () => {
-            return backend.read(manager, TestModel, {}, readResult, getReadOpts({
+            return backend.read(manager, TestModel, getReadOpts({
                 rawValues: ['id']
-            }))
+            }), readResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -212,9 +214,9 @@ describe('rev.backends.inmemory', () => {
         });
 
         it('throws when an invalid query is specified', () => {
-            return backend.read(manager, TestModel, {
-                    non_existent_field: 42
-                }, readResult, getReadOpts())
+            return backend.read(manager, TestModel, getReadOpts({
+                where: { non_existent_field: 42 }
+            }), readResult)
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('not a recognised field');

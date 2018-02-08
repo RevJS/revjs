@@ -29,7 +29,7 @@ describe('rev.backends.inmemory', () => {
     describe('initial state', () => {
 
         it('read() returns an empty list', () => {
-            return backend.read(manager, TestModel, {}, readResult, getReadOpts())
+            return backend.read(manager, TestModel, getReadOpts(), readResult)
                 .then(() => {
                     expect(readResult.result).to.be.undefined;
                     expect(readResult.results).to.be.instanceOf(Array);

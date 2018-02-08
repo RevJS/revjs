@@ -39,7 +39,7 @@ describe('rev.backends.inmemory - read() related field tests', () => {
     describe('read() - without "related" option specified', () => {
 
         it('returns results without RelatedModel field data', () => {
-            return backend.read(manager, Developer, {}, developerReadResult, getReadOpts())
+            return backend.read(manager, Developer, getReadOpts(), developerReadResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -55,7 +55,7 @@ describe('rev.backends.inmemory - read() related field tests', () => {
         });
 
         it('returns results without RelatedModelList field data', () => {
-            return backend.read(manager, Company, {}, companyReadResult, getReadOpts())
+            return backend.read(manager, Company, getReadOpts(), companyReadResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -76,9 +76,9 @@ describe('rev.backends.inmemory - read() related field tests', () => {
         const expectedCity2 = new Company(testCityData[1]);
 
         it('returns results with one RelatedModel field hydrated', () => {
-            return backend.read(manager, Developer, {}, developerReadResult, getReadOpts({
+            return backend.read(manager, Developer, getReadOpts({
                 related: [ 'company' ]
-            }))
+            }), developerReadResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -94,9 +94,9 @@ describe('rev.backends.inmemory - read() related field tests', () => {
         });
 
         it('returns results with two RelatedModel fields hydrated', () => {
-            return backend.read(manager, Developer, {}, developerReadResult, getReadOpts({
+            return backend.read(manager, Developer, getReadOpts({
                 related: [ 'company', 'city' ]
-            }))
+            }), developerReadResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -112,11 +112,10 @@ describe('rev.backends.inmemory - read() related field tests', () => {
         });
 
         it('returns the plain foreign key value if it does not match a record', () => {
-            return backend.read(manager, Developer, {
-                id: 6
-            }, developerReadResult, getReadOpts({
+            return backend.read(manager, Developer, getReadOpts({
+                where: { id: 6 },
                 related: [ 'city' ]
-            }))
+            }), developerReadResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -133,9 +132,9 @@ describe('rev.backends.inmemory - read() related field tests', () => {
     describe('read() - with "related" option specifying RelatedModelList fields', () => {
 
         it('returns results with one RelatedModelList field hydrated', () => {
-            return backend.read(manager, Company, {}, companyReadResult, getReadOpts({
+            return backend.read(manager, Company, getReadOpts({
                 related: [ 'developers' ]
-            }))
+            }), companyReadResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -167,9 +166,9 @@ describe('rev.backends.inmemory - read() related field tests', () => {
         });
 
         it('returns results with two RelatedModelList fields hydrated', () => {
-            return backend.read(manager, Company, {}, companyReadResult, getReadOpts({
+            return backend.read(manager, Company, getReadOpts({
                 related: [ 'departments', 'developers' ]
-            }))
+            }), companyReadResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -215,9 +214,9 @@ describe('rev.backends.inmemory - read() related field tests', () => {
     describe('read() - with "related" option specifying RelatedModel and RelatedModelList fields', () => {
 
         it('returns results with RelatedModel and RelatedModelList fields hydrated', () => {
-            return backend.read(manager, Company, {}, companyReadResult, getReadOpts({
+            return backend.read(manager, Company, getReadOpts({
                 related: [ 'developers', 'leadDeveloper' ]
-            }))
+            }), companyReadResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
@@ -255,14 +254,15 @@ describe('rev.backends.inmemory - read() related field tests', () => {
     describe('read() - with "related" option specifying fields multiple levels deep', () => {
 
         it('returns results with related data from all levels', () => {
-            return backend.read(manager, Developer, {
-                id: { _in: [1, 5] }
-            }, developerReadResult, getReadOpts({
+            return backend.read(manager, Developer, getReadOpts({
+                where: {
+                    id: { _in: [1, 5] }
+                },
                 related: [
                     'company.departments',
                     'company.departments.company',
                     'city',  ]
-            }))
+            }), developerReadResult)
                 .then((res) => {
                     expect(res.success).to.be.true;
                     expect(res.result).to.be.undefined;
