@@ -95,7 +95,7 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
             loadState: 'loading'
         });
         const modelData = await this.context.modelManager.read(
-            this.modelMeta.ctor, {}, { limit, offset });
+            this.modelMeta.ctor, { limit, offset });
         if (modelData.success && modelData.results) {
             this.setState({
                 loadState: 'loaded',

@@ -78,8 +78,12 @@ export class DetailView extends React.Component<IDetailViewProps> {
         const meta = this.modelContext.modelMeta;
         const result = await this.context.modelManager.read(
             meta.ctor,
-            { [meta.primaryKey]: this.props.primaryKeyValue },
-            { limit: 1 }
+            {
+                where: {
+                    [meta.primaryKey]: this.props.primaryKeyValue
+                },
+                limit: 1
+            }
         );
         if (this.modelContext.loadState == 'LOADING') {
             this.modelContext.loadState = 'NONE';
