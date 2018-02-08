@@ -16,7 +16,7 @@ describe('rev.backends.inmemory', () => {
 
     beforeEach(() => {
         manager = new ModelManager();
-        options = {};
+        options = { where: {} };
         backend = new InMemoryBackend();
         manager.registerBackend('default', backend);
         manager.register(TestModel);
@@ -100,7 +100,7 @@ describe('rev.backends.inmemory', () => {
             return backend.remove(manager, model, { where: null }, removeResult)
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
-                    expect(err.message).to.contain('remove() requires the \'where\' option11');
+                    expect(err.message).to.contain('remove() requires the \'where\' option');
                 });
         });
 

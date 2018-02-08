@@ -102,7 +102,7 @@ describe('rev.backends.inmemory', () => {
                     model.name = 'Frank';
                     return backend.update(manager,
                         model,
-                        {}, updateResult);
+                        { where: {} }, updateResult);
                 })
                 .then(() => {
                     expect(backend._storage['TestModel'])

@@ -67,7 +67,7 @@ describe('rev.operations.create()', () => {
                 expect(mockBackend.createStub.callCount).to.equal(1);
                 let readCall = mockBackend.createStub.getCall(0);
                 expect(readCall.args[1]).to.equal(model);
-                expect(readCall.args[3]).to.deep.equal(create.DEFAULT_CREATE_OPTIONS);
+                expect(readCall.args[2]).to.deep.equal(create.DEFAULT_CREATE_OPTIONS);
             });
     });
 
@@ -80,7 +80,7 @@ describe('rev.operations.create()', () => {
                 expect(mockBackend.createStub.callCount).to.equal(1);
                 let readCall = mockBackend.createStub.getCall(0);
                 expect(readCall.args[1]).to.equal(model);
-                expect(readCall.args[3].validation).to.deep.equal({});
+                expect(readCall.args[2].validation).to.deep.equal({});
             });
     });
 

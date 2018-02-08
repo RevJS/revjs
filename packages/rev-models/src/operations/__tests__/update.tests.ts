@@ -19,9 +19,9 @@ class TestModel {
         name: string;
     @d.SelectField({ selection: GENDERS })
         gender: string;
-    @d.IntegerField({ minValue: 10 })
+    @d.IntegerField({ required: false, minValue: 10 })
         age: number;
-    @d.EmailField()
+    @d.EmailField({ required: false })
         email: string;
 }
 
@@ -89,8 +89,7 @@ describe('rev.operations.update()', () => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let updateCall = mockBackend.updateStub.getCall(0);
                 expect(updateCall.args[1]).to.equal(model);
-                expect(updateCall.args[2]).to.equal(options.where);
-                expect(updateCall.args[4]).to.deep.equal(testOpts);
+                expect(updateCall.args[2]).to.deep.equal(testOpts);
             });
     });
 
@@ -104,8 +103,8 @@ describe('rev.operations.update()', () => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let updateCall = mockBackend.updateStub.getCall(0);
                 expect(updateCall.args[1]).to.equal(model);
-                expect(updateCall.args[2]).to.equal(options.where);
-                expect(updateCall.args[4].validation).to.deep.equal({});
+                expect(updateCall.args[2].where).to.equal(options.where);
+                expect(updateCall.args[2].validation).to.deep.equal({});
             });
     });
 
@@ -119,7 +118,9 @@ describe('rev.operations.update()', () => {
                 let updateCall = mockBackend.updateStub.getCall(0);
                 expect(updateCall.args[1]).to.equal(model);
                 expect(updateCall.args[2]).to.deep.equal({
-                    name: 'Bob'
+                    where: {
+                        name: 'Bob'
+                    }
                 });
             });
     });

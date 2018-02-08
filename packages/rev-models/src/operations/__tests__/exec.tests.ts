@@ -102,7 +102,7 @@ describe('rev.operations.exec()', () => {
                         manager: manager,
                         args: testArgs,
                         result: res,
-                        options: { validate: false }
+                        options
                     });
                     expect(mockBackend.execStub.callCount).to.equal(0);
                 });
@@ -235,13 +235,13 @@ describe('rev.operations.exec()', () => {
         it('if model does not contain method, backend.exec() is called instead', () => {
             let model = new TestModel();
             model.name = 'Joe';
-            return rwExec.exec(manager, model, options)
+            return rwExec.exec(manager, model, { method: 'methodOnlyInBackend' })
                 .then(() => {
                     expect(mockBackend.execStub.callCount).to.equal(1);
                     let execCall = mockBackend.execStub.getCall(0);
                     expect(execCall.args[0]).to.equal(manager);
                     expect(execCall.args[1]).to.equal(model);
-                    expect(execCall.args[2]).to.equal(options);
+                    expect(execCall.args[2]).to.deep.equal({ method: 'methodOnlyInBackend' });
                     expect(execCall.args[3]).to.be.instanceof(ModelOperationResult);
                 });
         });

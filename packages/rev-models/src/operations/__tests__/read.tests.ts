@@ -48,18 +48,19 @@ describe('rev.operations.read()', () => {
 
     it('DEFAULT_READ_OPTIONS are as expected', () => {
         expect(read.DEFAULT_READ_OPTIONS).to.deep.equal({
+            where: {},
             limit: 20,
             offset: 0
         });
     });
 
     it('calls backend.read() and returns results', () => {
-        return rwRead.read(manager, TestModel, whereClause)
+        return rwRead.read(manager, TestModel)
             .then((res) => {
                 expect(mockBackend.readStub.callCount).to.equal(1);
                 let readCall = mockBackend.readStub.getCall(0);
                 expect(readCall.args[1]).to.equal(TestModel);
-                expect(readCall.args[2]).to.equal(whereClause);
+                expect(readCall.args[2]).to.deep.equal(read.DEFAULT_READ_OPTIONS);
                 expect(res.success).to.be.true;
                 expect(res.results).to.equal(testResults);
                 expect(res.validation).to.be.undefined;
@@ -72,7 +73,7 @@ describe('rev.operations.read()', () => {
                 expect(mockBackend.readStub.callCount).to.equal(1);
                 let readCall = mockBackend.readStub.getCall(0);
                 expect(readCall.args[1]).to.equal(TestModel);
-                expect(readCall.args[2]).to.deep.equal({});
+                expect(readCall.args[2].where).to.deep.equal({});
                 expect(res.success).to.be.true;
                 expect(res.results).to.equal(testResults);
                 expect(res.validation).to.be.undefined;
@@ -85,8 +86,7 @@ describe('rev.operations.read()', () => {
                 expect(mockBackend.readStub.callCount).to.equal(1);
                 let readCall = mockBackend.readStub.getCall(0);
                 expect(readCall.args[1]).to.equal(TestModel);
-                expect(readCall.args[2]).to.deep.equal({});
-                expect(readCall.args[4]).to.deep.equal(read.DEFAULT_READ_OPTIONS);
+                expect(readCall.args[2]).to.deep.equal(read.DEFAULT_READ_OPTIONS);
             });
     });
 
@@ -96,9 +96,8 @@ describe('rev.operations.read()', () => {
                 expect(mockBackend.readStub.callCount).to.equal(1);
                 let readCall = mockBackend.readStub.getCall(0);
                 expect(readCall.args[1]).to.equal(TestModel);
-                expect(readCall.args[2]).to.deep.equal({});
-                expect(readCall.args[4].limit).to.equal(read.DEFAULT_READ_OPTIONS.limit);
-                expect(readCall.args[4].offset).to.equal(10);
+                expect(readCall.args[2].limit).to.equal(read.DEFAULT_READ_OPTIONS.limit);
+                expect(readCall.args[2].offset).to.equal(10);
             });
     });
 

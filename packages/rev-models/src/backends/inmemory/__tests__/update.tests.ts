@@ -16,7 +16,7 @@ describe('rev.backends.inmemory', () => {
 
     beforeEach(() => {
         manager = new ModelManager();
-        options = {};
+        options = { where: {} };
         backend = new InMemoryBackend();
         manager.registerBackend('default', backend);
         manager.register(TestModel);
@@ -137,7 +137,7 @@ describe('rev.backends.inmemory', () => {
 
         it('throws an error if where clause is not provided', () => {
             let model = new TestModel();
-            return backend.update(manager, model, null, updateResult)
+            return backend.update(manager, model, {}, updateResult)
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('update() requires the \'where\' parameter');

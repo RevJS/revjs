@@ -57,7 +57,7 @@ describe('rev.operations.remove()', () => {
                 expect(mockBackend.removeStub.callCount).to.equal(1);
                 let removeCall = mockBackend.removeStub.getCall(0);
                 expect(removeCall.args[1]).to.equal(model);
-                expect(removeCall.args[2]).to.equal(options.where);
+                expect(removeCall.args[2].where).to.equal(options.where);
                 expect(res.success).to.be.true;
             });
     });
@@ -71,8 +71,7 @@ describe('rev.operations.remove()', () => {
                 expect(mockBackend.removeStub.callCount).to.equal(1);
                 let removeCall = mockBackend.removeStub.getCall(0);
                 expect(removeCall.args[1]).to.equal(model);
-                expect(removeCall.args[2]).to.deep.equal(options.where);
-                expect(removeCall.args[4]).to.deep.equal(testOpts);
+                expect(removeCall.args[2]).to.deep.equal(testOpts);
             });
     });
 
@@ -85,8 +84,7 @@ describe('rev.operations.remove()', () => {
                 expect(mockBackend.removeStub.callCount).to.equal(1);
                 let removeCall = mockBackend.removeStub.getCall(0);
                 expect(removeCall.args[1]).to.equal(model);
-                expect(removeCall.args[2]).to.deep.equal(options.where);
-                expect(removeCall.args[4].someKey).to.equal(10);
+                expect(removeCall.args[2].someKey).to.equal(10);
             });
     });
 
@@ -99,7 +97,9 @@ describe('rev.operations.remove()', () => {
                 let removeCall = mockBackend.removeStub.getCall(0);
                 expect(removeCall.args[1]).to.equal(model);
                 expect(removeCall.args[2]).to.deep.equal({
-                    name: 'bob'
+                    where: {
+                        name: 'bob'
+                    }
                 });
             });
     });

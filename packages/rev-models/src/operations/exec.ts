@@ -12,8 +12,7 @@ export interface IMethodContext<T> {
 }
 
 export const DEFAULT_EXEC_OPTIONS: IExecOptions = {
-    method: null,
-    args: null
+    method: null
 };
 
 export async function exec<R>(manager: IModelManager, model: IModel, options?: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
