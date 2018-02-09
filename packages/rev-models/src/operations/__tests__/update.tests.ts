@@ -21,7 +21,7 @@ class TestModel {
         gender: string;
     @d.IntegerField({ required: false, minValue: 10 })
         age: number;
-    @d.EmailField({ required: false })
+    @d.EmailField()
         email: string;
 }
 
@@ -76,20 +76,27 @@ describe('rev.operations.update()', () => {
             })
             .catch((e) => {
                 console.log(e.result.validation);
+                throw e;
             });
     });
 
-    it('calls backend.update() with DEFAULT_UPDATE_OPTIONS if no options are set', () => {
+    it('calls backend.update() with DEFAULT_UPDATE_OPTIONS, and set fields, if no options are set', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        let testOpts = Object.assign({}, update.DEFAULT_UPDATE_OPTIONS, options);
+        let expectedOpts = Object.assign({}, update.DEFAULT_UPDATE_OPTIONS, {
+            fields: ['name', 'gender']
+        });
         return rwUpdate.update(manager, model, options)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let updateCall = mockBackend.updateStub.getCall(0);
                 expect(updateCall.args[1]).to.equal(model);
-                expect(updateCall.args[2]).to.deep.equal(testOpts);
+                expect(updateCall.args[2]).to.deep.equal(expectedOpts);
+            })
+            .catch((e) => {
+                console.log(e.result.validation);
+                throw e;
             });
     });
 
@@ -179,7 +186,7 @@ describe('rev.operations.update()', () => {
         return rwUpdate.update(manager, model, options)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
-                expect(err.message).to.contain('options.fields must be an array of field names');
+                expect(err.message).to.contain('"fields" must be an array of field names');
             });
     });
 
@@ -192,7 +199,7 @@ describe('rev.operations.update()', () => {
         return rwUpdate.update(manager, model, options)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
-                expect(err.message).to.contain('Field \'cc_number\' does not exist in TestModel');
+                expect(err.message).to.contain(`Field 'cc_number' does not exist in model TestModel`);
             });
     });
 

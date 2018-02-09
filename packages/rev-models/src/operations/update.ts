@@ -4,6 +4,7 @@ import { IModel, IModelManager, IUpdateOptions, IUpdateMeta } from '../models/ty
 import { ModelOperationResult } from './operationresult';
 import { IModelOperation } from './operation';
 import { getModelPrimaryKeyQuery } from './utils';
+import { checkFieldsList } from '../models/utils';
 
 export const DEFAULT_UPDATE_OPTIONS: IUpdateOptions = {};
 
@@ -31,14 +32,7 @@ export async function update<T extends IModel>(manager: IModelManager, model: T,
     }
 
     if (opts.fields) {
-        if (typeof opts.fields != 'object' || !(opts.fields instanceof Array)) {
-            throw new Error('update() options.fields must be an array of field names');
-        }
-        for (let field of opts.fields) {
-            if (!(field in meta.fieldsByName)) {
-                throw new Error(`update() options.fields error: Field '${field}' does not exist in ${meta.name}`);
-            }
-        }
+        checkFieldsList(meta, opts.fields);
     }
 
     let operation: IModelOperation = {
