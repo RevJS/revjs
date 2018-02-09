@@ -46,12 +46,7 @@ let manager: ModelManager;
 
 describe('rev.operations.update()', () => {
 
-    let options: IUpdateOptions;
-
     beforeEach(() => {
-        options = {
-            where: {}
-        };
         mockBackend = new MockBackend();
         manager = new ModelManager();
         manager.registerBackend('default', mockBackend);
@@ -65,7 +60,7 @@ describe('rev.operations.update()', () => {
         model.gender = 'male';
         model.age = 23;
         model.email = 'bob@test.com';
-        return rwUpdate.update(manager, model, options)
+        return rwUpdate.update(manager, model)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let updateCall = mockBackend.updateStub.getCall(0);
@@ -80,14 +75,15 @@ describe('rev.operations.update()', () => {
             });
     });
 
-    it('calls backend.update() with DEFAULT_UPDATE_OPTIONS, and set fields, if no options are set', () => {
+    it('calls backend.update() with default "fields" and "where", if no options are set', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
         let expectedOpts = Object.assign({}, update.DEFAULT_UPDATE_OPTIONS, {
-            fields: ['name', 'gender']
+            fields: ['name', 'gender'],
+            where: { name: 'Bob' }
         });
-        return rwUpdate.update(manager, model, options)
+        return rwUpdate.update(manager, model)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let updateCall = mockBackend.updateStub.getCall(0);
@@ -95,7 +91,30 @@ describe('rev.operations.update()', () => {
                 expect(updateCall.args[2]).to.deep.equal(expectedOpts);
             })
             .catch((e) => {
-                console.log(e.result.validation);
+                console.log(e.result);
+                throw e;
+            });
+    });
+
+    it('"fields" option is based on model fields that are not undefined', () => {
+        let model = new TestModel();
+        model.name = 'Bob';
+        model.gender = 'male';
+        model.age = 24;
+        model.email = undefined;
+        let expectedOpts = Object.assign({}, update.DEFAULT_UPDATE_OPTIONS, {
+            fields: ['name', 'gender', 'age'],
+            where: { name: 'Bob' }
+        });
+        return rwUpdate.update(manager, model)
+            .then((res) => {
+                expect(mockBackend.updateStub.callCount).to.equal(1);
+                let updateCall = mockBackend.updateStub.getCall(0);
+                expect(updateCall.args[1]).to.equal(model);
+                expect(updateCall.args[2]).to.deep.equal(expectedOpts);
+            })
+            .catch((e) => {
+                console.log(e.result);
                 throw e;
             });
     });
@@ -104,14 +123,17 @@ describe('rev.operations.update()', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        options.validation = {};
+        const options: IUpdateOptions = {
+            where: { name: 'Joanne' },
+            fields: ['gender'],
+        };
         return rwUpdate.update(manager, model, options)
             .then((res) => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let updateCall = mockBackend.updateStub.getCall(0);
                 expect(updateCall.args[1]).to.equal(model);
-                expect(updateCall.args[2].where).to.equal(options.where);
-                expect(updateCall.args[2].validation).to.deep.equal({});
+                expect(updateCall.args[2].where).to.deep.equal({ name: 'Joanne' });
+                expect(updateCall.args[2].fields).to.deep.equal(['gender']);
             });
     });
 
@@ -124,7 +146,7 @@ describe('rev.operations.update()', () => {
                 expect(mockBackend.updateStub.callCount).to.equal(1);
                 let updateCall = mockBackend.updateStub.getCall(0);
                 expect(updateCall.args[1]).to.equal(model);
-                expect(updateCall.args[2]).to.deep.equal({
+                expect(updateCall.args[2]).to.deep.include({
                     where: {
                         name: 'Bob'
                     }
@@ -180,7 +202,7 @@ describe('rev.operations.update()', () => {
     it('rejects when options.fields set to something other than an array', () => {
         let model = new TestModel();
         Object.assign(model, { name: 'bob', gender: 'male' });
-        options = {
+        const options = {
             fields: 'name, gender' as any
         };
         return rwUpdate.update(manager, model, options)
@@ -193,7 +215,7 @@ describe('rev.operations.update()', () => {
     it('rejects when options.fields contains an invalid field name', () => {
         let model = new TestModel();
         Object.assign(model, { name: 'bob', gender: 'male' });
-        options = {
+        const options = {
             fields: ['cc_number']
         };
         return rwUpdate.update(manager, model, options)
@@ -209,7 +231,7 @@ describe('rev.operations.update()', () => {
         model.gender = 'fish';
         model.age = 9;
         model.email = 'www.google.com';
-        return rwUpdate.update(manager, model, options)
+        return rwUpdate.update(manager, model)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -226,7 +248,7 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorsToAdd = ['some_backend_error'];
-        return rwUpdate.update(manager, model, options)
+        return rwUpdate.update(manager, model)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -242,7 +264,7 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorsToAdd = ['some_backend_error'];
-        return rwUpdate.update(manager, model, options)
+        return rwUpdate.update(manager, model)
             .then((res) => { throw new Error('expected reject'); })
             .catch((res) => {
                 expect(res).to.be.instanceof(Error);
@@ -259,7 +281,7 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         mockBackend.errorToThrow = expectedError;
-        return rwUpdate.update(manager, model, options)
+        return rwUpdate.update(manager, model)
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err).to.equal(expectedError);

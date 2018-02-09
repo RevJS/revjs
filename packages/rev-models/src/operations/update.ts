@@ -21,6 +21,7 @@ export async function update<T extends IModel>(manager: IModelManager, model: T,
 
     let backend = manager.getBackend(meta.backend);
     let opts: IUpdateOptions = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
+    let validationOpts = opts.validation || {};
 
     if (!opts.where || typeof opts.where != 'object') {
         if (!meta.primaryKey || meta.primaryKey.length == 0) {
@@ -34,6 +35,15 @@ export async function update<T extends IModel>(manager: IModelManager, model: T,
     if (opts.fields) {
         checkFieldsList(meta, opts.fields);
     }
+    else {
+        opts.fields = [];
+        meta.fields.forEach((field) => {
+            if (typeof model[field.name] != 'undefined') {
+                opts.fields.push(field.name);
+            }
+        });
+    }
+    validationOpts.fields = opts.fields;
 
     let operation: IModelOperation = {
         operation: 'update',
@@ -41,7 +51,7 @@ export async function update<T extends IModel>(manager: IModelManager, model: T,
     };
     let operationResult = new ModelOperationResult<T, IUpdateMeta>(operation);
 
-    let validationResult = await validate(manager, model, operation, opts.validation ? opts.validation : null);
+    let validationResult = await validate(manager, model, operation, validationOpts);
     if (!validationResult.valid) {
         throw operationResult.createValidationError(validationResult);
     }
