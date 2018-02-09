@@ -3,9 +3,11 @@ import { IModelOperation } from './operation';
 import { ModelValidationResult } from '../validation/validationresult';
 import { VALIDATION_MESSAGES as msg } from '../validation/validationmsg';
 import { withTimeout } from '../utils';
+import { checkFieldsList } from '../models/utils';
 
 export interface IValidationOptions {
     timeout?: number;
+    fields?: string[];
 }
 
 export interface IValidationContext {
@@ -22,7 +24,17 @@ export async function validate<T extends IModel>(manager: IModelManager, model: 
     let timeout = options && options.timeout ? options.timeout : 5000;
     let result = new ModelValidationResult();
 
-    // First, check if model contains fields that are not in meta
+    // Work out fields to be validated
+    let fields: string[];
+    if (options && options.fields) {
+        checkFieldsList(meta, options.fields);
+        fields = options.fields;
+    }
+    else {
+        fields = Object.keys(meta.fieldsByName);
+    }
+
+    // Check for any unknown fields
     for (let field of Object.keys(model)) {
         if (!(field in meta.fieldsByName)) {
             result.addModelError(msg.extra_field(field), 'extra_field');
@@ -31,8 +43,9 @@ export async function validate<T extends IModel>(manager: IModelManager, model: 
 
     // Trigger field validation
     let promises: Array<Promise<any>> = [];
-    for (let field of meta.fields) {
-        promises.push(field.validate(manager, model, operation, result, options));
+    for (let fieldName of fields) {
+        let fieldObj = meta.fieldsByName[fieldName];
+        promises.push(fieldObj.validate(manager, model, operation, result, options));
     }
     await withTimeout(Promise.all(promises), timeout, 'validate()');
 

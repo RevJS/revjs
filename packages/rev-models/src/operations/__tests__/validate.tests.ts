@@ -86,6 +86,22 @@ describe('validate()', () => {
             });
     });
 
+    it('should only validate specific fields if the fields option is set', () => {
+
+        let test = new TestModel({
+            id: 'not an id',
+            name: 'Harry',
+            date: 'not a date'
+        });
+
+        return validate(manager, test, {operation: 'create'}, {
+            fields: ['name']
+        })
+            .then((res) => {
+                expect(res.valid).to.equal(true);
+            });
+    });
+
     it('should return an invalid result if a field value is invalid', () => {
 
         let test = new TestModel({
