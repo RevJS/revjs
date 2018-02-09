@@ -10,10 +10,10 @@ import { remove } from '../operations/remove';
 import { read } from '../operations/read';
 import { exec } from '../operations/exec';
 import { ModelOperationResult } from '../operations/operationresult';
-import { validate, IValidationOptions } from '../operations/validate';
+import { validate } from '../operations/validate';
 import { ModelValidationResult } from '../validation/validationresult';
 import { hydrate } from '../operations/hydrate';
-import { IModelManager, ICreateOptions, ICreateMeta, IUpdateOptions, IUpdateMeta, IRemoveOptions, IRemoveMeta, IReadOptions, IReadMeta, IExecOptions } from './types';
+import { IModelManager, IValidationOptions, ICreateOptions, ICreateMeta, IUpdateOptions, IUpdateMeta, IRemoveOptions, IRemoveMeta, IReadOptions, IReadMeta, IExecOptions } from './types';
 import { isSet } from '../utils';
 
 /**

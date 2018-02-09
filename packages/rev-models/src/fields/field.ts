@@ -1,10 +1,9 @@
 import { isSet } from '../utils';
 
 import * as validators from '../validation/validators';
-import { IModel, IModelManager } from '../models/types';
+import { IModel, IModelManager, IValidationOptions } from '../models/types';
 import { IModelOperation } from '../operations/operation';
 import { ModelValidationResult } from '../validation/validationresult';
-import { IValidationOptions } from '../operations/validate';
 
 export interface IFieldOptions {
     label?: string;

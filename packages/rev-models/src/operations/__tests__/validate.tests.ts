@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as d from '../../decorators';
-import { IModelMeta } from '../../models/types';
+import { IModelMeta, IValidationContext } from '../../models/types';
 import { TextField } from '../../fields/';
-import { validate, IValidationContext } from '../validate';
+import { validate } from '../validate';
 import { VALIDATION_MESSAGES as msg } from '../../validation/validationmsg';
 import { ModelManager } from '../../models/manager';
 import { InMemoryBackend } from '../../backends/inmemory/backend';

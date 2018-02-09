@@ -1,9 +1,8 @@
-import { IModel, IModelManager } from '../../models/types';
+import { IModel, IModelManager, IValidationOptions } from '../../models/types';
 import { IModelOperation } from '../../operations/operation';
 import { isSet } from '../../utils/index';
 import { VALIDATION_MESSAGES as msg } from '../validationmsg';
 import { ModelValidationResult } from '../validationresult';
-import { IValidationOptions } from '../../operations/validate';
 import { Field } from '../../fields';
 
 export function modelClassValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {

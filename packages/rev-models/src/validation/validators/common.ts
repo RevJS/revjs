@@ -1,10 +1,9 @@
 import { VALIDATION_MESSAGES as msg } from '../validationmsg';
 import { isSet } from '../../utils';
-import { IModel, IModelManager } from '../../models/types';
+import { IModel, IModelManager, IValidationOptions } from '../../models/types';
 import { Field } from '../../fields/field';
 import { IModelOperation } from '../../operations/operation';
 import { ModelValidationResult } from '../validationresult';
-import { IValidationOptions } from '../../operations/validate';
 
 export type IFieldValidator =
     <T extends IModel>(

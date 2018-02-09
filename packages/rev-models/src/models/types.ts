@@ -1,9 +1,21 @@
 
-import { IValidationContext, IValidationOptions } from '../operations/validate';
 import { Field } from '../fields/field';
 import { IBackend } from '../backends';
 import { IModelOperationResult, IOperationMeta } from '../operations/operationresult';
 import { ModelValidationResult } from '../validation/validationresult';
+import { IModelOperation } from '../operations/operation';
+
+export interface IValidationOptions {
+    timeout?: number;
+    fields?: string[];
+}
+
+export interface IValidationContext {
+    manager: IModelManager;
+    operation: IModelOperation;
+    result: ModelValidationResult;
+    options?: IValidationOptions;
+}
 
 export interface IModel {
     [fieldName: string]: any;

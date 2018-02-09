@@ -6,7 +6,7 @@ import { VALIDATION_MESSAGES as msg } from '../../validationmsg';
 
 import { ModelValidationResult } from '../../validationresult';
 import { IModelOperation } from '../../../operations/operation';
-import { IValidationOptions } from '../../../operations/validate';
+import { IValidationOptions } from '../../../models/types';
 import { ModelManager } from '../../../models/manager';
 import { InMemoryBackend } from '../../../backends/inmemory/backend';
 import { expectValidationFailure } from './utils';

@@ -1,21 +1,9 @@
-import { IModel, IModelManager } from '../models/types';
+import { IModel, IModelManager, IValidationOptions } from '../models/types';
 import { IModelOperation } from './operation';
 import { ModelValidationResult } from '../validation/validationresult';
 import { VALIDATION_MESSAGES as msg } from '../validation/validationmsg';
 import { withTimeout } from '../utils';
 import { checkFieldsList } from '../models/utils';
-
-export interface IValidationOptions {
-    timeout?: number;
-    fields?: string[];
-}
-
-export interface IValidationContext {
-    manager: IModelManager;
-    operation: IModelOperation;
-    result: ModelValidationResult;
-    options?: IValidationOptions;
-}
 
 export async function validate<T extends IModel>(manager: IModelManager, model: T, operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
 

@@ -1,10 +1,9 @@
-import { IModel, IModelManager } from '../../models/types';
+import { IModel, IModelManager, IValidationOptions } from '../../models/types';
 import { Field } from '../../fields/field';
 import { IModelOperation } from '../../operations/operation';
 import { isSet } from '../../utils/index';
 import { VALIDATION_MESSAGES as msg } from '../validationmsg';
 import { ModelValidationResult } from '../validationresult';
-import { IValidationOptions } from '../../operations/validate';
 
 export function singleSelectionValidator<T extends IModel>(manager: IModelManager, model: T, field: any, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
