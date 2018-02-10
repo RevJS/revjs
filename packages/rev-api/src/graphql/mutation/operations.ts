@@ -59,14 +59,13 @@ export function getModelOperationMutations(api: IGraphQLApi, meta: IApiMeta): Gr
             mutations[mutationName] = {
                 type: GraphQLJSON,
                 args: {
-                    model: { type: new GraphQLNonNull(api.getModelInputObject(meta.model)) },
-                    where: { type: GraphQLJSON }
+                    where: { type: new GraphQLNonNull(GraphQLJSON) }
                 },
                 resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
-                    // const model = modelManager.hydrate(modelMeta.ctor, args.model);
-                    // return modelManager.remove(model, {
-                    //     where: args.where
-                    // });
+                    const model = new modelMeta.ctor();
+                    return modelManager.remove(model, {
+                        where: args.where
+                    });
                 }
             };
         }
