@@ -47,7 +47,7 @@ export class Post implements IModel {
     postMethod3() {}
 
     validate(ctx: IValidationContext) {
-        if (this.title.includes('Fake News')) {
+        if (this.title && this.title.includes('Fake News')) {
             ctx.result.addModelError('Fake News is not allowed!');
         }
     }

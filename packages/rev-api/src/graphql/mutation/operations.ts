@@ -1,4 +1,4 @@
-import { GraphQLFieldConfigMap, GraphQLNonNull, GraphQLResolveInfo, GraphQLList, GraphQLString } from 'graphql';
+import { GraphQLFieldConfigMap, GraphQLNonNull, GraphQLResolveInfo } from 'graphql';
 import { IApiMeta } from '../../api/types';
 import * as GraphQLJSON from 'graphql-type-json';
 import { IGraphQLApi } from '../types';
@@ -43,14 +43,14 @@ export function getModelOperationMutations(api: IGraphQLApi, meta: IApiMeta): Gr
                     const model = modelManager.hydrate(modelMeta.ctor, args.model);
                     const options = args.where ? { where: args.where } : undefined;
                     return modelManager.update(model, options)
-                    .catch((e) => {
-                        if (e.message == 'ValidationError') {
-                            return e.result;
-                        }
-                        else {
-                            throw e;
-                        }
-                    });
+                        .catch((e) => {
+                            if (e.message == 'ValidationError') {
+                                return e.result;
+                            }
+                            else {
+                                throw e;
+                            }
+                        });
                 }
             };
         }

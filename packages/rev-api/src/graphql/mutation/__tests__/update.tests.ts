@@ -155,6 +155,7 @@ describe('GraphQL "mutation" type - Model_update()', () => {
         let api: GraphQLApi;
         let schema: GraphQLSchema;
         let existingPost: models.Post;
+        let existingPost2: models.Post;
 
         beforeEach(async () => {
             modelManager = models.getModelManager();
@@ -172,7 +173,15 @@ describe('GraphQL "mutation" type - Model_update()', () => {
                 published: true,
                 post_date: '2017-12-23T09:30:21'
             });
+            existingPost2 = new models.Post({
+                id: 11,
+                title: 'Another Post',
+                body: 'This is another post',
+                published: true,
+                post_date: '2018-01-05T12:23:34'
+            });
             await modelManager.create(existingPost);
+            await modelManager.create(existingPost2);
         });
 
         it('When "model" arg is not specified, an error is returned', async () => {
@@ -207,47 +216,70 @@ describe('GraphQL "mutation" type - Model_update()', () => {
             expect(opResult.validation.modelErrors[0].message).to.equal('Fake News is not allowed!');
         });
 
-        // it('When model is valid, a successful result is returned with the created model', async () => {
-        //     const query = `
-        //         mutation {
-        //             Post_create(model: {
-        //                 title: "Awesome Post",
-        //                 body: "This post is valid and therefore awesome",
-        //                 published: true,
-        //                 post_date: "2018-01-01T12:01:12"
-        //             })
-        //         }
-        //     `;
-        //     const result = await graphql(schema, query);
-        //     expect(result.errors).to.be.undefined;
-        //     expect(result.data).to.be.an('object');
-        //     expect(result.data.Post_create).to.be.an('object');
+        it('When the updated fields are valid, a successful result is returned with the number of updated records', async () => {
+            const query = `
+                mutation {
+                    Post_update(model: {
+                        id: 10,
+                        body: "A new body for post ID 10"
+                    })
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.errors).to.be.undefined;
+            expect(result.data).to.be.an('object');
+            expect(result.data.Post_update).to.be.an('object');
 
-        //     const opResult: IModelOperationResult<any, ICreateMeta> = result.data.Post_create;
-        //     expect(opResult.success).to.be.true;
-        //     expect(opResult.result).to.deep.include({
-        //         id: 1,
-        //         title: 'Awesome Post',
-        //         body: 'This post is valid and therefore awesome',
-        //         published: true,
-        //         post_date: '2018-01-01T12:01:12'
-        //     });
-        // });
+            const opResult: IModelOperationResult<any, IUpdateMeta> = result.data.Post_update;
+            expect(opResult.success).to.be.true;
+            expect(opResult.result).to.be.undefined;
+            expect(opResult.results).to.be.undefined;
+            expect(opResult.meta).to.deep.equal({
+                totalCount: 1
+            });
+        });
 
-        // // TODO: We should recommend some best practise for hiding error details in production
-        // it('if modelManager.create() throws some other error, a graphql error is raised', async () => {
-        //     const expectedError = new Error('AAAAAAAaaaAaaaarrrrgh!!!!');
-        //     modelManager.create = () => Promise.reject(expectedError);
+        it('We can use the "where" parameter to update multiple records', async () => {
+            const query = `
+                mutation {
+                    Post_update(
+                        model: {
+                            body: "A new body for ALL TEH POSTS!!!"
+                        },
+                        where: {
+                            published: true
+                        }
+                    )
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.errors).to.be.undefined;
+            expect(result.data).to.be.an('object');
+            expect(result.data.Post_update).to.be.an('object');
 
-        //     const query = `
-        //         mutation {
-        //             Post_create(model: {})
-        //         }
-        //     `;
-        //     const result = await graphql(schema, query);
-        //     expect(result.errors).to.have.length(1);
-        //     expect(result.errors[0].message).to.equal(expectedError.message);
-        // });
+            const opResult: IModelOperationResult<any, IUpdateMeta> = result.data.Post_update;
+            expect(opResult.success).to.be.true;
+            expect(opResult.result).to.be.undefined;
+            expect(opResult.results).to.be.undefined;
+            expect(opResult.meta).to.deep.equal({
+                totalCount: 2
+            });
+        });
+
+        // TODO: We should recommend some best practise for hiding error details in production
+        it('if modelManager.update() throws some other error, a graphql error is raised', async () => {
+            const expectedError = new Error('AAAAAAAaaaAaaaarrrrgh!!!!');
+            modelManager.update = () => Promise.reject(expectedError);
+
+            const query = `
+                mutation {
+                    Post_update(model: {})
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.errors).to.have.length(1);
+            expect(result.errors[0].message).to.equal(expectedError.message);
+        });
 
     });
 
