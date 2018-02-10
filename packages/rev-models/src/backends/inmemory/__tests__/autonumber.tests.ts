@@ -52,7 +52,7 @@ describe('rev.backends.inmemory', () => {
                 });
         });
 
-        it('create() - values provided for AutoNumberField are ignored', () => {
+        it('create() - values provided for AutoNumberField are stored', () => {
             let model1 = new TestModel();
             model1.id = 99;
             model1.name = 'record 1';
@@ -66,13 +66,13 @@ describe('rev.backends.inmemory', () => {
             ])
                 .then((res) => {
                     expect(res[0].result).to.be.instanceof(TestModel);
-                    expect(res[0].result.id).to.equal(1);
+                    expect(res[0].result.id).to.equal(99);
                     expect(res[1].result).to.be.instanceof(TestModel);
-                    expect(res[1].result.id).to.equal(2);
+                    expect(res[1].result.id).to.equal(227);
                 });
         });
 
-        it('update() - values provided for AutoNumberField are ignored', () => {
+        it('update() - values provided for AutoNumberField are stored', () => {
             let testData = [
                 {
                     id: 1,
@@ -86,6 +86,14 @@ describe('rev.backends.inmemory', () => {
 
             return backend.load(manager, TestModel, testData)
                 .then(() => {
+                    let model = new TestModel();
+                    model.id = 10;
+                    model.name = 'Frank';
+                    return backend.update(manager,
+                        model,
+                        { where: { id: 2 } }, updateResult);
+                })
+                .then(() => {
                     expect(backend._storage['TestModel'])
                         .to.deep.equal([
                             {
@@ -93,26 +101,7 @@ describe('rev.backends.inmemory', () => {
                                 name: 'record 1',
                             },
                             {
-                                id: 2,
-                                name: 'record 2',
-                            }
-                        ]);
-                    let model = new TestModel();
-                    model.id = -10;
-                    model.name = 'Frank';
-                    return backend.update(manager,
-                        model,
-                        { where: {} }, updateResult);
-                })
-                .then(() => {
-                    expect(backend._storage['TestModel'])
-                        .to.deep.equal([
-                            {
-                                id: 1,
-                                name: 'Frank',
-                            },
-                            {
-                                id: 2,
+                                id: 10,
                                 name: 'Frank',
                             }
                         ]);

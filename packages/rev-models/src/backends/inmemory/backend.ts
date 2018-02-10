@@ -287,11 +287,10 @@ export class InMemoryBackend implements IBackend {
         for (let fieldName of fieldList) {
 
             let field = meta.fieldsByName[fieldName];
-            if (field instanceof AutoNumberField) {
-                // deal with AutoNumberField special case
-                if (operation == 'create') {
-                    target[fieldName] = this._getNextSequence(meta, fieldName);
-                }
+            if (field instanceof AutoNumberField
+                    && operation == 'create'
+                    && typeof model[fieldName] == 'undefined') {
+                target[fieldName] = this._getNextSequence(meta, fieldName);
             }
             else if (typeof model[fieldName] != 'undefined') {
                 let value = field.toBackendValue(manager, field, model[fieldName]);
