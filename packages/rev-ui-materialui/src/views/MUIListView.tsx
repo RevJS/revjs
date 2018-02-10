@@ -81,9 +81,9 @@ export const MUIListView = styles<IMUIListViewProps>((props) => {
                     onClick={() => props.onRecordPress(record)}
                 >
                     {props.fields.map((field, colIdx) => {
-                        const data = record[field.name].toString();
+                        const data = record[field.name];
                         return (
-                            <TableCell key={colIdx} padding="dense">{data}</TableCell>
+                            <TableCell key={colIdx} padding="dense">{data ? data.toString() : ''}</TableCell>
                         );
                     })}
                 </TableRow>

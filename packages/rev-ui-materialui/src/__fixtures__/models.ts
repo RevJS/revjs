@@ -10,6 +10,8 @@ export class Post {
         title: string;
     @TextField()
         body: string;
+    @TextField({ required: false })
+        keywords: string;
     @BooleanField()
         published: boolean;
     @DateTimeField()

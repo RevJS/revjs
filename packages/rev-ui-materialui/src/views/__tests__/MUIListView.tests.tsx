@@ -213,7 +213,7 @@ describe('MUIListView', () => {
                         const td = row.find('td').at(fieldIdx);
 
                         expect(td.text()).to.equal(
-                            post[field.name].toString()
+                            post[field.name] ? post[field.name].toString() : ''
                         );
                     });
                 }

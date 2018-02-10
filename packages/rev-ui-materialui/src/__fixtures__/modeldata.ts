@@ -23,6 +23,7 @@ Go download it now and use it for ALL TEH THINGS!`,
             body: `One language to rule them all...
 
 My precious...`,
+            keywords: 'js, javascript, awesome',
             published: true,
             post_date: '2017-04-15T13:14:15',
         }),
@@ -31,6 +32,7 @@ My precious...`,
             title: 'Ruby Sucks',
             body: `Why do people use it?
 ... who knows!`,
+            keywords: 'ruby, sucks',
             published: true,
             post_date: '2017-07-02T01:02:03',
         }),
