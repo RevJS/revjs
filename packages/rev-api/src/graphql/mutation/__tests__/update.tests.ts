@@ -5,9 +5,10 @@ import { ModelApiManager } from '../../../api/manager';
 import * as models from '../../__fixtures__/models';
 import { graphql, GraphQLSchema } from 'graphql';
 import { GraphQLApi } from '../../api';
-import { ModelManager } from 'rev-models';
+import { ModelManager, IModelOperationResult } from 'rev-models';
+import { IUpdateMeta } from 'rev-models/lib/models/types';
 
-describe.skip('GraphQL "mutation" type - Model_update()', () => {
+describe('GraphQL "mutation" type - Model_update()', () => {
 
     describe('Method Signature', () => {
         let manager: ModelApiManager;
@@ -97,7 +98,7 @@ describe.skip('GraphQL "mutation" type - Model_update()', () => {
             modelManager.update = updateSpy;
         });
 
-        it('when a model is specified, modelManager.update() is called with "model" and "fields" options set', async () => {
+        it('when a model is specified, modelManager.update() is called with "model" option set', async () => {
             const query = `
                 mutation {
                     Post_update(model: {
@@ -112,42 +113,12 @@ describe.skip('GraphQL "mutation" type - Model_update()', () => {
 
             const updateArgs = updateSpy.getCall(0).args;
             expect(updateArgs).to.have.length(2);
+            expect(updateArgs[0]).to.be.instanceof(models.Post);
             expect(updateArgs[0]).to.include({
                 id: 10,
                 title: 'Post Partial Update...'
             });
-            expect(updateArgs[1]).to.deep.equal({
-                fields: ['title']
-            });
-
-        });
-
-        it('when multiple fields are specified, modelManager.update() is called with "model" and "fields" options set', async () => {
-            const query = `
-                mutation {
-                    Post_update(model: {
-                        id: 10,
-                        title: "More Complete Update...",
-                        body: "Heres a new Body!",
-                        published: true
-                    })
-                }
-            `;
-            const result = await graphql(schema, query);
-            expect(result.errors).to.be.undefined;
-            expect(updateSpy.callCount).to.equal(1);
-
-            const updateArgs = updateSpy.getCall(0).args;
-            expect(updateArgs).to.have.length(2);
-            expect(updateArgs[0]).to.include({
-                id: 10,
-                title: 'More Complete Update...',
-                body: 'Heres a new Body!',
-                published: true
-            });
-            expect(updateArgs[1]).to.deep.equal({
-                fields: ['title', 'body', 'published']
-            });
+            expect(updateArgs[1]).to.be.undefined;
 
         });
 
@@ -166,11 +137,11 @@ describe.skip('GraphQL "mutation" type - Model_update()', () => {
 
             const updateArgs = updateSpy.getCall(0).args;
             expect(updateArgs).to.have.length(2);
+            expect(updateArgs[0]).to.be.instanceof(models.Post);
             expect(updateArgs[0]).to.include({
                 title: 'Update with Where clause'
             });
             expect(updateArgs[1]).to.deep.equal({
-                fields: ['title'],
                 where: { id: { _gt: 1 } }
             });
 
@@ -178,7 +149,7 @@ describe.skip('GraphQL "mutation" type - Model_update()', () => {
 
     });
 
-    describe('Calling Model_update() - options passed through to modelManager', () => {
+    describe('Calling Model_update()', () => {
         let modelManager: ModelManager;
         let apiManager: ModelApiManager;
         let api: GraphQLApi;
@@ -215,26 +186,26 @@ describe.skip('GraphQL "mutation" type - Model_update()', () => {
             expect(result.errors[0].message).to.contain('argument "model" of type "Post_input!" is required but not provided');
         });
 
-        // it('When model has validation errors, an unsuccessful result is returned with the errors', async () => {
-        //     const query = `
-        //         mutation {
-        //             Post_update(model: {
-        //                 id: 10,
-        //                 title: "Fake News"
-        //             })
-        //         }
-        //     `;
-        //     const result = await graphql(schema, query);
-        //     console.log(result.data);
-        //     expect(result.errors).to.be.undefined;
-        //     expect(result.data).to.be.an('object');
-        //     expect(result.data.Post_update).to.be.an('object');
+        it('When model has validation errors, an unsuccessful result is returned with the errors', async () => {
+            const query = `
+                mutation {
+                    Post_update(model: {
+                        id: 10,
+                        title: "Fake News"
+                    })
+                }
+            `;
+            const result = await graphql(schema, query);
+            expect(result.errors).to.be.undefined;
+            expect(result.data).to.be.an('object');
+            expect(result.data.Post_update).to.be.an('object');
 
-        //     const opResult: IModelOperationResult<any, ICreateMeta> = result.data.Post_update;
-        //     expect(opResult.success).to.be.false;
-        //     expect(opResult.validation).to.be.an('object');
-        //     expect(opResult.validation.modelErrors).to.deep.equal({});
-        // });
+            const opResult: IModelOperationResult<any, IUpdateMeta> = result.data.Post_update;
+            expect(opResult.success).to.be.false;
+            expect(opResult.validation).to.be.an('object');
+            expect(opResult.validation.modelErrors).to.have.length(1);
+            expect(opResult.validation.modelErrors[0].message).to.equal('Fake News is not allowed!');
+        });
 
         // it('When model is valid, a successful result is returned with the created model', async () => {
         //     const query = `

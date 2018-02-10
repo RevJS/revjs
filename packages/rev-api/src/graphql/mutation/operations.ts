@@ -37,15 +37,12 @@ export function getModelOperationMutations(api: IGraphQLApi, meta: IApiMeta): Gr
                 type: GraphQLJSON,
                 args: {
                     model: { type: new GraphQLNonNull(api.getModelInputObject(meta.model)) },
-                    where: { type: GraphQLJSON },
-                    fields: { type: new GraphQLList(GraphQLString)}
+                    where: { type: GraphQLJSON }
                 },
                 resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
                     const model = modelManager.hydrate(modelMeta.ctor, args.model);
-                    return modelManager.update(model, {
-                        where: args.where,
-                        fields: args.fields
-                    })
+                    const options = args.where ? { where: args.where } : undefined;
+                    return modelManager.update(model, options)
                     .catch((e) => {
                         if (e.message == 'ValidationError') {
                             return e.result;

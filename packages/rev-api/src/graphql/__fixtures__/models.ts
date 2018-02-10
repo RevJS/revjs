@@ -1,5 +1,5 @@
 import {
-    fields, ModelManager, InMemoryBackend,
+    IModel, IValidationContext, fields, ModelManager, InMemoryBackend,
     IntegerField, TextField, DateField, BooleanField, DateTimeField,
     AutoNumberField, NumberField, SelectField, TimeField,
     RelatedModel, RelatedModelList, MultiSelectField
@@ -22,7 +22,7 @@ export class User {
     userMethod1() {}
 }
 
-export class Post {
+export class Post implements IModel {
     @AutoNumberField({ primaryKey: true })
         id: number;
     @TextField()
@@ -45,6 +45,12 @@ export class Post {
     postMethod1() {}
     postMethod2() {}
     postMethod3() {}
+
+    validate(ctx: IValidationContext) {
+        if (this.title.includes('Fake News')) {
+            ctx.result.addModelError('Fake News is not allowed!');
+        }
+    }
 }
 
 export class Comment {
