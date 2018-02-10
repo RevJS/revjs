@@ -425,7 +425,7 @@ describe('DetailView', () => {
 
             it('save() triggers creation of the model, re-renders, and returns operation result', async () => {
                 receivedModelContext.model = new models.Post({
-                    id: null, title: 'Valid New Post', body: 'Posty Posty...'
+                    title: 'Valid New Post', body: 'Posty Posty...'
                 });
                 const result = await receivedModelContext.save();
                 expect(result).to.be.instanceof(ModelOperationResult);
