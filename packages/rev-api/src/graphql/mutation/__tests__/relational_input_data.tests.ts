@@ -6,9 +6,9 @@ import * as models from '../../__fixtures__/models';
 import { graphql, GraphQLSchema } from 'graphql';
 import { GraphQLApi } from '../../api';
 import { ModelManager } from 'rev-models';
-import { posts, users } from '../../__fixtures__/modeldata';
+import { posts, users, createData } from '../../__fixtures__/modeldata';
 
-describe.only('GraphQL "mutation" type - relational input data', () => {
+describe('GraphQL "mutation" type - relational input data', () => {
 
     let modelManager: ModelManager;
     let apiManager: ModelApiManager;
@@ -17,8 +17,10 @@ describe.only('GraphQL "mutation" type - relational input data', () => {
     let createSpy: sinon.SinonSpy;
     const mockResult = { success: true };
 
-    beforeEach(() => {
+    beforeEach(async () => {
         modelManager = models.getModelManager();
+        await createData(modelManager);
+
         apiManager = new ModelApiManager(modelManager);
         apiManager.register(models.Comment, { operations: ['create'] });
         api = new GraphQLApi(apiManager);
@@ -37,16 +39,27 @@ describe.only('GraphQL "mutation" type - relational input data', () => {
                 })
             }
         `;
-        let result = await graphql(schema, query);
-        console.log(result.errors);
+        await graphql(schema, query);
         expect(createSpy.callCount).to.equal(1);
-        expect(createSpy.getCall(0).args).to.deep.equal([
-            new models.Comment({
-                post: posts[0],
-                comment: 'Fantastic news!',
-                user: users[1]
-            })
-        ]);
+
+        expect(createSpy.getCall(0).args[0]).to.be.instanceof(models.Comment);
+        expect(createSpy.getCall(0).args[0]).to.deep.include({
+            comment: 'Fantastic news!',
+        });
+        expect(createSpy.getCall(0).args[0].post).to.be.instanceof(models.Post);
+        expect(createSpy.getCall(0).args[0].post).to.deep.include({
+            id: 1,
+            title: posts[0].title,
+            body: posts[0].body,
+            post_date: posts[0].post_date,
+            published: posts[0].published,
+        });
+        expect(createSpy.getCall(0).args[0].user).to.be.instanceof(models.User);
+        expect(createSpy.getCall(0).args[0].user).to.deep.include({
+            id: 2,
+            name: users[1].name,
+            date_registered: users[1].date_registered
+        });
     });
 
 });
