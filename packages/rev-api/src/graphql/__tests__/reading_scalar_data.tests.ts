@@ -175,7 +175,7 @@ describe('GraphQL query type - scalar model data', () => {
             apiManager = new ModelApiManager(modelManager);
             apiManager.register(models.ModelWithAllScalarFields, { operations: ['read'] });
             api = new GraphQLApi(apiManager);
-            api.fieldConverters.forEach((converter) => {
+            api.fieldMappings.forEach((converter) => {
                 if (converter[0] == fields.TextField) {
                     converter[1].converter = (model, fieldName) => {
                         return 'I am a custom converter!';

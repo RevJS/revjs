@@ -12,7 +12,10 @@ import { IReadOptions, IModelMeta } from 'rev-models/lib/models/types';
 import { IModelOperationResult } from '../../../rev-models/lib/operations/operationresult';
 
 export class GraphQLApi implements IGraphQLApi {
-    fieldConverters: Array<[new(...args: any[]) => fields.Field, IGraphQLFieldConverter]>;
+    fieldMappings: Array<[
+        new(...args: any[]) => fields.Field,
+        IGraphQLFieldConverter
+    ]>;
     modelObjectTypes: { [modelName: string]: GraphQLObjectType } = {};
     modelInputTypes: { [modelName: string]: GraphQLInputObjectType } = {};
 
@@ -20,7 +23,7 @@ export class GraphQLApi implements IGraphQLApi {
         if (!manager || typeof manager.getApiMeta != 'function') {
             throw new Error(`GraphQLApi: Invalid ModelApiManager passed in constructor.`);
         }
-        this.fieldConverters = [
+        this.fieldMappings = [
             [fields.AutoNumberField, { type: GraphQLInt, converter: (model, fieldName) => model[fieldName] }],
             [fields.IntegerField, { type: GraphQLInt, converter: (model, fieldName) => model[fieldName] }],
             [fields.NumberField, { type: GraphQLFloat, converter: (model, fieldName) => model[fieldName] }],
@@ -46,6 +49,14 @@ export class GraphQLApi implements IGraphQLApi {
         return Object.keys(this.modelObjectTypes);
     }
 
+    getGraphQLFieldMapping(field: fields.Field): IGraphQLFieldConverter {
+        for (const fieldMapping of this.fieldMappings) {
+            if (field instanceof fieldMapping[0]) {
+                return fieldMapping[1];
+            }
+        }
+    }
+
     getGraphQLFieldConverter(field: fields.Field): IGraphQLFieldConverter {
         if (field instanceof fields.RelatedModelFieldBase) {
             let modelObjectType: GraphQLType = this.modelObjectTypes[field.options.model];
@@ -61,11 +72,7 @@ export class GraphQLApi implements IGraphQLApi {
             };
         }
         else {
-            for (const fieldMapping of this.fieldConverters) {
-                if (field instanceof fieldMapping[0]) {
-                    return fieldMapping[1];
-                }
-            }
+            return this.getGraphQLFieldMapping(field);
         }
     }
 
@@ -104,16 +111,25 @@ export class GraphQLApi implements IGraphQLApi {
             return this.modelInputTypes[modelName];
         }
         else {
-            let meta = this.getModelManager().getModelMeta(modelName);
+            const manager = this.getModelManager();
+            let meta = manager.getModelMeta(modelName);
             const fieldConfig = {};
             meta.fields.forEach((field) => {
                 if (!(field instanceof fields.RelatedModelFieldBase)) {
-                    for (const fieldMapping of this.fieldConverters) {
-                        if (field instanceof fieldMapping[0]) {
-                            fieldConfig[field.name] = {
-                                type: fieldMapping[1].type
-                            };
-                        }
+                    const mapping = this.getGraphQLFieldMapping(field);
+                    fieldConfig[field.name] = {
+                        type: mapping.type
+                    };
+                }
+                else {
+                    if (field instanceof fields.RelatedModelField) {
+                        const relatedModel = field.options.model;
+                        const relatedMeta = manager.getModelMeta(relatedModel);
+                        const relatedPKField = relatedMeta.fieldsByName[relatedMeta.primaryKey];
+                        const mapping = this.getGraphQLFieldMapping(relatedPKField);
+                        fieldConfig[field.name] = {
+                            type: mapping.type
+                        };
                     }
                 }
             });
