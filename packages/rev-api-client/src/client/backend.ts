@@ -71,10 +71,14 @@ export class ModelApiBackend implements IBackend {
         };
     }
 
-    _buildGraphQLModelData(manager: ModelManager, meta: IModelMeta<any>, model: IModel) {
+    _buildGraphQLModelData(manager: ModelManager, meta: IModelMeta<any>, model: IModel, fieldNames?: string[]) {
         const data = {};
         meta.fields.forEach((field) => {
-            if (typeof model[field.name] != 'undefined') {
+            if (
+                (!fieldNames || fieldNames.indexOf(field.name) > -1
+                    || field.name == meta.primaryKey)
+                && typeof model[field.name] != 'undefined'
+            ) {
                 data[field.name] = field.toBackendValue(manager, model[field.name]);
             }
         });
@@ -109,7 +113,32 @@ export class ModelApiBackend implements IBackend {
     }
 
     async update<T extends IModel>(manager: ModelManager, model: T, options: IUpdateOptions, result: ModelOperationResult<T, IUpdateMeta>): Promise<ModelOperationResult<T, IUpdateMeta>> {
-        return Promise.reject(new Error('Not yet implemented'));
+        const meta = manager.getModelMeta(model);
+        const data = this._buildGraphQLModelData(manager, meta, model, options.fields);
+        const mutationName = meta.name + '_update';
+        let args: any = {
+            model: data
+        };
+        if (options.where) {
+            args.where = options.where;
+        }
+        const query = {
+            mutation: {
+                [mutationName]: {
+                    __args: args
+                }
+            }
+        };
+        const httpResult = await this._getGraphQLQueryResult(query);
+        if (!httpResult.data.data
+            || !httpResult.data.data[mutationName]) {
+            throw this._createHttpError('GraphQL response did not contain the expected operation results', httpResult);
+        }
+        const updateResult: ModelOperationResult<any, IUpdateMeta> = httpResult.data.data[mutationName];
+        result.success = updateResult.success;
+        result.validation = updateResult.validation;
+        result.meta = updateResult.meta;
+        return result;
     }
 
     async remove<T extends IModel>(manager: ModelManager, model: T, options: IRemoveOptions, result: ModelOperationResult<T, IRemoveMeta>): Promise<ModelOperationResult<T, IRemoveMeta>> {
