@@ -142,7 +142,27 @@ export class ModelApiBackend implements IBackend {
     }
 
     async remove<T extends IModel>(manager: ModelManager, model: T, options: IRemoveOptions, result: ModelOperationResult<T, IRemoveMeta>): Promise<ModelOperationResult<T, IRemoveMeta>> {
-        return Promise.reject(new Error('Not yet implemented'));
+        const meta = manager.getModelMeta(model);
+        const mutationName = meta.name + '_remove';
+        // options.where should be set, assuming we are called from ModelManager
+        const query = {
+            mutation: {
+                [mutationName]: {
+                    __args: {
+                        where: options.where
+                    }
+                }
+            }
+        };
+        const httpResult = await this._getGraphQLQueryResult(query);
+        if (!httpResult.data.data
+            || !httpResult.data.data[mutationName]) {
+            throw this._createHttpError('GraphQL response did not contain the expected operation results', httpResult);
+        }
+        const removeResult: ModelOperationResult<any, IRemoveMeta> = httpResult.data.data[mutationName];
+        result.success = removeResult.success;
+        result.meta = removeResult.meta;
+        return result;
     }
 
     async read<T extends IModel>(manager: ModelManager, model: new() => T, options: IReadOptions, result: ModelOperationResult<T, IReadMeta>): Promise<ModelOperationResult<T, IReadMeta>> {
