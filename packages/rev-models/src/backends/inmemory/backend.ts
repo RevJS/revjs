@@ -293,7 +293,7 @@ export class InMemoryBackend implements IBackend {
                 target[fieldName] = this._getNextSequence(meta, fieldName);
             }
             else if (typeof model[fieldName] != 'undefined') {
-                let value = field.toBackendValue(manager, field, model[fieldName]);
+                let value = field.toBackendValue(manager, model[fieldName]);
                 if (typeof value != 'undefined') {
                     target[fieldName] = value;
                 }

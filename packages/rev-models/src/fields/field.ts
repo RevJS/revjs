@@ -71,11 +71,11 @@ export class Field {
         });
     }
 
-    toBackendValue(manager: IModelManager, field: Field, value: any) {
+    toBackendValue(manager: IModelManager, value: any) {
         return value;
     }
 
-    fromBackendValue(manager: IModelManager, field: Field, value: any) {
+    fromBackendValue(manager: IModelManager, value: any) {
         return value;
     }
 }

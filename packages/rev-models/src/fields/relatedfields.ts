@@ -36,11 +36,11 @@ export class RelatedModelField extends RelatedModelFieldBase {
 
     }
 
-    toBackendValue(manager: IModelManager, field: Field, value: any): any {
+    toBackendValue(manager: IModelManager, value: any): any {
         if (!isSet(value)) {
             return null;
         }
-        const meta = manager.getModelMeta(field.options.model);
+        const meta = manager.getModelMeta(this.options.model);
         if (!meta.primaryKey) {
             return null;  // Should not be hit due to primary key validator
         }
@@ -73,7 +73,7 @@ export class RelatedModelListField extends RelatedModelFieldBase {
 
     }
 
-    toBackendValue(manager: IModelManager, field: Field, value: any): any {
+    toBackendValue(manager: IModelManager, value: any): any {
         // Cannot currently be stored
     }
 }

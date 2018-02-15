@@ -130,14 +130,14 @@ describe('rev.fields.relatedmodelfields', () => {
 
         it('returns null if model field is not set', () => {
             const record = new TestModel();
-            expect(field.toBackendValue(manager, field, record[field.name])).to.be.null;
+            expect(field.toBackendValue(manager, record[field.name])).to.be.null;
         });
 
         it('returns null if model primary key field is not set', () => {
             const record = new TestModel();
             const linkedModel = new TestRelatedModel();
             record.value = linkedModel;
-            expect(field.toBackendValue(manager, field, record[field.name])).to.be.null;
+            expect(field.toBackendValue(manager, record[field.name])).to.be.null;
         });
 
         it('returns primary key value if model primary key field is set', () => {
@@ -145,7 +145,7 @@ describe('rev.fields.relatedmodelfields', () => {
             const linkedModel = new TestRelatedModel();
             linkedModel.name = 'key_value';
             record.value = linkedModel;
-            expect(field.toBackendValue(manager, field, record[field.name])).to.equal('key_value');
+            expect(field.toBackendValue(manager, record[field.name])).to.equal('key_value');
         });
 
     });

@@ -10,7 +10,7 @@ export function hydrate<T extends IModel>(manager: IModelManager, model: new() =
     if (data && typeof data == 'object') {
         for (let field of meta.fields) {
             if (typeof data[field.name] != 'undefined' && !(field instanceof RelatedModelFieldBase)) {
-                instance[field.name] = field.fromBackendValue(manager, field, data[field.name]);
+                instance[field.name] = field.fromBackendValue(manager, data[field.name]);
             }
         }
     }
