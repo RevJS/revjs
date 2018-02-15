@@ -7,7 +7,6 @@ import { ModelApiBackend } from '../backend';
 import { getModelManager, Comment, Post } from '../__fixtures__/models';
 import { ModelManager, ModelOperationResult } from 'rev-models';
 import { IReadMeta, IReadOptions } from 'rev-models/lib/models/types';
-import { expectToHaveProperties } from '../__test_utils__/utils';
 
 describe('ModelApiBackend - read()', () => {
 
@@ -62,13 +61,13 @@ describe('ModelApiBackend - read()', () => {
         expect(result.results[0]).to.be.instanceof(Post);
         expect(result.results[1]).to.be.instanceof(Post);
         expect(result.results[2]).to.be.instanceof(Post);
-        expectToHaveProperties(result.results[0], {
+        expect(result.results[0]).to.include({
             id: 1, title: 'RevJS v1.0.0 Released!'
         });
-        expectToHaveProperties(result.results[1], {
+        expect(result.results[1]).to.include({
             id: 2, title: 'JavaScript is Awesome'
         });
-        expectToHaveProperties(result.results[2], {
+        expect(result.results[2]).to.include({
             id: 3, title: 'Ruby Sucks'
         });
     });
@@ -101,7 +100,7 @@ describe('ModelApiBackend - read()', () => {
         expect(result.success).to.be.true;
         expect(result.results).to.have.length(1);
         expect(result.results[0]).to.be.instanceof(Post);
-        expectToHaveProperties(result.results[0], {
+        expect(result.results[0]).to.include({
             id: 3, title: 'Ruby Sucks'
         });
     });
@@ -117,7 +116,7 @@ describe('ModelApiBackend - read()', () => {
         expect(result.success).to.be.true;
         expect(result.results).to.have.length(1);
         expect(result.results[0]).to.be.instanceof(Post);
-        expectToHaveProperties(result.results[0], {
+        expect(result.results[0]).to.include({
             id: 2, title: 'JavaScript is Awesome'
         });
     });
