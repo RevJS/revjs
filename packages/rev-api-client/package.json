@@ -23,7 +23,7 @@
     "axios": "^0.17.1",
     "graphql": "^0.10.1",
     "graphql-type-json": "^0.1.4",
-    "json-to-graphql-query": "^0.2.0",
+    "json-to-graphql-query": "^1.0.0",
     "rev-models": "^0.7.1",
     "tslib": "1.x"
   },

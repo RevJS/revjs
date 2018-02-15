@@ -24,6 +24,21 @@ export class ModelApiBackend implements IBackend {
         }
     }
 
+    async _getGraphQLQueryResult(query: object) {
+        const httpResult = await this._httpClient({
+            url: this.apiUrl,
+            method: 'POST',
+            data: { query: jsonToGraphQLQuery(query) }
+        });
+        if (!httpResult.data) {
+            throw this._createHttpError('Received no data from the API', httpResult);
+        }
+        if (httpResult.data.errors) {
+            throw this._createHttpError('GraphQL errors were returned', httpResult);
+        }
+        return httpResult;
+    }
+
     _createHttpError(message: string, response: AxiosResponse) {
         const error = new Error(message);
         error.response = response;
@@ -56,8 +71,39 @@ export class ModelApiBackend implements IBackend {
         };
     }
 
+    _buildGraphQLModelData(manager: ModelManager, meta: IModelMeta<any>, model: IModel) {
+        const data = {};
+        meta.fields.forEach((field) => {
+            if (typeof model[field.name] != 'undefined') {
+                data[field.name] = field.toBackendValue(manager, model[field.name]);
+            }
+        });
+        return data;
+    }
+
     async create<T extends IModel>(manager: ModelManager, model: T, options: ICreateOptions, result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
-        return Promise.reject(new Error('Not yet implemented'));
+        const meta = manager.getModelMeta(model);
+        const data = this._buildGraphQLModelData(manager, meta, model);
+        const mutationName = meta.name + '_create';
+        const query = {
+            mutation: {
+                [mutationName]: {
+                    __args: {
+                        model: data
+                    }
+                }
+            }
+        };
+        const httpResult = await this._getGraphQLQueryResult(query);
+        if (!httpResult.data.data
+            || !httpResult.data.data[mutationName]) {
+            throw this._createHttpError('GraphQL response did not contain the expected model results', httpResult);
+        }
+        const createResult: ModelOperationResult<any, ICreateMeta> = httpResult.data.data[mutationName];
+        result.success = createResult.success;
+        result.validation = createResult.validation;
+        result.result = manager.hydrate(meta.ctor, createResult.result);
+        return result;
     }
 
     async update<T extends IModel>(manager: ModelManager, model: T, options: IUpdateOptions, result: ModelOperationResult<T, IUpdateMeta>): Promise<ModelOperationResult<T, IUpdateMeta>> {
@@ -71,17 +117,7 @@ export class ModelApiBackend implements IBackend {
     async read<T extends IModel>(manager: ModelManager, model: new() => T, options: IReadOptions, result: ModelOperationResult<T, IReadMeta>): Promise<ModelOperationResult<T, IReadMeta>> {
         const meta = manager.getModelMeta(model);
         const query = this._buildGraphQLQuery(meta, options.where, options.offset, options.limit);
-        const httpResult = await this._httpClient({
-            url: this.apiUrl,
-            method: 'POST',
-            data: { query: jsonToGraphQLQuery(query) }
-        });
-        if (!httpResult.data) {
-            throw this._createHttpError('Received no data from the API', httpResult);
-        }
-        if (httpResult.data.errors) {
-            throw this._createHttpError('GraphQL errors were returned', httpResult);
-        }
+        const httpResult = await this._getGraphQLQueryResult(query);
         if (!httpResult.data.data
             || !httpResult.data.data[meta.name]
             || !(httpResult.data.data[meta.name].results instanceof Array)) {

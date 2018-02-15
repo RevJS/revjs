@@ -23,9 +23,9 @@ export function getMockHttpClient(mockResponse: AxiosResponse<any>) {
  */
 export async function getMockApiHttpClient(modelManager: ModelManager) {
     const apiManager = new ModelApiManager(modelManager);
-    apiManager.register(models.Post, { operations: ['read'] });
-    apiManager.register(models.User, { operations: ['read'] });
-    apiManager.register(models.Comment, { operations: ['read'] });
+    apiManager.register(models.Post, { operations: ['create', 'read', 'update', 'remove'] });
+    apiManager.register(models.User, { operations: ['create', 'read', 'update', 'remove'] });
+    apiManager.register(models.Comment, { operations: ['create', 'read', 'update', 'remove'] });
     const api = new GraphQLApi(apiManager);
 
     await createData(modelManager);

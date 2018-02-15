@@ -10,7 +10,7 @@ import { expectToHaveProperties } from '../__test_utils__/utils';
 import { ICreateOptions, ICreateMeta } from 'rev-models/lib/models/types';
 import { posts, users } from '../__fixtures__/modeldata';
 
-describe.only('ModelApiBackend - create()', () => {
+describe('ModelApiBackend - create()', () => {
 
     let manager: ModelManager;
     let mockHttpClient: (config: AxiosRequestConfig) => AxiosPromise;
@@ -48,6 +48,8 @@ describe.only('ModelApiBackend - create()', () => {
             manager, comment, createOptions, createResult
         );
         expect(result.success).to.be.true;
+        expect(result.validation).to.be.an('object');
+        expect(result.validation.valid).to.be.true;
         expect(result.results).to.be.undefined;
         expect(result.result).to.be.instanceof(Comment);
         expect(result.result.id).to.be.a('number');
