@@ -102,7 +102,9 @@ export class ModelApiBackend implements IBackend {
         const createResult: ModelOperationResult<any, ICreateMeta> = httpResult.data.data[mutationName];
         result.success = createResult.success;
         result.validation = createResult.validation;
-        result.result = manager.hydrate(meta.ctor, createResult.result);
+        if (createResult.result) {
+            result.result = manager.hydrate(meta.ctor, createResult.result);
+        }
         return result;
     }
 

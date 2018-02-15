@@ -6,7 +6,6 @@ import { getMockApiHttpClient, getMockHttpClient } from '../__test_utils__/mockH
 import { ModelApiBackend } from '../backend';
 import { getModelManager, Comment, Post } from '../__fixtures__/models';
 import { ModelManager, ModelOperationResult } from 'rev-models';
-import { expectToHaveProperties } from '../__test_utils__/utils';
 import { ICreateOptions, ICreateMeta } from 'rev-models/lib/models/types';
 import { posts, users } from '../__fixtures__/modeldata';
 
@@ -53,75 +52,54 @@ describe('ModelApiBackend - create()', () => {
         expect(result.results).to.be.undefined;
         expect(result.result).to.be.instanceof(Comment);
         expect(result.result.id).to.be.a('number');
+        expect(result.result.comment).to.equal(comment.comment);
     });
 
-    // it('reads all scalar fields from graphql api (Posts)', async () => {
-    //     const result = await apiBackend.create(
-    //         manager, Post, createOptions, createResult
-    //     );
-    //     expect(result.success).to.be.true;
-    //     expect(result.results[0]).to.be.instanceof(Post);
-    //     expect(result.results[1]).to.be.instanceof(Post);
-    //     expect(result.results[2]).to.be.instanceof(Post);
-    //     expectToHaveProperties(result.results[0], {
-    //         id: 1, title: 'RevJS v1.0.0 Released!'
-    //     });
-    //     expectToHaveProperties(result.results[1], {
-    //         id: 2, title: 'JavaScript is Awesome'
-    //     });
-    //     expectToHaveProperties(result.results[2], {
-    //         id: 3, title: 'Ruby Sucks'
-    //     });
-    // });
+    it('can create a new record with scalar and related values (Post)', async () => {
+        const post = new Post({
+            title: 'Wicked post via the API',
+            body: 'GraphQL is soooo coooool',
+            published: true,
+            post_date: '2018-02-15T12:13:14',
+            user: users[0]
+        });
+        const result = await apiBackend.create(
+            manager, post, createOptions, createResult
+        );
+        expect(result.success).to.be.true;
+        expect(result.validation).to.be.an('object');
+        expect(result.validation.valid).to.be.true;
+        expect(result.results).to.be.undefined;
+        expect(result.result).to.be.instanceof(Post);
+        expect(result.result.id).to.be.a('number');
+        expect(result.result.title).to.equal(post.title);
+        expect(result.result.body).to.equal(post.body);
+        expect(result.result.published).to.equal(post.published);
+        expect(result.result.post_date).to.equal(post.post_date);
+    });
 
-    // it('returns read metadata', async () => {
-    //     const result = await apiBackend.create(
-    //         manager, Post, {
-    //             where: {},
-    //             offset: 0,
-    //             limit: 10
-    //         }, createResult);
-    //     expect(result.success).to.be.true;
-    //     expect(result.meta).to.deep.equal({
-    //         offset: 0,
-    //         limit: 10,
-    //         totalCount: 3
-    //     });
-    // });
-
-    // it('where clause works as expected', async () => {
-    //     const result = await apiBackend.create(
-    //         manager, Post, {
-    //             where: {
-    //                 id: 3
-    //             },
-    //             offset: 0,
-    //             limit: 10
-    //         }, createResult
-    //     );
-    //     expect(result.success).to.be.true;
-    //     expect(result.results).to.have.length(1);
-    //     expect(result.results[0]).to.be.instanceof(Post);
-    //     expectToHaveProperties(result.results[0], {
-    //         id: 3, title: 'Ruby Sucks'
-    //     });
-    // });
-
-    // it('offset and limit options work as expected', async () => {
-    //     const result = await apiBackend.create(
-    //         manager, Post, {
-    //             where: {},
-    //             offset: 1,
-    //             limit: 1
-    //         }, createResult
-    //     );
-    //     expect(result.success).to.be.true;
-    //     expect(result.results).to.have.length(1);
-    //     expect(result.results[0]).to.be.instanceof(Post);
-    //     expectToHaveProperties(result.results[0], {
-    //         id: 2, title: 'JavaScript is Awesome'
-    //     });
-    // });
+    it('returns an unsuccessful result with error details if validation errors occur', async () => {
+        const post = new Post({
+            title: 'Forgot to add the body...',
+            published: false,
+            post_date: 'not a date',
+            user: users[0]
+        });
+        const result = await apiBackend.create(
+            manager, post, createOptions, createResult
+        );
+        expect(result.success).to.be.false;
+        expect(result.validation).to.be.an('object');
+        expect(result.validation.valid).to.be.false;
+        expect(result.validation.fieldErrors['body']).to.deep.equal([
+            { message: 'body is a required field', code: 'required' }
+        ]);
+        expect(result.validation.fieldErrors['post_date']).to.deep.equal([
+            { message: 'post_date should be a date and time', code: 'not_a_datetime' }
+        ]);
+        expect(result.results).to.be.undefined;
+        expect(result.result).to.be.undefined;
+    });
 
     // it('throws error with received data if response is empty', () => {
     //     const mockResponse: AxiosResponse = {
