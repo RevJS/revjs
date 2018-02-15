@@ -97,7 +97,7 @@ export class ModelApiBackend implements IBackend {
         const httpResult = await this._getGraphQLQueryResult(query);
         if (!httpResult.data.data
             || !httpResult.data.data[mutationName]) {
-            throw this._createHttpError('GraphQL response did not contain the expected model results', httpResult);
+            throw this._createHttpError('GraphQL response did not contain the expected operation results', httpResult);
         }
         const createResult: ModelOperationResult<any, ICreateMeta> = httpResult.data.data[mutationName];
         result.success = createResult.success;
