@@ -1,0 +1,9 @@
+version: '3.2'
+
+services:
+
+  mkdocs:
+    build: .
+    volumes:
+    - .:/mkdocs
+    - ../dist:/mkdocs/dist

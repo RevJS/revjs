@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "run-bin tslint -p . && run-bin tsc",
+    "build-docs": "echo DOCS_TODO",
     "build-watch": "run-bin tsc --watch",
     "test": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/**/*\"",
     "test-ci": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/**/*\" --reporter mocha-circleci-reporter",

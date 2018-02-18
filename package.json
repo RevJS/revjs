@@ -4,6 +4,9 @@
   "scripts": {
     "postinstall": "lerna bootstrap",
     "build": "lerna run build",
+    "build-docs": "npm run build-mkdocs && npm run build-typedocs",
+    "build-mkdocs": "cd docs/mkdocs && docker-compose up",
+    "build-typedocs": "lerna run build-docs",
     "test": "lerna run test",
     "test-ci": "lerna run test-ci",
     "pack": "lerna run pack",

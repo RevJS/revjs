@@ -1,11 +1,11 @@
 
 // TypeDoc Configuration
 module.exports = {
-    out: './lib/docs',
+    out: '../../docs/dist/api/rev-models',
 
-    readme: './src/docs/INDEX.md',
+    readme: './DOCINDEX.md',
     includes: './src',
-    theme: '../../docs/theme/',
+    theme: '../../docs/typedoc/theme/',
     
     mode: 'file',
     excludeExternals: true,
