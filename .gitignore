@@ -6,4 +6,5 @@ npm-debug.log
 lerna-debug.log
 package-lock.json
 docs/dist
+docs/mkdocs/dist
 test-results.xml

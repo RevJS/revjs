@@ -6,4 +6,3 @@ services:
     build: .
     volumes:
     - .:/mkdocs
-    - ../dist:/mkdocs/dist

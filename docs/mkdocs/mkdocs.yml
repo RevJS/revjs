@@ -1,12 +1,12 @@
 site_name: RevJS
-repo_url: https://github.com/RevJS/revjs
 pages:
-  - Welcome!:
-    - What is RevJS?: index.md
-    - Components: components.md
-  - Components:
-    - rev-models: components/models.md
+  - Welcome to RevJS!: index.md
+  - Components: components.md
 strict: true
 theme: readthedocs
+extra_css:
+  - style.css
 docs_dir: /mkdocs/src
 site_dir: /mkdocs/dist
+repo_url: https://github.com/RevJS/revjs
+edit_uri: /RevJS/revjs/edit/master/docs/mkdocs/src/

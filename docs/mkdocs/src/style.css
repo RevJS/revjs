@@ -1,0 +1,4 @@
+
+li.toctree-l2:first-child {
+    display: none;
+}
