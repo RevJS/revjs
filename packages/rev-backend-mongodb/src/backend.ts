@@ -1,12 +1,12 @@
 
-import { IModel, ModelManager } from 'rev-models';
+import { IModel, ModelManager, fields } from 'rev-models';
 import { MongoClient, Db, MongoClientOptions } from 'mongodb';
 
 import { IBackend } from 'rev-models/lib/backends/backend';
 import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
 import {
     ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IRemoveMeta,
-    IRemoveOptions, IReadMeta, IReadOptions, IExecMeta, IExecOptions
+    IRemoveOptions, IReadMeta, IReadOptions, IExecMeta, IExecOptions, IModelMeta
 } from 'rev-models/lib/models/types';
 
 export interface IMongoDBBackendConfig {
@@ -35,8 +35,40 @@ export class MongoDBBackend implements IBackend {
         }
     }
 
+    getMongoClient() {
+        return this.client;
+    }
+
+    private _getCollectionName(meta: IModelMeta<any>) {
+        return meta.name;
+    }
+
     async create<T extends IModel>(manager: ModelManager, model: T, options: ICreateOptions, result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
-        // const meta = manager.getModelMeta(model);
+        const meta = manager.getModelMeta(model);
+
+        const document = {};
+        let fieldList = Object.keys(meta.fieldsByName);
+        for (let fieldName of fieldList) {
+            let field = meta.fieldsByName[fieldName];
+            if (field instanceof fields.AutoNumberField
+                    && typeof model[fieldName] == 'undefined') {
+                throw new Error('TODO: Implement auto-number fields');
+            }
+            else if (typeof model[fieldName] != 'undefined') {
+                let value = field.toBackendValue(manager, model[fieldName]);
+                if (typeof value != 'undefined') {
+                    document[fieldName] = value;
+                }
+            }
+        }
+
+        const colName = this._getCollectionName(meta);
+        const createResult = await this.db.collection(colName).insertOne(document);
+        if (createResult.insertedCount != 1) {
+            throw new Error('mongodb insert failed'); // TODO: Something nicer
+        }
+
+        result.result = manager.hydrate(meta.ctor, document);
         return result;
     }
 

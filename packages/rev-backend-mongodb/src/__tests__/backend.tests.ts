@@ -1,13 +1,10 @@
 
 import { expect } from 'chai';
-import { MongoDBBackend, IMongoDBBackendConfig } from '../backend';
+import { MongoDBBackend } from '../backend';
+import { testConfig } from './testconfig';
 
 describe('MongoDBBackend', () => {
     let backend: MongoDBBackend;
-    const config: IMongoDBBackendConfig = {
-        url: 'mongodb://localhost:27017',
-        dbName: 'RevJS'
-    };
 
     describe('Connecting to MongoDB', () => {
 
@@ -16,7 +13,7 @@ describe('MongoDBBackend', () => {
         });
 
         it('can connect to existing mongodb server', async () => {
-            backend = new MongoDBBackend(config);
+            backend = new MongoDBBackend(testConfig);
             await backend.connect();
         });
 
