@@ -1,6 +1,6 @@
 
 import * as d from '../../decorators';
-import { IModelManager } from 'rev-models';
+import { IModelManager } from '../../models/types';
 
 let GENDERS = [
     ['male', 'Male'],
