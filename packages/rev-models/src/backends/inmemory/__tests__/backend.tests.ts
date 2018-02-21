@@ -7,6 +7,7 @@ import { ModelOperationResult } from '../../../operations/operationresult';
 import { TestModel, testData } from './testdata';
 import { DEFAULT_READ_OPTIONS } from '../../../operations/read';
 import { IReadMeta } from '../../../models/types';
+import { standardBackendTests } from '../../testsuite';
 
 function getReadOpts(options?: object) {
     return Object.assign({}, DEFAULT_READ_OPTIONS, options);
@@ -61,3 +62,6 @@ describe('rev.backends.inmemory', () => {
     });
 
 });
+
+const inMemoryBackend = new InMemoryBackend();
+standardBackendTests('InMemoryBackend', inMemoryBackend);
