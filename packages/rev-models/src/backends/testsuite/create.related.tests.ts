@@ -43,11 +43,11 @@ export function createWithRelatedModelTests(backendName: string, backend: IBacke
             expect(res.result.name).to.equal(model.name);
             expect(res.result.company).to.be.undefined;
 
-            const readRes = await manager.read(Developer, { where: { id: 1 }});
-            expect(readRes.results[0].company).to.be.undefined;
+            const readRes = await manager.read(Developer, { where: { id: 1 }, related: ['company']});
+            expect(readRes.results[0].company).to.be.null;
         });
 
-        it('ignores null related model field and does not return it', async () => {
+        it('stores null related model value and does not return it', async () => {
             let model = new Developer();
             model.id = 1;
             model.name = 'Test Developer';
@@ -60,8 +60,8 @@ export function createWithRelatedModelTests(backendName: string, backend: IBacke
             expect(res.result.name).to.equal(model.name);
             expect(res.result.company).to.be.undefined;
 
-            const readRes = await manager.read(Developer, { where: { id: 1 }});
-            expect(readRes.results[0].company).to.be.undefined;
+            const readRes = await manager.read(Developer, { where: { id: 1 }, related: ['company']});
+            expect(readRes.results[0].company).to.be.null;
         });
 
         it('stores related model field as its primary key value and does not return it', async () => {
