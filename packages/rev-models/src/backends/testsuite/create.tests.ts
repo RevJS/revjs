@@ -25,7 +25,7 @@ export function createTests(backendName: string, backend: IBackend) {
         });
 
         async function cleanup() {
-            return manager.remove(TestModel, { where: { id: { _gte: 0 }}});
+            return manager.remove(TestModel, { where: {}});
         }
 
         it('stores model data as a plain object and returns a new model instance', async () => {

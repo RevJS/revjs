@@ -39,7 +39,7 @@ export function autoNumberTests(backendName: string, backend: IBackend) {
         });
 
         async function cleanup() {
-            return manager.remove(TestModel, { where: { id: { _gte: 0 }}});
+            return manager.remove(TestModel, { where: {}});
         }
 
         it('new records get sequential numbers starting from 1', async () => {
