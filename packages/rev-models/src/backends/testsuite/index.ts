@@ -5,6 +5,7 @@ import { readTests } from './read.tests';
 import { updateTests } from './update.tests';
 import { removeTests } from './remove.tests';
 import { createWithRelatedModelTests } from './create.related.tests';
+import { readWithRelatedModelTests } from './read.related.tests';
 
 export function standardBackendTests(backendName: string, backend: IBackend) {
     readTests(backendName, backend);
@@ -13,4 +14,5 @@ export function standardBackendTests(backendName: string, backend: IBackend) {
     removeTests(backendName, backend);
     autoNumberTests(backendName, backend);
     createWithRelatedModelTests(backendName, backend);
+    readWithRelatedModelTests(backendName, backend);
 }
