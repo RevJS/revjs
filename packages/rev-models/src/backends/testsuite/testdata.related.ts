@@ -1,5 +1,5 @@
 
-import * as d from '../../../decorators';
+import * as d from '../../decorators';
 
 export class Company {
     @d.IntegerField({ primaryKey: true })
@@ -10,7 +10,7 @@ export class Company {
         departments: Department[];
     @d.RelatedModelList({ model: 'Developer', field: 'company' })
         developers: Developer[];
-    @d.RelatedModel({ model: 'Developer' })
+    @d.RelatedModel({ model: 'Developer', required: false })
         leadDeveloper: Developer;
 
     constructor(data?: Partial<Company>) {
