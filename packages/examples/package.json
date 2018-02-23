@@ -1,0 +1,26 @@
+{
+  "name": "examples",
+  "version": "0.8.0",
+  "description": "RevJS Examples",
+  "private": true,
+  "scripts": {
+    "build": "run-bin tslint -p . && run-bin tsc",
+    "build-docs": "echo na",
+    "ts-node": "run-bin ts-node",
+    "test": "echo na",
+    "test-ci": "echo na",
+    "pack": "echo na"
+  },
+  "author": "Russell Briggs <russ@paraflyer.net>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RevJS/revjs.git"
+  },
+  "dependencies": {
+    "rev-models": "^0.8.0"
+  },
+  "devDependencies": {
+    "run-bin": "^1.0.0"
+  }
+}
