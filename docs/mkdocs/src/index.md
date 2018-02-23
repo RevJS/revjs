@@ -9,6 +9,10 @@ This is achieved by removing the need for boilerplate **Database**, **API** and
 **User Interface** code, and allowing you to focus on your data-model and
 business logic, i.e. the "important bits" of your application!
 
+```ts
+{!rev-models/src/examples/02_defining_a_model.ts!}
+```
+
 ResJS modules are designed for use with **TypeScript**, to give you all the
 benefits of strong typing and intellisense, however they should work with
 standard ES6+ too. (we're looking for someone interested in creating and
