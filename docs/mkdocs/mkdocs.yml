@@ -13,3 +13,7 @@ edit_uri: /RevJS/revjs/edit/master/docs/mkdocs/src/
 markdown_extensions:
   - markdown_include.include:
       base_path: /packages
+extra_javascript:
+  - js/highlight.pack.js
+extra_css:
+  - css/highlight.css
