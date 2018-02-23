@@ -27,8 +27,6 @@ maintaining a revjs ES6+ guide!...)
 
 ## Components
 
-See the sections linked below for further information on each module of RevJS
-
 ### [rev-models](rev-models.md)
 
 Define your Data Models and Validation, and easily test them out with the in-memory
