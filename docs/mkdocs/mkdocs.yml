@@ -1,7 +1,11 @@
 site_name: RevJS
 pages:
   - Welcome to RevJS!: index.md
-  - Components: components.md
+  - Components:
+      - rev-models.md
+      - rev-api.md
+      - rev-api-client.md
+      - rev-ui.md
 strict: true
 theme: readthedocs
 extra_css:
