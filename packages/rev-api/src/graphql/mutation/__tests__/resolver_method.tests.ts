@@ -278,7 +278,7 @@ describe('getMethodResolver()', () => {
             .then((res) => {
                 expect(smellyArgs).to.be.undefined; // not called
                 expect(res.success).to.be.false;
-                expect(res.errors[0].code).to.equal('validation_error');
+                expect(res.errors[0].code).to.equal('invalid_args');
                 expect(res.validation.fieldErrors['textArg'][0].code).to.equal('required');
             });
         });
@@ -292,7 +292,7 @@ describe('getMethodResolver()', () => {
             .then((res) => {
                 expect(smellyArgs).to.be.undefined; // not called
                 expect(res.success).to.be.false;
-                expect(res.errors[0].code).to.equal('validation_error');
+                expect(res.errors[0].code).to.equal('invalid_args');
                 expect(res.validation.fieldErrors['intArg'][0].code).to.equal('not_a_number');
             });
         });

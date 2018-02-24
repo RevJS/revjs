@@ -22,7 +22,8 @@ export function getMethodResolver(manager: IModelApiManager, modelName: string, 
                 let result = new ModelOperationResult({
                     operationName: methodName
                 });
-                result.createValidationError(res);
+                result.addError('Args failed validation', 'invalid_args');
+                result.validation = res;
                 return result;
             }
             else {

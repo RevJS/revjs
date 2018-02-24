@@ -2,7 +2,7 @@ import { GraphQLFieldConfigMap, GraphQLNonNull, GraphQLResolveInfo } from 'graph
 import { IApiMeta } from '../../api/types';
 import * as GraphQLJSON from 'graphql-type-json';
 import { IGraphQLApi } from '../types';
-import { IModel, fields } from 'rev-models';
+import { IModel, fields, ValidationError } from 'rev-models';
 
 export function getModelOperationMutations(api: IGraphQLApi, meta: IApiMeta): GraphQLFieldConfigMap<any, any> {
     const modelManager = api.getModelManager();
@@ -41,7 +41,7 @@ export function getModelOperationMutations(api: IGraphQLApi, meta: IApiMeta): Gr
                     await hydrateRelatedModelFields(model, args.model);
                     return modelManager.create(model)
                         .catch((e) => {
-                            if (e.message == 'ValidationError') {
+                            if (e instanceof ValidationError) {
                                 return e.result;
                             }
                             else {
@@ -65,7 +65,7 @@ export function getModelOperationMutations(api: IGraphQLApi, meta: IApiMeta): Gr
                     const options = args.where ? { where: args.where } : undefined;
                     return modelManager.update(model, options)
                         .catch((e) => {
-                            if (e.message == 'ValidationError') {
+                            if (e instanceof ValidationError) {
                                 return e.result;
                             }
                             else {
