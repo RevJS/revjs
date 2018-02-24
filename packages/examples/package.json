@@ -1,6 +1,6 @@
 {
   "name": "examples",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "RevJS Examples",
   "private": true,
   "scripts": {
@@ -18,7 +18,7 @@
     "url": "https://github.com/RevJS/revjs.git"
   },
   "dependencies": {
-    "rev-models": "^0.8.0"
+    "rev-models": "^0.9.0"
   },
   "devDependencies": {
     "run-bin": "^1.0.0"
