@@ -2,6 +2,7 @@
   "name": "rev-backend-mongodb",
   "version": "0.8.0",
   "description": "RevJS Isomorphic Data Library - Mongo DB Backend",
+  "private": true,
   "main": "lib/index.js",
   "scripts": {
     "build": "run-bin tslint -p . && run-bin tsc",
