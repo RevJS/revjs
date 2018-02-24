@@ -2,19 +2,21 @@ site_name: RevJS
 pages:
   - Welcome to RevJS!: index.md
   - Components:
-      - rev-models.md
-      - rev-api.md
-      - rev-api-client.md
-      - rev-ui.md
+      - rev-models: rev-models.md
+      - rev-api: rev-api.md
+      - rev-api-client: rev-api-client.md
+      - rev-ui: rev-ui.md
 strict: true
 theme: readthedocs
 extra_css:
-  - style.css
+  - css/style.css
 docs_dir: /mkdocs/src
 site_dir: /mkdocs/dist
 repo_url: https://github.com/RevJS/revjs
 edit_uri: /RevJS/revjs/edit/master/docs/mkdocs/src/
 markdown_extensions:
+  - toc:
+      permalink: True
   - markdown_include.include:
       base_path: /packages
 extra_javascript:

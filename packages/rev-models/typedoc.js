@@ -5,7 +5,7 @@ module.exports = {
 
     readme: './DOCINDEX.md',
     includes: './src',
-    exclude: '**/{__tests__,examples}/**/*',
+    exclude: '**/{__tests__,testsuite}/**/*',
     theme: '../../docs/typedoc/theme/',
     
     mode: 'file',
