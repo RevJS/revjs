@@ -21,7 +21,7 @@ export class Post {
     @SelectField({ selection: POST_STATUS })
         status: string;
 
-    constructor(data: Partial<Post>) {
+    constructor(data?: Partial<Post>) {
         Object.assign(this, data);
     }
 }
@@ -35,7 +35,7 @@ modelManager.register(Post);
 (async () => {
 
     // Create some data
-    
+
     await modelManager.create(new Post({
         title: 'My First Post',
         body: 'This is a really cool post made in RevJS',

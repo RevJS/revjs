@@ -33,7 +33,7 @@ describe('MongoDBBackend.create()', () => {
         manager = new ModelManager();
         manager.registerBackend('default', backend);
         manager.register(TestModel);
-        createResult = new ModelOperationResult<TestModel, ICreateMeta>({operation: 'create'});
+        createResult = new ModelOperationResult<TestModel, ICreateMeta>({operationName: 'create'});
     });
 
     it('stores valid model data and returns a new model instance', async () => {

@@ -12,7 +12,7 @@ export class City {
     @TextField()
         name: string;
 
-    constructor(data: Partial<City>) {
+    constructor(data?: Partial<City>) {
         Object.assign(this, data);
     }
 }
@@ -31,7 +31,7 @@ export class Customer {
     @RelatedModel({ model: 'City' })
         city: City;
 
-    constructor(data: Partial<Customer>) {
+    constructor(data?: Partial<Customer>) {
         Object.assign(this, data);
     }
 }
