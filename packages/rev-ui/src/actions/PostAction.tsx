@@ -1,6 +1,7 @@
 
 import * as React from 'react';
 
+import { ValidationError } from 'rev-models';
 import { IModelContextProp, IModelContext } from '../views/DetailView';
 import { withModelContext } from '../views/withModelContext';
 import { UI_COMPONENTS } from '../config';
@@ -48,8 +49,7 @@ class PostActionC extends React.Component<IPostActionProps & IModelContextProp> 
         };
 
         if (!validationResult.valid) {
-            let err: any = new Error('ValidationError');
-            err.validation = validationResult;
+            const err = new ValidationError(validationResult);
             failure(err);
         }
         else {

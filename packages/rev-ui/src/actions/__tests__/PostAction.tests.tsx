@@ -214,8 +214,7 @@ describe('PostAction', () => {
 
             expect(onErrorCallback.callCount).to.equal(1);
             const err = onErrorCallback.getCall(0).args[0];
-            expect(err).to.be.instanceof(Error);
-            expect(err.message).to.equal('ValidationError');
+            expect(err).to.be.instanceof(rev.ValidationError);
             expect(err.validation).to.be.instanceof(ModelValidationResult);
             expect(err.validation.valid).to.be.false;
             expect(receivedProps.modelContext.loadState).to.equal('NONE');

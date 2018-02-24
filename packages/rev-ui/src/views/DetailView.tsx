@@ -2,8 +2,8 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { IModel, IModelMeta, IModelManager } from 'rev-models';
-import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
+import { IModel, IModelMeta, IModelManager, ValidationError } from 'rev-models';
+import { IModelValidationResult } from 'rev-models/lib/validation/validationresult';
 import { isSet } from 'rev-models/lib/utils';
 import { UI_COMPONENTS } from '../config';
 import { IModelOperationResult } from 'rev-models/lib/operations/operationresult';
@@ -21,11 +21,11 @@ export interface IModelContext<T extends IModel = IModel> {
     manager: IModelManager;
     model: T;
     modelMeta: IModelMeta<T>;
-    validation: ModelValidationResult;
+    validation: IModelValidationResult;
     dirty: boolean;
     setLoadState(state: IModelLoadState): void;
     setDirty(dirty: boolean): void;
-    validate(): Promise<ModelValidationResult>;
+    validate(): Promise<IModelValidationResult>;
     save(): Promise<IModelOperationResult<T, any>>;
     refresh(): void;
 }
@@ -132,8 +132,8 @@ export class DetailView extends React.Component<IDetailViewProps> {
             }
         }
         catch (e) {
-            if (e.message == 'ValidationError') {
-                ctx.validation = e.result.validation;
+            if (e instanceof ValidationError) {
+                ctx.validation = e.validation;
                 this.forceUpdate();
             }
             throw e;

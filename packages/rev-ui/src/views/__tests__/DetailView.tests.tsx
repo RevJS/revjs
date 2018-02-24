@@ -411,7 +411,7 @@ describe('DetailView', () => {
                     throw new Error('should have thrown');
                 }
                 catch (e) {
-                    expect(e.message).to.equal('ValidationError');
+                    expect(e).to.be.instanceof(rev.ValidationError);
                     expect(e.result).to.be.instanceof(ModelOperationResult);
                     const validation = e.result.validation;
                     expect(receivedModelContext.validation).to.equal(validation);
