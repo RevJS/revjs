@@ -1,7 +1,7 @@
 import { TextField, EmailField, EMAIL_ADDR_REGEX, URLField, URL_REGEX } from '../textfields';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { IFieldOptions, Field, DEFAULT_FIELD_OPTIONS } from '../field';
-import { stringValidator, requiredValidator, stringEmptyValidator, minStringLengthValidator, maxStringLengthValidator, minValueValidator, maxValueValidator, regExValidator } from '../../validation/validators';
+import { stringValidator, requiredValidator, stringEmptyValidator, minStringLengthValidator, maxStringLengthValidator, regExValidator } from '../../validation/validators';
 import { IModelOperation } from '../../operations/operation';
 
 import { expect } from 'chai';
@@ -67,18 +67,6 @@ describe('rev.fields.textfields', () => {
             expect(test.validators[1]).to.equal(maxStringLengthValidator);
         });
 
-        it('adds the minValue validator if options.minValue is set', () => {
-            let test = new TextField('value', { required: false, minValue: 'a' });
-            expect(test.validators.length).to.equal(2);
-            expect(test.validators[1]).to.equal(minValueValidator);
-        });
-
-        it('adds the maxValue validator if options.maxValue is set', () => {
-            let test = new TextField('value', { required: false, maxValue: 'z' });
-            expect(test.validators.length).to.equal(2);
-            expect(test.validators[1]).to.equal(maxValueValidator);
-        });
-
         it('adds the regEx validator if options.regEx is set to a RegExp', () => {
             let test = new TextField('value', { required: false, regEx: /^T/ });
             expect(test.validators.length).to.equal(2);
@@ -97,8 +85,6 @@ describe('rev.fields.textfields', () => {
                 required: true,
                 minLength: 1,
                 maxLength: 10,
-                minValue: 'a',
-                maxValue: 'z',
                 regEx: /^abc/
             });
             testModel.value = 'abc123';
@@ -132,8 +118,6 @@ describe('rev.fields.textfields', () => {
                 required: true,
                 minLength: 1,
                 maxLength: 10,
-                minValue: 'a',
-                maxValue: 'd'
             });
             testModel.value = 'This string is too long and out of range';
             return test.validate(manager, testModel, testOp, result)

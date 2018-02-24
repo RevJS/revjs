@@ -6,8 +6,6 @@ export const EMAIL_ADDR_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@
 export const URL_REGEX = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/;
 
 export interface ITextFieldOptions extends IFieldOptions {
-    minValue?: number | string;
-    maxValue?: number | string;
     minLength?: number;
     maxLength?: number;
     regEx?: RegExp;
@@ -29,12 +27,6 @@ export class TextField extends Field {
         }
         if (typeof o.maxLength != 'undefined') {
             v.push(validators.maxStringLengthValidator);
-        }
-        if (typeof o.minValue != 'undefined') {
-            v.push(validators.minValueValidator);
-        }
-        if (typeof o.maxValue != 'undefined') {
-            v.push(validators.maxValueValidator);
         }
         if (typeof o.regEx == 'object' && o.regEx instanceof RegExp) {
             v.push(validators.regExValidator);

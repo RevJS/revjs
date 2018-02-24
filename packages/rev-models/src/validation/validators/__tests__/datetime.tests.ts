@@ -20,7 +20,6 @@ class TestModel {
 let idField = new fld.IntegerField('id');
 let nameField = new fld.TextField('name', {
     minLength: 5, maxLength: 10,
-    minValue: 'ddd', maxValue: 'jjj',
     regEx: /^abc\d.$/  // abc[number][anything]
 });
 let dateField = new fld.DateTimeField('registered');

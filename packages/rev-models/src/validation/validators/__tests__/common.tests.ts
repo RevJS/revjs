@@ -21,7 +21,6 @@ class TestModel {
 let idField = new fld.IntegerField('id');
 let nameField = new fld.TextField('name', {
     minLength: 5, maxLength: 10,
-    minValue: 'ddd', maxValue: 'jjj',
     regEx: /^abc\d.$/  // abc[number][anything]
 });
 let ageField = new fld.NumberField('age', {
@@ -528,20 +527,6 @@ describe('rev.fields.validators', () => {
             expectValidationFailure('min_value', ageField.name, msg.min_value(ageField.name, ageField.options.minValue), vResult);
         });
 
-        it('returns valid = false when string is less than minValue', () => {
-            let test = new TestModel();
-            test.name = 'bbb';
-            vld.minValueValidator(manager, test, nameField, op, vResult, opts);
-            expectValidationFailure('min_value', nameField.name, msg.min_value(nameField.name, nameField.options.minValue), vResult);
-        });
-
-        it('returns valid = false when string is a lot less than minValue', () => {
-            let test = new TestModel();
-            test.name = '';
-            vld.minValueValidator(manager, test, nameField, op, vResult, opts);
-            expectValidationFailure('min_value', nameField.name, msg.min_value(nameField.name, nameField.options.minValue), vResult);
-        });
-
     });
 
     describe('maxValueValidator()', () => {
@@ -595,13 +580,6 @@ describe('rev.fields.validators', () => {
             test.age = 45;
             vld.maxValueValidator(manager, test, ageField, op, vResult, opts);
             expectValidationFailure('max_value', ageField.name, msg.max_value(ageField.name, ageField.options.maxValue), vResult);
-        });
-
-        it('returns valid = false when string is greater than maxValue', () => {
-            let test = new TestModel();
-            test.name = 'zzz';
-            vld.maxValueValidator(manager, test, nameField, op, vResult, opts);
-            expectValidationFailure('max_value', nameField.name, msg.max_value(nameField.name, nameField.options.maxValue), vResult);
         });
 
     });
