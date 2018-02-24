@@ -19,8 +19,8 @@ export function createTests(backendName: string, backend: IBackend) {
             manager = new ModelManager();
             manager.registerBackend('default', backend);
             manager.register(TestModel);
-            createResult = new ModelOperationResult<TestModel, ICreateMeta>({operation: 'create'});
-            createResult2 = new ModelOperationResult<TestModel, ICreateMeta>({operation: 'create'});
+            createResult = new ModelOperationResult<TestModel, ICreateMeta>({operationName: 'create'});
+            createResult2 = new ModelOperationResult<TestModel, ICreateMeta>({operationName: 'create'});
             await cleanup();
         });
 

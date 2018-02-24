@@ -26,7 +26,7 @@ export async function remove<T extends IModel>(manager: IModelManager, model: T,
     }
 
     let operation: IModelOperation = {
-        operation: 'remove',
+        operationName: 'remove',
         where: opts.where
     };
     let operationResult = new ModelOperationResult<T, IRemoveMeta>(operation);

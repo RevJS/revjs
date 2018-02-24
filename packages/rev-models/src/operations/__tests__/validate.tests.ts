@@ -52,7 +52,7 @@ describe('validate()', () => {
             date: '2018-01-02'
         });
 
-        return validate(manager, test, {operation: 'create'})
+        return validate(manager, test, {operationName: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(true);
             });
@@ -61,7 +61,7 @@ describe('validate()', () => {
     it('should reject if model not registered', () => {
         class UnregisteredModel {}
         let test = new UnregisteredModel();
-        return validate(manager, test, {operation: 'create'})
+        return validate(manager, test, {operationName: 'create'})
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('is not registered');
@@ -77,7 +77,7 @@ describe('validate()', () => {
             extra: 'stuff'
         });
 
-        return validate(manager, test, {operation: 'create'})
+        return validate(manager, test, {operationName: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.modelErrors.length).to.equal(1);
@@ -94,7 +94,7 @@ describe('validate()', () => {
             date: 'not a date'
         });
 
-        return validate(manager, test, {operation: 'create'}, {
+        return validate(manager, test, {operationName: 'create'}, {
             fields: ['name']
         })
             .then((res) => {
@@ -110,7 +110,7 @@ describe('validate()', () => {
             date: '2018-01-02'
         });
 
-        return validate(manager, test, {operation: 'create'})
+        return validate(manager, test, {operationName: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.fieldErrors['id'].length).to.equal(1);
@@ -125,7 +125,7 @@ describe('validate()', () => {
             id: 11
         });
 
-        return validate(manager, test, {operation: 'create'})
+        return validate(manager, test, {operationName: 'create'})
             .then((res) => {
                 expect(res.valid).to.equal(false);
                 expect(res.fieldErrors['name'].length).to.equal(1);
@@ -152,7 +152,7 @@ describe('validate()', () => {
         manager.register(DelayModel, delayModelMeta);
         let test = new DelayModel();
 
-        return validate(manager, test, {operation: 'create'}, { timeout: 10})
+        return validate(manager, test, {operationName: 'create'}, { timeout: 10})
             .then(() => { throw new Error('expected to reject'); })
             .catch((err) => {
                 expect(err.message).to.contain('timed out');
@@ -165,13 +165,13 @@ describe('validate()', () => {
             let validateSpy = sinon.spy();
             TestModel.prototype.validate = validateSpy;
 
-            return validate(manager, validModel, {operation: 'create'})
+            return validate(manager, validModel, {operationName: 'create'})
                 .then((res) => {
                     expect(validateSpy.callCount).to.equal(1);
                     expect(validateSpy.getCall(0).args.length).to.equal(1);
                     expect(validateSpy.getCall(0).args[0]).to.deep.equal({
                         manager: manager,
-                        operation: { operation: 'create' },
+                        operation: { operationName: 'create' },
                         options: undefined,
                         result: res
                     });
@@ -182,7 +182,7 @@ describe('validate()', () => {
 
             TestModel.prototype.validate = undefined;
 
-            return validate(manager, validModel, {operation: 'create'})
+            return validate(manager, validModel, {operationName: 'create'})
                 .then((res) => {
                     expect(res.valid).to.equal(true);
                     expect(res.fieldErrors).to.deep.equal({});
@@ -193,7 +193,7 @@ describe('validate()', () => {
 
             TestModel.prototype.validate = () => undefined;
 
-            return validate(manager, validModel, {operation: 'create'})
+            return validate(manager, validModel, {operationName: 'create'})
                 .then((res) => {
                     expect(res.valid).to.equal(true);
                     expect(res.fieldErrors).to.deep.equal({});
@@ -206,7 +206,7 @@ describe('validate()', () => {
                 vc.result.addFieldError('name', 'That name is too stupid!', 'daftness', { stupidityLevel: 10 });
             };
 
-            return validate(manager, validModel, {operation: 'create'})
+            return validate(manager, validModel, {operationName: 'create'})
                 .then((res) => {
                     expect(res.valid).to.equal(false);
                     expect(res.fieldErrors['name'].length).to.equal(1);
@@ -224,7 +224,7 @@ describe('validate()', () => {
                 throw new Error('Validator epic fail...');
             };
 
-            return validate(manager, validModel, {operation: 'create'})
+            return validate(manager, validModel, {operationName: 'create'})
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('Validator epic fail...');
@@ -239,13 +239,13 @@ describe('validate()', () => {
             let validateSpy = sinon.spy();
             TestModel.prototype.validateAsync = validateSpy;
 
-            return validate(manager, validModel, {operation: 'create'})
+            return validate(manager, validModel, {operationName: 'create'})
                 .then((res) => {
                     expect(validateSpy.callCount).to.equal(1);
                     expect(validateSpy.getCall(0).args.length).to.equal(1);
                     expect(validateSpy.getCall(0).args[0]).to.deep.equal({
                         manager: manager,
-                        operation: { operation: 'create' },
+                        operation: { operationName: 'create' },
                         options: undefined,
                         result: res
                     });
@@ -256,7 +256,7 @@ describe('validate()', () => {
 
             TestModel.prototype.validateAsync = undefined;
 
-            return validate(manager, validModel, {operation: 'create'})
+            return validate(manager, validModel, {operationName: 'create'})
                 .then((res) => {
                     expect(res.valid).to.equal(true);
                     expect(res.fieldErrors).to.deep.equal({});
@@ -272,7 +272,7 @@ describe('validate()', () => {
                 });
             };
 
-            return validate(manager, validModel, {operation: 'create'})
+            return validate(manager, validModel, {operationName: 'create'})
                 .then((res) => {
                     expect(res.valid).to.equal(false);
                     expect(res.fieldErrors['name'].length).to.equal(1);
@@ -290,7 +290,7 @@ describe('validate()', () => {
                 throw new Error('Async Validator epic fail...');
             };
 
-            return validate(manager, validModel, {operation: 'create'})
+            return validate(manager, validModel, {operationName: 'create'})
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('Async Validator epic fail...');
@@ -303,7 +303,7 @@ describe('validate()', () => {
                 return Promise.reject(new Error('Can handle rejection...'));
             };
 
-            return validate(manager, validModel, {operation: 'create'})
+            return validate(manager, validModel, {operationName: 'create'})
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('Can handle rejection...');
@@ -320,7 +320,7 @@ describe('validate()', () => {
                 });
             };
 
-            return validate(manager, validModel, {operation: 'create'}, { timeout: 10 })
+            return validate(manager, validModel, {operationName: 'create'}, { timeout: 10 })
                 .then(() => { throw new Error('expected to reject'); })
                 .catch((err) => {
                     expect(err.message).to.contain('timed out');

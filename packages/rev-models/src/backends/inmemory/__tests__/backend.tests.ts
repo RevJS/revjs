@@ -24,7 +24,7 @@ describe('rev.backends.inmemory', () => {
         backend = new InMemoryBackend();
         manager.registerBackend('default', backend);
         manager.register(TestModel);
-        readResult = new ModelOperationResult<TestModel, IReadMeta>({operation: 'read'});
+        readResult = new ModelOperationResult<TestModel, IReadMeta>({operationName: 'read'});
     });
 
     describe('initial state', () => {

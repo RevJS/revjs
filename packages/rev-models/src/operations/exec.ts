@@ -28,7 +28,7 @@ export async function exec<R>(manager: IModelManager, model: IModel, options?: I
     let opts: IExecOptions = Object.assign({}, DEFAULT_EXEC_OPTIONS, options);
 
     let operation: IModelOperation = {
-        operation: options.method
+        operationName: options.method
     };
     let result = new ModelOperationResult<R, IExecMeta>(operation);
     let ctx: IMethodContext<R> = { manager, args: options.args, result, options };

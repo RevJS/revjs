@@ -20,7 +20,7 @@ export function getMethodResolver(manager: IModelApiManager, modelName: string, 
         .then((res) => {
             if (!res.valid) {
                 let result = new ModelOperationResult({
-                    operation: methodName
+                    operationName: methodName
                 });
                 result.createValidationError(res);
                 return result;
@@ -52,7 +52,7 @@ function validateMethodArgs(models: IModelManager, methodMeta: IApiMethodMeta, a
 
     if (methodMeta.args) {
         let operation: IModelOperation = {
-            operation: 'validateArgs'
+            operationName: 'validateArgs'
         };
         for (let field of methodMeta.args) {
             promises.push(field.validate(models, args, operation, result));

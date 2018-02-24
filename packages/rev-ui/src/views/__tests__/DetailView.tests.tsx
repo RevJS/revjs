@@ -429,7 +429,7 @@ describe('DetailView', () => {
                 });
                 const result = await receivedModelContext.save();
                 expect(result).to.be.instanceof(ModelOperationResult);
-                expect(result.operation.operation).to.equal('create');
+                expect(result.operation.operationName).to.equal('create');
                 expect(result.success).to.be.true;
                 expect(result.result).not.to.be.undefined;
                 expect(result.result).to.be.instanceof(models.Post);
@@ -448,7 +448,7 @@ describe('DetailView', () => {
                 });
                 const result = await receivedModelContext.save();
                 expect(result).to.be.instanceof(ModelOperationResult);
-                expect(result.operation.operation).to.equal('update');
+                expect(result.operation.operationName).to.equal('update');
                 expect(result.operation.where).to.deep.equal({ id: 100 });
                 expect(result.success).to.be.true;
                 expect(receivedModelContext.validation).to.equal(result.validation);

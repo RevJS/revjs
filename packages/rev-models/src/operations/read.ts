@@ -32,7 +32,7 @@ export async function read<T extends IModel>(manager: IModelManager, model: new(
     let opts = Object.assign({}, DEFAULT_READ_OPTIONS, options);
 
     let operation: IModelOperation = {
-        operation: 'read',
+        operationName: 'read',
         where: opts.where
     };
     let operationResult = new ModelOperationResult<T, IReadMeta>(operation);

@@ -313,7 +313,7 @@ export class ModelManager implements IModelManager {
      * @param options Any options to use for the validation
      */
     validate<T extends IModel>(model: T, options?: IValidationOptions): Promise<ModelValidationResult> {
-        let operation: IModelOperation = { operation: 'validate' };
+        let operation: IModelOperation = { operationName: 'validate' };
         return validate(this, model, operation, options);
     }
 

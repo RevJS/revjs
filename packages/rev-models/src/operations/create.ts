@@ -20,7 +20,7 @@ export async function create<T extends IModel>(manager: IModelManager, model: T,
     let backend = manager.getBackend(meta.backend);
 
     let operation: IModelOperation = {
-        operation: 'create'
+        operationName: 'create'
     };
     let operationResult = new ModelOperationResult<T, ICreateMeta>(operation);
     let opts = Object.assign({}, DEFAULT_CREATE_OPTIONS, options);

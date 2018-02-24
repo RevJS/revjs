@@ -18,7 +18,7 @@ export function updateTests(backendName: string, backend: IBackend) {
             manager = new ModelManager();
             manager.registerBackend('default', backend);
             manager.register(TestModel);
-            updateResult = new ModelOperationResult<TestModel, IUpdateMeta>({operation: 'update'});
+            updateResult = new ModelOperationResult<TestModel, IUpdateMeta>({operationName: 'update'});
 
             await removeTestData(manager);
         });

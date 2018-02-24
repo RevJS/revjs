@@ -31,9 +31,9 @@ export function autoNumberTests(backendName: string, backend: IBackend) {
             manager = new ModelManager();
             manager.registerBackend('default', backend);
             manager.register(TestModel);
-            createResult = new ModelOperationResult<TestModel, ICreateMeta>({operation: 'create'});
-            createResult2 = new ModelOperationResult<TestModel, ICreateMeta>({operation: 'create'});
-            updateResult = new ModelOperationResult<TestModel, IUpdateMeta>({operation: 'update'});
+            createResult = new ModelOperationResult<TestModel, ICreateMeta>({operationName: 'create'});
+            createResult2 = new ModelOperationResult<TestModel, ICreateMeta>({operationName: 'create'});
+            updateResult = new ModelOperationResult<TestModel, IUpdateMeta>({operationName: 'update'});
 
             await cleanup();
         });

@@ -29,7 +29,7 @@ describe('ModelApiBackend - remove()', () => {
         }
         apiBackend = new ModelApiBackend('/api', mockHttpClient);
         removeOptions = {};
-        removeResult = new ModelOperationResult<Comment, IRemoveMeta>({operation: 'remove'});
+        removeResult = new ModelOperationResult<Comment, IRemoveMeta>({operationName: 'remove'});
     }
 
     beforeEach(async () => {

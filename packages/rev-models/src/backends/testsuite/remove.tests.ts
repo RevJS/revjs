@@ -18,7 +18,7 @@ export function removeTests(backendName: string, backend: IBackend) {
             manager = new ModelManager();
             manager.registerBackend('default', backend);
             manager.register(TestModel);
-            removeResult = new ModelOperationResult<TestModel, IRemoveMeta>({operation: 'remove'});
+            removeResult = new ModelOperationResult<TestModel, IRemoveMeta>({operationName: 'remove'});
 
             await removeTestData(manager);
         });

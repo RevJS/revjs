@@ -8,7 +8,7 @@ import { IReadMeta } from '../../models/types';
 describe('ModelOperationResult - constructor()', () => {
 
     it('sets up an empty result as expected', () => {
-        let op: IModelOperation = {operation: 'create'};
+        let op: IModelOperation = {operationName: 'create'};
         let res = new ModelOperationResult(op);
         expect(res.success).to.equal(true);
         expect(res.operation).to.equal(op);
@@ -26,7 +26,7 @@ describe('ModelOperationResult - addError()', () => {
     let res: ModelOperationResult<any, any>;
 
     beforeEach(() => {
-        res = new ModelOperationResult({operation: 'create'});
+        res = new ModelOperationResult({operationName: 'create'});
     });
 
     it('adds an error with specified message', () => {
@@ -112,7 +112,7 @@ describe('ModelOperationResult - setMeta()', () => {
     let res: ModelOperationResult<any, IReadMeta>;
 
     beforeEach(() => {
-        res = new ModelOperationResult<any, IReadMeta>({operation: 'read'});
+        res = new ModelOperationResult<any, IReadMeta>({operationName: 'read'});
     });
 
     it('able to add meta when ressult.meta is not defined', () => {
@@ -155,7 +155,7 @@ describe('ModelOperationResult - createValidationError()', () => {
     let validation: ModelValidationResult;
 
     beforeEach(() => {
-        res = new ModelOperationResult({operation: 'create'});
+        res = new ModelOperationResult({operationName: 'create'});
         validation = new ModelValidationResult();
         validation.addModelError('Its broke bro!');
     });

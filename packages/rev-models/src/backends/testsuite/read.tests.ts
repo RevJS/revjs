@@ -24,8 +24,8 @@ export function readTests(backendName: string, backend: IBackend) {
             manager = new ModelManager();
             manager.registerBackend('default', backend);
             manager.register(TestModel);
-            readResult = new ModelOperationResult<TestModel, IReadMeta>({operation: 'read'});
-            readResult2 = new ModelOperationResult<TestModel, IReadMeta>({operation: 'read'});
+            readResult = new ModelOperationResult<TestModel, IReadMeta>({operationName: 'read'});
+            readResult2 = new ModelOperationResult<TestModel, IReadMeta>({operationName: 'read'});
         });
 
         describe('read() - with no data', () => {

@@ -30,7 +30,7 @@ manager.register(TestRelatedModel);
 
 describe('rev.fields.relatedmodelfields', () => {
     let testOp: IModelOperation = {
-        operation: 'create'
+        operationName: 'create'
     };
     let testModel: TestModel;
     let result: ModelValidationResult;

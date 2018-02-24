@@ -42,7 +42,7 @@ export class User {
     }
     methodOperationResult() {
         return new ModelOperationResult({
-            operation: 'customOperation'
+            operationName: 'customOperation'
         });
     }
     methodWithError() {
@@ -128,7 +128,7 @@ describe('getMethodResolver()', () => {
                 expect(smellyArgs[0]).to.have.property('manager', models);
                 expect(smellyArgs[0]).to.have.property('result');
                 expect(smellyArgs[0].result).to.have.property('operation');
-                expect(smellyArgs[0].result.operation).to.have.property('operation', 'getSmellyUser');
+                expect(smellyArgs[0].result.operation).to.have.property('operationName', 'getSmellyUser');
                 expect(smellyArgs[0].result).to.have.property('success', true);
                 expect(smellyArgs[0].args).to.deep.equal({});
                 expect(smellyInstanceProps).to.deep.equal({
@@ -212,7 +212,7 @@ describe('getMethodResolver()', () => {
             .then((res) => {
                 expect(res).to.be.instanceof(ModelOperationResult);
                 expect(res.success).to.be.true;
-                expect(res.operation.operation).to.equal('customOperation');
+                expect(res.operation.operationName).to.equal('customOperation');
             });
         });
 

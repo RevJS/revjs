@@ -46,7 +46,7 @@ manager.register(TestModel, {
 });
 
 let op: IModelOperation = {
-    operation: 'create'
+    operationName: 'create'
 };
 let opts: IValidationOptions = {
     timeout: 200

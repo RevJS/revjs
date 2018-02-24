@@ -30,7 +30,7 @@ describe('ModelApiBackend - create()', () => {
         }
         apiBackend = new ModelApiBackend('/api', mockHttpClient);
         createOptions = {};
-        createResult = new ModelOperationResult<Comment, ICreateMeta>({operation: 'create'});
+        createResult = new ModelOperationResult<Comment, ICreateMeta>({operationName: 'create'});
     }
 
     beforeEach(async () => {

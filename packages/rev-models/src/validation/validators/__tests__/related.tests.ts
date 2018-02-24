@@ -41,7 +41,7 @@ const relatedModelField = meta.fieldsByName['model'];
 const modelListField = meta.fieldsByName['modelList'];
 
 const op: IModelOperation = {
-    operation: 'create'
+    operationName: 'create'
 };
 const opts: IValidationOptions = {
     timeout: 200

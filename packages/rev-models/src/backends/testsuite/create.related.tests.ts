@@ -21,8 +21,8 @@ export function createWithRelatedModelTests(backendName: string, backend: IBacke
             manager.registerBackend('default', backend);
             manager.register(Company);
             manager.register(Developer);
-            companyCreateResult = new ModelOperationResult<Company, ICreateMeta>({operation: 'create'});
-            developerCreateResult = new ModelOperationResult<Developer, ICreateMeta>({operation: 'create'});
+            companyCreateResult = new ModelOperationResult<Company, ICreateMeta>({operationName: 'create'});
+            developerCreateResult = new ModelOperationResult<Developer, ICreateMeta>({operationName: 'create'});
             await cleanup();
         });
 

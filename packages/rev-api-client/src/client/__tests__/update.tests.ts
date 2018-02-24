@@ -30,7 +30,7 @@ describe('ModelApiBackend - update()', () => {
         }
         apiBackend = new ModelApiBackend('/api', mockHttpClient);
         updateOptions = {};
-        updateResult = new ModelOperationResult<Comment, IUpdateMeta>({operation: 'update'});
+        updateResult = new ModelOperationResult<Comment, IUpdateMeta>({operationName: 'update'});
     }
 
     beforeEach(async () => {

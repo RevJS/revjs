@@ -27,8 +27,8 @@ export function readWithRelatedModelTests(backendName: string, backend: IBackend
             manager.register(Developer);
             manager.register(City);
             manager.register(Department);
-            companyReadResult = new ModelOperationResult<Company, IReadMeta>({operation: 'read'});
-            developerReadResult = new ModelOperationResult<Developer, IReadMeta>({operation: 'read'});
+            companyReadResult = new ModelOperationResult<Company, IReadMeta>({operationName: 'read'});
+            developerReadResult = new ModelOperationResult<Developer, IReadMeta>({operationName: 'read'});
 
             await removeRelatedTestData(manager);
             await createRelatedTestData(manager);

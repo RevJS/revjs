@@ -36,7 +36,7 @@ let models = new ModelManager();
 
 describe('rev.fields.field', () => {
     let testOp: IModelOperation = {
-        operation: 'create'
+        operationName: 'create'
     };
 
     describe('Field - constructor()', () => {

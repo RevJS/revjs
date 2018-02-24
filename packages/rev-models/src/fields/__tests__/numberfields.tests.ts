@@ -15,7 +15,7 @@ let manager = new ModelManager();
 
 describe('rev.fields.numberfields', () => {
     let testOp: IModelOperation = {
-        operation: 'create'
+        operationName: 'create'
     };
     let testModel: TestModel;
     let result: ModelValidationResult;

@@ -46,7 +46,7 @@ export async function update<T extends IModel>(manager: IModelManager, model: T,
     validationOpts.fields = opts.fields;
 
     let operation: IModelOperation = {
-        operation: 'update',
+        operationName: 'update',
         where: opts.where
     };
     let operationResult = new ModelOperationResult<T, IUpdateMeta>(operation);

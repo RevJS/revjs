@@ -22,8 +22,8 @@ export function updateWithRelatedModelTests(backendName: string, backend: IBacke
             manager.register(Developer);
             manager.register(City);
             manager.register(Department);
-            companyUpdateResult = new ModelOperationResult<Company, IUpdateMeta>({operation: 'create'});
-            developerUpdateResult = new ModelOperationResult<Developer, IUpdateMeta>({operation: 'create'});
+            companyUpdateResult = new ModelOperationResult<Company, IUpdateMeta>({operationName: 'create'});
+            developerUpdateResult = new ModelOperationResult<Developer, IUpdateMeta>({operationName: 'create'});
 
             await removeRelatedTestData(manager);
             await createRelatedTestData(manager);

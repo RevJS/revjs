@@ -33,7 +33,7 @@ describe('ModelApiBackend - read()', () => {
             offset: 0,
             limit: 20
         };
-        readResult = new ModelOperationResult<Comment, IReadMeta>({operation: 'read'});
+        readResult = new ModelOperationResult<Comment, IReadMeta>({operationName: 'read'});
     }
 
     beforeEach(async () => {

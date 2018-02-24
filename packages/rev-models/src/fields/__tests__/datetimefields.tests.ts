@@ -16,7 +16,7 @@ let manager = new ModelManager();
 describe('rev.fields.datetimefields', () => {
     let testModel: TestModel;
     let testOp: IModelOperation = {
-        operation: 'create'
+        operationName: 'create'
     };
     let result: ModelValidationResult;
 
