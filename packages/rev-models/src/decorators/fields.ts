@@ -1,5 +1,5 @@
 import * as fld from '../fields';
-import { ITextFieldOptions } from '../fields/textfields';
+import { ITextFieldBaseOptions, ITextFieldOptions } from '../fields/textfields';
 import { INumberFieldOptions } from '../fields/numberfields';
 import { IFieldOptions } from '../fields/field';
 import { ISelectFieldOptions } from '../fields/selectionfields';
@@ -28,21 +28,21 @@ export function TextField(options?: ITextFieldOptions)
     };
 }
 
-export function PasswordField(options?: ITextFieldOptions)
+export function PasswordField(options?: ITextFieldBaseOptions)
 {
     return function(target: any, propName: string) {
         addFieldMeta(target, propName, new fld.PasswordField(propName, options));
     };
 }
 
-export function EmailField(options?: ITextFieldOptions)
+export function EmailField(options?: ITextFieldBaseOptions)
 {
     return function(target: any, propName: string) {
         addFieldMeta(target, propName, new fld.EmailField(propName, options));
     };
 }
 
-export function URLField(options?: ITextFieldOptions)
+export function URLField(options?: ITextFieldBaseOptions)
 {
     return function(target: any, propName: string) {
         addFieldMeta(target, propName, new fld.URLField(propName, options));

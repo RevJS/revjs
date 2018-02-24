@@ -1,4 +1,4 @@
-import { TextField, EmailField, EMAIL_ADDR_REGEX, URLField, URL_REGEX } from '../textfields';
+import { TextFieldBase, TextField, PasswordField, EmailField, EMAIL_ADDR_REGEX, URLField, URL_REGEX } from '../textfields';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { IFieldOptions, Field, DEFAULT_FIELD_OPTIONS } from '../field';
 import { stringValidator, requiredValidator, stringEmptyValidator, minStringLengthValidator, maxStringLengthValidator, regExValidator } from '../../validation/validators';
@@ -126,6 +126,53 @@ describe('rev.fields.textfields', () => {
 
     });
 
+    describe('PasswordField', () => {
+
+        it('creates a field with properties as expected', () => {
+            let opts: IFieldOptions = Object.assign(
+                {}, DEFAULT_FIELD_OPTIONS
+            );
+            let test = new PasswordField('value');
+            expect(test).is.instanceof(TextFieldBase);
+            expect(test.name).to.equal('value');
+            expect(test.options).to.deep.equal(opts);
+        });
+
+        it('sets default field options if they are not specified', () => {
+            let test = new PasswordField('value');
+            expect(test.options).to.deep.equal(
+                Object.assign({}, DEFAULT_FIELD_OPTIONS)
+            );
+        });
+
+        it('successfully validates a string value', () => {
+            let test = new PasswordField('value', { required: true });
+            testModel.value = 'Joe Smith';
+            return test.validate(manager, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
+        });
+
+        it('successfully validates a string value that passes validation', () => {
+            let test = new PasswordField('value', {
+                required: true,
+                minLength: 1,
+                maxLength: 10,
+                regEx: /^abc/
+            });
+            testModel.value = 'abc123';
+            return test.validate(manager, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
+        });
+
+        it('successfully validates a null value if field not required', () => {
+            let test = new PasswordField('value', { required: false });
+            testModel.value = null;
+            return test.validate(manager, testModel, testOp, result)
+                .then((res) => { expect(res.valid).to.be.true; });
+        });
+
+    });
+
     describe('EmailField', () => {
 
         it('creates a field with properties as expected', () => {
@@ -134,7 +181,7 @@ describe('rev.fields.textfields', () => {
                 { regEx: EMAIL_ADDR_REGEX }
             );
             let test = new EmailField('value');
-            expect(test).is.instanceof(TextField);
+            expect(test).is.instanceof(TextFieldBase);
             expect(test.name).to.equal('value');
             expect(test.options).to.deep.equal(opts);
             expect(test.options.regEx).to.equal(EMAIL_ADDR_REGEX);
@@ -196,7 +243,7 @@ describe('rev.fields.textfields', () => {
                 { regEx: URL_REGEX }
             );
             let test = new URLField('value');
-            expect(test).is.instanceof(TextField);
+            expect(test).is.instanceof(TextFieldBase);
             expect(test.name).to.equal('value');
             expect(test.options).to.deep.equal(opts);
             expect(test.options.regEx).to.equal(URL_REGEX);
