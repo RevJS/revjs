@@ -2,7 +2,6 @@
 import { expect } from 'chai';
 import { IModelOperation } from '../operation';
 import { ModelOperationResult } from '../operationresult';
-import { ModelValidationResult } from '../../validation/validationresult';
 import { IReadMeta } from '../../models/types';
 
 describe('ModelOperationResult - constructor()', () => {
@@ -145,40 +144,6 @@ describe('ModelOperationResult - setMeta()', () => {
         expect(() => {
             res.setMeta('limit: 10' as any);
         }).to.throw('metadata must be an object');
-    });
-
-});
-
-describe('ModelOperationResult - createValidationError()', () => {
-
-    let res: ModelOperationResult<any, any>;
-    let validation: ModelValidationResult;
-
-    beforeEach(() => {
-        res = new ModelOperationResult({operationName: 'create'});
-        validation = new ModelValidationResult();
-        validation.addModelError('Its broke bro!');
-    });
-
-    it('changes the properties of the operation result as expected', () => {
-        expect(res.success).to.be.true;
-        expect(res.validation).to.be.undefined;
-
-        res.createValidationError(validation);
-        expect(res.success).to.be.false;
-        expect(res.errors).to.have.length(1);
-        expect(res.errors[0]).to.deep.equal({
-            message: 'Model failed validation',
-            code: 'validation_error'
-        });
-        expect(res.validation).to.equal(validation);
-    });
-
-    it('returns an Error with the correct properties', () => {
-        let result = res.createValidationError(validation);
-        expect(result).to.be.instanceof(Error);
-        expect(result.message).to.equal('ValidationError');
-        expect(result.result).to.equal(res);
     });
 
 });

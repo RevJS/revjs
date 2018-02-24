@@ -7,6 +7,7 @@ import * as create from '../create';
 import { MockBackend } from './mock-backend';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { ModelManager } from '../../models/manager';
+import { ValidationError } from '../../validation/validationerror';
 
 let GENDERS = [
     ['male', 'Male'],
@@ -115,13 +116,14 @@ describe('rev.operations.create()', () => {
         let model = new TestModel();
         return rwCreate.create(manager, model)
             .then((res) => { throw new Error('expected reject'); })
-            .catch((res) => {
-                expect(res).to.be.instanceof(Error);
-                expect(res.message).to.equal('ValidationError');
-                expect(res.result).to.exist;
-                expect(res.result.success).to.be.false;
-                expect(res.result.validation).to.be.instanceOf(ModelValidationResult);
-                expect(res.result.validation.valid).to.be.false;
+            .catch((err) => {
+                expect(err).to.be.instanceof(ValidationError);
+                expect(err.validation).to.be.instanceOf(ModelValidationResult);
+                expect(err.validation.valid).to.be.false;
+                expect(err.result).to.exist;
+                expect(err.result.success).to.be.false;
+                expect(err.result.validation).to.be.instanceOf(ModelValidationResult);
+                expect(err.result.validation.valid).to.be.false;
             });
     });
 
@@ -133,13 +135,14 @@ describe('rev.operations.create()', () => {
         model.email = 'www.google.com';
         return rwCreate.create(manager, model)
             .then((res) => { throw new Error('expected reject'); })
-            .catch((res) => {
-                expect(res).to.be.instanceof(Error);
-                expect(res.message).to.equal('ValidationError');
-                expect(res.result).to.exist;
-                expect(res.result.success).to.be.false;
-                expect(res.result.validation).to.be.instanceOf(ModelValidationResult);
-                expect(res.result.validation.valid).to.be.false;
+            .catch((err) => {
+                expect(err).to.be.instanceof(ValidationError);
+                expect(err.validation).to.be.instanceOf(ModelValidationResult);
+                expect(err.validation.valid).to.be.false;
+                expect(err.result).to.exist;
+                expect(err.result.success).to.be.false;
+                expect(err.result.validation).to.be.instanceOf(ModelValidationResult);
+                expect(err.result.validation.valid).to.be.false;
             });
     });
 

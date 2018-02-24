@@ -69,12 +69,4 @@ export class ModelOperationResult<T, M extends IOperationMeta> implements IModel
         Object.assign(this.meta, meta);
     }
 
-    createValidationError(validationResult: ModelValidationResult): Error {
-        this.validation = validationResult;
-        this.addError('Model failed validation', 'validation_error');
-        let err = new Error('ValidationError');
-        err.result = this;
-        return err;
-    }
-
 }

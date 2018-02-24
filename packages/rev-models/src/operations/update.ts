@@ -5,6 +5,7 @@ import { ModelOperationResult } from './operationresult';
 import { IModelOperation } from './operation';
 import { getModelPrimaryKeyQuery } from './utils';
 import { checkFieldsList } from '../models/utils';
+import { ValidationError } from '../validation/validationerror';
 
 export const DEFAULT_UPDATE_OPTIONS: IUpdateOptions = {};
 
@@ -53,7 +54,11 @@ export async function update<T extends IModel>(manager: IModelManager, model: T,
 
     let validationResult = await validate(manager, model, operation, validationOpts);
     if (!validationResult.valid) {
-        throw operationResult.createValidationError(validationResult);
+        operationResult.addError('Model failed validation', 'validation_error');
+        operationResult.validation = validationResult;
+        const error = new ValidationError(validationResult);
+        error.result = operationResult;
+        throw error;
     }
     else {
         operationResult.validation = validationResult;

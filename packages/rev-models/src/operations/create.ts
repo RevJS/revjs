@@ -3,6 +3,7 @@ import { IModel, IModelManager, ICreateOptions, ICreateMeta } from '../models/ty
 import { validate } from './validate';
 import { ModelOperationResult } from './operationresult';
 import { IModelOperation } from './operation';
+import { ValidationError } from '../validation/validationerror';
 
 export const DEFAULT_CREATE_OPTIONS: ICreateOptions = {};
 
@@ -28,7 +29,11 @@ export async function create<T extends IModel>(manager: IModelManager, model: T,
     let validationResult = await validate(manager, model, operation, opts.validation ? opts.validation : null);
 
     if (!validationResult.valid) {
-        throw operationResult.createValidationError(validationResult);
+        operationResult.addError('Model failed validation', 'validation_error');
+        operationResult.validation = validationResult;
+        const error = new ValidationError(validationResult);
+        error.result = operationResult;
+        throw error;
     }
     else {
         operationResult.validation = validationResult;
