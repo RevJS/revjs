@@ -11,6 +11,8 @@ The `rev-models` module provides the following:
  * An **in-memory** storage backend, so you can play with RevJS functions without
    needing to set up a database.
 
+*Jump straight to [rev-models API Documentation](/api/rev-models)*
+
 ## Example
 
 The example below registers a simple data class with some basic validation

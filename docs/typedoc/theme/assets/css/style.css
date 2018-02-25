@@ -24,3 +24,7 @@ body {
 .tsd-signature, .tsd-signature-symbol, .tsd-signature-type {
     font-weight: bold;
 }
+.home-link {
+    margin-left: 30px;
+    font-style: italic;
+}
