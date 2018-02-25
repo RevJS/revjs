@@ -20,3 +20,7 @@ body {
 }
 .tsd-navigation.primary {
     padding-bottom: 0px;
+}
+.tsd-signature, .tsd-signature-symbol, .tsd-signature-type {
+    font-weight: bold;
+}
