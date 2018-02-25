@@ -4,8 +4,15 @@ import { ModelOperationResult } from './operationresult';
 import { IModelOperation } from './operation';
 import { getModelPrimaryKeyQuery } from './utils';
 
+/**
+ * @private
+ */
 export const DEFAULT_REMOVE_OPTIONS: IRemoveOptions = {};
 
+/**
+ * @private
+ * Documentation in ModelManager class
+ */
 export async function remove<T extends IModel>(manager: IModelManager, model: T, options?: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
 
     let meta = manager.getModelMeta(model);

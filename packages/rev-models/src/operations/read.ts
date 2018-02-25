@@ -4,12 +4,19 @@ import { ModelOperationResult } from './operationresult';
 import { IModelOperation } from './operation';
 import { RelatedModelFieldBase } from '../fields/relatedfields';
 
+/**
+ * @private
+ */
 export const DEFAULT_READ_OPTIONS: IReadOptions = {
     where: {},
     limit: 20,
     offset: 0
 };
 
+/**
+ * @private
+ * Documentation in ModelManager class
+ */
 export async function read<T extends IModel>(manager: IModelManager, model: new() => T, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
 
     let meta = manager.getModelMeta(model) as IModelMeta<T>;

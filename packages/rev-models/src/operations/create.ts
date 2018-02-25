@@ -5,8 +5,15 @@ import { ModelOperationResult } from './operationresult';
 import { IModelOperation } from './operation';
 import { ValidationError } from '../validation/validationerror';
 
+/**
+ * @private
+ */
 export const DEFAULT_CREATE_OPTIONS: ICreateOptions = {};
 
+/**
+ * @private
+ * Documentation in ModelManager class
+ */
 export async function create<T extends IModel>(manager: IModelManager, model: T, options?: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
 
     if (typeof model != 'object') {

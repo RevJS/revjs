@@ -5,7 +5,7 @@ module.exports = {
 
     readme: 'none',
     includes: './src',
-    exclude: '**/{__tests__,testsuite}/**/*',
+    exclude: '**/{__tests__,__test_utils__,testsuite}/**/*',
     theme: '../../docs/typedoc/theme/',
     
     mode: 'file',

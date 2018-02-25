@@ -7,8 +7,15 @@ import { getModelPrimaryKeyQuery } from './utils';
 import { checkFieldsList } from '../models/utils';
 import { ValidationError } from '../validation/validationerror';
 
+/**
+ * @private
+ */
 export const DEFAULT_UPDATE_OPTIONS: IUpdateOptions = {};
 
+/**
+ * @private
+ * Documentation in ModelManager class
+ */
 export async function update<T extends IModel>(manager: IModelManager, model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
 
     if (typeof model != 'object') {

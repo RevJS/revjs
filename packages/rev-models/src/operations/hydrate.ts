@@ -2,6 +2,10 @@
 import { IModel, IModelManager } from '../models/types';
 import { RelatedModelFieldBase } from '../fields';
 
+/**
+ * @private
+ * Documentation in ModelManager class
+ */
 export function hydrate<T extends IModel>(manager: IModelManager, model: new() => T, data: any): T {
 
     let meta = manager.getModelMeta(model);

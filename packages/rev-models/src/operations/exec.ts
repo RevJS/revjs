@@ -11,10 +11,17 @@ export interface IMethodContext<T> {
     options?: IExecOptions;
 }
 
+/**
+ * @private
+ */
 export const DEFAULT_EXEC_OPTIONS: IExecOptions = {
     method: null
 };
 
+/**
+ * @private
+ * Documentation in ModelManager class
+ */
 export async function exec<R>(manager: IModelManager, model: IModel, options?: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
 
     if (typeof model != 'object') {

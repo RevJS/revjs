@@ -1,5 +1,8 @@
 import { IModel, IModelMeta } from '../models/types';
 
+/**
+ * @private
+ */
 export function getModelPrimaryKeyQuery<T extends IModel>(model: T, meta: IModelMeta<T>) {
     if (!meta.primaryKey) {
         throw new Error('KeyError: no primaryKey defined');

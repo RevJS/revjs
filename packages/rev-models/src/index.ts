@@ -9,5 +9,3 @@ export { IMethodContext } from './operations/exec';
 export { IModelOperationResult, ModelOperationResult } from './operations/operationresult';
 export { InMemoryBackend } from './backends/inmemory/backend';
 export { ValidationError } from './validation/validationerror';
-
-export * from './operations';
