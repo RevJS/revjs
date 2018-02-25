@@ -13,7 +13,7 @@
                         <li class="state failure">The search index is not available</li>
                     </ul>
 
-                    <a href="{{relativeURL "index.html"}}" class="title">{{project.name}}</a>
+                    <a href="{{relativeURL "index.html"}}" class="title">RevJS API Documentation</a>
                 </div>
 
                 <div class="table-cell" id="tsd-widgets">
@@ -51,6 +51,9 @@
     </div>
     <div class="tsd-page-title">
         <div class="container">
+            <ul class="tsd-breadcrumb">
+                {{#with model}}{{> breadcrumb}}{{/with}}
+            </ul>
             <h1>{{#compact}}
                 {{model.kindString}}&nbsp;
                 {{model.name}}
