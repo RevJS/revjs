@@ -3,7 +3,7 @@
 module.exports = {
     out: '../../docs/dist/api/rev-models',
 
-    readme: './DOCINDEX.md',
+    readme: 'none',
     includes: './src',
     exclude: '**/{__tests__,testsuite}/**/*',
     theme: '../../docs/typedoc/theme/',
