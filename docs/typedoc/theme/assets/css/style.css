@@ -27,4 +27,9 @@ body {
 .home-link {
     margin-left: 30px;
     font-style: italic;
+    position: relative;
+    z-index: 2;
+}
+a.home-link:hover {
+    text-decoration: underline;
 }
