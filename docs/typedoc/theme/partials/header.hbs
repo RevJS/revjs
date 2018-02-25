@@ -32,7 +32,7 @@
                 {{/if}}
             </ul>
             <h1>{{#compact}}
-                {{model.kindString}}&nbsp;
+                {{#if model.kindString}}{{model.kindString}}:&nbsp;{{/if}}
                 {{model.name}}
                 {{#if model.typeParameters}}
                     &lt;
