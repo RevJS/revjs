@@ -33,3 +33,6 @@ body {
 a.home-link:hover {
     text-decoration: underline;
 }
+.tsd-is-private {
+    display: none;
+}
