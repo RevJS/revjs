@@ -1,8 +1,12 @@
-
 .tsd-page-toolbar {
     background-color: #2980B9;
 }
-
 .tsd-page-toolbar, .tsd-page-toolbar a {
     color: #fcfcfc;
+}
+.tsd-breadcrumb li::after {
+    content: none;
+}
+.tsd-navigation.primary {
+    padding-bottom: 0px;
 }

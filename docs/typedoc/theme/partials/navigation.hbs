@@ -5,9 +5,6 @@
         </li>
     {{else}}
         {{#if isGlobals}}
-            <li class="globals {{#if isInPath}}current{{/if}} {{cssClasses}}">
-                <a href="{{relativeURL url}}"><em>Library Root</em></a>
-            </li>
         {{else}}
             <li class="{{#if isInPath}}current{{/if}} {{cssClasses}}">
                 <a href="{{relativeURL url}}">{{{wbr title}}}</a>
