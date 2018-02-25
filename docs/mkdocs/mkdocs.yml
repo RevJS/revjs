@@ -1,4 +1,4 @@
-site_name: RevJS
+site_name: RevJS Guide
 pages:
   - Welcome to RevJS!: index.md
   - Components:

@@ -8,6 +8,8 @@ The `rev-models` module provides the following:
  * A [ModelManager](#modelmanager-functions) object, which holds the list of
    your registered models, and provides functions for **create**, **read**,
    **update** and **delete**.
+ * An **in-memory** storage backend, so you can play with RevJS functions without
+   needing to set up a database.
 
 ## Example
 
@@ -38,9 +40,55 @@ rules, creates some data, and reads it back.
 
 ## Custom Validation
 
+In addition to the built-in, configurable validation provided by the
+standard field types, you can specify your own validation rules directly on your
+models, as shown in the example below
+
+```ts
+{!examples/src/defining_and_using_models/custom_validation.ts!}
+```
+
+The output of the above code is:
+
+```
+ValidationError
+ * title: Cannot create post with a duplicate title!
+```
+
+For further information on model validation functions, check out the
+[IModel](/api/rev-models/interfaces/imodel.html) interface
+
 ## ModelManager functions
 
-[rev-models API Documentation](/api/rev-models)
+The RevJS [ModelManager](/api/rev-models/classes/modelmanager.html) has the
+following main functions:
+
+ * [registerBackend()](/api/rev-models/classes/modelmanager.html#registerbackend) -
+   used to configure the database or API where your models are stored
+ * [read()](/api/rev-models/classes/modelmanager.html#read) - read models from
+   your backend
+ * [create()](/api/rev-models/classes/modelmanager.html#create) - store a new
+   model in your backend
+ * [update()](/api/rev-models/classes/modelmanager.html#update) - update a model
+   already stored in the backend
+ * [remove()](/api/rev-models/classes/modelmanager.html#remove) - remove a model
+   that is currently stored in the backend
+
+## Supported Backends
+
+The following back-ends are currently supported:
+
+ * [InMemoryBackend](/api/rev-models/classes/inmemorybackend.html) - stores your
+   model data in-memory. Ideal for initial development and automated testing.
+ * **ModelApiBackend** - designed for use in the browser or mobile app.
+   Uses the API created by `rev-api` to store and retrieve your models.
+ * **MongoDBBackend** - stores and retrieves your data from MongoDB
+
+We have defined a standard [IBackend](/api/rev-models/interfaces/ibackend.html)
+interface, as well as a
+[Standard Test Suite](https://github.com/RevJS/revjs/blob/master/packages/rev-models/src/backends/testsuite/index.ts)
+to aid with new backend development, and are keen to accept any contributions
+from the community!
 
 ## Contributing
 
