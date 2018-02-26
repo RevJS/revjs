@@ -6,6 +6,11 @@ export interface ISelectFieldOptions extends IFieldOptions {
     selection: string[][];
 }
 
+/**
+ * A BooleanField stores a true / false value
+ * 
+ * **Accepted Values:** a *boolean*
+ */
 export class BooleanField extends Field {
     constructor(name: string, options?: IFieldOptions) {
         super(name, options);
@@ -13,6 +18,12 @@ export class BooleanField extends Field {
     }
 }
 
+/**
+ * A SelectField stores a single value that must be one of the values in the
+ * `selection` list.
+ * 
+ * **Accepted Values:** a *string*
+ */
 export class SelectField extends Field {
     options: ISelectFieldOptions;
 
@@ -37,6 +48,12 @@ export class SelectField extends Field {
     }
 }
 
+/**
+ * A MultiSelectField stores one or more values, which must be from the
+ * specified `selection` list.
+ * 
+ * **Accepted Values:** an *array of strings*
+ */
 export class MultiSelectField extends Field {
     options: ISelectFieldOptions;
 

@@ -7,6 +7,11 @@ export interface INumberFieldOptions extends IFieldOptions {
     maxValue?: number | string;
 }
 
+/**
+ * A NumberField stores any numeric value supported by JavaScript
+ * 
+ * **Accepted Values:** a *number*
+ */
 export class NumberField extends Field {
     options: INumberFieldOptions;
 
@@ -22,6 +27,12 @@ export class NumberField extends Field {
     }
 }
 
+/**
+ * A IntegerField stores an integer (whole number) value only. Numbers with
+ * decimal values are not allowed.
+ * 
+ * **Accepted Values:** a *number* representing an integer
+ */
 export class IntegerField extends NumberField {
     constructor(name: string, options?: INumberFieldOptions) {
         super(name, options);
@@ -30,6 +41,15 @@ export class IntegerField extends NumberField {
     }
 }
 
+/**
+ * An **AutoNumberField** is a special type of field that generates a sequential
+ * numeric value if a value is not provided.
+ * 
+ * This type of field can be used as a unique record identifier, or as a value
+ * to be shown to the user (e.g. an Invoice Number field).
+ * 
+ * **Accepted Values:** an *integer* or *undefined*
+ */
 export class AutoNumberField extends Field {
     options: IFieldOptions;
 

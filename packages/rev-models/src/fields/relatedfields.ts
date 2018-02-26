@@ -13,12 +13,24 @@ export interface IRelatedModelListFieldOptions extends IFieldOptions {
     field: string;
 }
 
+/**
+ * @private
+ */
 export const DEFAULT_MODELLIST_FIELD_OPTIONS: IFieldOptions = {
     required: false
 };
 
+/**
+ * @private
+ */
 export class RelatedModelFieldBase extends Field {}
 
+/**
+ * A RelatedModelField is basically a "Foreign Key" link to a related model.
+ * 
+ * **Accepted Values:** a JavaScript *object* representing an instance of the
+ * related model
+ */
 export class RelatedModelField extends RelatedModelFieldBase {
     options: IRelatedModelFieldOptions;
 
@@ -50,6 +62,13 @@ export class RelatedModelField extends RelatedModelFieldBase {
     }
 }
 
+/**
+ * A RelatedModelListField allows you easily retrieve all the related models
+ * that are linked to the current model.
+ * 
+ * **Note:** Currently RelatedModelListField lists are read-only. You can
+ * link new models by updating their corresponding [[RelatedModelField]]
+ */
 export class RelatedModelListField extends RelatedModelFieldBase {
     options: IRelatedModelListFieldOptions;
 

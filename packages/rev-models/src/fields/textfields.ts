@@ -15,6 +15,9 @@ export interface ITextFieldOptions extends ITextFieldBaseOptions {
     multiLine?: boolean;
 }
 
+/**
+ * @private
+ */
 export class TextFieldBase extends Field {
     options: ITextFieldBaseOptions;
 
@@ -38,6 +41,11 @@ export class TextFieldBase extends Field {
     }
 }
 
+/**
+ * A TextField stores any text value supported by JavaScript
+ * 
+ * **Accepted Values:** a *string*
+ */
 export class TextField extends TextFieldBase {
     options: ITextFieldOptions;
     constructor(name: string, options?: ITextFieldOptions) {
@@ -45,8 +53,21 @@ export class TextField extends TextFieldBase {
     }
 }
 
+/**
+ * A PasswordField stores any text value supported by JavaScript
+ * 
+ * **IMPORTANT NOTE:** RevJS does **not** do any encryption of password fields.
+ * This field type primarily exists for front-end use.
+ * 
+ * **Accepted Values:** a *string*
+ */
 export class PasswordField extends TextFieldBase {}
 
+/**
+ * An EmailField validates and stores an Email Address.
+ * 
+ * **Accepted Values:** a *string* representing an e-mail address
+ */
 export class EmailField extends TextFieldBase {
     constructor(name: string, options?: ITextFieldBaseOptions) {
         let opts = getOptions(options) as ITextFieldBaseOptions;
@@ -59,6 +80,11 @@ export class EmailField extends TextFieldBase {
     }
 }
 
+/**
+ * A URLField validates and stores a Web Address (URL).
+ * 
+ * **Accepted Values:** a *string* representing a url
+ */
 export class URLField extends TextFieldBase {
     constructor(name: string, options?: ITextFieldBaseOptions) {
         let opts = getOptions(options) as ITextFieldBaseOptions;
