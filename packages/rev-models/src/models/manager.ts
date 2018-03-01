@@ -26,7 +26,7 @@ import { isSet } from '../utils';
  * The example below shows how to create a new model manager:
  *
  * ```ts
- * [[include:examples/01_defining_a_model_manager.ts]]
+ * [[include:examples/src/model_manager/creating_a_model_manager.ts]]
  * ```
  */
 export class ModelManager implements IModelManager {

@@ -4,7 +4,7 @@ module.exports = {
     out: '../../docs/dist/api/rev-models',
 
     readme: 'none',
-    includes: './src',
+    includes: '../',
     exclude: '**/{__tests__,__test_utils__,testsuite}/**/*',
     theme: '../../docs/typedoc/theme/',
     
