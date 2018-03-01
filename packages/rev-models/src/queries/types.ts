@@ -1,12 +1,18 @@
 
 import { IModel, IModelManager } from '../models/types';
 
+/**
+ * @private
+ */
 export interface IQueryNode<T extends IModel> {
     operator: string;
     parent: IQueryNode<T>;
     children: Array<IQueryNode<T>>;
 }
 
+/**
+ * @private
+ */
 export interface IOperatorRegister {
     [operator: string]: new(
             parser: IQueryParser,
@@ -16,6 +22,9 @@ export interface IOperatorRegister {
             parent: IQueryNode<any>) => IQueryNode<any>;
 }
 
+/**
+ * @private
+ */
 export interface IQueryParser {
     manager: IModelManager;
     OPERATOR_PREFIX: string;

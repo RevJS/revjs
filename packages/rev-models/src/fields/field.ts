@@ -5,16 +5,25 @@ import { IModel, IModelManager, IValidationOptions } from '../models/types';
 import { IModelOperation } from '../operations/operation';
 import { ModelValidationResult } from '../validation/validationresult';
 
+/**
+ * @private
+ */
 export interface IFieldOptions {
     label?: string;
     required?: boolean;
     primaryKey?: boolean;
 }
 
+/**
+ * @private
+ */
 export const DEFAULT_FIELD_OPTIONS: IFieldOptions = {
     required: true
 };
 
+/**
+ * @private
+ */
 export function getOptions(options?: IFieldOptions): IFieldOptions {
     if (isSet(options)) {
         if (typeof options != 'object') {
@@ -27,8 +36,19 @@ export function getOptions(options?: IFieldOptions): IFieldOptions {
     }
 }
 
+/**
+ * Base class for all RevJS Field Types
+ */
 export class Field {
+
+    /**
+     * Array of synchronous field validators, used when an instance of this field is validated.
+     */
     validators: validators.IFieldValidator[];
+
+    /**
+     * Array of asynchronous field validators, used when an instance of this field is validated.
+     */
     asyncValidators: validators.IAsyncFieldValidator[];
 
     constructor(public name: string, public options?: any) {
@@ -43,6 +63,10 @@ export class Field {
         }
     }
 
+    /**
+     * @private
+     * Used by ModelManager to validate a field value
+     */
     validate<T extends IModel>(manager: IModelManager, model: T, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): Promise<ModelValidationResult> {
         let timeout = options && options.timeout ? options.timeout : 5000;
         return new Promise((resolve, reject) => {
@@ -71,10 +95,22 @@ export class Field {
         });
     }
 
+    /**
+     * Convert a model instance value to a value for storing in a backend
+     * @param manager The ModelManager associated with the model
+     * @param value The value to convert
+     * @returns The backend value
+     */
     toBackendValue(manager: IModelManager, value: any) {
         return value;
     }
 
+    /**
+     * Convert a backend value into a model instance value
+     * @param manager The ModelManager associated with the model
+     * @param value The value to convert
+     * @returns The value to be stored in the model instance
+     */
     fromBackendValue(manager: IModelManager, value: any) {
         return value;
     }

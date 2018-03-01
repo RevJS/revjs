@@ -3,6 +3,9 @@ import { IQueryParser, IQueryNode } from '../types';
 import { isFieldValue } from '../utils';
 import { IModel } from '../../models/types';
 
+/**
+ * @private
+ */
 export class ValueListOperator<T extends IModel> extends QueryNode<T> {
 
     constructor(

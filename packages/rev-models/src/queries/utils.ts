@@ -1,5 +1,8 @@
 import { escapeForRegex } from '../utils/index';
 
+/**
+ * @private
+ */
 export function isFieldValue(value: any) {
     return (typeof value == 'string'
         || typeof value == 'boolean'
@@ -8,6 +11,9 @@ export function isFieldValue(value: any) {
         || value === null);
 }
 
+/**
+ * @private
+ */
 export function getLikeOperatorRegExp(likeStr: string) {
     // Build a RegExp from string with % wildcards (i.e. LIKE in SQL)
     // Can't use a simple RegExp because JS doesn't support lookbehinds :(

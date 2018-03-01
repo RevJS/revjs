@@ -3,6 +3,9 @@ import { QueryNode } from './query';
 import { IQueryParser, IQueryNode } from '../types';
 import { IModel } from '../../models/types';
 
+/**
+ * @private
+ */
 export class ConjunctionNode<T extends IModel> extends QueryNode<T> {
 
     constructor(

@@ -1,4 +1,7 @@
 
+/**
+ * @private
+ */
 export function sortRecords(records: object[], orderBy: string[]) {
     return records.sort((r1, r2) => {
         for (let order_spec of orderBy) {

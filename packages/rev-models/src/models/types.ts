@@ -10,6 +10,10 @@ export interface IValidationOptions {
     fields?: string[];
 }
 
+/**
+ * @private
+ * (although will be needed for custom field validators)
+ */
 export interface IValidationContext {
     manager: IModelManager;
     operation: IModelOperation;
@@ -36,12 +40,18 @@ export interface IModelMeta<T> {
     stored?: boolean;
 }
 
+/**
+ * @private
+ */
 export type ModelCtor = new(...args: any[]) => IModel;
 
 export interface ICreateOptions {
     validation?: IValidationOptions;
 }
 
+/**
+ * @private
+ */
 export interface ICreateMeta extends IOperationMeta {
     // For future use
 }
@@ -52,6 +62,9 @@ export interface IUpdateOptions {
     validation?: IValidationOptions;
 }
 
+/**
+ * @private
+ */
 export interface IUpdateMeta extends IOperationMeta {
     totalCount: number;
 }
@@ -60,6 +73,9 @@ export interface IRemoveOptions {
     where?: object;
 }
 
+/**
+ * @private
+ */
 export interface IRemoveMeta extends IOperationMeta {
     totalCount: number;
 }
@@ -73,10 +89,16 @@ export interface IReadOptions {
     rawValues?: string[];
 }
 
+/**
+ * @private
+ */
 export type IRawValues = Array<{
     [fieldName: string]: any;
 }>;
 
+/**
+ * @private
+ */
 export interface IReadMeta extends IOperationMeta {
     orderBy?: string[];
     limit: number;
@@ -85,6 +107,9 @@ export interface IReadMeta extends IOperationMeta {
     rawValues?: IRawValues;
 }
 
+/**
+ * @private
+ */
 export interface IExecArgs {
     [key: string]: any;
 }
@@ -94,10 +119,16 @@ export interface IExecOptions {
     args?: IExecArgs;
 }
 
+/**
+ * @private
+ */
 export interface IExecMeta extends IOperationMeta {
     // For future use
 }
 
+/**
+ * @private
+ */
 export interface IModelManager {
     isRegistered: (modelName: string) => boolean;
     register: <T extends IModel>(model: new(...args: any[]) => any, meta?: IModelMeta<T>) => void;

@@ -7,6 +7,9 @@ import { ValueOperator } from '../../queries/nodes/value';
 import { ValueListOperator } from '../../queries/nodes/valuelist';
 import { getLikeOperatorRegExp } from '../../queries/utils';
 
+/**
+ * @private
+ */
 export class InMemoryQuery<T extends IModel> {
 
     constructor(private query: IQueryNode<T>) {}

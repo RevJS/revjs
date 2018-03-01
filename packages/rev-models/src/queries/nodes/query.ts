@@ -3,6 +3,9 @@ import { IQueryParser, IQueryNode } from '../types';
 import { printObj } from '../../utils/index';
 import { IModel } from '../../models/types';
 
+/**
+ * @private
+ */
 export class QueryNode<T extends IModel> implements IQueryNode<T> {
     public children: Array<IQueryNode<T>>;
 

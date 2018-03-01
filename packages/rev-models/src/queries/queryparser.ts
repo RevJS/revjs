@@ -8,6 +8,9 @@ import { IQueryParser, IQueryNode, IOperatorRegister } from './types';
 import { printObj } from '../utils/index';
 import { IModel, IModelManager } from '../models/types';
 
+/**
+ * @private
+ */
 export class QueryParser implements IQueryParser {
     CONJUNCTION_OPERATORS: IOperatorRegister = {};
     FIELD_OPERATORS: IOperatorRegister = {};

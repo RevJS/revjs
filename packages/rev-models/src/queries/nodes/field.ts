@@ -5,6 +5,9 @@ import { isFieldValue } from '../utils';
 import { ValueOperator } from './value';
 import { IModel } from '../../models/types';
 
+/**
+ * @private
+ */
 export class FieldNode<T extends IModel> extends QueryNode<T> {
 
     constructor(

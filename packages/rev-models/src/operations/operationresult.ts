@@ -1,17 +1,26 @@
 import { IModelOperation } from './operation';
 import { ModelValidationResult } from '../validation/validationresult';
 
+/**
+ * @private
+ */
 export interface IOperationError {
     message: string;
     code?: string;
     [key: string]: any;
 }
 
+/**
+ * @private
+ */
 export interface IOperationMeta {
     // Base interface for operation result metadata
     // In future we might have common meta, e.g. exec_time
 }
 
+/**
+ * @private
+ */
 export interface IModelOperationResult<T, M extends IOperationMeta> {
     operation: IModelOperation;
     success: boolean;
