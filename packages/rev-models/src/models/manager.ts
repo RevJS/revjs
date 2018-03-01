@@ -9,9 +9,9 @@ import { update } from '../operations/update';
 import { remove } from '../operations/remove';
 import { read } from '../operations/read';
 import { exec } from '../operations/exec';
-import { ModelOperationResult } from '../operations/operationresult';
+import { IModelOperationResult } from '../operations/operationresult';
 import { validate } from '../operations/validate';
-import { ModelValidationResult } from '../validation/validationresult';
+import { IModelValidationResult } from '../validation/validationresult';
 import { hydrate } from '../operations/hydrate';
 import { IModelManager, IValidationOptions, ICreateOptions, ICreateMeta, IUpdateOptions, IUpdateMeta, IRemoveOptions, IRemoveMeta, IReadOptions, IReadMeta, IExecOptions } from './types';
 import { isSet } from '../utils';
@@ -230,7 +230,7 @@ export class ModelManager implements IModelManager {
      * backend
      * @param options An optional set of options
      */
-    create<T extends IModel>(model: T, options?: ICreateOptions): Promise<ModelOperationResult<T, ICreateMeta>> {
+    create<T extends IModel>(model: T, options?: ICreateOptions): Promise<IModelOperationResult<T, ICreateMeta>> {
         return create(this, model, options);
     }
 
@@ -254,7 +254,7 @@ export class ModelManager implements IModelManager {
      * be updated
      * @param options Options for the update
      */
-    update<T extends IModel>(model: T, options?: IUpdateOptions): Promise<ModelOperationResult<T, IUpdateMeta>> {
+    update<T extends IModel>(model: T, options?: IUpdateOptions): Promise<IModelOperationResult<T, IUpdateMeta>> {
         return update(this, model, options);
     }
 
@@ -278,7 +278,7 @@ export class ModelManager implements IModelManager {
      * record, just pass a new model instance and set `options.where`
      * @param options Options for the record removal
      */
-    remove<T extends IModel>(model: T, options?: IRemoveOptions): Promise<ModelOperationResult<T, IRemoveMeta>> {
+    remove<T extends IModel>(model: T, options?: IRemoveOptions): Promise<IModelOperationResult<T, IRemoveMeta>> {
         return remove(this, model, options);
     }
 
@@ -295,7 +295,7 @@ export class ModelManager implements IModelManager {
      * @param where The where clause (documentation of the query language TODO!)
      * @param options Options for record retrieval (e.g. record limit)
      */
-    read<T extends IModel>(model: new() => T, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+    read<T extends IModel>(model: new() => T, options?: IReadOptions): Promise<IModelOperationResult<T, IReadMeta>> {
         return read(this, model, options);
     }
 
@@ -312,7 +312,7 @@ export class ModelManager implements IModelManager {
      * @param model The model instance to be validated
      * @param options Any options to use for the validation
      */
-    validate<T extends IModel>(model: T, options?: IValidationOptions): Promise<ModelValidationResult> {
+    validate<T extends IModel>(model: T, options?: IValidationOptions): Promise<IModelValidationResult> {
         let operation: IModelOperation = { operationName: 'validate' };
         return validate(this, model, operation, options);
     }
@@ -330,7 +330,7 @@ export class ModelManager implements IModelManager {
      * @param argObj Any additional arguments to be passed to the method
      * @param options Additional options
      */
-    exec<R>(model: IModel, options?: IExecOptions): Promise<ModelOperationResult<R, any>> {
+    exec<R>(model: IModel, options?: IExecOptions): Promise<IModelOperationResult<R, any>> {
         return exec(this, model, options);
     }
 

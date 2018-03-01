@@ -2,7 +2,7 @@
 import { Field } from '../fields/field';
 import { IBackend } from '../backends';
 import { IModelOperationResult, IOperationMeta } from '../operations/operationresult';
-import { ModelValidationResult } from '../validation/validationresult';
+import { ModelValidationResult, IModelValidationResult } from '../validation/validationresult';
 import { IModelOperation } from '../operations/operation';
 
 export interface IValidationOptions {
@@ -145,7 +145,7 @@ export interface IModelManager {
     update: <T extends IModel>(model: T, options?: IUpdateOptions) => Promise<IModelOperationResult<T, IUpdateMeta>>;
     remove: <T extends IModel>(model: T, options?: IRemoveOptions) => Promise<IModelOperationResult<T, IRemoveMeta>>;
     read: <T extends IModel>(model: new() => T, options?: IReadOptions) => Promise<IModelOperationResult<T, IReadMeta>>;
-    validate: <T extends IModel>(model: T, options?: IValidationOptions) => Promise<ModelValidationResult>;
+    validate: <T extends IModel>(model: T, options?: IValidationOptions) => Promise<IModelValidationResult>;
     exec: <R>(model: IModel, options?: IExecOptions) => Promise<IModelOperationResult<R, any>>;
 
     hydrate: <T extends IModel>(model: new() => T, data: any) => T;
