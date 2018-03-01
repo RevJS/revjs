@@ -223,7 +223,7 @@ export class ModelManager implements IModelManager {
      * Below is an example of how to use the create method:
      *
      * ```ts
-     * [[include:examples/03_creating_and validating_data.ts]]
+     * [[include:examples/src/defining_and_using_models/validating_data.ts]]
      * ```
      *
      * @param model An instance of a registered model to be created in the
@@ -289,7 +289,7 @@ export class ModelManager implements IModelManager {
      * Below is an example of how to use the read method:
      *
      * ```ts
-     * [[include:examples/04_reading_and_filtering_data.ts]]
+     * [[include:examples/src/defining_and_using_models/searching_and_paging.ts]]
      * ```
      * @param model The Class constructor of the model to read
      * @param where The where clause (documentation of the query language TODO!)

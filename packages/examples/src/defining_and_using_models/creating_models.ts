@@ -28,7 +28,7 @@ export class Customer {
         age: number;
     @SelectField({ selection: [['M', 'Male'], ['F', 'Female']] })
         gender: string;
-    @RelatedModel({ model: 'City' })
+    @RelatedModel({ model: 'City', required: false })
         city: City;
 
     constructor(data?: Partial<Customer>) {
