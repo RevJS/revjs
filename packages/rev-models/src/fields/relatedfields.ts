@@ -28,13 +28,13 @@ export class RelatedModelFieldBase extends Field {}
 /**
  * A RelatedModelField is basically a "Foreign Key" link to a related model. Use
  * the **@RelatedModel()** decorator to add a RelatedModelField to your model
- * 
+ *
  * **Accepted Values:** a JavaScript *object* representing an instance of the
  * related model
- * 
+ *
  * ```ts
  * import { RelatedModel } from 'rev-models';
- * 
+ *
  * class MyModel {
  *     @RelatedModel({ model: 'City' })
  *         city: City;
@@ -76,13 +76,13 @@ export class RelatedModelField extends RelatedModelFieldBase {
  * A RelatedModelListField allows you easily retrieve all the related models
  * that are linked to the current model. Use the **@RelatedModelList()**
  * decorator to add a RelatedModelListField to your model
- * 
+ *
  * **Note:** Currently RelatedModelListField lists are **read-only**. You can
  * link new models by updating their corresponding [[RelatedModelField]]
- * 
+ *
  * ```ts
  * import { RelatedModelList } from 'rev-models';
- * 
+ *
  * class City {
  *     @RelatedModelList({ model: 'Customer', field: 'city' })
  *         customers: Customer[];
