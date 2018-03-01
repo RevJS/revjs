@@ -1,5 +1,5 @@
 import { IModelOperation } from './operation';
-import { ModelValidationResult } from '../validation/validationresult';
+import { ModelValidationResult, IModelValidationResult } from '../validation/validationresult';
 
 /**
  * @private
@@ -19,15 +19,40 @@ export interface IOperationMeta {
 }
 
 /**
- * @private
+ * The IModelOperationResult interface is the standard data structure returned by
+ * all RevJS model operations (create, update, etc.)
+ *
+ * @typeparam T The model class
+ * @typeparam M The structure of the data returned in the 'meta' key
  */
 export interface IModelOperationResult<T, M extends IOperationMeta> {
+    /**
+     * The name and other information about the current operation
+     */
     operation: IModelOperation;
+    /**
+     * A boolean indicating whether the information was successful or not
+     */
     success: boolean;
-    validation?: ModelValidationResult;
+    /**
+     * The results of any model validation carried out
+     */
+    validation?: IModelValidationResult;
+    /**
+     * For operations that act on a sngle record (e.g. 'create'), the created/updated model
+     */
     result?: T;
+    /**
+     * For operations that act on multiple models (e.g. 'read'), the list of associated models
+     */
     results?: T[];
+    /**
+     * List of any errors that occured during the operation
+     */
     errors?: IOperationError[];
+    /**
+     * Additional metadata related to the operation, e.g. "totalCount" - the number of records affected
+     */
     meta?: M;
 }
 
