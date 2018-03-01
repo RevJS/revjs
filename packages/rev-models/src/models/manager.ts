@@ -79,7 +79,7 @@ export class ModelManager implements IModelManager {
      * a ModelModelManager:
      *
      * ```ts
-     * [[include:examples/02_defining_a_model.ts]]
+     * [[include:examples/src/model_manager/registering_models.ts]]
      * ```
      *
      * @param model The class to register. Must be a class *constructor* **NOT an
@@ -247,7 +247,7 @@ export class ModelManager implements IModelManager {
      * Below is an example of how to use the update method:
      *
      * ```ts
-     * [[include:examples/05_updating_data.ts]]
+     * [[include:examples/src/defining_and_using_models/updating_data.ts]]
      * ```
      *
      * @param model An instance of a registered model containing the data to
@@ -271,7 +271,7 @@ export class ModelManager implements IModelManager {
      * Below is an example of how to use the remove method:
      *
      * ```ts
-     * [[include:examples/06_removing_data.ts]]
+     * [[include:examples/src/defining_and_using_models/removing_data.ts]]
      * ```
      * @param model An instance of a registered model containing the primary
      * key of the record to be removed. If you do not have an instance of the

@@ -36,7 +36,7 @@ export class Customer {
     }
 }
 
-// Create ModelManager
+// Create ModelManager and register the models
 
 export const modelManager = new ModelManager();
 modelManager.registerBackend('default', new InMemoryBackend());
