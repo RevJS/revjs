@@ -1,6 +1,5 @@
 
-import { fields, IModel } from 'rev-models';
-import { STANDARD_OPERATIONS } from 'rev-models/lib/operations';
+import { fields, IModel, STANDARD_OPERATIONS } from 'rev-models';
 import { IApiMeta, IModelApiManager } from './types';
 
 const RESERVED_ARG_NAMES = ['model'];
