@@ -42,12 +42,12 @@ describe('rev.backends.inmemory', () => {
 
     describe('load()', () => {
 
-        it('populates InMemoryBackend._storage with a copy of passed data', () => {
-            return backend.load(manager, TestModel, testData)
-                .then(() => {
-                    expect(backend._storage['TestModel']).to.deep.equal(testData);
-                    expect(backend._storage['TestModel']).not.to.equal(testData);
-                });
+        it('populates InMemoryBackend._storage with a copy of passed data', async () => {
+            await backend.load(manager, TestModel, testData);
+            const res = await backend.read(manager, TestModel, getReadOpts(), readResult);
+            expect(res.results).to.have.length(testData.length);
+            expect(res.results[0].id).to.deep.equal(testData[0].id);
+            expect(res.results[4].id).to.deep.equal(testData[4].id);
         });
 
         it('rejects if passed data is not an array of objects', () => {

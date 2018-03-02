@@ -2,6 +2,9 @@
 import { ModelOperationResult } from '../operations/operationresult';
 import { IModel, IModelManager, ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IRemoveMeta, IRemoveOptions, IReadMeta, IReadOptions, IExecMeta, IExecOptions } from '../models/types';
 
+/**
+ * Interface that all RevJS backends are required to implement
+ */
 export interface IBackend {
     create<T extends IModel>(manager: IModelManager, model: T, options: ICreateOptions, result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>>;
     update<T extends IModel>(manager: IModelManager, model: T, options: IUpdateOptions, result: ModelOperationResult<T, IUpdateMeta>): Promise<ModelOperationResult<T, IUpdateMeta>>;

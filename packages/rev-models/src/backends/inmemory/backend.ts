@@ -24,21 +24,36 @@ interface IRelatedModelListInstances {
     };
 }
 
+/**
+ * The InMemoryBackend stores your model data in JavaScript objects. This
+ * backend is useful during initial development and testing but **should not be
+ * used in production!**
+ */
 export class InMemoryBackend implements IBackend {
-    _storage: {
+    private _storage: {
         [modelName: string]: any[]
     } = {};
-    _sequences: {
+    private _sequences: {
         [modelName: string]: {
             [fieldName: string]: number
         }
     } = {};
+    /**
+     * @private
+     */
     OPERATION_DELAY = 0;  // Useful for testing
 
     constructor() {
         this._storage = {};
     }
 
+    /**
+     * This method can be used to quickly populate the backend with raw
+     * JavaScript object data
+     * @param manager The associated model manager
+     * @param model The model class of the data you are loading
+     * @param data An array of raw JavaScript objects representing the data
+     */
     async load<T extends IModel>(
             manager: IModelManager,
             model: new(...args: any[]) => T,
@@ -57,6 +72,9 @@ export class InMemoryBackend implements IBackend {
         }
     }
 
+    /**
+     * [[IBackend.create]] implementation
+     */
     async create<T extends IModel>(
             manager: IModelManager,
             model: T,
@@ -78,6 +96,9 @@ export class InMemoryBackend implements IBackend {
         return result;
     }
 
+    /**
+     * [[IBackend.update]] implementation
+     */
     async update<T extends IModel>(
             manager: IModelManager,
             model: T,
@@ -109,6 +130,9 @@ export class InMemoryBackend implements IBackend {
         return result;
     }
 
+    /**
+     * [[IBackend.read]] implementation
+     */
     async read<T extends IModel>(
             manager: IModelManager,
             model: new(...args: any[]) => T,
@@ -222,6 +246,9 @@ export class InMemoryBackend implements IBackend {
         return result;
     }
 
+    /**
+     * [[IBackend.remove]] implementation
+     */
     async remove<T extends IModel>(
             manager: IModelManager,
             model: T,
@@ -257,22 +284,25 @@ export class InMemoryBackend implements IBackend {
         return result;
     }
 
+    /**
+     * [[IBackend.exec]] implementation (not supported by InMemoryBackend)
+     */
     async exec<R>(manager: IModelManager, model: IModel, options: IExecOptions, result: ModelOperationResult<R, IExecMeta>): Promise<ModelOperationResult<R, IExecMeta>> {
         return Promise.reject(new Error('InMemoryBackend.exec() not supported'));
     }
 
-    _getModelStorage(meta: IModelMeta<any>): any {
+    private _getModelStorage(meta: IModelMeta<any>): any {
         if (!this._storage[meta.name]) {
             this._storage[meta.name] = [];
         }
         return this._storage[meta.name];
     }
 
-    _setModelStorage(meta: IModelMeta<any>, data: any[]): any {
+    private _setModelStorage(meta: IModelMeta<any>, data: any[]): any {
         this._storage[meta.name] = data;
     }
 
-    _getNextSequence(meta: IModelMeta<any>, field: string) {
+    private _getNextSequence(meta: IModelMeta<any>, field: string) {
         if (!this._sequences[meta.name]) {
             this._sequences[meta.name] = {};
         }
@@ -282,7 +312,7 @@ export class InMemoryBackend implements IBackend {
         return ++this._sequences[meta.name][field];
     }
 
-    _writeFields<T extends IModel>(manager: IModelManager, operation: string, model: T, meta: IModelMeta<any>, target: any, fields?: string[]): void {
+    private _writeFields<T extends IModel>(manager: IModelManager, operation: string, model: T, meta: IModelMeta<any>, target: any, fields?: string[]): void {
         let fieldList = fields ? fields : Object.keys(meta.fieldsByName);
         for (let fieldName of fieldList) {
 
@@ -301,13 +331,13 @@ export class InMemoryBackend implements IBackend {
         }
     }
 
-    _getOwnRelatedFieldNames(options: IReadOptions) {
+    private _getOwnRelatedFieldNames(options: IReadOptions) {
         return options.related && options.related.map((fieldName) => {
             return fieldName.split('.')[0];
         });
     }
 
-    _getChildRelatedFieldNames(options: IReadOptions, parent: string) {
+    private _getChildRelatedFieldNames(options: IReadOptions, parent: string) {
         if (options.related) {
             let childRelatedFields: string[] = [];
             options.related.forEach((fieldName) => {
