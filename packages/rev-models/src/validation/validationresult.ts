@@ -11,22 +11,38 @@ export interface IModelError {
     [key: string]: any;
 }
 
+/**
+ * Represents the result of validation of model data
+ */
 export interface IModelValidationResult {
+    /**
+     * Indicates whether the model data has passed validation
+     */
     valid: boolean;
+    /**
+     * Details of any validation errors that occured, organised by field name.
+     */
     fieldErrors: {
         [fieldName: string]: IFieldError[]
     };
+    /**
+     * A list of any validation errors that occured at the model-level.
+     */
     modelErrors: IModelError[];
-    validationFinished: boolean;
 }
 
+/**
+ * This is the implementation of [[IModelValidationResult]], which is
+ * created by the [[ModelManager.validate]] method and is passed down to field
+ * and model validation functions. It includes utility methods to update the
+ * result such as **addFieldError()** and **addModelError()**
+ */
 export class ModelValidationResult implements IModelValidationResult {
     valid: boolean;
     fieldErrors: {
         [fieldName: string]: IFieldError[]
     };
     modelErrors: IModelError[];
-    validationFinished: boolean;
 
     constructor(valid?: boolean) {
         if (typeof valid == 'undefined') {
@@ -40,9 +56,16 @@ export class ModelValidationResult implements IModelValidationResult {
         }
         this.fieldErrors = {};
         this.modelErrors = [];
-        this.validationFinished = true;
     }
 
+    /**
+     * Marks `result.valid = false` and adds the passed error details into
+     * `result.fieldErrors`
+     * @param fieldName The name of the field with the validation error
+     * @param message The user-friendly validation error message
+     * @param code A code that can be used by calling methods to identify the type of error
+     * @param data Any additional data to return with the error
+     */
     addFieldError(fieldName: string, message: string, code?: string, data?: any) {
         if (!fieldName) {
             throw new Error(`ValidationError: You must specify fieldName when adding a field error.`);
@@ -66,6 +89,13 @@ export class ModelValidationResult implements IModelValidationResult {
         this.fieldErrors[fieldName].push(fieldError);
     }
 
+    /**
+     * Marks `result.valid = false` and adds the passed error details into
+     * `result.modelErrors`
+     * @param message The user-friendly validation error message
+     * @param code A code that can be used by calling methods to identify the type of error
+     * @param data Any additional data to return with the error
+     */
     addModelError(message: string, code?: string, data?: any) {
         if (!message) {
             throw new Error(`ValidationError: You must specify a message for a model error.`);

@@ -11,7 +11,6 @@ describe('rev.model.validation', () => {
             expect(valid.valid).to.equal(true);
             expect(valid.fieldErrors).to.deep.equal({});
             expect(valid.modelErrors).to.deep.equal([]);
-            expect(valid.validationFinished).to.equal(true);
         });
 
         it('creates a valid result when valid is true', () => {

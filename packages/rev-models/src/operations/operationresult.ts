@@ -31,7 +31,7 @@ export interface IModelOperationResult<T, M extends IOperationMeta> {
      */
     operation: IModelOperation;
     /**
-     * A boolean indicating whether the information was successful or not
+     * A boolean indicating whether the operation was successful or not
      */
     success: boolean;
     /**
@@ -56,6 +56,11 @@ export interface IModelOperationResult<T, M extends IOperationMeta> {
     meta?: M;
 }
 
+/**
+ * This is the internal implementation of [[IModelOperationResult]], which is created by a [[ModelManager]]
+ * and passed down to [[IBackend]]s. It includes utility methods to update the result such as **addError()**
+ * and **setMeta()**
+ */
 export class ModelOperationResult<T, M extends IOperationMeta> implements IModelOperationResult<T, M> {
     operation: IModelOperation;
     success: boolean;
@@ -70,7 +75,13 @@ export class ModelOperationResult<T, M extends IOperationMeta> implements IModel
         this.success = true;
     }
 
-    addError(message: string, code?: string, data?: any) {
+    /**
+     * Adds an error to the result
+     * @param message The user-friendly error message
+     * @param code A code that calling methods can use to identify the type of error
+     * @param data Any additional data to pass back to calling methods
+     */
+    addError(message: string, code?: string, data?: object) {
         if (!message) {
             throw new Error(`ModelOperationResult Error: A message must be specified for the operation error.`);
         }
@@ -93,6 +104,10 @@ export class ModelOperationResult<T, M extends IOperationMeta> implements IModel
         this.errors.push(operationError);
     }
 
+    /**
+     * Sets keys in the `result.meta` object, e.g. `totalCount`
+     * @param meta An object containing the keys to set and their values
+     */
     setMeta(meta: Partial<M>) {
         if (typeof meta != 'object') {
             throw new Error('metadata must be an object');

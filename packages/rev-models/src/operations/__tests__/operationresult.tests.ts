@@ -100,7 +100,7 @@ describe('ModelOperationResult - addError()', () => {
 
     it('throws an error if data is not an object', () => {
         expect(() => {
-            res.addError('Operation took too long', 'timeout', 1000000);
+            res.addError('Operation took too long', 'timeout', 1000000 as any);
         }).to.throw('You cannot add non-object data to an operation result');
     });
 
