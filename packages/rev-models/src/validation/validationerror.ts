@@ -2,8 +2,28 @@
 import { IModelOperationResult } from '../operations/operationresult';
 import { IModelValidationResult } from './validationresult';
 
+/**
+ * A ValidationError is thrown by a [[ModelManager]] when an operation fails
+ * due to model validation.
+ *
+ * The `validation` property contains the failure details in a
+ * [[IModelValidationResult]] object.
+ *
+ * The below example shows an example of handling a ValidationError returned
+ * from a ModelManager:
+ *
+ * ```ts
+ * [[include:examples/src/model_manager/handling_validation_errors.ts]]
+ * ```
+ */
 export class ValidationError extends Error {
+    /**
+     * The result of the model operation (normally failed due to model validation)
+     */
     result: IModelOperationResult<any, any>;
+    /**
+     * The details of the validation problem
+     */
     validation: IModelValidationResult;
 
     constructor(
