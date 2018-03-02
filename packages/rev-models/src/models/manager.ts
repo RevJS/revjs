@@ -223,7 +223,7 @@ export class ModelManager implements IModelManager {
      * Below is an example of how to use the create method:
      *
      * ```ts
-     * [[include:examples/src/defining_and_using_models/validating_data.ts]]
+     * [[include:examples/src/defining_and_using_models/creating_and_reading_a_model.ts]]
      * ```
      *
      * @param model An instance of a registered model to be created in the
@@ -307,7 +307,7 @@ export class ModelManager implements IModelManager {
      *
      * Model validation proceeds as follows:
      * 1. Validate fields
-     * 2. Validate model (using [[IModel.validate]])
+     * 2. Validate model (using [[IModel.validateAsync]] and [[IModel.validate]])
      *
      * @param model The model instance to be validated
      * @param options Any options to use for the validation
@@ -326,11 +326,10 @@ export class ModelManager implements IModelManager {
      *
      * @param model The model instance containing the data needed for this
      * method call
-     * @param method The name of the method to be called
-     * @param argObj Any additional arguments to be passed to the method
-     * @param options Additional options
+     * @param options Options for the for the method call, including the method
+     * name and any arguments to pass
      */
-    exec<R>(model: IModel, options?: IExecOptions): Promise<IModelOperationResult<R, any>> {
+    exec<R>(model: IModel, options: IExecOptions): Promise<IModelOperationResult<R, any>> {
         return exec(this, model, options);
     }
 

@@ -22,7 +22,7 @@ export const DEFAULT_EXEC_OPTIONS: IExecOptions = {
  * @private
  * Documentation in ModelManager class
  */
-export async function exec<R>(manager: IModelManager, model: IModel, options?: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
+export async function exec<R>(manager: IModelManager, model: IModel, options: IExecOptions): Promise<ModelOperationResult<R, IExecMeta>> {
 
     if (typeof model != 'object') {
         throw new Error('Specified model is not a Model instance');
