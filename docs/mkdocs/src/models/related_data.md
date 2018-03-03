@@ -46,13 +46,64 @@ Comments:
 {!examples/src/using_related_models/creating_related_data.ts!}
 ```
 
-**NOTE:** - RevJS supports assigning values to **RelatedModel** fields only at
+## Reading Related Model Data
+
+By default, RevJS will NOT return related model information (for performance
+reasons). However, it is easy to request this data using the `related` option
+for the
+[ModelManager.read()](/api/rev-models/classes/modelmanager.html#read) method.
+
+See below examples for how to read related model data:
+
+```ts
+{!examples/src/using_related_models/reading_related_data.ts!}
+```
+
+## Updating Related Model Records
+
+You can change the record linked to a RevJS model simply by attaching a
+different model instance, or setting the value to `null`, as shown in the
+examples below:
+
+```ts
+{!examples/src/using_related_models/updating_related_data.ts!}
+```
+
+**NOTE:** - RevJS supports assigning values to **RelatedModel** fields *only* at
 the moment. Changes to RelatedModelList fields do not get stored
 currently.
 
-## Reading Related Model Data
+## Searching based on Related Model Data
 
-By default, RevJS will NOT return related model information for performance
-reasons. It is easy to request this data though, using the `related` option
-for the
-[ModelManager.read()](/api/rev-models/classes/modelmanager.html#read) method.
+RevJS allows you to search records based on the Primary Key values stored in
+RelatedModel fields. For example:
+
+```ts
+// Retrieve all comments linked to User id = 1
+modelManager.read(Comment, {
+    where: {
+        user: 1
+    }
+})
+
+// Retrieve all comments that are not linked to a user
+modelManager.read(Comment, {
+    where: {
+        user: null
+    }
+})
+```
+
+RevJS does *not yet* support querying for records based on properties of related
+records. For example, the following is **not yet possible**, but would be cool:
+
+```ts
+modelManager.read(User, {
+    where: {
+        'posts.title': { _like: '%fake news%' }
+    }
+})
+```
+
+We hope to implement something like this in the future, and of course welcome
+contributions from the community! :)

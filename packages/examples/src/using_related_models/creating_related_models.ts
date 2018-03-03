@@ -41,7 +41,7 @@ export class Comment {
         id: number;
     @RelatedModel({ model: 'Post' })
         post: Post;
-    @RelatedModel({ model: 'User' })
+    @RelatedModel({ model: 'User', required: false })
         user: User;
     @TextField()
         comment: string;
