@@ -4,7 +4,7 @@ pages:
   - Working with Models:
     - Creating Models: models/creating_models.md
     - Creating Model Data: models/creating_data.md
-  - Components:
+  - RevJS Modules:
     - rev-models: components/rev-models.md
     - rev-api: components/rev-api.md
     - rev-api-client: components/rev-api-client.md
