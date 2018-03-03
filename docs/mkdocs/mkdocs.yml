@@ -7,6 +7,7 @@ pages:
     - Reading Model Data: models/reading_data.md
     - Updating Model Data: models/updating_data.md
     - Deleting Model Data: models/deleting_data.md
+    - Working with Related Models: models/related_data.md
   - RevJS Modules:
     - rev-models: components/rev-models.md
     - rev-api: components/rev-api.md
