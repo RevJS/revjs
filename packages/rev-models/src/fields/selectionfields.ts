@@ -2,6 +2,9 @@
 import { Field, IFieldOptions } from './field';
 import * as validators from '../validation/validators';
 
+/**
+ * @private
+ */
 export interface ISelectFieldOptions extends IFieldOptions {
     selection: string[][];
 }

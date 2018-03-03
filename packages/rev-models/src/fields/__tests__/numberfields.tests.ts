@@ -55,13 +55,13 @@ describe('rev.fields.numberfields', () => {
         });
 
         it('adds the minValue validator if options.minValue is set', () => {
-            let test = new NumberField('value', { required: false, minValue: 'a' });
+            let test = new NumberField('value', { required: false, minValue: 1 });
             expect(test.validators.length).to.equal(2);
             expect(test.validators[1]).to.equal(minValueValidator);
         });
 
         it('adds the maxValue validator if options.maxValue is set', () => {
-            let test = new NumberField('value', { required: false, maxValue: 'z' });
+            let test = new NumberField('value', { required: false, maxValue: 20 });
             expect(test.validators.length).to.equal(2);
             expect(test.validators[1]).to.equal(maxValueValidator);
         });
@@ -156,13 +156,13 @@ describe('rev.fields.numberfields', () => {
         });
 
         it('adds the minValue validator if options.minValue is set', () => {
-            let test = new IntegerField('value', { required: false, minValue: 'a' });
+            let test = new IntegerField('value', { required: false, minValue: 1 });
             expect(test.validators.length).to.equal(3);
             expect(test.validators[2]).to.equal(minValueValidator);
         });
 
         it('adds the maxValue validator if options.maxValue is set', () => {
-            let test = new IntegerField('value', { required: false, maxValue: 'z' });
+            let test = new IntegerField('value', { required: false, maxValue: 20 });
             expect(test.validators.length).to.equal(3);
             expect(test.validators[2]).to.equal(maxValueValidator);
         });

@@ -2,9 +2,12 @@
 import { Field, IFieldOptions, getOptions } from './field';
 import * as validators from '../validation/validators';
 
+/**
+ * @private
+ */
 export interface INumberFieldOptions extends IFieldOptions {
-    minValue?: number | string;
-    maxValue?: number | string;
+    minValue?: number;
+    maxValue?: number;
 }
 
 /**

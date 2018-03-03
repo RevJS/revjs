@@ -5,12 +5,18 @@ import * as validators from '../validation/validators';
 export const EMAIL_ADDR_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 export const URL_REGEX = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/;
 
+/**
+ * @private
+ */
 export interface ITextFieldBaseOptions extends IFieldOptions {
     minLength?: number;
     maxLength?: number;
     regEx?: RegExp;
 }
 
+/**
+ * @private
+ */
 export interface ITextFieldOptions extends ITextFieldBaseOptions {
     multiLine?: boolean;
 }

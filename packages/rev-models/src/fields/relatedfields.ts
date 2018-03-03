@@ -4,10 +4,16 @@ import * as validators from '../validation/validators';
 import { IModelManager } from '../models/types';
 import { isSet } from '../utils';
 
+/**
+ * @private
+ */
 export interface IRelatedModelFieldOptions extends IFieldOptions {
     model: string;
 }
 
+/**
+ * @private
+ */
 export interface IRelatedModelListFieldOptions extends IFieldOptions {
     model: string;
     field: string;
