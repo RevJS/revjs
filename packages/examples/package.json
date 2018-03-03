@@ -4,7 +4,7 @@
   "description": "RevJS Examples",
   "private": true,
   "scripts": {
-    "build": "run-bin tslint -p . && run-bin tsc",
+    "build": "run-bin tslint -p . && run-bin tsc --noEmit",
     "build-docs": "echo na",
     "ts-node": "run-bin ts-node",
     "test": "echo na",
