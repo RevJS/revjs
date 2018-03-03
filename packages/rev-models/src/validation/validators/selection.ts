@@ -5,6 +5,9 @@ import { isSet } from '../../utils/index';
 import { VALIDATION_MESSAGES as msg } from '../validationmsg';
 import { ModelValidationResult } from '../validationresult';
 
+/**
+ * @private
+ */
 export function singleSelectionValidator<T extends IModel>(manager: IModelManager, model: T, field: any, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         for (let opt of field.options.selection) {
@@ -20,6 +23,9 @@ export function singleSelectionValidator<T extends IModel>(manager: IModelManage
     }
 }
 
+/**
+ * @private
+ */
 export function listEmptyValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof model[field.name] == 'object' && model[field.name] instanceof Array
             && model[field.name].length == 0) {
@@ -31,6 +37,9 @@ export function listEmptyValidator<T extends IModel>(manager: IModelManager, mod
     }
 }
 
+/**
+ * @private
+ */
 export function multipleSelectionValidator<T extends IModel>(manager: IModelManager, model: T, field: any, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         if (typeof model[field.name] != 'object' || !(model[field.name] instanceof Array)) {

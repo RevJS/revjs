@@ -26,6 +26,9 @@ function populateMetaFromClassFields<T extends IModel>(model: new(...args: any[]
     }
 }
 
+/**
+ * @private
+ */
 export function initialiseMeta<T extends IModel>(manager: IModelManager, model: new(...args: any[]) => T, meta?: IModelMeta<T>): IModelMeta<T> {
 
     if (!meta) {
@@ -91,6 +94,9 @@ export function initialiseMeta<T extends IModel>(manager: IModelManager, model: 
     return meta;
 }
 
+/**
+ * @private
+ */
 export function checkMetadataInitialised(meta: any): void {
     if (!meta || typeof meta != 'object'
             || !meta.fields || typeof meta.fields != 'object' || !(meta.fields instanceof Array)

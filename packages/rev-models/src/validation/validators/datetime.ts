@@ -9,6 +9,9 @@ let dateOnlyRegex = /^[0-9]{4}-[01][0-9]-[0-3][0-9]$/;
 let timeOnlyRegex = /^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/;
 let dateTimeRegex = /^[0-9]{4}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/;
 
+/**
+ * @private
+ */
 export function dateOnlyValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         if (typeof model[field.name] != 'string'
@@ -23,6 +26,9 @@ export function dateOnlyValidator<T extends IModel>(manager: IModelManager, mode
     }
 }
 
+/**
+ * @private
+ */
 export function timeOnlyValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         if (typeof model[field.name] != 'string'
@@ -37,6 +43,9 @@ export function timeOnlyValidator<T extends IModel>(manager: IModelManager, mode
     }
 }
 
+/**
+ * @private
+ */
 export function dateTimeValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         if (typeof model[field.name] != 'string'

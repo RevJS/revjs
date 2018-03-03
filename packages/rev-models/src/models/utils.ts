@@ -1,12 +1,18 @@
 
 import { IModelMeta } from './types';
 
+/**
+ * @private
+ */
 export function checkIsModelConstructor(model: any) {
     if (!model || typeof model != 'function' || !model.name) {
         throw new Error('ModelError: Supplied model is not a model constructor.');
     }
 }
 
+/**
+ * @private
+ */
 export function checkFieldsList(meta: IModelMeta<any>, fields: string[]) {
     if (!(fields instanceof Array)) {
         throw new Error('"fields" must be an array of field names');

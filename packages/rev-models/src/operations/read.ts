@@ -47,6 +47,9 @@ export async function read<T extends IModel>(manager: IModelManager, model: new(
 
 }
 
+/**
+ * @private
+ */
 export function validateRelated<T extends IModel>(model: new() => T, meta: IModelMeta<T>, related: any) {
 
     if (typeof related != 'object'
@@ -68,6 +71,9 @@ export function validateRelated<T extends IModel>(model: new() => T, meta: IMode
     }
 }
 
+/**
+ * @private
+ */
 export function validateOrderBy<T extends IModel>(model: new() => T, meta: IModelMeta<T>, orderBy: any) {
 
     if (typeof orderBy != 'object'

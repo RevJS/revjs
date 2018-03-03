@@ -5,6 +5,9 @@ import { VALIDATION_MESSAGES as msg } from '../validationmsg';
 import { ModelValidationResult } from '../validationresult';
 import { Field } from '../../fields';
 
+/**
+ * @private
+ */
 export function modelClassValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         let val = model[field.name];
@@ -22,6 +25,9 @@ export function modelClassValidator<T extends IModel>(manager: IModelManager, mo
     }
 }
 
+/**
+ * @private
+ */
 export function modelPrimaryKeyValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (isSet(model[field.name])) {
         const meta = manager.getModelMeta(field.options.model);
@@ -45,6 +51,9 @@ export function modelPrimaryKeyValidator<T extends IModel>(manager: IModelManage
     }
 }
 
+/**
+ * @private
+ */
 export function modelListClassValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult, options?: IValidationOptions): void {
     if (typeof model[field.name] != 'undefined') {
         let fieldVal = model[field.name];
