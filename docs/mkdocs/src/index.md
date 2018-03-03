@@ -10,7 +10,7 @@ RevJS allows you to
  * Define a relational **data model** using plain JS classes, and built-in or custom field types
  * Define custom **validation logic** directly in your models
  * Easily create a **GraphQL API** to make your models available over the network
- * Quickly build a **user interface** for the web or movile, using our React higher-order components
+ * Quickly build a **user interface** for the web or mobile, using our React higher-order components
 
 ## Example
 

@@ -16,15 +16,13 @@ import { City, modelManager } from './creating_models';
     // Change it's name and trigger an update
     const auckland = cities.results[0];
     auckland.name = 'City of Sails';
+
     await modelManager.update(auckland);
 
     // Check that Auckland's record has been updated
-    const janeRetrieved = await modelManager.read(City, { where: {
+    const cityRetrieved = await modelManager.read(City, { where: {
             name: 'City of Sails'
     }});
-    console.log('Updated Record:', janeRetrieved.results[0]);
+    console.log('Updated Record:', cityRetrieved.results[0]);
 
 })();
-
-// It is also possible to target multiple records with an update using the
-// 'where' option.
