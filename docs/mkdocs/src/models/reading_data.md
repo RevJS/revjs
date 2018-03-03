@@ -64,3 +64,15 @@ You can use the `limit` and `offset` options with the
 ```ts
 {!examples/src/searching_and_reading_data/read_with_paging.ts!}
 ```
+
+## Sorting Data
+
+You can use the **orderBy** option to specify the order of the records that are
+retrieved from the backend. This option takes an array of field names, and the
+records are sorted by each of the specified fields, in order. You can optionally
+use the `desc` keyword after the field name, to sort the values in that field
+in descending order.
+
+```ts
+{!examples/src/searching_and_reading_data/read_with_sorting.ts!}
+```
