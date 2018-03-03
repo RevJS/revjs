@@ -78,4 +78,20 @@ export async function createData() {
         published: true
     }));
 
+    await modelManager.create(new Post({
+        category: 'music',
+        title: 'New release from Fiddy Cent',
+        body: 'Its called "Ok, I admit it, I suck" :)',
+        rating: 2,
+        published: true
+    }));
+
+    await modelManager.create(new Post({
+        category: 'music',
+        title: 'New release from Bruno Mars',
+        body: 'Its called "Daaaamn, you ugly"',
+        rating: 2,
+        published: true
+    }));
+
 }

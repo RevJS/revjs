@@ -1,5 +1,4 @@
 
-import { IModelOperationResult } from 'rev-models';
 import { Post, modelManager, createData } from './models';
 
 (async () => {
