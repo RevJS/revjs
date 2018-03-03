@@ -13,11 +13,10 @@ import { Post, modelManager, createData } from './post_model';
 
     // Delete all unpublished posts
     const deleteResult = await modelManager.remove(new Post(), {
-            where: {
-                published: false
-            }
+        where: {
+            published: false
         }
-    );
+    });
     console.log('Deleted records:', deleteResult.meta.totalCount);
 
 })();
