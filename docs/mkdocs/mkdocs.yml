@@ -2,7 +2,8 @@ site_name: RevJS Guide
 pages:
   - Welcome to RevJS!: index.md
   - Working with Models:
-    - Creating your Data Model: models/creating_your_data_model.md
+    - Creating Models: models/creating_models.md
+    - Creating Model Data: models/creating_data.md
   - Components:
     - rev-models: components/rev-models.md
     - rev-api: components/rev-api.md
