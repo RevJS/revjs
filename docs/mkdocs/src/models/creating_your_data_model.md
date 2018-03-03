@@ -1,28 +1,28 @@
+# Creating your Data Model
 
-# rev-models - RevJS Data Models
+## Defining Models
 
-The `rev-models` module provides the following:
+A "Model" in RevJS is simply a JavaScript Class with some additional properties
+that tell RevJS how to validate, store and retrieve data.
 
- * A set of [Built-in Field Types](#built-in-field-types) for defining your
-   data models
- * A [ModelManager](#modelmanager-functions) object, which holds the list of
-   your registered models, and provides functions for **create**, **read**,
-   **update** and **delete**.
- * An **in-memory** storage backend, so you can play with RevJS functions without
-   needing to set up a database.
+If you are using **TypeScript**, then you can use decorators to easily define
+the properties of your model.
 
-*Jump to the [rev-models API Documentation](/api/rev-models)*
+In order to use your model classes, you must register them using the
+[register()](/api/rev-models/classes/modelmanager.html#register) method of a
+[ModelManager](/api/rev-models/classes/modelmanager.html) instance.
 
-## Example
-
-The example below registers a simple data class with some basic validation
-rules, creates some data, and reads it back.
+The example below shows how to create two related models, and register them
+with a ModelManager:
 
 ```ts
-{!examples/src/defining_and_using_models/creating_and_reading_a_model.ts!}
+{!examples/src/defining_and_using_models/creating_models.ts!}
 ```
 
 ## Built-in Field Types
+
+RevJS ships with a set 15 standard field types, and you can also create your own
+by extending the [Field](/api/rev-models/classes/field.html) class.
 
  * **[TextField](/api/rev-models/classes/textfield.html)** - Single, or multi-line text field
  * **[EmailField](/api/rev-models/classes/emailfield.html)** - TextField with e-mail address validation
@@ -40,11 +40,12 @@ rules, creates some data, and reads it back.
  * **[RelatedModelField](/api/rev-models/classes/relatedmodelfield.html)** - Foreign-key link to a related model
  * **[RelatedModelListField](/api/rev-models/classes/relatedmodellistfield.html)** - List of related models
 
-## Custom Validation
+## Validation
 
-In addition to the built-in, configurable validation provided by the
-standard field types, you can specify your own validation rules directly on your
-models, as shown in the example below
+In addition to the built-in, configurable validation provided by fields, you
+can specify your own validation logic directly on your models by defining a
+**validate()** or **validateAsync()** method, as shown in the
+example below:
 
 ```ts
 {!examples/src/defining_and_using_models/custom_validation.ts!}
@@ -60,29 +61,15 @@ ValidationError
 For further information on model validation functions, check out the
 [IModel](/api/rev-models/interfaces/imodel.html) interface
 
-## ModelManager functions
+## RevJS Backends
 
-The RevJS [ModelManager](/api/rev-models/classes/modelmanager.html) has the
-following main functions:
-
- * [registerBackend()](/api/rev-models/classes/modelmanager.html#registerbackend) -
-   used to configure the database or API where your models are stored
- * [read()](/api/rev-models/classes/modelmanager.html#read) - read models from
-   your backend
- * [create()](/api/rev-models/classes/modelmanager.html#create) - store a new
-   model in your backend
- * [update()](/api/rev-models/classes/modelmanager.html#update) - update a model
-   already stored in the backend
- * [remove()](/api/rev-models/classes/modelmanager.html#remove) - remove a model
-   that is currently stored in the backend
-
-## Supported Backends
-
-The following back-ends are currently supported:
+RevJS has the concept of a **pluggable backend architecture**, to allow it to
+support storage of models in a variety of databases and across the network
+using APIs. The following backends are currently available:
 
  * [InMemoryBackend](/api/rev-models/classes/inmemorybackend.html) - stores your
    model data in-memory. Ideal for initial development and automated testing.
- * **ModelApiBackend** - designed for use in the browser or mobile app.
+ * **ModelApiBackend** - designed for use in the browser or a mobile app.
    Uses the API created by `rev-api` to store and retrieve your models.
  * **MongoDBBackend** - stores and retrieves your data from MongoDB
 
@@ -91,9 +78,3 @@ interface, as well as a
 [Standard Test Suite](https://github.com/RevJS/revjs/blob/master/packages/rev-models/src/backends/testsuite/index.ts)
 to aid with new backend development, and are keen to accept any contributions
 from the community!
-
-## Contributing
-
-We are actively looking to build a team around RevJS. If you are interesting in
-contributing, fork us on github or drop us a
-[mail](mailto:russ@russellbriggs.co)!

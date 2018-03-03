@@ -1,15 +1,15 @@
 site_name: RevJS Guide
 pages:
   - Welcome to RevJS!: index.md
+  - Working with Models:
+    - Creating your Data Model: models/creating_your_data_model.md
   - Components:
-      - rev-models: rev-models.md
-      - rev-api: rev-api.md
-      - rev-api-client: rev-api-client.md
-      - rev-ui: rev-ui.md
+    - rev-models: components/rev-models.md
+    - rev-api: components/rev-api.md
+    - rev-api-client: components/rev-api-client.md
+    - rev-ui: components/rev-ui.md
 strict: true
 theme: readthedocs
-extra_css:
-  - css/style.css
 docs_dir: /mkdocs/src
 site_dir: /mkdocs/dist
 repo_url: https://github.com/RevJS/revjs
@@ -23,3 +23,4 @@ extra_javascript:
   - js/highlight.pack.js
 extra_css:
   - css/highlight.css
+  - css/style.css

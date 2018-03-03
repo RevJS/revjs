@@ -7,10 +7,10 @@ data-driven JS applications.
 
 RevJS allows you to
 
- * Define your data model using **plain JS Classes**, and built-in or custom field types
- * Define custom synchronous or asynchronous **validation logic** directly on your models
- * Make your models available over the network via an **automatically generated GraphQL API**
- * Quickly build your **data-driven user interface in React**, using our Higher Order Components
+ * Define a relational **data model** using plain JS classes, and built-in or custom field types
+ * Define custom **validation logic** directly in your models
+ * Easily create a **GraphQL API** to make your models available over the network
+ * Quickly build a **user interface** for the web or movile, using our React higher-order components
 
 ## Example
 
@@ -27,21 +27,21 @@ maintaining a revjs ES6+ guide!...)
 
 ## Components
 
-### [rev-models](rev-models.md)
+### [rev-models](components/rev-models.md)
 
 Define your Data Models and Validation, and easily test them out with the in-memory
 storage provided.
 
-### [rev-api](rev-api.md)
+### [rev-api](components/rev-api.md)
 
 Expose your data model via an automatically-generated GraphQL API
 
-### [rev-api-client](rev-api-client.md)
+### [rev-api-client](components/rev-api-client.md)
 
 Access your server-side models in the browser or on a mobile device,
 using the same API and validation logic.
 
-### [rev-ui](rev-ui.md)
+### [rev-ui](components/rev-ui.md)
 
 Quickly build user interfaces with data from your RevJS backend using our
 React higher-order components.
