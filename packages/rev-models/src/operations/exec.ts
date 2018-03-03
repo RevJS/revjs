@@ -4,10 +4,26 @@ import { ModelOperationResult } from './operationresult';
 import { IModelOperation } from './operation';
 import { isSet } from '../utils/index';
 
+/**
+ * The IMethodContext interface represents the object passed to model methods,
+ * when executed via [[ModelManager.exec]]
+ */
 export interface IMethodContext<T> {
+    /**
+     * The associated ModelManager
+     */
     manager: IModelManager;
+    /**
+     * The arguments passed to the [[ModelManager.exec]] method
+     */
     args: IExecArgs;
+    /**
+     * The result of the operation
+     */
     result: ModelOperationResult<T, IExecMeta>;
+    /**
+     * The original options passed to [[ModelManager.exec]]
+     */
     options?: IExecOptions;
 }
 

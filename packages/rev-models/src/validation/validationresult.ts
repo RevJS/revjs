@@ -1,10 +1,16 @@
 
+/**
+ * @private
+ */
 export interface IFieldError {
     message: string;
     code?: string;
     [key: string]: any;
 }
 
+/**
+ * @private
+ */
 export interface IModelError {
     message: string;
     code?: string;

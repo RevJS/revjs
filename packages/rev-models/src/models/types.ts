@@ -5,38 +5,104 @@ import { IModelOperationResult, IOperationMeta } from '../operations/operationre
 import { ModelValidationResult, IModelValidationResult } from '../validation/validationresult';
 import { IModelOperation } from '../operations/operation';
 
+/**
+ * @private
+ */
 export interface IValidationOptions {
     timeout?: number;
     fields?: string[];
 }
 
 /**
- * @private
- * (although will be needed for custom field validators)
+ * The IValidationContext interface represents the object passed to
+ * [[IModel.validate]] and [[IModel.validateAsync]] methods
  */
 export interface IValidationContext {
+    /**
+     * The associated ModelManager
+     */
     manager: IModelManager;
+    /**
+     * The requested operation that the validation is being run for
+     */
     operation: IModelOperation;
+    /**
+     * The current ModelValidationResult. You can use the methods on this object
+     * to register any validation errors
+     */
     result: ModelValidationResult;
+    /**
+     * Any options specified for the validation
+     */
     options?: IValidationOptions;
 }
 
+/**
+ * The IModel interface defines the standard methods that RevJS models can
+ * implement.
+ *
+ * The below code gives an example of defining both validate() and
+ * validateAsync() methods for a model:
+ *
+ * ```ts
+ * [[include:examples/src/defining_and_using_models/custom_validation.ts]]
+ * ```
+ */
 export interface IModel {
     [fieldName: string]: any;
+    /**
+     * You can define any synchronous model validation logic in this method.
+     * Use the `vc.result` ([[ModelValidationResult]]) object to record any
+     * validation errors.
+     */
     validate?(vc: IValidationContext): void;
+    /**
+     * You can define any asynchronous model validation logic in this method.
+     * This method must return a promise. Use the `vc.result`
+     * ([[ModelValidationResult]]) object to record any validation errors.
+     */
     validateAsync?(vc: IValidationContext): Promise<void>;
 }
 
+/**
+ * The IModelMeta interface represents the metadata that RevJS stores for a
+ * model. This information can optionally be provided when registering models
+ * via [[ModelManager.register]].
+ */
 export interface IModelMeta<T> {
+    /**
+     * The model Class / constructor function
+     */
     ctor?: new(...args: any[]) => T;
+    /**
+     * The model name
+     */
     name?: string;
+    /**
+     * A user-friendly name for the model
+     */
     label?: string;
+    /**
+     * The array of [[Field]]s defined for the object
+     */
     fields?: Field[];
+    /**
+     * The model [[Field]]s, indexed by field name
+     */
     fieldsByName?: {
         [fieldName: string]: Field
     };
+    /**
+     * The name of the model's Primary Key field
+     */
     primaryKey?: string;
+    /**
+     * The name of the backend used to store the model
+     */
     backend?: string;
+    /**
+     * A boolean indicating whether the model can be stored in the backend
+     */
     stored?: boolean;
 }
 
@@ -45,6 +111,9 @@ export interface IModelMeta<T> {
  */
 export type ModelCtor = new(...args: any[]) => IModel;
 
+/**
+ * @private
+ */
 export interface ICreateOptions {
     validation?: IValidationOptions;
 }
@@ -56,6 +125,9 @@ export interface ICreateMeta extends IOperationMeta {
     // For future use
 }
 
+/**
+ * @private
+ */
 export interface IUpdateOptions {
     where?: object;
     fields?: string[];
@@ -69,6 +141,9 @@ export interface IUpdateMeta extends IOperationMeta {
     totalCount: number;
 }
 
+/**
+ * @private
+ */
 export interface IRemoveOptions {
     where?: object;
 }
@@ -80,6 +155,9 @@ export interface IRemoveMeta extends IOperationMeta {
     totalCount: number;
 }
 
+/**
+ * @private
+ */
 export interface IReadOptions {
     where?: object;
     orderBy?: string[];
@@ -114,6 +192,9 @@ export interface IExecArgs {
     [key: string]: any;
 }
 
+/**
+ * @private
+ */
 export interface IExecOptions {
     method: string;
     args?: IExecArgs;
