@@ -13,7 +13,7 @@ import { City, modelManager } from './creating_models';
 
     // Retrieve Auckland
     const cities = await modelManager.read(City, { where: {
-            name: 'Auckland'
+        name: 'Auckland'
     }});
 
     // Remove it!
@@ -24,5 +24,3 @@ import { City, modelManager } from './creating_models';
     console.log('Remaining Records:', newRecords.results);
 
 })();
-
-// It is also possible to remove multiple records using the 'where' option
