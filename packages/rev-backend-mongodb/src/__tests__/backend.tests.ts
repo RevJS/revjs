@@ -4,6 +4,7 @@ import { MongoDBBackend } from '../backend';
 import { testConfig } from './testconfig';
 
 import { createTests } from 'rev-models/lib/backends/testsuite/create.tests';
+import { readTests } from 'rev-models/lib/backends/testsuite/read.tests';
 import { IBackendTestConfig } from '../../../rev-models/lib/backends/testsuite';
 
 describe('MongoDBBackend', () => {
@@ -49,6 +50,7 @@ describe('MongoDBBackend - RevJS Backend Tests', () => {
     });
 
     createTests('MongoDBBackend', config);
+    readTests('MongoDBBackend', config);
 
     after(() => {
         backend.disconnect();

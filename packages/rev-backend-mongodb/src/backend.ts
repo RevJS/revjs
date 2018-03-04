@@ -94,8 +94,8 @@ export class MongoDBBackend implements IBackend {
         const records = await this.db.collection(colName).find({}).toArray();
         result.results = records.map((record) => manager.hydrate(meta.ctor, record));
         result.setMeta({
-            offset: 0,
-            limit: result.results.length,
+            offset: options.offset,
+            limit: options.limit,
             totalCount: result.results.length
         });
         return result;
