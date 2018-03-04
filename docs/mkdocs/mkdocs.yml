@@ -8,7 +8,9 @@ pages:
     - Updating Model Data: models/updating_data.md
     - Deleting Model Data: models/deleting_data.md
     - Working with Related Models: models/related_data.md
-  - RevJS Modules:
+  - Creating a GraphQL API:
+    - Creating an API: api/creating_an_api.md
+  - RevJS Module Reference:
     - rev-models: components/rev-models.md
     - rev-api: components/rev-api.md
     - rev-api-client: components/rev-api-client.md
