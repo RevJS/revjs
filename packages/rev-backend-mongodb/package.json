@@ -7,9 +7,9 @@
   "scripts": {
     "build": "run-bin tslint -p . && run-bin tsc",
     "build-watch": "run-bin tsc --watch",
-    "test": "echo SKIPPING run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\"",
-    "test-ci": "echo SKIPPING run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\" --reporter mocha-circleci-reporter",
-    "test-watch": "echo SKIPPING run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\" --watch --watch-extensions ts,tsx",
+    "test": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\"",
+    "test-ci": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\" --reporter mocha-circleci-reporter",
+    "test-watch": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/*\" --watch --watch-extensions ts,tsx",
     "mocha": "run-bin mocha -r ts-node/register",
     "pack": "npm pack"
   },

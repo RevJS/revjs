@@ -28,7 +28,7 @@ export function createTests(backendName: string, backend: IBackend) {
             return manager.remove(TestModel, { where: {}});
         }
 
-        it('stores model data as a plain object and returns a new model instance', async () => {
+        it('stores model data and returns a new model instance', async () => {
             let model = new TestModel();
             model.id = 1;
             model.name = 'test model';

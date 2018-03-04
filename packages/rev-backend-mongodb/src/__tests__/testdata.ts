@@ -70,5 +70,8 @@ export const testData = [
 ];
 
 export async function clearTestData(mongoDB: Db) {
-    return mongoDB.collection('TestModel').drop();
+    try {
+        await mongoDB.collection('TestModel').drop();
+    }
+    catch (e) { }
 }
