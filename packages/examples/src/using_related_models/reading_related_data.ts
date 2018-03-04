@@ -1,5 +1,5 @@
 
-import { User, Post, Comment, modelManager } from './creating_related_models';
+import { Post, modelManager } from './creating_related_models';
 import { createData } from './creating_related_data';
 
 (async () => {
@@ -25,6 +25,6 @@ import { createData } from './creating_related_data';
     const posts4 = await modelManager.read(Post, {
         related: ['user', 'comments.user']
     });
-    console.log('Posts with User, Comments and Comment Author:', posts3.results);
+    console.log('Posts with User, Comments and Comment Author:', posts4.results);
 
 })();

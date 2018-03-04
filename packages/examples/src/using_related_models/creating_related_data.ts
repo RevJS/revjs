@@ -25,11 +25,11 @@ export async function createData() {
         user: jane
     }))).result;
 
-    const post2 = (await modelManager.create(new Post({
+    await modelManager.create(new Post({
         title: 'The Rain in Spain',
         body: 'Really is a pain?',
         user: jane
-    }))).result;
+    }));
 
     // Create Comments
 
