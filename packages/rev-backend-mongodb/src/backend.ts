@@ -78,12 +78,26 @@ export class MongoDBBackend implements IBackend {
     }
 
     async remove<T extends IModel>(manager: ModelManager, model: T, options: IRemoveOptions, result: ModelOperationResult<T, IRemoveMeta>): Promise<ModelOperationResult<T, IRemoveMeta>> {
-        // const meta = manager.getModelMeta(model);
+        const meta = manager.getModelMeta(model);
+        const colName = this._getCollectionName(meta);
+        // Remove all data for now
+        try {
+            await this.db.collection(colName).drop();
+        }
+        catch (e) {}
         return result;
     }
 
     async read<T extends IModel>(manager: ModelManager, model: new() => T, options: IReadOptions, result: ModelOperationResult<T, IReadMeta>): Promise<ModelOperationResult<T, IReadMeta>> {
-        // const meta = manager.getModelMeta(model);
+        const meta = manager.getModelMeta(model);
+        const colName = this._getCollectionName(meta);
+        const records = await this.db.collection(colName).find({}).toArray();
+        result.results = records.map((record) => manager.hydrate(meta.ctor, record));
+        result.setMeta({
+            offset: 0,
+            limit: result.results.length,
+            totalCount: result.results.length
+        });
         return result;
     }
 

@@ -3,6 +3,9 @@ import { expect } from 'chai';
 import { MongoDBBackend } from '../backend';
 import { testConfig } from './testconfig';
 
+import { createTests } from 'rev-models/lib/backends/testsuite/create.tests';
+import { IBackendTestConfig } from '../../../rev-models/lib/backends/testsuite';
+
 describe('MongoDBBackend', () => {
     let backend: MongoDBBackend;
 
@@ -31,6 +34,24 @@ describe('MongoDBBackend', () => {
                 });
         });
 
+    });
+
+});
+
+describe('MongoDBBackend - RevJS Backend Tests', () => {
+    const config: IBackendTestConfig = {} as any;
+    let backend: MongoDBBackend;
+
+    before(async () => {
+        backend = new MongoDBBackend(testConfig);
+        await backend.connect();
+        config.backend = backend;
+    });
+
+    createTests('MongoDBBackend', config);
+
+    after(() => {
+        backend.disconnect();
     });
 
 });

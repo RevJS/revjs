@@ -6,15 +6,18 @@ import { IBackend } from '../backend';
 import { ModelOperationResult } from '../../operations/operationresult';
 import { TestModel, testData, createTestData, removeTestData } from './testdata';
 import { IRemoveMeta } from '../../models/types';
+import { IBackendTestConfig } from '.';
 
-export function removeTests(backendName: string, backend: IBackend) {
+export function removeTests(backendName: string, config: IBackendTestConfig) {
 
     describe(`Standard backend.remove() tests for ${backendName}`, () => {
 
+        let backend: IBackend;
         let manager: ModelManager;
         let removeResult: ModelOperationResult<TestModel, IRemoveMeta>;
 
         beforeEach(async () => {
+            backend = config.backend;
             manager = new ModelManager();
             manager.registerBackend('default', backend);
             manager.register(TestModel);

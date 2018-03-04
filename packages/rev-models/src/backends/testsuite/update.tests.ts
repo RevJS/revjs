@@ -6,15 +6,18 @@ import { ModelManager } from '../../models/manager';
 import { ModelOperationResult } from '../../operations/operationresult';
 import { TestModel, testData, removeTestData, createTestData } from './testdata';
 import { IUpdateMeta } from '../../models/types';
+import { IBackendTestConfig } from '.';
 
-export function updateTests(backendName: string, backend: IBackend) {
+export function updateTests(backendName: string, config: IBackendTestConfig) {
 
     describe(`Standard backend.update() tests for ${backendName}`, () => {
 
+        let backend: IBackend;
         let manager: ModelManager;
         let updateResult: ModelOperationResult<TestModel, IUpdateMeta>;
 
         beforeEach(async () => {
+            backend = config.backend;
             manager = new ModelManager();
             manager.registerBackend('default', backend);
             manager.register(TestModel);

@@ -6,16 +6,19 @@ import { IBackend } from '../backend';
 import { ModelOperationResult } from '../../operations/operationresult';
 import { Company, Developer, removeRelatedTestData, createRelatedTestData, testCompanyData, City, Department, testCityData, testDeveloperData } from './testdata.related';
 import { IUpdateMeta } from '../../models/types';
+import { IBackendTestConfig } from '.';
 
-export function updateWithRelatedModelTests(backendName: string, backend: IBackend) {
+export function updateWithRelatedModelTests(backendName: string, config: IBackendTestConfig) {
 
     describe(`Standard backend.update() with related model data tests for ${backendName}`, () => {
 
+        let backend: IBackend;
         let manager: ModelManager;
         let companyUpdateResult: ModelOperationResult<Company, IUpdateMeta>;
         let developerUpdateResult: ModelOperationResult<Developer, IUpdateMeta>;
 
         beforeEach(async () => {
+            backend = config.backend;
             manager = new ModelManager();
             manager.registerBackend('default', backend);
             manager.register(Company);

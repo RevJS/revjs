@@ -7,8 +7,9 @@ import { TestModel, createTestData, removeTestData } from './testdata';
 import { DEFAULT_READ_OPTIONS } from '../../operations/read';
 import { IReadMeta } from '../../models/types';
 import { IBackend } from '../backend';
+import { IBackendTestConfig } from '.';
 
-export function readTests(backendName: string, backend: IBackend) {
+export function readTests(backendName: string, config: IBackendTestConfig) {
 
     function getReadOpts(options?: object) {
         return Object.assign({}, DEFAULT_READ_OPTIONS, options);
@@ -16,11 +17,13 @@ export function readTests(backendName: string, backend: IBackend) {
 
     describe(`Standard backend.read() tests for ${backendName}`, () => {
 
+        let backend: IBackend;
         let manager: ModelManager;
         let readResult: ModelOperationResult<TestModel, IReadMeta>;
         let readResult2: ModelOperationResult<TestModel, IReadMeta>;
 
         before(() => {
+            backend = config.backend;
             manager = new ModelManager();
             manager.registerBackend('default', backend);
             manager.register(TestModel);

@@ -7,8 +7,9 @@ import { Company, Developer, City, testCityData, Department, removeRelatedTestDa
 import { DEFAULT_READ_OPTIONS } from '../../operations/read';
 import { IReadMeta } from '../../models/types';
 import { IBackend } from '../backend';
+import { IBackendTestConfig } from '.';
 
-export function readWithRelatedModelTests(backendName: string, backend: IBackend) {
+export function readWithRelatedModelTests(backendName: string, config: IBackendTestConfig) {
 
     describe(`Standard backend.read() with related model data tests for ${backendName}`, () => {
 
@@ -16,11 +17,13 @@ export function readWithRelatedModelTests(backendName: string, backend: IBackend
             return Object.assign({}, DEFAULT_READ_OPTIONS, options);
         }
 
+        let backend: IBackend;
         let manager: ModelManager;
         let companyReadResult: ModelOperationResult<Company, IReadMeta>;
         let developerReadResult: ModelOperationResult<Developer, IReadMeta>;
 
         before(async () => {
+            backend = config.backend;
             manager = new ModelManager();
             manager.registerBackend('default', backend);
             manager.register(Company);

@@ -1,14 +1,15 @@
 
 import { expect } from 'chai';
 
-import { IBackend } from '../backend';
 import { ModelManager } from '../../models/manager';
 import { ModelOperationResult } from '../../operations/operationresult';
 import { DEFAULT_CREATE_OPTIONS } from '../../operations/create';
 import * as d from '../../decorators';
 import { ICreateMeta, IUpdateMeta } from '../../models/types';
+import { IBackendTestConfig } from '.';
+import { IBackend } from '..';
 
-export function autoNumberTests(backendName: string, backend: IBackend) {
+export function autoNumberTests(backendName: string, config: IBackendTestConfig) {
 
     class TestModel {
         @d.AutoNumberField({ primaryKey: true })
@@ -22,12 +23,14 @@ export function autoNumberTests(backendName: string, backend: IBackend) {
 
     describe(`Standard backend AutoNumber field tests for ${backendName}`, () => {
 
+        let backend: IBackend;
         let manager: ModelManager;
         let createResult: ModelOperationResult<TestModel, ICreateMeta>;
         let createResult2: ModelOperationResult<TestModel, ICreateMeta>;
         let updateResult: ModelOperationResult<TestModel, IUpdateMeta>;
 
         beforeEach(async () => {
+            backend = config.backend;
             manager = new ModelManager();
             manager.registerBackend('default', backend);
             manager.register(TestModel);

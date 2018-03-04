@@ -7,16 +7,19 @@ import { ModelOperationResult } from '../../operations/operationresult';
 import { Company, Developer } from './testdata.related';
 import { DEFAULT_CREATE_OPTIONS } from '../../operations/create';
 import { ICreateMeta } from '../../models/types';
+import { IBackendTestConfig } from '.';
 
-export function createWithRelatedModelTests(backendName: string, backend: IBackend) {
+export function createWithRelatedModelTests(backendName: string, config: IBackendTestConfig) {
 
     describe(`Standard backend.create() with related model data tests for ${backendName}`, () => {
 
+        let backend: IBackend;
         let manager: ModelManager;
         let companyCreateResult: ModelOperationResult<Company, ICreateMeta>;
         let developerCreateResult: ModelOperationResult<Developer, ICreateMeta>;
 
         beforeEach(async () => {
+            backend = config.backend;
             manager = new ModelManager();
             manager.registerBackend('default', backend);
             manager.register(Company);

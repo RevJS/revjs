@@ -6,16 +6,19 @@ import { ModelOperationResult } from '../../operations/operationresult';
 import { TestModel } from './testdata';
 import { DEFAULT_CREATE_OPTIONS } from '../../operations/create';
 import { ICreateMeta } from '../../models/types';
+import { IBackendTestConfig } from '.';
 
-export function createTests(backendName: string, backend: IBackend) {
+export function createTests(backendName: string, config: IBackendTestConfig) {
 
     describe(`Standard backend.create() tests for ${backendName}`, () => {
 
+        let backend: IBackend;
         let manager: ModelManager;
         let createResult: ModelOperationResult<TestModel, ICreateMeta>;
         let createResult2: ModelOperationResult<TestModel, ICreateMeta>;
 
         beforeEach(async () => {
+            backend = config.backend;
             manager = new ModelManager();
             manager.registerBackend('default', backend);
             manager.register(TestModel);
@@ -48,6 +51,7 @@ export function createTests(backendName: string, backend: IBackend) {
                 name: 'test model',
                 age: 20
             });
+            expect(readRes.results[0]).to.be.instanceof(TestModel);
         });
 
         it('stores multiple records', async () => {

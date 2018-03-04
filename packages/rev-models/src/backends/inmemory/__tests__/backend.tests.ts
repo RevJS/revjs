@@ -64,4 +64,4 @@ describe('rev.backends.inmemory', () => {
 });
 
 const inMemoryBackend = new InMemoryBackend();
-standardBackendTests('InMemoryBackend', inMemoryBackend);
+standardBackendTests('InMemoryBackend', { backend: inMemoryBackend });
