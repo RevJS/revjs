@@ -62,7 +62,7 @@ The GraphQL `mutation {}` schema provides access to `create()`, `update()` and
 `remove()` functions, for all models you have enabled these for. Any
 custom API Methods you have created will also be available here.
 
-The screenshot below shows the GraphQL Mustation Schema generated from the
+The screenshot below shows the GraphQL Mutation Schema generated from the
 examples above:
 
 ![GraphQL Mutation Schema](../img/graphql-mutations.png)
