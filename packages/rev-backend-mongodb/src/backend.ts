@@ -6,7 +6,7 @@ import { IBackend } from 'rev-models/lib/backends/backend';
 import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
 import {
     ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IRemoveMeta,
-    IRemoveOptions, IReadMeta, IReadOptions, IExecMeta, IExecOptions, IModelMeta
+    IRemoveOptions, IReadMeta, IReadOptions, IExecMeta, IExecOptions, IModelMeta, IRawValues
 } from 'rev-models/lib/models/types';
 import { QueryParser } from 'rev-models/lib/queries/queryparser';
 import { IQueryNode } from 'rev-models/lib/queries/types';
@@ -112,6 +112,18 @@ export class MongoDBBackend implements IBackend {
         return mongoQuery;
     }
 
+    private _convertOrderBy(orderBy: string[]) {
+        const sortDocument = {};
+        if (orderBy instanceof Array) {
+            orderBy.forEach((field) => {
+                const tokens = field.split(' ');
+                const order = tokens[1] == 'desc' ? -1 : 1;
+                sortDocument[tokens[0]] = order;
+            });
+        }
+        return sortDocument;
+    }
+
     async create<T extends IModel>(manager: ModelManager, model: T, options: ICreateOptions, result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
         const meta = manager.getModelMeta(model);
 
@@ -162,15 +174,41 @@ export class MongoDBBackend implements IBackend {
         const colName = this._getCollectionName(meta);
 
         const mongoQuery = this._convertQuery(manager, model, options.where);
-        console.log('Mongo Query', JSON.stringify(mongoQuery));
 
-        const records = await this.db.collection(colName).find(mongoQuery).toArray();
-        result.results = records.map((record) => manager.hydrate(meta.ctor, record));
+        const records = await this.db.collection(colName)
+            .find(mongoQuery)
+            .sort(this._convertOrderBy(options.orderBy))
+            .skip(options.offset)
+            .limit(options.limit)
+            .toArray();
+
+        const rawValues: IRawValues = [];
+
+        result.results = [];
+        records.forEach((record) => {
+
+            const modelInstance = manager.hydrate(meta.ctor, record);
+            result.results.push(modelInstance);
+
+            if (options.rawValues) {
+                let rawValueObj = {};
+                for (let fieldName of options.rawValues) {
+                    rawValueObj[fieldName] = record[fieldName];
+                }
+                rawValues.push(rawValueObj);
+            }
+        });
+
         result.setMeta({
             offset: options.offset,
             limit: options.limit,
             totalCount: result.results.length
         });
+
+        if (options.rawValues) {
+            result.setMeta({ rawValues });
+        }
+
         return result;
     }
 
