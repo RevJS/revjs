@@ -27,7 +27,7 @@ bundle.
 
 APIs created via `rev-api` can be exposed by any web framework that can
 serve [GraphQL JS](https://github.com/graphql/graphql-js) schemas. A good
-example is [Appollog Server](https://github.com/apollographql/apollo-server)
+example is [Appollo GraphQL Server](https://github.com/apollographql/apollo-server)
 which supports most popular NodeJS Web Frameworks.
 
 In the example below, we use apollo graphql server to serve our API:
