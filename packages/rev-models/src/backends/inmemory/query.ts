@@ -1,10 +1,7 @@
 
 import { IQueryNode } from '../../queries/types';
 import { IModel } from '../../models/types';
-import { ConjunctionNode } from '../../queries/nodes/conjunction';
-import { FieldNode } from '../../queries/nodes/field';
-import { ValueOperator } from '../../queries/nodes/value';
-import { ValueListOperator } from '../../queries/nodes/valuelist';
+import { ConjunctionNode, FieldNode, ValueOperator, ValueListOperator } from '../../queries/nodes';
 import { getLikeOperatorRegExp } from '../../queries/utils';
 
 /**

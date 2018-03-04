@@ -1,8 +1,5 @@
 
-import { ConjunctionNode } from './nodes/conjunction';
-import { FieldNode } from './nodes/field';
-import { ValueOperator } from './nodes/value';
-import { ValueListOperator } from './nodes/valuelist';
+import { ConjunctionNode, FieldNode, ValueOperator, ValueListOperator } from './nodes';
 
 import { IQueryParser, IQueryNode, IOperatorRegister } from './types';
 import { printObj } from '../utils/index';
