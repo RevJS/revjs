@@ -100,7 +100,7 @@ export function autoNumberTests(backendName: string, config: IBackendTestConfig)
             });
             const updateRes = await backend.update(manager,
                 model2Update,
-                { where: { id: 2 } }, updateResult);
+                { where: { id: 2 }, fields: ['id', 'name'] }, updateResult);
             expect(updateRes.meta.totalCount).to.equal(1);
 
             const updateReadRes = await manager.read(TestModel, { where: { id: 10 }});

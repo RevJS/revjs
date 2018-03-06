@@ -7,6 +7,7 @@ import { createTests } from 'rev-models/lib/backends/testsuite/create.tests';
 import { readTests } from 'rev-models/lib/backends/testsuite/read.tests';
 import { updateTests } from 'rev-models/lib/backends/testsuite/update.tests';
 import { removeTests } from 'rev-models/lib/backends/testsuite/remove.tests';
+import { autoNumberTests } from 'rev-models/lib/backends/testsuite/autonumber.tests';
 import { IBackendTestConfig } from '../../../rev-models/lib/backends/testsuite';
 
 describe('MongoDBBackend', () => {
@@ -48,6 +49,7 @@ describe('MongoDBBackend - RevJS Backend Tests', () => {
     before(async () => {
         backend = new MongoDBBackend(testConfig);
         await backend.connect();
+        await backend.resetAutoNumberValues();
         config.backend = backend;
     });
 
@@ -55,6 +57,7 @@ describe('MongoDBBackend - RevJS Backend Tests', () => {
     readTests('MongoDBBackend', config);
     updateTests('MongoDBBackend', config);
     removeTests('MongoDBBackend', config);
+    autoNumberTests('MongoDBBackend', config);
 
     after(() => {
         backend.disconnect();

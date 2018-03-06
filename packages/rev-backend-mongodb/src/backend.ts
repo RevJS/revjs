@@ -16,6 +16,8 @@ export interface IMongoDBBackendConfig {
     options?: MongoClientOptions;
 }
 
+export const AUTONUMBER_COLLECTION = '__revjs_autonumber';
+
 export class MongoDBBackend implements IBackend {
     client: MongoClient;
     db: Db;
@@ -56,6 +58,23 @@ export class MongoDBBackend implements IBackend {
         return sortDocument;
     }
 
+    private async _getNextAutoNumberValue(modelName: string, fieldName: string): Promise<number> {
+        const sequenceName = `${modelName}__${fieldName}`;
+        const res = await this.db.collection(AUTONUMBER_COLLECTION)
+            .findOneAndUpdate(
+                { _id: sequenceName },
+                { $inc: { nextValue: 1 }},
+                { upsert: true, returnOriginal: false });
+        return res.value.nextValue;
+    }
+
+    async resetAutoNumberValues() {
+        try {
+            await this.db.collection(AUTONUMBER_COLLECTION).drop();
+        }
+        catch (e) {}
+    }
+
     async create<T extends IModel>(manager: ModelManager, model: T, options: ICreateOptions, result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
         const meta = manager.getModelMeta(model);
 
@@ -65,7 +84,7 @@ export class MongoDBBackend implements IBackend {
             let field = meta.fieldsByName[fieldName];
             if (field instanceof fields.AutoNumberField
                     && typeof model[fieldName] == 'undefined') {
-                throw new Error('TODO: Implement auto-number fields');
+                document[fieldName] = await this._getNextAutoNumberValue(meta.name, fieldName);
             }
             else if (typeof model[fieldName] != 'undefined') {
                 let value = field.toBackendValue(manager, model[fieldName]);
