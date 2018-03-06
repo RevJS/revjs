@@ -86,7 +86,28 @@ export class MongoDBBackend implements IBackend {
     }
 
     async update<T extends IModel>(manager: ModelManager, model: T, options: IUpdateOptions, result: ModelOperationResult<T, IUpdateMeta>): Promise<ModelOperationResult<T, IUpdateMeta>> {
-        // const meta = manager.getModelMeta(model);
+        if (!options.where) {
+            throw new Error('update() requires the \'where\' parameter');
+        }
+
+        let meta = manager.getModelMeta(model);
+        const mongoQuery = convertQuery(manager, meta.ctor, options.where);
+
+        const fieldUpdates = {};
+        options.fields.forEach((fieldName) => {
+            const field = meta.fieldsByName[fieldName];
+            if (typeof model[fieldName] != 'undefined') {
+                let value = field.toBackendValue(manager, model[fieldName]);
+                if (typeof value != 'undefined') {
+                    fieldUpdates[fieldName] = value;
+                }
+            }
+        });
+
+        const colName = this._getCollectionName(meta);
+        const updateResult = await this.db.collection(colName).updateMany(mongoQuery, { $set: fieldUpdates });
+
+        result.setMeta({ totalCount: updateResult.matchedCount });
         return result;
     }
 
