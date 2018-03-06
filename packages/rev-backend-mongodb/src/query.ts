@@ -1,5 +1,5 @@
 import { IModel, ModelManager } from 'rev-models';
-import { ConjunctionNode, FieldNode, ValueOperator } from 'rev-models/lib/queries/nodes';
+import { ConjunctionNode, FieldNode, ValueOperator, ValueListOperator } from 'rev-models/lib/queries/nodes';
 import { getLikeOperatorRegExp } from 'rev-models/lib/queries/utils';
 import { IQueryNode } from 'rev-models/lib/queries/types';
 import { QueryParser } from 'rev-models/lib/queries/queryparser';
@@ -33,17 +33,25 @@ function _convertConjunctionNode(srcNode: ConjunctionNode<any>, destNode: object
 
 function _convertFieldNode(srcNode: FieldNode<any>, destNode: object) {
     destNode[srcNode.fieldName] = {};
-    for (let valueNode of srcNode.children as Array<ValueOperator<any>>) {
+    for (let valueNode of srcNode.children) {
         let mongoOperator = FIELD_OPERATOR_MAPPING[valueNode.operator];
         if (!mongoOperator) {
             throw new Error(`Field Value Operator '${valueNode.operator}' not recognised.`);
         }
-        let value = valueNode.value;
-        if (mongoOperator == '__like') {
-            mongoOperator = '$regex';
-            value = getLikeOperatorRegExp(value);
+        if (valueNode instanceof ValueOperator) {
+            let value = valueNode.value;
+            if (mongoOperator == '__like') {
+                mongoOperator = '$regex';
+                value = getLikeOperatorRegExp(value);
+            }
+            destNode[srcNode.fieldName][mongoOperator] = value;
         }
-        destNode[srcNode.fieldName][mongoOperator] = value;
+        else if (valueNode instanceof ValueListOperator) {
+            destNode[srcNode.fieldName][mongoOperator] = valueNode.values;
+        }
+        else {
+            throw new Error(`Field Value Operator '${valueNode.operator}' not supported.`);
+        }
     }
 }
 
@@ -60,7 +68,7 @@ function _convertQueryNode(srcNode: IQueryNode<any>, destNode: object) {
 
 }
 
-export function convertQuery<T extends IModel>(manager: ModelManager, model: new() => T, where: object) {
+export function convertQuery<T extends IModel>(manager: ModelManager, model: new() => T, where: object): any {
     const parser = new QueryParser(manager);
     const queryNode = parser.getQueryNodeForQuery(model, where);
     const mongoQuery = {};
