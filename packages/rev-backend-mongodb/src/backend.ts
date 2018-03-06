@@ -112,13 +112,17 @@ export class MongoDBBackend implements IBackend {
     }
 
     async remove<T extends IModel>(manager: ModelManager, model: T, options: IRemoveOptions, result: ModelOperationResult<T, IRemoveMeta>): Promise<ModelOperationResult<T, IRemoveMeta>> {
-        const meta = manager.getModelMeta(model);
-        const colName = this._getCollectionName(meta);
-        // Remove all data for now
-        try {
-            await this.db.collection(colName).drop();
+        if (!options.where) {
+            throw new Error('remove() requires the \'where\' option to be set');
         }
-        catch (e) {}
+
+        let meta = manager.getModelMeta(model);
+        const mongoQuery = convertQuery(manager, meta.ctor, options.where);
+
+        const colName = this._getCollectionName(meta);
+        const removeResult = await this.db.collection(colName).deleteMany(mongoQuery);
+
+        result.setMeta({ totalCount: removeResult.deletedCount });
         return result;
     }
 
