@@ -32,7 +32,7 @@ export function updateTests(backendName: string, config: IBackendTestConfig) {
                 let model = new TestModel();
                 model.id = 1;
                 model.name = 'bob';
-                return backend.update(manager, model, { where: {} }, updateResult)
+                return backend.update(manager, model, { where: {}, fields: ['id', 'name'] }, updateResult)
                     .then((res) => {
                         expect(res.success).to.be.true;
                         expect(res.result).to.be.undefined;
@@ -45,7 +45,7 @@ export function updateTests(backendName: string, config: IBackendTestConfig) {
                 let model = new TestModel();
                 model.id = 1;
                 model.name = 'bob';
-                return backend.update(manager, model, { where: { id: { _gte: 0 } }}, updateResult)
+                return backend.update(manager, model, { where: { id: { _gte: 0 } }, fields: ['id', 'name']}, updateResult)
                     .then((res) => {
                         expect(res.success).to.be.true;
                         expect(res.result).to.be.undefined;
@@ -67,7 +67,7 @@ export function updateTests(backendName: string, config: IBackendTestConfig) {
                 let model = new TestModel();
                 model.name = 'bob';
 
-                const res = await backend.update(manager, model, { where: {} }, updateResult);
+                const res = await backend.update(manager, model, { where: {}, fields: [ 'name'] }, updateResult);
                 expect(res.success).to.be.true;
                 expect(res.result).to.be.undefined;
                 expect(res.results).to.be.undefined;
@@ -87,9 +87,12 @@ export function updateTests(backendName: string, config: IBackendTestConfig) {
                 model.name = 'gertrude';
                 model.gender = 'female';
 
-                const res = await backend.update(manager, model, { where: {
-                    id: { _gt: 0, _lt: 3 }
-                }}, updateResult);
+                const res = await backend.update(manager, model, {
+                    where: {
+                        id: { _gt: 0, _lt: 3 }
+                    },
+                    fields: ['name', 'gender']
+                }, updateResult);
                 expect(res.success).to.be.true;
                 expect(res.result).to.be.undefined;
                 expect(res.results).to.be.undefined;
