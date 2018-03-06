@@ -49,7 +49,6 @@ describe('MongoDBBackend - RevJS Backend Tests', () => {
     before(async () => {
         backend = new MongoDBBackend(testConfig);
         await backend.connect();
-        await backend.resetAutoNumberValues();
         config.backend = backend;
     });
 

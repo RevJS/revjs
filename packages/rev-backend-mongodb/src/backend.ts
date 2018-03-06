@@ -68,13 +68,6 @@ export class MongoDBBackend implements IBackend {
         return res.value.nextValue;
     }
 
-    async resetAutoNumberValues() {
-        try {
-            await this.db.collection(AUTONUMBER_COLLECTION).drop();
-        }
-        catch (e) {}
-    }
-
     async create<T extends IModel>(manager: ModelManager, model: T, options: ICreateOptions, result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
         const meta = manager.getModelMeta(model);
 

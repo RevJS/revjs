@@ -45,20 +45,20 @@ export function autoNumberTests(backendName: string, config: IBackendTestConfig)
             return manager.remove(TestModel, { where: {}});
         }
 
-        it('new records get sequential numbers starting from 1', async () => {
+        it('each new record gets a new sequential number', async () => {
             let model1 = new TestModel();
             model1.name = 'record 1';
             let model2 = new TestModel();
             model2.name = 'record 2';
 
-            const res = await Promise.all([
-                backend.create(manager, model1, DEFAULT_CREATE_OPTIONS, createResult),
-                backend.create(manager, model2, DEFAULT_CREATE_OPTIONS, createResult2)
-            ]);
-            expect(res[0].result).to.be.instanceof(TestModel);
-            expect(res[0].result.id).to.equal(1);
-            expect(res[1].result).to.be.instanceof(TestModel);
-            expect(res[1].result.id).to.equal(2);
+            const res1 = await backend.create(manager, model1, DEFAULT_CREATE_OPTIONS, createResult);
+            const res2 = await backend.create(manager, model2, DEFAULT_CREATE_OPTIONS, createResult2);
+
+            expect(res1.result).to.be.instanceof(TestModel);
+            expect(res1.result.id).to.be.a('number');
+            expect(res2.result).to.be.instanceof(TestModel);
+            expect(res2.result.id).to.be.a('number');
+            expect(res2.result.id).to.equal(res1.result.id + 1);
         });
 
         it('create() - values provided for AutoNumberField are stored', async () => {
