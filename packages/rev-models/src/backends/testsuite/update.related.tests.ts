@@ -37,7 +37,10 @@ export function updateWithRelatedModelTests(backendName: string, config: IBacken
             model.id = 1;
             model.name = 'Updated Name';
 
-            const res = await backend.update(manager, model, { where: { id: 1 }}, developerUpdateResult);
+            const res = await backend.update(manager, model, {
+                where: { id: 1 },
+                fields: ['id', 'name']
+            }, developerUpdateResult);
             expect(res.results).to.be.undefined;
             expect(res.result).to.be.undefined;
             expect(res.meta.totalCount).to.equal(1);
@@ -52,7 +55,10 @@ export function updateWithRelatedModelTests(backendName: string, config: IBacken
             model.id = 1;
             model.company = null;
 
-            const res = await backend.update(manager, model, { where: { id: 1 }}, developerUpdateResult);
+            const res = await backend.update(manager, model, {
+                where: { id: 1 },
+                fields: ['id', 'company']
+            }, developerUpdateResult);
             expect(res.results).to.be.undefined;
             expect(res.result).to.be.undefined;
             expect(res.meta.totalCount).to.equal(1);
@@ -67,7 +73,10 @@ export function updateWithRelatedModelTests(backendName: string, config: IBacken
                 city: testCityData[1]
             });
 
-            const res = await backend.update(manager, model, { where: { id: 2 }}, developerUpdateResult);
+            const res = await backend.update(manager, model, {
+                where: { id: 2 },
+                fields: ['id', 'city']
+            }, developerUpdateResult);
             expect(res.results).to.be.undefined;
             expect(res.result).to.be.undefined;
             expect(res.meta.totalCount).to.equal(1);
@@ -83,7 +92,10 @@ export function updateWithRelatedModelTests(backendName: string, config: IBacken
                 developers: [testDeveloperData[0], testDeveloperData[1]]
             });
 
-            const res = await backend.update(manager, model, { where: { id: 3 }}, companyUpdateResult);
+            const res = await backend.update(manager, model, {
+                where: { id: 3 },
+                fields: ['id', 'name']
+            }, companyUpdateResult);
             expect(res.results).to.be.undefined;
             expect(res.result).to.be.undefined;
             expect(res.meta.totalCount).to.equal(1);

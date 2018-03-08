@@ -1,28 +1,13 @@
 
 import { IBackend } from '../';
 import { IModel, IModelMeta, IModelManager, ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IReadMeta, IReadOptions, IRemoveMeta, IRemoveOptions, IExecMeta, IExecOptions, IRawValues } from '../../models/types';
-import { ModelOperationResult, IModelOperationResult } from '../../operations/operationresult';
+import { ModelOperationResult } from '../../operations/operationresult';
 import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
 import { sortRecords } from './sort';
 import { AutoNumberField, RelatedModelField, RelatedModelListField } from '../../fields';
 import { sleep } from '../../__test_utils__';
-
-interface IForeignKeyValues {
-    [fieldName: string]: any[];
-}
-
-interface IRelatedModelInstances {
-    [fieldName: string]: {
-        [keyValue: string]: IModel
-    };
-}
-
-interface IRelatedModelListInstances {
-    [fieldName: string]: {
-        [keyValue: string]: IModel[]
-    };
-}
+import { IForeignKeyValues, getOwnRelatedFieldNames, getRelatedModelInstances, getRelatedModelListInstances } from '../utils';
 
 /**
  * The InMemoryBackend stores your model data in JavaScript objects. This
@@ -153,7 +138,7 @@ export class InMemoryBackend implements IBackend {
         const foreignKeyValues: IForeignKeyValues = {};
         const rawValues: IRawValues = [];
 
-        const relatedFieldNames = this._getOwnRelatedFieldNames(options);
+        const relatedFieldNames = getOwnRelatedFieldNames(options);
 
         // Populate scalar values and cache related model information
         result.results = [];
@@ -163,7 +148,9 @@ export class InMemoryBackend implements IBackend {
 
                 let modelInstance = manager.hydrate(model, record);
                 result.results.push(modelInstance);
-                primaryKeyValues.push(modelInstance[meta.primaryKey]);
+                if (meta.primaryKey) {
+                    primaryKeyValues.push(modelInstance[meta.primaryKey]);
+                }
 
                 if (relatedFieldNames) {
                     for (let fieldName of relatedFieldNames) {
@@ -199,8 +186,8 @@ export class InMemoryBackend implements IBackend {
         if (relatedFieldNames) {
             // Get related record data
             const related = await Promise.all([
-                this._getRelatedModelInstances(manager, meta, foreignKeyValues, options),
-                this._getRelatedModelListInstances(manager, meta, primaryKeyValues, options)
+                getRelatedModelInstances(manager, meta, foreignKeyValues, options),
+                getRelatedModelListInstances(manager, meta, primaryKeyValues, options)
             ]);
             const [relatedModelInstances, relatedModelListInstances] = related;
 
@@ -329,116 +316,6 @@ export class InMemoryBackend implements IBackend {
                 }
             }
         }
-    }
-
-    private _getOwnRelatedFieldNames(options: IReadOptions) {
-        return options.related && options.related.map((fieldName) => {
-            return fieldName.split('.')[0];
-        });
-    }
-
-    private _getChildRelatedFieldNames(options: IReadOptions, parent: string) {
-        if (options.related) {
-            let childRelatedFields: string[] = [];
-            options.related.forEach((fieldName) => {
-                let tokens = fieldName.split('.');
-                if (tokens.length > 1 && tokens[0] == parent) {
-                    childRelatedFields.push(tokens.slice(1).join('.'));
-                }
-            });
-            return childRelatedFields;
-        }
-    }
-
-    private async _getRelatedModelInstances(manager: IModelManager, meta: IModelMeta<any>, foreignKeyValues: IForeignKeyValues, options: IReadOptions) {
-
-        const foreignKeyFields: string[] = [];
-        const foreignKeyPKFields: string[] = [];
-        const foreignKeyPromises: Array<Promise<IModelOperationResult<any, any>>> = [];
-
-        for (let fieldName in foreignKeyValues) {
-            if (foreignKeyValues[fieldName].length > 0) {
-                let field = meta.fieldsByName[fieldName] as RelatedModelField;
-                let relatedMeta = manager.getModelMeta(field.options.model);
-                let readOptions: IReadOptions = {
-                    limit: foreignKeyValues[fieldName].length,
-                    related: this._getChildRelatedFieldNames(options, fieldName)
-                };
-
-                foreignKeyFields.push(fieldName);
-                foreignKeyPKFields.push(relatedMeta.primaryKey);
-                foreignKeyPromises.push(
-                    manager.read(
-                        relatedMeta.ctor,
-                        {
-                            where: {
-                                [relatedMeta.primaryKey]: { _in: foreignKeyValues[fieldName] }
-                            },
-                            ...readOptions
-                        }
-                    ));
-            }
-        }
-
-        const relatedModelInstances: IRelatedModelInstances = {};
-
-        let results = await Promise.all(foreignKeyPromises);
-        foreignKeyFields.forEach((fieldName, i) => {
-            relatedModelInstances[fieldName] = {};
-            for (let instance of results[i].results) {
-                relatedModelInstances[fieldName][instance[foreignKeyPKFields[i]]] = instance;
-            }
-        });
-
-        return relatedModelInstances;
-    }
-
-    private async _getRelatedModelListInstances(manager: IModelManager, meta: IModelMeta<any>, primaryKeyValues: string[], options: IReadOptions) {
-
-        const modelListFields: string[] = [];
-        const modelListFieldFKs: string[] = [];
-        const modelListFieldPromises: Array<Promise<IModelOperationResult<any, any>>> = [];
-        const relatedFieldNames = this._getOwnRelatedFieldNames(options);
-
-        for (let fieldName of relatedFieldNames) {
-            let field = meta.fieldsByName[fieldName];
-            if (field instanceof RelatedModelListField) {
-                let relatedMeta = manager.getModelMeta(field.options.model);
-                let readOptions: IReadOptions = {
-                    // NOTE: Number of results limited to the default number of results
-                    rawValues: [field.options.field],
-                    related: this._getChildRelatedFieldNames(options, fieldName)
-                };
-                modelListFields.push(fieldName);
-                modelListFieldFKs.push(field.options.field);
-                modelListFieldPromises.push(
-                    manager.read(
-                        relatedMeta.ctor,
-                        {
-                            where: {
-                                [field.options.field]: { _in: primaryKeyValues }
-                            },
-                            ...readOptions
-                        }
-                    ));
-            }
-        }
-
-        const relatedModelListInstances: IRelatedModelListInstances = {};
-
-        let results = await Promise.all(modelListFieldPromises);
-        modelListFields.forEach((fieldName, i) => {
-            relatedModelListInstances[fieldName] = {};
-            results[i].results.forEach((instance, resultIdx) => {
-                let fkValue = results[i].meta.rawValues[resultIdx][modelListFieldFKs[i]];
-                if (!relatedModelListInstances[fieldName][fkValue]) {
-                    relatedModelListInstances[fieldName][fkValue] = [];
-                }
-                relatedModelListInstances[fieldName][fkValue].push(instance);
-            });
-        });
-
-        return relatedModelListInstances;
     }
 
 }
