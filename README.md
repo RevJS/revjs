@@ -12,13 +12,15 @@ The RevJS suite of modules aims to provide the following functionality:
  * Helpers for various front-end frameworks for rendering, validating and
    submitting form data
 
-This project is currently in pre-alpha stages, but is getting closer to alpha!
+This project will shortly be in BETA. Watch this space!! :)
 You can see what we're currently working on our
 [Trello Board](https://trello.com/b/4H5uL73T/revjs)
 
 The basic idea is, this code:
 
 ```typescript
+// Pseudo code - example needs updating - will do soon!
+// See revjs.org for working samples
 import * as rev from 'rev-models';
 
 class Person {

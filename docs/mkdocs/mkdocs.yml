@@ -10,12 +10,13 @@ pages:
     - Working with Related Models: models/related_data.md
   - Creating a GraphQL API:
     - Creating an API: api/creating_an_api.md
-  - RevJS Module Reference:
+  - RevJS Module Guide:
     - rev-models: components/rev-models.md
     - rev-backend-mongodb: components/rev-backend-mongodb.md
     - rev-api: components/rev-api.md
     - rev-api-client: components/rev-api-client.md
     - rev-ui: components/rev-ui.md
+    - Change Log: changelog.md
 strict: true
 theme: readthedocs
 docs_dir: /mkdocs/src
