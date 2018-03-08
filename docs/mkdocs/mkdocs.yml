@@ -12,6 +12,7 @@ pages:
     - Creating an API: api/creating_an_api.md
   - RevJS Module Reference:
     - rev-models: components/rev-models.md
+    - rev-backend-mongodb: components/rev-backend-mongodb.md
     - rev-api: components/rev-api.md
     - rev-api-client: components/rev-api-client.md
     - rev-ui: components/rev-ui.md

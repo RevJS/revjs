@@ -27,7 +27,7 @@ export interface IMongoDBBackendConfig {
 export const AUTONUMBER_COLLECTION_NAME = '__revjs_autonumber';
 
 /**
- * RevJS Backend class that stores model data in MongoDB
+ * A RevJS Backend class that stores model data in MongoDB
  *
  * Usage example:
  *
