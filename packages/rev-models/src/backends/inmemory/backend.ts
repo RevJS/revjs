@@ -58,7 +58,7 @@ export class InMemoryBackend implements IBackend {
     }
 
     /**
-     * [[IBackend.create]] implementation
+     * @private
      */
     async create<T extends IModel>(
             manager: IModelManager,
@@ -82,7 +82,7 @@ export class InMemoryBackend implements IBackend {
     }
 
     /**
-     * [[IBackend.update]] implementation
+     * @private
      */
     async update<T extends IModel>(
             manager: IModelManager,
@@ -116,7 +116,7 @@ export class InMemoryBackend implements IBackend {
     }
 
     /**
-     * [[IBackend.read]] implementation
+     * @private
      */
     async read<T extends IModel>(
             manager: IModelManager,
@@ -234,7 +234,7 @@ export class InMemoryBackend implements IBackend {
     }
 
     /**
-     * [[IBackend.remove]] implementation
+     * @private
      */
     async remove<T extends IModel>(
             manager: IModelManager,
@@ -272,7 +272,7 @@ export class InMemoryBackend implements IBackend {
     }
 
     /**
-     * [[IBackend.exec]] implementation (not supported by InMemoryBackend)
+     * @private
      */
     async exec<R>(manager: IModelManager, model: IModel, options: IExecOptions, result: ModelOperationResult<R, IExecMeta>): Promise<ModelOperationResult<R, IExecMeta>> {
         return Promise.reject(new Error('InMemoryBackend.exec() not supported'));
