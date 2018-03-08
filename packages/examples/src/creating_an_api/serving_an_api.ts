@@ -28,7 +28,7 @@ app.use(router.allowedMethods());
 app.listen(port);
 
 console.log(`GraphQL Server is running on port ${port}.`);
-console.log(`GraphiQL UI is running at http://localhost:${port}/grapihql`);
+console.log(`GraphiQL UI is running at http://localhost:${port}/graphiql`);
 
 // Load sample data
 
