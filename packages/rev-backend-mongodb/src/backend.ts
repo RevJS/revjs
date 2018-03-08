@@ -2,7 +2,9 @@
 import { IModel, ModelManager, fields } from 'rev-models';
 import { MongoClient, Db, MongoClientOptions } from 'mongodb';
 
-import { IBackend } from 'rev-models/lib/backends/backend';
+import { IBackend } from 'rev-models/lib/backends';
+import { getOwnRelatedFieldNames, IForeignKeyValues, getRelatedModelInstances, getRelatedModelListInstances } from 'rev-models/lib/backends/utils';
+
 import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
 import {
     ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IRemoveMeta,
@@ -151,13 +153,42 @@ export class MongoDBBackend implements IBackend {
             .limit(options.limit)
             .toArray();
 
+        const primaryKeyValues: any[] = [];
+        const foreignKeyValues: IForeignKeyValues = {};
         const rawValues: IRawValues = [];
+        const relatedFieldNames = getOwnRelatedFieldNames(options);
 
         result.results = [];
         records.forEach((record) => {
 
             const modelInstance = manager.hydrate(meta.ctor, record);
             result.results.push(modelInstance);
+
+            if (meta.primaryKey) {
+                primaryKeyValues.push(modelInstance[meta.primaryKey]);
+            }
+
+            // TODO: Refactor this into a method shared with InMemoryBackend (and future backends)
+            if (relatedFieldNames) {
+                for (let fieldName of relatedFieldNames) {
+                    let field = meta.fieldsByName[fieldName];
+                    let keyValue = record[fieldName];
+                    if (field instanceof fields.RelatedModelField) {
+                        if (!(fieldName in foreignKeyValues)) {
+                            foreignKeyValues[fieldName] = [];
+                        }
+                        if (typeof keyValue != 'undefined' && keyValue !== null) {
+                            modelInstance[fieldName] = keyValue;
+                            if (foreignKeyValues[fieldName].indexOf(keyValue) == -1) {
+                                foreignKeyValues[fieldName].push(keyValue);
+                            }
+                        }
+                        else {
+                            modelInstance[fieldName] = null;
+                        }
+                    }
+                }
+            }
 
             if (options.rawValues) {
                 let rawValueObj = {};
@@ -168,15 +199,47 @@ export class MongoDBBackend implements IBackend {
             }
         });
 
+        // TODO: Refactor this into a method shared with InMemoryBackend (and future backends)
+        if (relatedFieldNames) {
+            // Get related record data
+            const related = await Promise.all([
+                getRelatedModelInstances(manager, meta, foreignKeyValues, options),
+                getRelatedModelListInstances(manager, meta, primaryKeyValues, options)
+            ]);
+            const [relatedModelInstances, relatedModelListInstances] = related;
+
+            for (let instance of result.results) {
+                for (let fieldName of relatedFieldNames) {
+                    let field = meta.fieldsByName[fieldName];
+                    if (field instanceof fields.RelatedModelField) {
+                        if (instance[fieldName] !== null
+                            && relatedModelInstances[fieldName]
+                            && relatedModelInstances[fieldName][instance[fieldName]]) {
+                                instance[fieldName] = relatedModelInstances[fieldName][instance[fieldName]];
+                        }
+                    }
+                    else if (field instanceof fields.RelatedModelListField) {
+                        if (relatedModelListInstances[fieldName]
+                            && relatedModelListInstances[fieldName][instance[meta.primaryKey]]) {
+                                instance[fieldName] = relatedModelListInstances[fieldName][instance[meta.primaryKey]];
+                        }
+                        else {
+                            instance[fieldName] = [];
+                        }
+                    }
+                }
+            }
+        }
+
+        if (options.rawValues) {
+            result.setMeta({ rawValues });
+        }
+
         result.setMeta({
             offset: options.offset,
             limit: options.limit,
             totalCount: result.results.length
         });
-
-        if (options.rawValues) {
-            result.setMeta({ rawValues });
-        }
 
         return result;
     }

@@ -3,12 +3,7 @@ import { expect } from 'chai';
 import { MongoDBBackend } from '../backend';
 import { testConfig } from './testconfig';
 
-import { createTests } from 'rev-models/lib/backends/testsuite/create.tests';
-import { readTests } from 'rev-models/lib/backends/testsuite/read.tests';
-import { updateTests } from 'rev-models/lib/backends/testsuite/update.tests';
-import { removeTests } from 'rev-models/lib/backends/testsuite/remove.tests';
-import { autoNumberTests } from 'rev-models/lib/backends/testsuite/autonumber.tests';
-import { IBackendTestConfig } from '../../../rev-models/lib/backends/testsuite';
+import { standardBackendTests, IBackendTestConfig } from 'rev-models/lib/backends/testsuite';
 
 describe('MongoDBBackend', () => {
     let backend: MongoDBBackend;
@@ -52,11 +47,7 @@ describe('MongoDBBackend - RevJS Backend Tests', () => {
         config.backend = backend;
     });
 
-    createTests('MongoDBBackend', config);
-    readTests('MongoDBBackend', config);
-    updateTests('MongoDBBackend', config);
-    removeTests('MongoDBBackend', config);
-    autoNumberTests('MongoDBBackend', config);
+    standardBackendTests('MongoDBBackend', config);
 
     after(() => {
         backend.disconnect();
