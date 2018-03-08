@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { ModelManager } from '../../models/manager';
 import { ModelOperationResult } from '../../operations/operationresult';
-import { TestModel, createTestData, removeTestData } from './testdata';
+import { TestModel, createTestData, removeTestData, TestModelNoPK, testDataNoPK } from './testdata';
 import { DEFAULT_READ_OPTIONS } from '../../operations/read';
 import { IReadMeta } from '../../models/types';
 import { IBackend } from '../backend';
@@ -21,14 +21,17 @@ export function readTests(backendName: string, config: IBackendTestConfig) {
         let manager: ModelManager;
         let readResult: ModelOperationResult<TestModel, IReadMeta>;
         let readResult2: ModelOperationResult<TestModel, IReadMeta>;
+        let readResultNoPk: ModelOperationResult<TestModelNoPK, IReadMeta>;
 
         before(() => {
             backend = config.backend;
             manager = new ModelManager();
             manager.registerBackend('default', backend);
             manager.register(TestModel);
+            manager.register(TestModelNoPK);
             readResult = new ModelOperationResult<TestModel, IReadMeta>({operationName: 'read'});
             readResult2 = new ModelOperationResult<TestModel, IReadMeta>({operationName: 'read'});
+            readResultNoPk = new ModelOperationResult<TestModelNoPK, IReadMeta>({operationName: 'read'});
         });
 
         describe('read() - with no data', () => {
@@ -228,6 +231,43 @@ export function readTests(backendName: string, config: IBackendTestConfig) {
                     .then(() => { throw new Error('expected to reject'); })
                     .catch((err) => {
                         expect(err.message).to.contain('not a recognised field');
+                    });
+            });
+
+        });
+
+        describe('read() - model with no primary key', () => {
+
+            before(async () => {
+                await removeTestData(manager);
+                await createTestData(manager);
+            });
+
+            it('returns all records when where clause = {}', () => {
+                return backend.read(manager, TestModelNoPK, getReadOpts({ where: {}, orderBy: ['name'] }), readResultNoPk)
+                    .then((res) => {
+                        expect(res.success).to.be.true;
+                        expect(res.result).to.be.undefined;
+                        expect(res.results).to.have.length(3);
+                        expect(res.results[0]).to.be.instanceof(TestModelNoPK);
+                        expect(res.results[1]).to.be.instanceof(TestModelNoPK);
+                        expect(res.results[2]).to.be.instanceof(TestModelNoPK);
+                        expect(res.results[0].name).to.equal(testDataNoPK[0].name);
+                        expect(res.results[1].name).to.equal(testDataNoPK[1].name);
+                        expect(res.results[2].name).to.equal(testDataNoPK[2].name);
+                    });
+            });
+
+            it('returns filtered records when where clause is set', () => {
+                return backend.read(manager, TestModelNoPK, getReadOpts({
+                    where: { name: 'record2' }
+                }), readResultNoPk)
+                    .then((res) => {
+                        expect(res.success).to.be.true;
+                        expect(res.result).to.be.undefined;
+                        expect(res.results).to.have.length(1);
+                        expect(res.results[0].name).to.equal('record2');
+                        expect(res.results[0].description).to.equal('This is the second record');
                     });
             });
 

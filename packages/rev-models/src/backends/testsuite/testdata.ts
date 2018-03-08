@@ -30,6 +30,17 @@ export class TestModel {
     }
 }
 
+export class TestModelNoPK {
+    @d.TextField()
+        name: string;
+    @d.TextField()
+        description: string;
+
+    constructor(data?: Partial<TestModelNoPK>) {
+        Object.assign(this, data);
+    }
+}
+
 export const testData = [
     new TestModel({
         id: 0,
@@ -73,12 +84,31 @@ export const testData = [
     })
 ];
 
+export const testDataNoPK = [
+    new TestModelNoPK({
+        name: 'record1',
+        description: 'This is the first record'
+    }),
+    new TestModelNoPK({
+        name: 'record2',
+        description: 'This is the second record'
+    }),
+    new TestModelNoPK({
+        name: 'record3',
+        description: 'And here is a third!'
+    }),
+];
+
 export async function createTestData(manager: IModelManager) {
     for (let model of testData) {
+        await manager.create(model);
+    }
+    for (let model of testDataNoPK) {
         await manager.create(model);
     }
 }
 
 export async function removeTestData(manager: IModelManager) {
     await manager.remove(TestModel, { where: {}});
+    await manager.remove(TestModelNoPK, { where: {}});
 }

@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { ModelManager } from '../../models/manager';
 import { IBackend } from '../backend';
 import { ModelOperationResult } from '../../operations/operationresult';
-import { TestModel, testData, createTestData, removeTestData } from './testdata';
+import { TestModel, testData, createTestData, removeTestData, TestModelNoPK } from './testdata';
 import { IRemoveMeta } from '../../models/types';
 import { IBackendTestConfig } from '.';
 
@@ -21,6 +21,7 @@ export function removeTests(backendName: string, config: IBackendTestConfig) {
             manager = new ModelManager();
             manager.registerBackend('default', backend);
             manager.register(TestModel);
+            manager.register(TestModelNoPK);
             removeResult = new ModelOperationResult<TestModel, IRemoveMeta>({operationName: 'remove'});
 
             await removeTestData(manager);
