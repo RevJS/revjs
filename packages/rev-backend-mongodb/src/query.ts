@@ -68,6 +68,9 @@ function _convertQueryNode(srcNode: IQueryNode<any>, destNode: object) {
 
 }
 
+/**
+ * @private
+ */
 export function convertQuery<T extends IModel>(manager: ModelManager, model: new() => T, where: object): any {
     const parser = new QueryParser(manager);
     const queryNode = parser.getQueryNodeForQuery(model, where);

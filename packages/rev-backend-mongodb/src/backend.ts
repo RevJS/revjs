@@ -12,36 +12,60 @@ import {
 } from 'rev-models/lib/models/types';
 import { convertQuery } from './query';
 
+/**
+ * Configuration used to initialise the MongoDB connection for [[MongoDBBackend]]
+ */
 export interface IMongoDBBackendConfig {
     url: string;
     dbName: string;
     options?: MongoClientOptions;
 }
 
-export const AUTONUMBER_COLLECTION = '__revjs_autonumber';
+/**
+ * The MongoDB Collection used to store the next @AutoNumberField values
+ */
+export const AUTONUMBER_COLLECTION_NAME = '__revjs_autonumber';
 
+/**
+ * RevJS Backend class that stores model data in MongoDB
+ *
+ * Usage example:
+ *
+ * ```ts
+ * [[include:examples/src/using_backends/using_a_mongodb_backend.ts]]
+ * ```
+ */
 export class MongoDBBackend implements IBackend {
-    client: MongoClient;
-    db: Db;
+    private client: MongoClient;
+    private db: Db;
 
+    /**
+     * Backend constructor.
+     *
+     * **NOTE:** You must call the **[[MongoDBBackend.connect]]** method after constructing
+     * the backend before attempting to store or retrieve any data.
+     * @param config MongoDB Connection Information
+     */
     constructor(
         private config: IMongoDBBackendConfig
     ) {}
 
+    /**
+     * Initialises the connection to the MongoDB server
+     */
     async connect() {
         this.client = await MongoClient.connect(this.config.url, this.config.options);
         this.db = this.client.db(this.config.dbName);
     }
 
+    /**
+     * Disconnects from the MongoDB server
+     */
     async disconnect() {
         if (this.client) {
             this.client.close();
             this.client = null;
         }
-    }
-
-    getMongoClient() {
-        return this.client;
     }
 
     private _getCollectionName(meta: IModelMeta<any>) {
@@ -62,7 +86,7 @@ export class MongoDBBackend implements IBackend {
 
     private async _getNextAutoNumberValue(modelName: string, fieldName: string): Promise<number> {
         const sequenceName = `${modelName}__${fieldName}`;
-        const res = await this.db.collection(AUTONUMBER_COLLECTION)
+        const res = await this.db.collection(AUTONUMBER_COLLECTION_NAME)
             .findOneAndUpdate(
                 { _id: sequenceName },
                 { $inc: { nextValue: 1 }},
@@ -70,6 +94,9 @@ export class MongoDBBackend implements IBackend {
         return res.value.nextValue;
     }
 
+    /**
+     * @private
+     */
     async create<T extends IModel>(manager: ModelManager, model: T, options: ICreateOptions, result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
         const meta = manager.getModelMeta(model);
 
@@ -99,6 +126,9 @@ export class MongoDBBackend implements IBackend {
         return result;
     }
 
+    /**
+     * @private
+     */
     async update<T extends IModel>(manager: ModelManager, model: T, options: IUpdateOptions, result: ModelOperationResult<T, IUpdateMeta>): Promise<ModelOperationResult<T, IUpdateMeta>> {
         if (!options.where) {
             throw new Error('update() requires the \'where\' parameter');
@@ -125,6 +155,9 @@ export class MongoDBBackend implements IBackend {
         return result;
     }
 
+    /**
+     * @private
+     */
     async remove<T extends IModel>(manager: ModelManager, model: T, options: IRemoveOptions, result: ModelOperationResult<T, IRemoveMeta>): Promise<ModelOperationResult<T, IRemoveMeta>> {
         if (!options.where) {
             throw new Error('remove() requires the \'where\' option to be set');
@@ -140,6 +173,9 @@ export class MongoDBBackend implements IBackend {
         return result;
     }
 
+    /**
+     * @private
+     */
     async read<T extends IModel>(manager: ModelManager, model: new() => T, options: IReadOptions, result: ModelOperationResult<T, IReadMeta>): Promise<ModelOperationResult<T, IReadMeta>> {
         const meta = manager.getModelMeta(model);
         const colName = this._getCollectionName(meta);
@@ -244,6 +280,9 @@ export class MongoDBBackend implements IBackend {
         return result;
     }
 
+    /**
+     * @private
+     */
     async exec<R>(manager: ModelManager, model: IModel, options: IExecOptions, result: ModelOperationResult<R, IExecMeta>): Promise<ModelOperationResult<R, IExecMeta>> {
         return Promise.reject(new Error('Not yet implemented'));
     }
