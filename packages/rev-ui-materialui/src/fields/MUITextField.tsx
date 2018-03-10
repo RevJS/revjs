@@ -41,7 +41,7 @@ export const MUITextField: React.StatelessComponent<IFieldComponentProps> = (pro
                 <Input
                     id={fieldId}
                     type={type}
-                    value={props.value}
+                    value={props.value || ''}
                     onChange={(event) => props.onChange(event.target.value)}
                     error={error}
                     disabled={props.disabled}
