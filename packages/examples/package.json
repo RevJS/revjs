@@ -6,6 +6,8 @@
   "scripts": {
     "build": "run-bin tslint -p . && run-bin tsc --noEmit",
     "build-docs": "echo na",
+    "build-ui-js": "webpack --mode production --config src/creating_a_ui/webpack.config.js",
+    "build-ui-js-watch": "webpack --watch --mode production --config src/creating_a_ui/webpack.config.js",
     "ts-node": "run-bin ts-node",
     "test": "echo na",
     "test-ci": "echo na",
@@ -24,7 +26,9 @@
     "koa-router": "7.4.0",
     "rev-api": "^0.11.0",
     "rev-backend-mongodb": "^0.11.0",
-    "rev-models": "^0.11.0"
+    "rev-models": "^0.11.0",
+    "rev-ui": "^0.11.0",
+    "rev-ui-materialui": "^0.11.0"
   },
   "devDependencies": {
     "@types/koa": "2.0.44",
