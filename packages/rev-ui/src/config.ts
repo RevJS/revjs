@@ -10,7 +10,8 @@ export const UI_COMPONENTS = {
     },
     actions: {
         PostAction: PassthroughComponent,
-        SaveAction: PassthroughComponent
+        SaveAction: PassthroughComponent,
+        RemoveAction: PassthroughComponent
     },
     fields: {
         DateField: PassthroughComponent,

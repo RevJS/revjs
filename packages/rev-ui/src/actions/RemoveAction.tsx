@@ -7,7 +7,7 @@ import { UI_COMPONENTS } from '../config';
 import { IActionComponentProps } from './types';
 import { IModelOperationResult } from 'rev-models';
 
-export interface ISaveActionProps {
+export interface IRemoveActionProps {
     label?: string;
     onSuccess?: (result: IModelOperationResult<any, any>) => void;
     onError?: (error: Error) => void;
@@ -17,12 +17,12 @@ export interface ISaveActionProps {
     component?: React.ComponentType;
 }
 
-class SaveActionC extends React.Component<ISaveActionProps & IModelContextProp> {
+class RemoveActionC extends React.Component<IRemoveActionProps & IModelContextProp> {
 
-    constructor(props: ISaveActionProps & IModelContextProp) {
+    constructor(props: IRemoveActionProps & IModelContextProp) {
         super(props);
         if (!this.props.modelContext) {
-            throw new Error('SaveAction Error: must be nested inside a DetailView');
+            throw new Error('RemoveAction Error: must be nested inside a DetailView');
         }
     }
 
@@ -46,7 +46,7 @@ class SaveActionC extends React.Component<ISaveActionProps & IModelContextProp> 
         ctx.setLoadState('SAVING');
 
         try {
-            const result = await ctx.save();
+            const result = await ctx.remove();
             success(result);
         }
         catch (e) {
@@ -68,9 +68,9 @@ class SaveActionC extends React.Component<ISaveActionProps & IModelContextProp> 
             children: this.props.children
         };
 
-        const Component = this.props.component || UI_COMPONENTS.actions.SaveAction;
+        const Component = this.props.component || UI_COMPONENTS.actions.RemoveAction;
         return <Component {...cProps} />;
     }
 }
 
-export const SaveAction = withModelContext(SaveActionC);
+export const RemoveAction = withModelContext(RemoveActionC);
