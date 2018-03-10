@@ -40,9 +40,9 @@ export const MUIListView = styles<IMUIListViewProps>((props) => {
 
     const toolbar = (
         <Toolbar className={props.classes.toolbar}>
-            <Typography type="title">{props.title}</Typography>
+            <Typography variant="title">{props.title}</Typography>
             <div className={props.classes.pagination}>
-                <Typography type="caption">
+                <Typography variant="caption">
                     {paginationText}
                 </Typography>
                 <IconButton
