@@ -34,6 +34,12 @@ router.post('/graphql', graphqlKoa({ schema: schema }));
 router.get('/graphql', graphqlKoa({ schema: schema }));
 router.get('/graphiql', graphiqlKoa({ endpointURL: '/graphql' }));
 
+app.use(async (ctx, next) => {
+    const allowedHeaders = ctx.get('Access-Control-Request-Headers');
+    ctx.set('Access-Control-Allow-Origin', '*');
+    ctx.set('Access-Control-Allow-Headers', allowedHeaders);
+    return next();
+});
 app.use(koaBody());
 app.use(router.routes());
 app.use(router.allowedMethods());

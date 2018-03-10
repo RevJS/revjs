@@ -28,13 +28,13 @@ export class User {
 export class Post {
     @AutoNumberField({ primaryKey: true })
         id: number;
-    @RelatedModel({ model: 'User' })
+    @RelatedModel({ model: 'User', label: 'Author' })
         user: User;
-    @TextField()
+    @TextField({ label: 'Post Title' })
         title: string;
-    @TextField({ multiLine: true })
+    @TextField({ multiLine: true, label: 'Post Content' })
         body: string;
-    @RelatedModelList({ model: 'Comment', field: 'post' })
+    @RelatedModelList({ model: 'Comment', field: 'post', label: 'Comments' })
         comments: Comment[];
 
     constructor(data?: Partial<Post>) {

@@ -4,14 +4,11 @@
   "description": "RevJS Examples",
   "private": true,
   "scripts": {
-    "build": "run-bin tslint -p . && run-bin tsc --noEmit",
-    "build-docs": "echo na",
-    "build-ui-js": "webpack --mode production --config src/creating_a_ui/webpack.config.js",
-    "build-ui-js-watch": "webpack --watch --mode production --config src/creating_a_ui/webpack.config.js",
-    "ts-node": "run-bin ts-node",
-    "test": "echo na",
-    "test-ci": "echo na",
-    "pack": "echo na"
+    "build": "run-bin tslint -p . && run-bin tsc --noEmit && npm run build-ui-js",
+    "build-ui-js": "run-bin webpack --mode production --config src/creating_a_ui/webpack.config.js",
+    "build-ui-js-watch": "run-bin webpack --watch --mode production --config src/creating_a_ui/webpack.config.js",
+    "start-ui-api": "run-bin ts-node src/creating_a_ui/api.ts",
+    "ts-node": "run-bin ts-node"
   },
   "author": "Russell Briggs <russ@paraflyer.net>",
   "license": "MIT",
@@ -25,6 +22,7 @@
     "koa-bodyparser": "4.2.0",
     "koa-router": "7.4.0",
     "rev-api": "^0.11.0",
+    "rev-api-client": "^0.11.0",
     "rev-backend-mongodb": "^0.11.0",
     "rev-models": "^0.11.0",
     "rev-ui": "^0.11.0",
