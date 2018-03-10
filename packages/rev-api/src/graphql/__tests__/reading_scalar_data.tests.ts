@@ -110,9 +110,13 @@ describe('GraphQL query type - scalar model data', () => {
             apiManager.register(models.ModelWithAllScalarFields, { operations: ['read'] });
 
             expectedData = new models.ModelWithAllScalarFields({
+                autoNumberField: 1,
                 integerField: 2,
                 numberField: 3.456,
                 textField: 'A test model with all default field types',
+                emailField: 'test@test.com',
+                urlField: 'http://www.test.com',
+                passwordField: 'password123',
                 booleanField: true,
                 selectField: 'Y',
                 multiSelectField: ['A', 'B'],
@@ -134,6 +138,9 @@ describe('GraphQL query type - scalar model data', () => {
                             integerField
                             numberField
                             textField
+                            emailField
+                            urlField
+                            passwordField
                             booleanField
                             selectField
                             multiSelectField
@@ -151,6 +158,9 @@ describe('GraphQL query type - scalar model data', () => {
                 integerField: expectedData.integerField,
                 numberField: expectedData.numberField,
                 textField: expectedData.textField,
+                emailField: expectedData.emailField,
+                urlField: expectedData.urlField,
+                passwordField: expectedData.passwordField,
                 booleanField: expectedData.booleanField,
                 selectField: expectedData.selectField,
                 multiSelectField: expectedData.multiSelectField,
@@ -176,7 +186,7 @@ describe('GraphQL query type - scalar model data', () => {
             apiManager.register(models.ModelWithAllScalarFields, { operations: ['read'] });
             api = new GraphQLApi(apiManager);
             api.fieldMappings.forEach((converter) => {
-                if (converter[0] == fields.TextField) {
+                if (converter[0] == fields.TextFieldBase) {
                     converter[1].converter = (model, fieldName) => {
                         return 'I am a custom converter!';
                     };
@@ -187,6 +197,9 @@ describe('GraphQL query type - scalar model data', () => {
                 integerField: 2,
                 numberField: 3.456,
                 textField: 'I should be overridden...',
+                emailField: 'test@test.com',
+                urlField: 'http://www.test.com',
+                passwordField: 'password123',
                 booleanField: true,
                 selectField: 'Y',
                 multiSelectField: ['A', 'B'],
@@ -208,6 +221,9 @@ describe('GraphQL query type - scalar model data', () => {
                             integerField
                             numberField
                             textField
+                            emailField
+                            urlField
+                            passwordField
                             booleanField
                             selectField
                             multiSelectField

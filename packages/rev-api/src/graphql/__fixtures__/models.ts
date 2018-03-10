@@ -2,6 +2,7 @@ import {
     IModel, IValidationContext, fields, ModelManager, InMemoryBackend,
     IntegerField, TextField, DateField, BooleanField, DateTimeField,
     AutoNumberField, NumberField, SelectField, TimeField,
+    EmailField, URLField, PasswordField,
     RelatedModel, RelatedModelList, MultiSelectField
 } from 'rev-models';
 
@@ -104,6 +105,12 @@ export class ModelWithAllScalarFields {
         numberField: number;
     @TextField()
         textField: string;
+    @EmailField()
+        emailField: string;
+    @URLField()
+        urlField: string;
+    @PasswordField()
+        passwordField: string;
     @BooleanField()
         booleanField: boolean;
     @SelectField({ selection: [['Y', 'Yes'], ['N', 'No']] })
