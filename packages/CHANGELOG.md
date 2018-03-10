@@ -1,7 +1,7 @@
 
 ## RevJS Module Releases
 
-### Upcoming Changes
+### 0.12.0
 
 **`rev-api`**
 
@@ -14,7 +14,7 @@
 
 **`rev-ui`**
 
-* Added viewContext.remove() method.
+* Added viewContext.remove() method. We now have full CRUD :)
 * Added `<RemoveAction />` component for removing the current record in a `<DetailView />`
 * All Action components now have default labels
 
