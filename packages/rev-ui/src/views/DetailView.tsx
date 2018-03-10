@@ -52,10 +52,6 @@ export class DetailView extends React.Component<IDetailViewProps> {
         }
         const modelMeta = this.context.modelManager.getModelMeta(this.props.model);
 
-        if (!modelMeta.primaryKey) {
-            throw new Error(`DetailView Error: model '${modelMeta.name}' does not have a primaryKey field defined.`);
-        }
-
         this.modelContext = {
             loadState: 'NONE',
             manager: this.context.modelManager,
@@ -80,8 +76,11 @@ export class DetailView extends React.Component<IDetailViewProps> {
     }
 
     async loadModel() {
-        this.modelContext.loadState = 'LOADING';
         const meta = this.modelContext.modelMeta;
+        if (!meta.primaryKey) {
+            throw new Error(`DetailView Error: Cannot load data for model '${meta.name}' because it doesn't have a primaryKey field defined.`);
+        }
+        this.modelContext.loadState = 'LOADING';
         const result = await this.context.modelManager.read(
             meta.ctor,
             {
@@ -129,6 +128,9 @@ export class DetailView extends React.Component<IDetailViewProps> {
 
     async save() {
         const ctx = this.modelContext;
+        if (!ctx.modelMeta.primaryKey) {
+            throw new Error(`DetailView Error: Cannot save data for model '${ctx.modelMeta.name}' because it doesn't have a primaryKey field defined.`);
+        }
         let result: IModelOperationResult<any, any>;
         try {
             if (ctx.manager.isNew(ctx.model)) {
@@ -152,6 +154,9 @@ export class DetailView extends React.Component<IDetailViewProps> {
 
     async remove(): Promise<any> {
         const ctx = this.modelContext;
+        if (!ctx.modelMeta.primaryKey) {
+            throw new Error(`DetailView Error: Cannot remove record for model '${ctx.modelMeta.name}' because it doesn't have a primaryKey field defined.`);
+        }
         let result: IModelOperationResult<any, any>;
         if (ctx.manager.isNew(ctx.model)) {
             throw new Error('Cannot call remove() on a new model record.');
