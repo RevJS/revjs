@@ -73,6 +73,29 @@ describe('RemoveAction', () => {
 
     });
 
+    describe('IActionComponentProps - default label', () => {
+        let modelManager: rev.ModelManager;
+
+        before(() => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post">
+                        <RemoveAction
+                            component={SpyComponent}
+                        />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
+
+        it('default label = "Delete"', () => {
+            expect(receivedProps.label).to.equal('Delete');
+        });
+
+    });
+
     describe('IActionComponentProps - new model loaded', () => {
         let modelManager: rev.ModelManager;
 

@@ -17,6 +17,7 @@
 * Added viewContext.remove() method. `<DetailView />` now restricted to only work with
   models that have a `primaryKey` field defined.
 * Added `<RemoveAction />` component for removing the current record in a `<DetailView />`
+* All Action components now have default labels
 
 ### 0.11.0 - 8th March 2018
 

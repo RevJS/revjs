@@ -62,7 +62,7 @@ class SaveActionC extends React.Component<ISaveActionProps & IModelContextProp> 
         }
 
         const cProps: IActionComponentProps = {
-            label: this.props.label,
+            label: this.props.label || 'Save',
             disabled,
             doAction: () => this.doAction(),
             children: this.props.children

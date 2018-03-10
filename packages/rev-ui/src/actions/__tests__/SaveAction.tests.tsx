@@ -71,6 +71,29 @@ describe('SaveAction', () => {
 
     });
 
+    describe('IActionComponentProps - default label', () => {
+        let modelManager: rev.ModelManager;
+
+        before(() => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post">
+                        <SaveAction
+                            component={SpyComponent}
+                        />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
+
+        it('default label = "Save"', () => {
+            expect(receivedProps.label).to.equal('Save');
+        });
+
+    });
+
     describe('IActionComponentProps - model loaded', () => {
         let modelManager: rev.ModelManager;
 

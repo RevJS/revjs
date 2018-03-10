@@ -64,7 +64,7 @@ class RemoveActionC extends React.Component<IRemoveActionProps & IModelContextPr
         }
 
         const cProps: IActionComponentProps = {
-            label: this.props.label,
+            label: this.props.label || 'Delete',
             disabled,
             doAction: () => this.doAction(),
             children: this.props.children

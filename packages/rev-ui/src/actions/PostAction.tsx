@@ -81,7 +81,7 @@ class PostActionC extends React.Component<IPostActionProps & IModelContextProp> 
         }
 
         const cProps: IActionComponentProps = {
-            label: this.props.label,
+            label: this.props.label || 'Submit',
             disabled,
             doAction: () => this.doAction(),
             children: this.props.children

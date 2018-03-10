@@ -86,6 +86,30 @@ describe('PostAction', () => {
 
     });
 
+    describe('IActionComponentProps - default label', () => {
+        let modelManager: rev.ModelManager;
+
+        before(() => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post">
+                        <PostAction
+                            url="/api"
+                            component={SpyComponent}
+                        />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
+
+        it('default label = "Submit"', () => {
+            expect(receivedProps.label).to.equal('Submit');
+        });
+
+    });
+
     describe('IActionComponentProps - model loaded', () => {
         let modelManager: rev.ModelManager;
 
