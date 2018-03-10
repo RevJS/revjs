@@ -12,6 +12,7 @@ export function registerComponents() {
 
     UI_COMPONENTS.actions.PostAction = MUIActionButton;
     UI_COMPONENTS.actions.SaveAction = MUIActionButton;
+    UI_COMPONENTS.actions.RemoveAction = MUIActionButton;
 
     UI_COMPONENTS.fields.DateField = MUITextField;
     UI_COMPONENTS.fields.TimeField = MUITextField;
