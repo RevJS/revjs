@@ -146,7 +146,6 @@ describe('RemoveAction', () => {
             resetSpyComponent();
             modelManager = models.getModelManager();
             await createData(modelManager);
-            const backend = modelManager.getBackend('default') as rev.InMemoryBackend;
             mount(
                 <ModelProvider modelManager={modelManager}>
                     <DetailView model="Post" primaryKeyValue="1">
