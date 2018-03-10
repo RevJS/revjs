@@ -2,14 +2,14 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
-import { ModelManager } from 'rev-models';
+import { IModelManager } from 'rev-models';
 
 export interface IModelManagerProp {
-    modelManager: ModelManager;
+    modelManager: IModelManager;
 }
 
 export interface IModelProviderContext {
-    modelManager: ModelManager;
+    modelManager: IModelManager;
 }
 
 export class ModelProvider extends React.Component<IModelManagerProp> {

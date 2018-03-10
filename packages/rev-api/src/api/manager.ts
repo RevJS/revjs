@@ -1,5 +1,5 @@
 
-import { ModelManager, IModel } from 'rev-models';
+import { IModelManager, IModel } from 'rev-models';
 import { checkIsModelConstructor } from 'rev-models/lib/models/utils';
 import { initialiseApiMeta } from '../api/meta';
 import { IModelApiManager, IApiMeta } from './types';
@@ -8,13 +8,13 @@ import { GraphQLSchema } from 'graphql/type/schema';
 
 export class ModelApiManager implements IModelApiManager {
 
-    modelManager: ModelManager;
+    modelManager: IModelManager;
     _apiMeta: {
         [modelName: string]: IApiMeta
     };
 
-    constructor(modelManager: ModelManager) {
-        if (typeof modelManager != 'object' || !(modelManager instanceof ModelManager)) {
+    constructor(modelManager: IModelManager) {
+        if (!modelManager || typeof modelManager.getModelMeta != 'function') {
             throw new Error(`ApiManagerError: Invalid ModelManager passed in constructor.`);
         }
         this.modelManager = modelManager;
@@ -46,7 +46,6 @@ export class ModelApiManager implements IModelApiManager {
             if (this._apiMeta[modelName].operations.indexOf(operationName) > -1) {
                 matches.push(modelName);
             }
-
         }
         return matches;
     }
