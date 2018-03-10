@@ -4,6 +4,7 @@
 ### Upcoming Changes
 
 * Improve error when a GraphQL fieldMapping is not found for a field type
+* Fix GraphQL mappings for EmailField, URLField and PasswordField
 
 ### 0.11.0 - 8th March 2018
 
