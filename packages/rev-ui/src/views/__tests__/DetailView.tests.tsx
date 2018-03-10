@@ -19,8 +19,14 @@ describe('DetailView', () => {
         let modelManager: rev.ModelManager;
         let errorStub: sinon.SinonStub;
 
+        class ModelNoPK {
+            @rev.TextField()
+                name: string;
+        }
+
         beforeEach(() => {
             modelManager = models.getModelManager();
+            modelManager.register(ModelNoPK);
             errorStub = sinon.stub(console, 'error');
         });
 
@@ -40,6 +46,14 @@ describe('DetailView', () => {
                     <DetailView model="NonExistey" />
                 </ModelProvider>);
             }).to.throw(`Model 'NonExistey' is not registered`);
+        });
+
+        it('throws error when specified model has no primary key defined', () => {
+            expect(() => {
+                mount(<ModelProvider modelManager={modelManager}>
+                    <DetailView model="ModelNoPK" />
+                </ModelProvider>);
+            }).to.throw(`model 'ModelNoPK' does not have a primaryKey field defined`);
         });
 
     });
@@ -66,58 +80,6 @@ describe('DetailView', () => {
         receivedModelContext = null;
         renderCount = 0;
     }
-
-    describe('initial modelContext - when model does not have a primaryKey field', () => {
-        let modelManager: rev.ModelManager;
-
-        class ModelNoPK {
-            @rev.TextField()
-                name: string;
-        }
-
-        before(() => {
-            resetTestView();
-            modelManager = models.getModelManager();
-            modelManager.register(ModelNoPK);
-            mount(
-                <ModelProvider modelManager={modelManager}>
-                    <DetailView model="ModelNoPK">
-                        <TestView />
-                    </DetailView>
-                </ModelProvider>
-            );
-        });
-
-        it('passes modelContext to contained Views', () => {
-            expect(receivedModelContext).not.to.be.null;
-        });
-
-        it('does not trigger a data load', () => {
-            expect(receivedModelContext.loadState).to.equal('NONE');
-        });
-
-        it('contains the current ModelManager', () => {
-            expect(receivedModelContext.manager).to.equal(modelManager);
-        });
-
-        it('a new model instance is created', () => {
-            expect(receivedModelContext.model).not.to.be.null;
-            expect(receivedModelContext.model).to.be.instanceof(ModelNoPK);
-        });
-
-        it('modelMeta is set', () => {
-            expect(receivedModelContext.modelMeta).to.deep.equal(modelManager.getModelMeta('ModelNoPK'));
-        });
-
-        it('validation information is null', () => {
-            expect(receivedModelContext.validation).to.be.null;
-        });
-
-        it('dirty is false', () => {
-            expect(receivedModelContext.dirty).to.be.false;
-        });
-
-    });
 
     describe('initial modelContext - when primaryKeyValue is not specified', () => {
         let modelManager: rev.ModelManager;
@@ -452,6 +414,65 @@ describe('DetailView', () => {
                 expect(result.operation.where).to.deep.equal({ id: 100 });
                 expect(result.success).to.be.true;
                 expect(receivedModelContext.validation).to.equal(result.validation);
+                expect(renderCount).to.equal(2);
+            });
+
+        });
+
+    });
+
+    describe('remove()', () => {
+        let modelManager: rev.ModelManager;
+
+        beforeEach(() => {
+            resetTestView();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post">
+                        <TestView />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
+
+        it('remove() is passed in modelContext', () => {
+            expect(receivedModelContext.save).to.be.a('function');
+        });
+
+        it('initial render has completed', () => {
+            expect(renderCount).to.equal(1);
+        });
+
+        describe('when model is a new record', () => {
+
+            it('remove() throws an error', async () => {
+                receivedModelContext.model = new models.Post({
+                    title: 'Valid New Post', body: 'Posty Posty...'
+                });
+                try {
+                    await receivedModelContext.remove();
+                    throw new Error('should have thrown');
+                }
+                catch (e) {
+                    expect(e).to.be.instanceof(Error);
+                    expect(e.message).to.equal('Cannot call remove() on a new model record.');
+                }
+            });
+
+        });
+
+        describe('when model is an existing record', () => {
+
+            it('remove() triggers removal of the model, re-renders, and returns operation result', async () => {
+                receivedModelContext.model = new models.Post({
+                    id: 100, title: 'Valid New Post', body: 'Posty Posty...'
+                });
+                const result = await receivedModelContext.remove();
+                expect(result).to.be.instanceof(ModelOperationResult);
+                expect(result.operation.operationName).to.equal('remove');
+                expect(result.operation.where).to.deep.equal({ id: 100 });
+                expect(result.success).to.be.true;
                 expect(renderCount).to.equal(2);
             });
 

@@ -27,6 +27,7 @@ export interface IModelContext<T extends IModel = IModel> {
     setDirty(dirty: boolean): void;
     validate(): Promise<IModelValidationResult>;
     save(): Promise<IModelOperationResult<T, any>>;
+    remove(): Promise<IModelOperationResult<T, any>>;
     refresh(): void;
 }
 
@@ -51,6 +52,10 @@ export class DetailView extends React.Component<IDetailViewProps> {
         }
         const modelMeta = this.context.modelManager.getModelMeta(this.props.model);
 
+        if (!modelMeta.primaryKey) {
+            throw new Error(`DetailView Error: model '${modelMeta.name}' does not have a primaryKey field defined.`);
+        }
+
         this.modelContext = {
             loadState: 'NONE',
             manager: this.context.modelManager,
@@ -62,10 +67,11 @@ export class DetailView extends React.Component<IDetailViewProps> {
             setDirty: (dirty) => this.setDirty(dirty),
             validate: () => this.validate(),
             save: () => this.save(),
+            remove: () => this.remove(),
             refresh: () => this.forceUpdate()
         };
 
-        if (modelMeta.primaryKey && isSet(props.primaryKeyValue)) {
+        if (isSet(props.primaryKeyValue)) {
             this.loadModel();
         }
         else {
@@ -139,6 +145,19 @@ export class DetailView extends React.Component<IDetailViewProps> {
             throw e;
         }
         ctx.validation = result.validation;
+        this.forceUpdate();
+        return result;
+    }
+
+    async remove(): Promise<any> {
+        const ctx = this.modelContext;
+        let result: IModelOperationResult<any, any>;
+        if (ctx.manager.isNew(ctx.model)) {
+            throw new Error('Cannot call remove() on a new model record.');
+        }
+        else {
+            result = await ctx.manager.remove(ctx.model);
+        }
         this.forceUpdate();
         return result;
     }
