@@ -55,6 +55,7 @@ export class GraphQLApi implements IGraphQLApi {
                 return fieldMapping[1];
             }
         }
+        throw new Error(`GraphQLApi: No fieldMapping found for field type '${field.constructor.name}'`);
     }
 
     getGraphQLFieldConverter(field: fields.Field): IGraphQLFieldConverter {
@@ -83,19 +84,13 @@ export class GraphQLApi implements IGraphQLApi {
             fields: () => {
                 const fieldConfig = {};
                 meta.fields.forEach((field) => {
-                    let fieldConverter = this.getGraphQLFieldConverter(field);
-                    if (fieldConverter) {
-                        fieldConfig[field.name] = {
-                            type: fieldConverter.type,
-                            resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
-                                return fieldConverter.converter(rootValue, field.name);
-                            }
-                        };
-                    }
-                    else {
-                        throw new Error(`GraphQLApi Error: The field class of ${modelName}.${field.name} does not have a registered mapping.`);
-                    }
-
+                    const fieldConverter = this.getGraphQLFieldConverter(field);
+                    fieldConfig[field.name] = {
+                        type: fieldConverter.type,
+                        resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
+                            return fieldConverter.converter(rootValue, field.name);
+                        }
+                    };
                 });
                 return fieldConfig;
             }

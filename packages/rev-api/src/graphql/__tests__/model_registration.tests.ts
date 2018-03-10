@@ -161,7 +161,7 @@ describe('GraphQL "query" type - model list', () => {
         it('getGraphQLSchema() throws an error', async () => {
             expect(() => {
                 api.getSchema();
-            }).to.throw('The field class of ModelWithUnknownField.unknownField does not have a registered mapping');
+            }).to.throw(`GraphQLApi: No fieldMapping found for field type 'UnknownField'`);
         });
 
     });
