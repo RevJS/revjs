@@ -469,11 +469,17 @@ describe('DetailView', () => {
                     id: 100, title: 'Valid New Post', body: 'Posty Posty...'
                 });
                 const result = await receivedModelContext.remove();
+
                 expect(result).to.be.instanceof(ModelOperationResult);
                 expect(result.operation.operationName).to.equal('remove');
                 expect(result.operation.where).to.deep.equal({ id: 100 });
                 expect(result.success).to.be.true;
+
                 expect(renderCount).to.equal(2);
+                expect(receivedModelContext.model).to.deep.equal(new models.Post());
+                expect(receivedModelContext.validation).to.equal(null);
+                expect(receivedModelContext.dirty).to.equal(false);
+
             });
 
         });

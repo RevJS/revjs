@@ -103,6 +103,7 @@ export class DetailView extends React.Component<IDetailViewProps> {
     setModel(model: IModel) {
         this.modelContext.model = model;
         this.modelContext.dirty = false;
+        this.modelContext.validation = null;
     }
 
     setLoadState(state: IModelLoadState) {
@@ -158,6 +159,7 @@ export class DetailView extends React.Component<IDetailViewProps> {
         else {
             result = await ctx.manager.remove(ctx.model);
         }
+        this.setModel(new ctx.modelMeta.ctor());
         this.forceUpdate();
         return result;
     }
