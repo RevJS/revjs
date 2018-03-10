@@ -3,8 +3,20 @@
 
 ### Upcoming Changes
 
+**`rev-api`**
+
 * Improve error when a GraphQL fieldMapping is not found for a field type
 * Fix GraphQL mappings for EmailField, URLField and PasswordField
+
+**`rev-api-client`**
+
+* Fix error when model fields are null
+
+**`rev-ui`**
+
+* Added viewContext.remove() method. `<DetailView />` now restricted to only work with
+  models that have a `primaryKey` field defined.
+* Added `<RemoveAction />` component for removing the current record in a `<DetailView />`
 
 ### 0.11.0 - 8th March 2018
 
