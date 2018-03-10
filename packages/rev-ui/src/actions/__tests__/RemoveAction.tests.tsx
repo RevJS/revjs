@@ -2,6 +2,8 @@
 import * as React from 'react';
 import * as sinon from 'sinon';
 import * as models from '../../__fixtures__/models';
+import { createData } from '../../__fixtures__/modeldata';
+import { sleep } from '../../__test_utils__/utils';
 import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount, ReactWrapper } from 'enzyme';
@@ -71,7 +73,7 @@ describe('RemoveAction', () => {
 
     });
 
-    describe('IActionComponentProps - model loaded', () => {
+    describe('IActionComponentProps - new model loaded', () => {
         let modelManager: rev.ModelManager;
 
         before(() => {
@@ -93,8 +95,8 @@ describe('RemoveAction', () => {
             expect(receivedProps.label).to.equal('Remove');
         });
 
-        it('disabled = false', () => {
-            expect(receivedProps.disabled).to.be.false;
+        it('disabled = true for New Models', () => {
+            expect(receivedProps.disabled).to.be.true;
         });
 
         it('passes through doAction() function', () => {
@@ -129,6 +131,41 @@ describe('RemoveAction', () => {
 
         it('disabled = true', () => {
             expect(receivedProps.disabled).to.be.true;
+        });
+
+        it('passes through doAction() function', () => {
+            expect(receivedProps.doAction).to.be.a('function');
+        });
+
+    });
+
+    describe('IActionComponentProps - existing model loaded', () => {
+        let modelManager: rev.ModelManager;
+
+        before(async () => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            await createData(modelManager);
+            const backend = modelManager.getBackend('default') as rev.InMemoryBackend;
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post" primaryKeyValue="1">
+                        <RemoveAction
+                            label="Remove"
+                            component={SpyComponent}
+                        />
+                    </DetailView>
+                </ModelProvider>
+            );
+            await sleep(10);
+        });
+
+        it('passes through label', () => {
+            expect(receivedProps.label).to.equal('Remove');
+        });
+
+        it('disabled = false for Existing Models', () => {
+            expect(receivedProps.disabled).to.be.false;
         });
 
         it('passes through doAction() function', () => {
@@ -209,12 +246,13 @@ describe('RemoveAction', () => {
     describe('disabled property', () => {
         let modelManager: rev.ModelManager;
 
-        before(() => {
+        before(async () => {
             resetSpyComponent();
             modelManager = models.getModelManager();
+            await createData(modelManager);
             mount(
                 <ModelProvider modelManager={modelManager}>
-                    <DetailView model="User">
+                    <DetailView model="User" primaryKeyValue="1">
                         <RemoveAction
                             label="Remove"
 
@@ -227,6 +265,7 @@ describe('RemoveAction', () => {
                     </DetailView>
                 </ModelProvider>
             );
+            await sleep(10);
         });
 
         it('control not disabled when disabled function returns false', () => {

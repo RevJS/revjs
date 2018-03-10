@@ -55,7 +55,9 @@ class RemoveActionC extends React.Component<IRemoveActionProps & IModelContextPr
     }
 
     render() {
-        let disabled = this.props.modelContext.loadState != 'NONE';
+        const ctx = this.props.modelContext;
+        let disabled = ctx.loadState != 'NONE'
+            || ctx.manager.isNew(ctx.model);
 
         if (!disabled && this.props.disabled) {
             disabled = this.props.disabled(this.props.modelContext);
