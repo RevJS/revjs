@@ -21,16 +21,52 @@ export async function createData(manager: ModelManager) {
     // Create Posts
 
     const post1 = (await manager.create(new Post({
-        title: 'Cool post, served by rev-api',
-        body: 'Heres some body text for the post',
+        title: 'Programmer',
+        body: 'Nader-Monahan',
         user: jane
     }))).result;
 
     const post2 = (await manager.create(new Post({
-        title: 'The Rain in Spain',
-        body: 'Really is a pain?',
-        user: jane
+        title: 'Design Engineer',
+        body: 'Hyatt Group',
+        user: bill
     }))).result;
+
+    await manager.create(new Post({
+        title: 'VP Sales',
+        body: 'Senger-Hoeger',
+        user: jane
+    }));
+
+    await manager.create(new Post({
+        title: 'VP Operations',
+        body: 'Schamberger-Orn',
+        user: joe
+    }));
+
+    await manager.create(new Post({
+        title: 'Administrative Assistant',
+        body: 'Hammes-Dooley',
+        user: jane
+    }));
+
+    await manager.create(new Post({
+        title: 'Tax Accountant',
+        body: 'Corkery, Wyman and Brekke',
+        user: bill
+    }));
+
+    await manager.create(new Post({
+        title: 'Food Chemist',
+        body: 'Friesen-Reichel',
+        user: joe
+    }));
+
+    await manager.create(new Post({
+        title: 'GIS Technical Architect',
+        body: 'Hyatt-Goyette',
+        user: joe
+    }));
 
     // Create Comments
 

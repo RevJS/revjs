@@ -31,6 +31,7 @@ ReactDOM.render((
                             'body',
                             'user'
                         ]}
+                        orderBy={['title']}
                         onRecordPress={(record) => {
                             alert('Selected a record:\n' + JSON.stringify(record, null, 2));
                         }}
