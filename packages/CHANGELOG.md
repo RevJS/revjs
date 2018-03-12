@@ -3,6 +3,10 @@
 
 ### Next Release
 
+**`rev-api-client`**
+
+* Add support for `orderBy` on `read()`
+
 **`rev-ui`**
 
 * `<ListView />` Renamed `rowLimit` property to `limit` (to match IReadOptions)

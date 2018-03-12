@@ -121,6 +121,31 @@ describe('ModelApiBackend - read()', () => {
         });
     });
 
+    it('orderBy option work as expected', async () => {
+        const result = await apiBackend.read(
+            manager, Post, {
+                where: {},
+                offset: 0,
+                limit: 10,
+                orderBy: ['title desc', 'body']
+            }, readResult
+        );
+        expect(result.success).to.be.true;
+        expect(result.results).to.have.length(3);
+        expect(result.results[0]).to.be.instanceof(Post);
+        expect(result.results[1]).to.be.instanceof(Post);
+        expect(result.results[2]).to.be.instanceof(Post);
+        expect(result.results[0]).to.include({
+            id: 3, title: 'Ruby Sucks',
+        });
+        expect(result.results[1]).to.include({
+            id: 1, title: 'RevJS v1.0.0 Released!',
+        });
+        expect(result.results[2]).to.include({
+            id: 2, title: 'JavaScript is Awesome'
+        });
+    });
+
     it('throws error with received data if response is empty', () => {
         const mockResponse: AxiosResponse = {
             data: null,

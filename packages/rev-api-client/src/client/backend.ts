@@ -45,21 +45,25 @@ export class ModelApiBackend implements IBackend {
         return error;
     }
 
-    _buildGraphQLQuery(meta: IModelMeta<any>, where: object, offset: number, limit: number) {
+    _buildGraphQLQuery(meta: IModelMeta<any>, options: IReadOptions) {
         const fieldObj: any = {};
         for (const field of meta.fields) {
             if (!(field instanceof fields.RelatedModelFieldBase)) {
                 fieldObj[field.name] = true;
             }
         }
+        const readOptions: IReadOptions = {
+            where: options.where,
+            offset: options.offset,
+            limit: options.limit
+        };
+        if (options.orderBy) {
+            readOptions.orderBy = options.orderBy;
+        }
         return {
             query: {
                 [meta.name]: {
-                    __args: {
-                        where,
-                        offset,
-                        limit
-                    },
+                    __args: readOptions,
                     results: fieldObj,
                     meta: {
                         offset: true,
@@ -167,7 +171,7 @@ export class ModelApiBackend implements IBackend {
 
     async read<T extends IModel>(manager: ModelManager, model: new() => T, options: IReadOptions, result: ModelOperationResult<T, IReadMeta>): Promise<ModelOperationResult<T, IReadMeta>> {
         const meta = manager.getModelMeta(model);
-        const query = this._buildGraphQLQuery(meta, options.where, options.offset, options.limit);
+        const query = this._buildGraphQLQuery(meta, options);
         const httpResult = await this._getGraphQLQueryResult(query);
         if (!httpResult.data.data
             || !httpResult.data.data[meta.name]
