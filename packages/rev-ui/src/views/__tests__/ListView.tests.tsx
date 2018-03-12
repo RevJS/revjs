@@ -169,7 +169,7 @@ describe('ListView', () => {
                     title="List with Data Loaded..."
                     model={model}
                     fields={fieldList}
-                    rowLimit={rowLimit}
+                    limit={rowLimit}
                     component={SpyComponent} />
             );
             await sleep(10);
@@ -178,7 +178,7 @@ describe('ListView', () => {
 
         it('record numbers are set based on offset + limut', () => {
             expect(receivedProps.firstRecordNumber).to.equal(1);
-            expect(receivedProps.lastRecordNumber).to.equal(3);
+            expect(receivedProps.lastRecordNumber).to.equal(rowLimit);
             expect(receivedProps.totalCount).to.equal(modelData.posts.length);
         });
 
@@ -223,7 +223,7 @@ describe('ListView', () => {
                     title="List with Data Loaded..."
                     model={model}
                     fields={fieldList}
-                    rowLimit={rowLimit}
+                    limit={rowLimit}
                     component={SpyComponent}
                 />);
             await sleep(10);
@@ -276,7 +276,7 @@ describe('ListView', () => {
                     title="List with Data Loaded..."
                     model={model}
                     fields={fieldList}
-                    rowLimit={rowLimit}
+                    limit={rowLimit}
                     component={SpyComponent}
                 />);
             await sleep(10);
@@ -332,7 +332,7 @@ describe('ListView', () => {
                     title="List with Data Loaded..."
                     model={model}
                     fields={fieldList}
-                    rowLimit={rowLimit}
+                    limit={rowLimit}
                     component={SpyComponent}
                 />);
             await sleep(10);

@@ -11,7 +11,7 @@ export interface IListViewProps {
     model: string;
     fields: string[];
     title?: string;
-    rowLimit?: number;
+    limit?: number;
 
     onRecordPress?: (model: IModel) => void;
 
@@ -70,7 +70,7 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
 
         this.state = {
             loadState: 'loading',
-            limit: props.rowLimit || 20,
+            limit: props.limit || 20,
             offset: 0
         };
     }
