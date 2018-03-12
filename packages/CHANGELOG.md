@@ -1,6 +1,13 @@
 
 ## RevJS Module Releases
 
+### Next Release
+
+**`rev-ui`**
+
+* `<ListView />` Renamed `rowLimit` property to `limit` (to match IReadOptions)
+* `<ListView />` Added `where` property for setting list filter
+
 ### 0.12.0
 
 **`rev-api`**

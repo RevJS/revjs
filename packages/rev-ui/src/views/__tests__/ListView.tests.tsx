@@ -420,6 +420,61 @@ describe('ListView', () => {
 
     });
 
+    describe('component props - where clause', () => {
+        const fieldList = ['id', 'title', 'published', 'post_date'];
+        let meta: IModelMeta<models.Post>;
+        const whereClause = { id: { _gt: 5 }};
+        let expectedData: models.Post[];
+        let expectedFields: fields.Field[];
+
+        before(async () => {
+            modelManager = models.getModelManager();
+            meta = modelManager.getModelMeta(models.Post);
+            await createData(modelManager);
+            expectedData = (await modelManager.read(models.Post, {
+                where: whereClause
+            })).results;
+            expectedFields = [
+                meta.fieldsByName['id'],
+                meta.fieldsByName['title'],
+                meta.fieldsByName['published'],
+                meta.fieldsByName['post_date']
+            ];
+
+            lifecycleOptions.enableComponentDidMount = true;
+            receivedProps = null;
+            const wrapper = mountComponent(
+                <ListView
+                    title="List with Data Loaded..."
+                    model={model}
+                    fields={fieldList}
+                    where={whereClause}
+                    limit={100}
+                    component={SpyComponent} />
+            );
+            await sleep(10);
+            wrapper.update();
+        });
+
+        it('filters the list of records using the where clause', () => {
+            expect(receivedProps.totalCount).to.equal(expectedData.length);
+        });
+
+        it('passes the fields list', () => {
+            expect(receivedProps.fields).to.deep.equal(expectedFields);
+        });
+
+        it('passes the correct record data', () => {
+            expectedData.forEach((record, recordIdx) => {
+                fieldList.forEach((fieldName) => {
+                    expect(receivedProps.records[recordIdx][fieldName])
+                        .to.equal(record[fieldName]);
+                });
+            });
+        });
+
+    });
+
     describe('Event Handlers', () => {
         const fieldList = ['id', 'title', 'published', 'post_date'];
         let expectedData: IModelTestData;

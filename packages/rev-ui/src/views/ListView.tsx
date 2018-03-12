@@ -11,6 +11,7 @@ export interface IListViewProps {
     model: string;
     fields: string[];
     title?: string;
+    where?: object;
     limit?: number;
 
     onRecordPress?: (model: IModel) => void;
@@ -39,6 +40,7 @@ export interface IListViewComponentProps {
 export interface IListViewState {
     loadState: IListViewLoadState;
     modelData?: IModelOperationResult<any, IReadMeta>;
+    where: object;
     limit: number;
     offset: number;
 }
@@ -70,8 +72,9 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
 
         this.state = {
             loadState: 'loading',
+            where: props.where || {},
             limit: props.limit || 20,
-            offset: 0
+            offset: 0,
         };
     }
 
@@ -95,7 +98,12 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
             loadState: 'loading'
         });
         const modelData = await this.context.modelManager.read(
-            this.modelMeta.ctor, { limit, offset });
+            this.modelMeta.ctor,
+            {
+                where: this.state.where,
+                limit,
+                offset
+            });
         if (modelData.success && modelData.results) {
             this.setState({
                 loadState: 'loaded',
