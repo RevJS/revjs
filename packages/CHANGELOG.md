@@ -7,6 +7,7 @@
 
 * `<ListView />` Renamed `rowLimit` property to `limit` (to match IReadOptions)
 * `<ListView />` Added `where` property for setting list filter
+* `<ListView />` Added `orderBy` property for sorting results
 
 ### 0.12.0
 
