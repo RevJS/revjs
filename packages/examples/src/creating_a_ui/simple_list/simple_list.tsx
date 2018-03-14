@@ -7,7 +7,11 @@ import { ModelProvider, ListView } from 'rev-ui';
 import * as models from '../models';
 
 import Reboot from 'material-ui/Reboot';
+import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
 import Card from 'material-ui/Card';
+
 import { registerComponents } from 'rev-ui-materialui';
 registerComponents();
 
@@ -19,26 +23,31 @@ modelManager.register(models.Comment);
 
 ReactDOM.render((
         <ModelProvider modelManager={modelManager} >
-            <div style={{ maxWidth: 800 }}>
-                <Reboot />
-                <Card>
+            <Reboot />
+            <AppBar position="static">
+                <Toolbar>
+                    <Typography variant="title" color="inherit">
+                        RevJS - ListView Demo
+                    </Typography>
+                </Toolbar>
+            </AppBar>
+            <Card style={{ maxWidth: 800, margin: '30px auto' }}>
 
-                    <ListView
-                        title="Current Posts"
-                        model="Post"
-                        fields={[
-                            'title',
-                            'body',
-                            'user'
-                        ]}
-                        orderBy={['title']}
-                        onRecordPress={(record) => {
-                            alert('Selected a record:\n' + JSON.stringify(record, null, 2));
-                        }}
-                    />
+                <ListView
+                    title="Current Posts"
+                    model="Post"
+                    fields={[
+                        'title',
+                        'body',
+                        'user'
+                    ]}
+                    orderBy={['title']}
+                    onRecordPress={(record) => {
+                        alert('Selected a record:\n' + JSON.stringify(record, null, 2));
+                    }}
+                />
 
-                </Card>
-            </div>
+            </Card>
         </ModelProvider>
     ),
     document.getElementById('app')
