@@ -66,7 +66,7 @@ export const MUIListView = styles<IMUIListViewProps>((props) => {
             <TableRow>
                 {props.fields.map((field, idx) => {
                     return (
-                        <TableCell key={idx} padding="dense">{field.options.label || field.name}</TableCell>
+                        <TableCell key={idx} padding="dense">{field.field.options.label || field.field.name}</TableCell>
                     );
                 })}
             </TableRow>
@@ -81,7 +81,7 @@ export const MUIListView = styles<IMUIListViewProps>((props) => {
                     onClick={() => props.onRecordPress(record)}
                 >
                     {props.fields.map((field, colIdx) => {
-                        const data = record[field.name];
+                        const data = record[field.fieldName];
                         return (
                             <TableCell key={colIdx} padding="dense">{data ? data.toString() : ''}</TableCell>
                         );

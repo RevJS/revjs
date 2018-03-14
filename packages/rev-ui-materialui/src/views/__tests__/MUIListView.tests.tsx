@@ -36,7 +36,10 @@ describe('MUIListView', () => {
         const cProps: IListViewComponentProps = {
             loadState: 'loading',
             title: 'Test List',
-            fields: modelMeta.fields,
+            fields: modelMeta.fields.map((field) => ({
+                fieldName: field.name,
+                field: field
+            })),
             records: [],
             firstRecordNumber: 0,
             lastRecordNumber: 0 ,
@@ -106,8 +109,8 @@ describe('MUIListView', () => {
                 props.fields.forEach((field, idx) => {
                     const th = wrapper.find('th').at(idx);
                     expect(th.text()).to.equal(
-                        field.options.label
-                        || field.name
+                        field.field.options.label
+                        || field.field.name
                     );
                 });
             });
@@ -186,8 +189,8 @@ describe('MUIListView', () => {
                 props.fields.forEach((field, idx) => {
                     const th = wrapper.find('th').at(idx);
                     expect(th.text()).to.equal(
-                        field.options.label
-                        || field.name
+                        field.field.options.label
+                        || field.field.name
                     );
                 });
             });
@@ -213,7 +216,7 @@ describe('MUIListView', () => {
                         const td = row.find('td').at(fieldIdx);
 
                         expect(td.text()).to.equal(
-                            post[field.name] ? post[field.name].toString() : ''
+                            post[field.field.name] ? post[field.field.name].toString() : ''
                         );
                     });
                 }
@@ -289,8 +292,8 @@ describe('MUIListView', () => {
                 props.fields.forEach((field, idx) => {
                     const th = wrapper.find('th').at(idx);
                     expect(th.text()).to.equal(
-                        field.options.label
-                        || field.name
+                        field.field.options.label
+                        || field.field.name
                     );
                 });
             });

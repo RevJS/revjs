@@ -6,7 +6,7 @@ import { mount } from 'enzyme';
 import { sleep } from '../../../__test_utils__/utils';
 import { ListView, lifecycleOptions, IListViewComponentProps, IListViewField } from '../../ListView';
 import * as models from '../../../__fixtures__/models';
-import { ModelManager, IModelMeta, fields } from 'rev-models';
+import { ModelManager, IModelMeta } from 'rev-models';
 import { ModelProvider } from '../../../provider/ModelProvider';
 import { createData, IModelTestData } from '../../../__fixtures__/modeldata';
 
