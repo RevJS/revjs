@@ -83,7 +83,7 @@ describe('ListView field tests', () => {
             errorStub.restore();
         });
 
-        it('throws an error because Related fields are not yet supported in ListViews', () => {
+        it('An error is thrown if it is not included in the "related" list', () => {
             expect(() => {
                 mountComponent(
                     <ListView
@@ -92,7 +92,20 @@ describe('ListView field tests', () => {
                         fields={['id', 'title', 'user']}
                         component={SpyComponent} />
                 );
-            }).to.throw(`Field 'user' is invalid. Related model fields are not directly supported in ListViews yet.`);
+            }).to.throw(`To render the related model field 'user', it must be included in the "related" prop of the ListView.`);
+        });
+
+        it('Does not throw an error if the field is included in the "related" list', () => {
+            expect(() => {
+                mountComponent(
+                    <ListView
+                        title="Test List"
+                        model={model}
+                        fields={['id', 'title', 'user']}
+                        related={['user']}
+                        component={SpyComponent} />
+                );
+            }).not.to.throw();
         });
 
     });
@@ -109,7 +122,7 @@ describe('ListView field tests', () => {
             errorStub.restore();
         });
 
-        it('throws an error because Related fields are not yet supported in ListViews', () => {
+        it('throws an error because only RelatedModel fields are supported in ListViews', () => {
             expect(() => {
                 mountComponent(
                     <ListView
@@ -118,7 +131,7 @@ describe('ListView field tests', () => {
                         fields={['id', 'title', 'comments']}
                         component={SpyComponent} />
                 );
-            }).to.throw(`Field 'comments' is invalid. Related model fields are not directly supported in ListViews yet.`);
+            }).to.throw(`Related model field 'comments' is invalid. Only RelatedModel fields are supported in ListViews currently.`);
         });
 
     });

@@ -74,7 +74,14 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
                 throw new Error(`ListView Error: Model '${props.model}' does not have a field called '${fieldName}'.`);
             }
             else if (field instanceof fields.RelatedModelFieldBase) {
-                throw new Error(`Field '${fieldName}' is invalid. Related model fields are not directly supported in ListViews yet.`);
+                if (field instanceof fields.RelatedModelField) {
+                    if (!props.related || props.related.indexOf(field.name) == -1) {
+                        throw new Error(`To render the related model field '${fieldName}', it must be included in the "related" prop of the ListView.`);
+                    }
+                }
+                else {
+                    throw new Error(`Related model field '${fieldName}' is invalid. Only RelatedModel fields are supported in ListViews currently.`);
+                }
             }
         }
 
