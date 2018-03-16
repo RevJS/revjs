@@ -26,9 +26,10 @@ function addFieldMeta(
     if (!options) {
         options = {};
     }
-    if (descriptor && descriptor.get && typeof options.stored == 'undefined') {
-        // We assume properties with Getters do not need to be stored
-        options.stored = false;
+    if (descriptor && descriptor.get) {
+        // We assume properties with Getters do not need to be stored and should not be required
+        options.stored = (typeof options.stored != 'undefined') ? options.stored : false;
+        options.required = (typeof options.required != 'undefined') ? options.required : false;
     }
     target.__fields.push(new fieldClass(fieldName, options));
 }
