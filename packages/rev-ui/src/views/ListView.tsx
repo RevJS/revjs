@@ -22,15 +22,10 @@ export interface IListViewProps {
 
 export type IListViewLoadState = 'loading' | 'loaded' | 'load_error';
 
-export interface IListViewField {
-    fieldName: string;
-    field: fields.Field;
-}
-
 export interface IListViewComponentProps {
     title: string;
     loadState: IListViewLoadState;
-    fields: IListViewField[];
+    fields: fields.Field[];
     records: IModel[];
     firstRecordNumber: number;
     lastRecordNumber: number;
@@ -125,10 +120,7 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
 
     render() {
 
-        const listFields = this.props.fields.map((fieldName) => ({
-            fieldName,
-            field: this.modelMeta.fieldsByName[fieldName]
-        }));
+        const listFields = this.props.fields.map((fieldName) => this.modelMeta.fieldsByName[fieldName]);
 
         const cProps: IListViewComponentProps & {children?: any} = {
             loadState: this.state.loadState,

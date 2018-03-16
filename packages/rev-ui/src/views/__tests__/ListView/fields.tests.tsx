@@ -4,9 +4,9 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { mount } from 'enzyme';
 import { sleep } from '../../../__test_utils__/utils';
-import { ListView, lifecycleOptions, IListViewComponentProps, IListViewField } from '../../ListView';
+import { ListView, lifecycleOptions, IListViewComponentProps } from '../../ListView';
 import * as models from '../../../__fixtures__/models';
-import { ModelManager, IModelMeta } from 'rev-models';
+import { ModelManager, IModelMeta, fields } from 'rev-models';
 import { ModelProvider } from '../../../provider/ModelProvider';
 import { createData, IModelTestData } from '../../../__fixtures__/modeldata';
 
@@ -35,17 +35,13 @@ describe('ListView field tests', () => {
         const fieldList = ['id', 'title', 'published', 'post_date'];
         let meta: IModelMeta<models.Post>;
         let modelData: IModelTestData;
-        let expectedFields: IListViewField[];
+        let expectedFields: fields.Field[];
 
         before(async () => {
             modelManager = models.getModelManager();
             meta = modelManager.getModelMeta(models.Post);
             modelData = await createData(modelManager);
-
-            expectedFields = fieldList.map((fieldName) => ({
-                fieldName: fieldName,
-                field: meta.fieldsByName[fieldName]
-            }));
+            expectedFields = fieldList.map((fieldName) => meta.fieldsByName[fieldName]);
 
             receivedProps = null;
             const wrapper = mountComponent(

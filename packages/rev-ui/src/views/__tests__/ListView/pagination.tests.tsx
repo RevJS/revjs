@@ -3,9 +3,9 @@ import * as React from 'react';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
 import { sleep } from '../../../__test_utils__/utils';
-import { ListView, lifecycleOptions, IListViewComponentProps, IListViewField } from '../../ListView';
+import { ListView, lifecycleOptions, IListViewComponentProps } from '../../ListView';
 import * as models from '../../../__fixtures__/models';
-import { ModelManager, IModelMeta } from 'rev-models';
+import { ModelManager, IModelMeta, fields } from 'rev-models';
 import { ModelProvider } from '../../../provider/ModelProvider';
 import { createData, IModelTestData } from '../../../__fixtures__/modeldata';
 
@@ -38,18 +38,14 @@ describe('ListView data & pagination', () => {
         let meta: IModelMeta<models.Post>;
         let modelData: IModelTestData;
         let expectedData: models.Post[];
-        let expectedFields: IListViewField[];
+        let expectedFields: fields.Field[];
 
         before(async () => {
             modelManager = models.getModelManager();
             meta = modelManager.getModelMeta(models.Post);
             modelData = await createData(modelManager);
             expectedData = modelData.posts.slice(0, 3);
-
-            expectedFields = fieldList.map((fieldName) => ({
-                fieldName: fieldName,
-                field: meta.fieldsByName[fieldName]
-            }));
+            expectedFields = fieldList.map((fieldName) => meta.fieldsByName[fieldName]);
 
             lifecycleOptions.enableComponentDidMount = true;
             receivedProps = null;
@@ -261,16 +257,12 @@ describe('ListView data & pagination', () => {
 
     describe('when data has loaded but there are no results', () => {
         const fieldList = ['id', 'title', 'published'];
-        let expectedFields: IListViewField[];
+        let expectedFields: fields.Field[];
 
         before(async () => {
             modelManager = models.getModelManager();
             const meta = modelManager.getModelMeta(models.Post);
-
-            expectedFields = fieldList.map((fieldName) => ({
-                fieldName: fieldName,
-                field: meta.fieldsByName[fieldName]
-            }));
+            expectedFields = fieldList.map((fieldName) => meta.fieldsByName[fieldName]);
 
             lifecycleOptions.enableComponentDidMount = true;
             receivedProps = null;

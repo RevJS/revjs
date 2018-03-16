@@ -4,9 +4,9 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { mount } from 'enzyme';
 import { sleep } from '../../../__test_utils__/utils';
-import { ListView, lifecycleOptions, IListViewComponentProps, IListViewField } from '../../ListView';
+import { ListView, lifecycleOptions, IListViewComponentProps } from '../../ListView';
 import * as models from '../../../__fixtures__/models';
-import { ModelManager, IModelMeta } from 'rev-models';
+import { ModelManager, IModelMeta, fields } from 'rev-models';
 import { ModelProvider } from '../../../provider/ModelProvider';
 import { createData, IModelTestData } from '../../../__fixtures__/modeldata';
 
@@ -67,16 +67,12 @@ describe('ListView basic component', () => {
     describe('initial component props - no data loaded', () => {
         const fieldList = ['id', 'title', 'published'];
         let meta: IModelMeta<models.Post>;
-        let expectedFields: IListViewField[];
+        let expectedFields: fields.Field[];
 
         before(() => {
             modelManager = models.getModelManager();
             meta = modelManager.getModelMeta(models.Post);
-
-            expectedFields = fieldList.map((fieldName) => ({
-                fieldName: fieldName,
-                field: meta.fieldsByName[fieldName]
-            }));
+            expectedFields = fieldList.map((fieldName) => meta.fieldsByName[fieldName]);
 
             lifecycleOptions.enableComponentDidMount = false;
             receivedProps = null;
@@ -148,7 +144,7 @@ describe('ListView basic component', () => {
         let meta: IModelMeta<models.Post>;
         const whereClause = { id: { _gte: 5 }};
         let expectedData: models.Post[];
-        let expectedFields: IListViewField[];
+        let expectedFields: fields.Field[];
 
         before(async () => {
             modelManager = models.getModelManager();
@@ -157,11 +153,7 @@ describe('ListView basic component', () => {
             expectedData = (await modelManager.read(models.Post, {
                 where: whereClause
             })).results;
-
-            expectedFields = fieldList.map((fieldName) => ({
-                fieldName: fieldName,
-                field: meta.fieldsByName[fieldName]
-            }));
+            expectedFields = fieldList.map((fieldName) => meta.fieldsByName[fieldName]);
 
             lifecycleOptions.enableComponentDidMount = true;
             receivedProps = null;
@@ -202,7 +194,7 @@ describe('ListView basic component', () => {
         let meta: IModelMeta<models.Post>;
         const orderBy = ['title desc', 'published'];
         let expectedData: models.Post[];
-        let expectedFields: IListViewField[];
+        let expectedFields: fields.Field[];
 
         before(async () => {
             modelManager = models.getModelManager();
@@ -211,11 +203,7 @@ describe('ListView basic component', () => {
             expectedData = (await modelManager.read(models.Post, {
                 orderBy: orderBy
             })).results;
-
-            expectedFields = fieldList.map((fieldName) => ({
-                fieldName: fieldName,
-                field: meta.fieldsByName[fieldName]
-            }));
+            expectedFields = fieldList.map((fieldName) => meta.fieldsByName[fieldName]);
 
             lifecycleOptions.enableComponentDidMount = true;
             receivedProps = null;
