@@ -78,8 +78,8 @@ export class ModelApiBackend implements IBackend {
     _buildGraphQLModelData(manager: ModelManager, meta: IModelMeta<any>, model: IModel, fieldNames?: string[]) {
         const data = {};
         meta.fields.forEach((field) => {
-            if (
-                (!fieldNames || fieldNames.indexOf(field.name) > -1
+            if (field.options.stored
+                && (!fieldNames || fieldNames.indexOf(field.name) > -1
                     || field.name == meta.primaryKey)
                 && typeof model[field.name] != 'undefined'
             ) {
