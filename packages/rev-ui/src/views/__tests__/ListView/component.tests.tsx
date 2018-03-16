@@ -235,6 +235,61 @@ describe('ListView basic component', () => {
 
     });
 
+    describe('component props - related option', () => {
+        const fieldList = ['id', 'title'];
+        const relatedFields = ['user'];
+        let meta: IModelMeta<models.Post>;
+        const whereClause = { id: { _gte: 5 }};
+        let expectedData: models.Post[];
+        let expectedFields: fields.Field[];
+
+        before(async () => {
+            modelManager = models.getModelManager();
+            meta = modelManager.getModelMeta(models.Post);
+            await createData(modelManager);
+            expectedData = (await modelManager.read(models.Post, {
+                where: whereClause,
+                related: relatedFields
+            })).results;
+            expectedFields = fieldList.map((fieldName) => meta.fieldsByName[fieldName]);
+
+            lifecycleOptions.enableComponentDidMount = true;
+            receivedProps = null;
+            const wrapper = mountComponent(
+                <ListView
+                    title="List with Data Loaded..."
+                    model={model}
+                    fields={fieldList}
+                    related={relatedFields}
+                    where={whereClause}
+                    limit={100}
+                    component={SpyComponent} />
+            );
+            await sleep(10);
+            wrapper.update();
+        });
+
+        it('passes the fields list', () => {
+            expect(receivedProps.fields).to.deep.equal(expectedFields);
+        });
+
+        it('passes the correct record data', () => {
+            expectedData.forEach((record, recordIdx) => {
+                fieldList.forEach((fieldName) => {
+                    expect(receivedProps.records[recordIdx][fieldName])
+                        .to.equal(record[fieldName]);
+                });
+            });
+        });
+
+        it('includes the related field data', () => {
+            expectedData.forEach((record, recordIdx) => {
+                expect(receivedProps.records[recordIdx].user).to.be.instanceof(models.User);
+            });
+        });
+
+    });
+
     describe('Event Handlers', () => {
         const fieldList = ['id', 'title', 'published', 'post_date'];
         let expectedData: IModelTestData;

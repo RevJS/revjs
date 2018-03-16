@@ -10,6 +10,7 @@ import { UI_COMPONENTS } from '../config';
 export interface IListViewProps {
     model: string;
     fields: string[];
+    related?: string[];
     title?: string;
     where?: object;
     orderBy?: string[];
