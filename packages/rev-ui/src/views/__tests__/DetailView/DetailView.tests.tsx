@@ -2,14 +2,14 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import * as sinon from 'sinon';
-import * as models from '../../__fixtures__/models';
-import { createData, IModelTestData } from '../../__fixtures__/modeldata';
+import * as models from '../../../__fixtures__/models';
+import { createData, IModelTestData } from '../../../__fixtures__/modeldata';
 import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount, ReactWrapper } from 'enzyme';
-import { ModelProvider } from '../../provider/ModelProvider';
-import { DetailView, IModelContext } from '../DetailView';
-import { sleep } from '../../__test_utils__/utils';
+import { ModelProvider } from '../../../provider/ModelProvider';
+import { DetailView, IModelContext } from '../../DetailView';
+import { sleep } from '../../../__test_utils__/utils';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
 

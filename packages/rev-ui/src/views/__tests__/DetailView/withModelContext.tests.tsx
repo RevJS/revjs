@@ -2,11 +2,11 @@
 import * as React from 'react';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
-import * as models from '../../__fixtures__/models';
+import * as models from '../../../__fixtures__/models';
 import { ModelManager } from 'rev-models';
-import { ModelProvider } from '../../provider/ModelProvider';
-import { DetailView, IModelContextProp } from '../DetailView';
-import { withModelContext } from '../withModelContext';
+import { ModelProvider } from '../../../provider/ModelProvider';
+import { DetailView, IModelContextProp } from '../../DetailView';
+import { withModelContext } from '../../withModelContext';
 
 interface ISpyComponentProps {
     prop1: string;
