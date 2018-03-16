@@ -3,12 +3,13 @@ import { expect } from 'chai';
 import * as d from '../fields';
 import * as f from '../../fields';
 
-describe('rev.decorators.fields', () => {
+describe('rev.decorators.fields - normal properties', () => {
 
     function expectFieldMeta(target: any, fieldName: string, type: any) {
         expect(target.prototype.__fields).to.be.an('Array');
         expect(target.prototype.__fields[0]).to.be.instanceof(type);
         expect(target.prototype.__fields[0].name).to.equal(fieldName);
+        expect(target.prototype.__fields[0].options.stored).to.be.true;
     }
 
     describe('Text Fields', () => {

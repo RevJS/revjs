@@ -6,7 +6,14 @@ import { ISelectFieldOptions } from '../fields/selectionfields';
 
 /* RevModel Field Decorators */
 
-function addFieldMeta(target: any, fieldName: string, fieldObj: fld.Field) {
+function addFieldMeta(
+        target: any,
+        fieldName: string,
+        descriptor: PropertyDescriptor,
+        fieldClass: new(...args: any[]) => fld.Field,
+        options: IFieldOptions
+    ) {
+
     if (!target.hasOwnProperty('__fields')) {
         let fields = [];
         if (target.__fields) {
@@ -16,7 +23,14 @@ function addFieldMeta(target: any, fieldName: string, fieldObj: fld.Field) {
             enumerable: false, value: fields
         });
     }
-    target.__fields.push(fieldObj);
+    if (!options) {
+        options = {};
+    }
+    if (descriptor && descriptor.get && typeof options.stored == 'undefined') {
+        // We assume properties with Getters do not need to be stored
+        options.stored = false;
+    }
+    target.__fields.push(new fieldClass(fieldName, options));
 }
 
 // Text Fields
@@ -36,8 +50,8 @@ function addFieldMeta(target: any, fieldName: string, fieldObj: fld.Field) {
  */
 export function TextField(options?: ITextFieldOptions)
 {
-    return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.TextField(propName, options));
+    return function(target: any, propName: string, descriptor?: PropertyDescriptor) {
+        addFieldMeta(target, propName, descriptor, fld.TextField, options);
     };
 }
 
@@ -56,8 +70,8 @@ export function TextField(options?: ITextFieldOptions)
  */
 export function PasswordField(options?: ITextFieldBaseOptions)
 {
-    return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.PasswordField(propName, options));
+    return function(target: any, propName: string, descriptor?: PropertyDescriptor) {
+        addFieldMeta(target, propName, descriptor, fld.PasswordField, options);
     };
 }
 
@@ -76,8 +90,8 @@ export function PasswordField(options?: ITextFieldBaseOptions)
  */
 export function EmailField(options?: ITextFieldBaseOptions)
 {
-    return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.EmailField(propName, options));
+    return function(target: any, propName: string, descriptor?: PropertyDescriptor) {
+        addFieldMeta(target, propName, descriptor, fld.EmailField, options);
     };
 }
 
@@ -96,8 +110,8 @@ export function EmailField(options?: ITextFieldBaseOptions)
  */
 export function URLField(options?: ITextFieldBaseOptions)
 {
-    return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.URLField(propName, options));
+    return function(target: any, propName: string, descriptor?: PropertyDescriptor) {
+        addFieldMeta(target, propName, descriptor, fld.URLField, options);
     };
 }
 
@@ -118,8 +132,8 @@ export function URLField(options?: ITextFieldBaseOptions)
  */
 export function NumberField(options?: INumberFieldOptions)
 {
-    return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.NumberField(propName, options));
+    return function(target: any, propName: string, descriptor?: PropertyDescriptor) {
+        addFieldMeta(target, propName, descriptor, fld.NumberField, options);
     };
 }
 
@@ -138,8 +152,8 @@ export function NumberField(options?: INumberFieldOptions)
  */
 export function IntegerField(options?: INumberFieldOptions)
 {
-    return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.IntegerField(propName, options));
+    return function(target: any, propName: string, descriptor?: PropertyDescriptor) {
+        addFieldMeta(target, propName, descriptor, fld.IntegerField, options);
     };
 }
 
@@ -158,8 +172,8 @@ export function IntegerField(options?: INumberFieldOptions)
  */
 export function AutoNumberField(options?: IFieldOptions)
 {
-    return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.AutoNumberField(propName, options));
+    return function(target: any, propName: string, descriptor?: PropertyDescriptor) {
+        addFieldMeta(target, propName, descriptor, fld.AutoNumberField, options);
     };
 }
 
@@ -180,8 +194,8 @@ export function AutoNumberField(options?: IFieldOptions)
  */
 export function BooleanField(options?: IFieldOptions)
 {
-    return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.BooleanField(propName, options));
+    return function(target: any, propName: string, descriptor?: PropertyDescriptor) {
+        addFieldMeta(target, propName, descriptor, fld.BooleanField, options);
     };
 }
 
@@ -206,8 +220,8 @@ export function BooleanField(options?: IFieldOptions)
  */
 export function SelectField(options: ISelectFieldOptions)
 {
-    return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.SelectField(propName, options));
+    return function(target: any, propName: string, descriptor?: PropertyDescriptor) {
+        addFieldMeta(target, propName, descriptor, fld.SelectField, options);
     };
 }
 
@@ -232,8 +246,8 @@ export function SelectField(options: ISelectFieldOptions)
  */
 export function MultiSelectField(options: ISelectFieldOptions)
 {
-    return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.MultiSelectField(propName, options));
+    return function(target: any, propName: string, descriptor?: PropertyDescriptor) {
+        addFieldMeta(target, propName, descriptor, fld.MultiSelectField, options);
     };
 }
 
@@ -254,8 +268,8 @@ export function MultiSelectField(options: ISelectFieldOptions)
  */
 export function DateField(options?: IFieldOptions)
 {
-    return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.DateField(propName, options));
+    return function(target: any, propName: string, descriptor?: PropertyDescriptor) {
+        addFieldMeta(target, propName, descriptor, fld.DateField, options);
     };
 }
 
@@ -274,8 +288,8 @@ export function DateField(options?: IFieldOptions)
  */
 export function TimeField(options?: IFieldOptions)
 {
-    return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.TimeField(propName, options));
+    return function(target: any, propName: string, descriptor?: PropertyDescriptor) {
+        addFieldMeta(target, propName, descriptor, fld.TimeField, options);
     };
 }
 
@@ -294,8 +308,8 @@ export function TimeField(options?: IFieldOptions)
  */
 export function DateTimeField(options?: IFieldOptions)
 {
-    return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.DateTimeField(propName, options));
+    return function(target: any, propName: string, descriptor?: PropertyDescriptor) {
+        addFieldMeta(target, propName, descriptor, fld.DateTimeField, options);
     };
 }
 
@@ -316,8 +330,8 @@ export function DateTimeField(options?: IFieldOptions)
  */
 export function RelatedModel(options: fld.IRelatedModelFieldOptions)
 {
-    return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.RelatedModelField(propName, options));
+    return function(target: any, propName: string, descriptor?: PropertyDescriptor) {
+        addFieldMeta(target, propName, descriptor, fld.RelatedModelField, options);
     };
 }
 
@@ -337,7 +351,7 @@ export function RelatedModel(options: fld.IRelatedModelFieldOptions)
  */
 export function RelatedModelList(options: fld.IRelatedModelListFieldOptions)
 {
-    return function(target: any, propName: string) {
-        addFieldMeta(target, propName, new fld.RelatedModelListField(propName, options));
+    return function(target: any, propName: string, descriptor?: PropertyDescriptor) {
+        addFieldMeta(target, propName, descriptor, fld.RelatedModelListField, options);
     };
 }

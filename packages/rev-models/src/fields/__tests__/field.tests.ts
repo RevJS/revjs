@@ -43,7 +43,8 @@ describe('rev.fields.field', () => {
 
         it('creates a field with properties as expected', () => {
             let opts: IFieldOptions = {
-                required: true
+                required: true,
+                stored: true
             };
             let test = new Field('name', opts);
             expect(test.name).to.equal('name');

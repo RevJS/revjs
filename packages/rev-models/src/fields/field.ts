@@ -12,13 +12,15 @@ export interface IFieldOptions {
     label?: string;
     required?: boolean;
     primaryKey?: boolean;
+    stored?: boolean;
 }
 
 /**
  * @private
  */
 export const DEFAULT_FIELD_OPTIONS: IFieldOptions = {
-    required: true
+    required: true,
+    stored: true
 };
 
 /**
