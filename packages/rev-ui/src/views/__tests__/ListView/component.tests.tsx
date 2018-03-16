@@ -285,6 +285,7 @@ describe('ListView basic component', () => {
         it('includes the related field data', () => {
             expectedData.forEach((record, recordIdx) => {
                 expect(receivedProps.records[recordIdx].user).to.be.instanceof(models.User);
+                expect(receivedProps.records[recordIdx].user).to.deep.equal(record.user);
             });
         });
 

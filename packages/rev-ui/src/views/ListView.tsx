@@ -43,6 +43,7 @@ export interface IListViewState {
     loadState: IListViewLoadState;
     modelData?: IModelOperationResult<any, IReadMeta>;
     where: object;
+    related: string[];
     orderBy: string[];
     limit: number;
     offset: number;
@@ -80,6 +81,7 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
         this.state = {
             loadState: 'loading',
             where: props.where || {},
+            related: props.related || null,
             orderBy: props.orderBy || null,
             limit: props.limit || 20,
             offset: 0,
@@ -109,6 +111,7 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
             this.modelMeta.ctor,
             {
                 where: this.state.where,
+                related: this.state.related,
                 orderBy: this.state.orderBy,
                 limit,
                 offset,
