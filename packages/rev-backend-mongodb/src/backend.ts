@@ -104,14 +104,16 @@ export class MongoDBBackend implements IBackend {
         let fieldList = Object.keys(meta.fieldsByName);
         for (let fieldName of fieldList) {
             let field = meta.fieldsByName[fieldName];
-            if (field instanceof fields.AutoNumberField
-                    && typeof model[fieldName] == 'undefined') {
-                document[fieldName] = await this._getNextAutoNumberValue(meta.name, fieldName);
-            }
-            else if (typeof model[fieldName] != 'undefined') {
-                let value = field.toBackendValue(manager, model[fieldName]);
-                if (typeof value != 'undefined') {
-                    document[fieldName] = value;
+            if (field.options.stored) {
+                if (field instanceof fields.AutoNumberField
+                        && typeof model[fieldName] == 'undefined') {
+                    document[fieldName] = await this._getNextAutoNumberValue(meta.name, fieldName);
+                }
+                else if (typeof model[fieldName] != 'undefined') {
+                    let value = field.toBackendValue(manager, model[fieldName]);
+                    if (typeof value != 'undefined') {
+                        document[fieldName] = value;
+                    }
                 }
             }
         }
@@ -140,7 +142,7 @@ export class MongoDBBackend implements IBackend {
         const fieldUpdates = {};
         options.fields.forEach((fieldName) => {
             const field = meta.fieldsByName[fieldName];
-            if (typeof model[fieldName] != 'undefined') {
+            if (field.options.stored && typeof model[fieldName] != 'undefined') {
                 let value = field.toBackendValue(manager, model[fieldName]);
                 if (typeof value != 'undefined') {
                     fieldUpdates[fieldName] = value;
