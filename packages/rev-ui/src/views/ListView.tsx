@@ -67,8 +67,12 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
         }
         this.modelMeta = this.context.modelManager.getModelMeta(this.props.model);
         for (const fieldName of props.fields) {
-            if (!(fieldName in this.modelMeta.fieldsByName)) {
+            const field = this.modelMeta.fieldsByName[fieldName];
+            if (!field) {
                 throw new Error(`ListView Error: Model '${props.model}' does not have a field called '${fieldName}'.`);
+            }
+            else if (field instanceof fields.RelatedModelFieldBase) {
+                throw new Error(`Field '${fieldName}' is invalid. Related model fields are not directly supported in ListViews yet.`);
             }
         }
 

@@ -71,7 +71,7 @@ describe('ListView field tests', () => {
 
     });
 
-    describe.skip('with a Related Post field selected', () => {
+    describe('with a RelatedModel field selected', () => {
         let errorStub: sinon.SinonStub;
 
         before(async () => {
@@ -83,7 +83,33 @@ describe('ListView field tests', () => {
             errorStub.restore();
         });
 
-        it('throws an error because RelatedModelList fields are not yet supported in ListViews', () => {
+        it('throws an error because Related fields are not yet supported in ListViews', () => {
+            expect(() => {
+                mountComponent(
+                    <ListView
+                        title="Test List"
+                        model={model}
+                        fields={['id', 'title', 'user']}
+                        component={SpyComponent} />
+                );
+            }).to.throw(`Field 'user' is invalid. Related model fields are not directly supported in ListViews yet.`);
+        });
+
+    });
+
+    describe('with a RelatedModelList field selected', () => {
+        let errorStub: sinon.SinonStub;
+
+        before(async () => {
+            modelManager = models.getModelManager();
+            errorStub = sinon.stub(console, 'error');
+        });
+
+        after(() => {
+            errorStub.restore();
+        });
+
+        it('throws an error because Related fields are not yet supported in ListViews', () => {
             expect(() => {
                 mountComponent(
                     <ListView
@@ -92,7 +118,7 @@ describe('ListView field tests', () => {
                         fields={['id', 'title', 'comments']}
                         component={SpyComponent} />
                 );
-            }).to.throw(`The related lookup field 'comments.blah' is invalid. Only RelatedModel fields are currently supported.`);
+            }).to.throw(`Field 'comments' is invalid. Related model fields are not directly supported in ListViews yet.`);
         });
 
     });
