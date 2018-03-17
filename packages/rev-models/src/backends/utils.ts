@@ -30,8 +30,8 @@ export interface IRelatedModelListInstances {
 /**
  * @private
  */
-export function getOwnRelatedFieldNames(options: IReadOptions) {
-    return options.related && options.related.map((fieldName) => {
+export function getOwnRelatedFieldNames(related: string[]) {
+    return related && related.map((fieldName) => {
         return fieldName.split('.')[0];
     });
 }
@@ -39,10 +39,10 @@ export function getOwnRelatedFieldNames(options: IReadOptions) {
 /**
  * @private
  */
-export function getChildRelatedFieldNames(options: IReadOptions, parent: string) {
-    if (options.related) {
+export function getChildRelatedFieldNames(related: string[], parent: string) {
+    if (related) {
         let childRelatedFields: string[] = [];
-        options.related.forEach((fieldName) => {
+        related.forEach((fieldName) => {
             let tokens = fieldName.split('.');
             if (tokens.length > 1 && tokens[0] == parent) {
                 childRelatedFields.push(tokens.slice(1).join('.'));
@@ -67,7 +67,7 @@ export async function getRelatedModelInstances(manager: IModelManager, meta: IMo
             let relatedMeta = manager.getModelMeta(field.options.model);
             let readOptions: IReadOptions = {
                 limit: foreignKeyValues[fieldName].length,
-                related: getChildRelatedFieldNames(options, fieldName)
+                related: getChildRelatedFieldNames(options.related, fieldName)
             };
 
             foreignKeyFields.push(fieldName);
@@ -106,7 +106,7 @@ export async function getRelatedModelListInstances(manager: IModelManager, meta:
     const modelListFields: string[] = [];
     const modelListFieldFKs: string[] = [];
     const modelListFieldPromises: Array<Promise<IModelOperationResult<any, any>>> = [];
-    const relatedFieldNames = getOwnRelatedFieldNames(options);
+    const relatedFieldNames = getOwnRelatedFieldNames(options.related);
 
     for (let fieldName of relatedFieldNames) {
         let field = meta.fieldsByName[fieldName];
@@ -115,7 +115,7 @@ export async function getRelatedModelListInstances(manager: IModelManager, meta:
             let readOptions: IReadOptions = {
                 // NOTE: Number of results limited to the default number of results
                 rawValues: [field.options.field],
-                related: getChildRelatedFieldNames(options, fieldName)
+                related: getChildRelatedFieldNames(options.related, fieldName)
             };
             modelListFields.push(fieldName);
             modelListFieldFKs.push(field.options.field);

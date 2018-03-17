@@ -138,7 +138,7 @@ export class InMemoryBackend implements IBackend {
         const foreignKeyValues: IForeignKeyValues = {};
         const rawValues: IRawValues = [];
 
-        const relatedFieldNames = getOwnRelatedFieldNames(options);
+        const relatedFieldNames = getOwnRelatedFieldNames(options.related);
 
         // Populate scalar values and cache related model information
         result.results = [];

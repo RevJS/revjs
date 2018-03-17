@@ -194,7 +194,7 @@ export class MongoDBBackend implements IBackend {
         const primaryKeyValues: any[] = [];
         const foreignKeyValues: IForeignKeyValues = {};
         const rawValues: IRawValues = [];
-        const relatedFieldNames = getOwnRelatedFieldNames(options);
+        const relatedFieldNames = getOwnRelatedFieldNames(options.related);
 
         result.results = [];
         records.forEach((record) => {
