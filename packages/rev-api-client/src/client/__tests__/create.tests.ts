@@ -1,18 +1,18 @@
 
 import { expect } from 'chai';
 
-import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
-import { getMockApiHttpClient, getMockHttpClient } from '../__test_utils__/mockHttpClient';
+import { AxiosResponse } from 'axios';
+import { getMockHttpClient } from '../__test_utils__/mockHttpClient';
+import { backendWithMockApi } from '../__test_utils__/mockApiProxy';
 import { ModelApiBackend } from '../backend';
 import { getModelManager, Comment, Post } from '../__fixtures__/models';
 import { ModelManager, ModelOperationResult } from 'rev-models';
 import { ICreateOptions, ICreateMeta } from 'rev-models/lib/models/types';
-import { posts, users } from '../__fixtures__/modeldata';
+import { posts, users, createData } from '../__fixtures__/modeldata';
 
 describe('ModelApiBackend - create()', () => {
 
     let manager: ModelManager;
-    let mockHttpClient: (config: AxiosRequestConfig) => AxiosPromise;
     let apiBackend: ModelApiBackend;
     let createOptions: ICreateOptions;
     let createResult: ModelOperationResult<any, ICreateMeta>;
@@ -22,13 +22,14 @@ describe('ModelApiBackend - create()', () => {
         mockResponse?: AxiosResponse<any>
     }) {
         manager = getModelManager();
+        await createData(manager);
         if (options.responseType == 'rev-api') {
-            mockHttpClient = await getMockApiHttpClient(manager);
+            apiBackend = backendWithMockApi(new ModelApiBackend('/api'));
         }
         else {
-            mockHttpClient = getMockHttpClient(options.mockResponse);
+            const mockHttpClient = getMockHttpClient(options.mockResponse);
+            apiBackend = new ModelApiBackend('/api', mockHttpClient);
         }
-        apiBackend = new ModelApiBackend('/api', mockHttpClient);
         createOptions = {};
         createResult = new ModelOperationResult<Comment, ICreateMeta>({operationName: 'create'});
     }
@@ -101,12 +102,12 @@ describe('ModelApiBackend - create()', () => {
         expect(result.result).to.be.undefined;
     });
 
-    it('throws error with received data if response is empty', () => {
+    it('throws error with received data if response is empty', async () => {
         const mockResponse: AxiosResponse = {
             data: null,
             status: 200, statusText: '', headers: {}, config: {}
         };
-        setup({ responseType: 'mock', mockResponse: mockResponse });
+        await setup({ responseType: 'mock', mockResponse: mockResponse });
 
         return apiBackend.create(manager, new Comment(), createOptions, createResult)
             .then(() => { throw new Error('expected to reject'); })
@@ -116,7 +117,7 @@ describe('ModelApiBackend - create()', () => {
             });
     });
 
-    it('re-throws graphql errors if they have been returned', () => {
+    it('re-throws graphql errors if they have been returned', async () => {
         const mockResponse: AxiosResponse = {
             data: {
                 errors: [
@@ -125,7 +126,7 @@ describe('ModelApiBackend - create()', () => {
             },
             status: 200, statusText: '', headers: {}, config: {}
         };
-        setup({ responseType: 'mock', mockResponse: mockResponse });
+        await setup({ responseType: 'mock', mockResponse: mockResponse });
 
         return apiBackend.create(manager, new Comment(), createOptions, createResult)
             .then(() => { throw new Error('expected to reject'); })
@@ -135,12 +136,12 @@ describe('ModelApiBackend - create()', () => {
             });
     });
 
-    it('throws error with received data if response does not contain graphql "data" key', () => {
+    it('throws error with received data if response does not contain graphql "data" key', async () => {
         const mockResponse: AxiosResponse = {
             data: {},
             status: 200, statusText: '', headers: {}, config: {}
         };
-        setup({ responseType: 'mock', mockResponse: mockResponse });
+        await setup({ responseType: 'mock', mockResponse: mockResponse });
 
         return apiBackend.create(manager, new Comment(), createOptions, createResult)
             .then(() => { throw new Error('expected to reject'); })

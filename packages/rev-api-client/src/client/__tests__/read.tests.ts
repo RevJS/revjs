@@ -2,16 +2,17 @@
 import { expect } from 'chai';
 
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
-import { getMockApiHttpClient, getMockHttpClient } from '../__test_utils__/mockHttpClient';
+import { getMockHttpClient } from '../__test_utils__/mockHttpClient';
+import { backendWithMockApi } from '../__test_utils__/mockApiProxy';
 import { ModelApiBackend } from '../backend';
 import { getModelManager, Comment, Post } from '../__fixtures__/models';
 import { ModelManager, ModelOperationResult } from 'rev-models';
 import { IReadMeta, IReadOptions } from 'rev-models/lib/models/types';
+import { posts, users, createData } from '../__fixtures__/modeldata';
 
 describe('ModelApiBackend - read()', () => {
 
     let manager: ModelManager;
-    let mockHttpClient: (config: AxiosRequestConfig) => AxiosPromise;
     let apiBackend: ModelApiBackend;
     let readOptions: IReadOptions;
     let readResult: ModelOperationResult<any, IReadMeta>;
@@ -21,13 +22,14 @@ describe('ModelApiBackend - read()', () => {
         mockResponse?: AxiosResponse<any>
     }) {
         manager = getModelManager();
+        await createData(manager);
         if (options.responseType == 'rev-api') {
-            mockHttpClient = await getMockApiHttpClient(manager);
+            apiBackend = backendWithMockApi(new ModelApiBackend('/api'));
         }
         else {
-            mockHttpClient = getMockHttpClient(options.mockResponse);
+            const mockHttpClient = getMockHttpClient(options.mockResponse);
+            apiBackend = new ModelApiBackend('/api', mockHttpClient);
         }
-        apiBackend = new ModelApiBackend('/api', mockHttpClient);
         readOptions = {
             where: {},
             offset: 0,
@@ -70,6 +72,32 @@ describe('ModelApiBackend - read()', () => {
         expect(result.results[2]).to.include({
             id: 3, title: 'Ruby Sucks'
         });
+    });
+
+    it('RelatedModelFields are not returned by default', async () => {
+        const result = await apiBackend.read(
+            manager, Post, readOptions, readResult
+        );
+        expect(result.success).to.be.true;
+        expect(result.results[0]).to.be.instanceof(Post);
+        expect(result.results[1]).to.be.instanceof(Post);
+        expect(result.results[2]).to.be.instanceof(Post);
+        expect(result.results[0].user).to.be.undefined;
+        expect(result.results[1].user).to.be.undefined;
+        expect(result.results[2].user).to.be.undefined;
+    });
+
+    it('RelatedModelListFields are not returned by default', async () => {
+        const result = await apiBackend.read(
+            manager, Post, readOptions, readResult
+        );
+        expect(result.success).to.be.true;
+        expect(result.results[0]).to.be.instanceof(Post);
+        expect(result.results[1]).to.be.instanceof(Post);
+        expect(result.results[2]).to.be.instanceof(Post);
+        expect(result.results[0].comments).to.be.undefined;
+        expect(result.results[1].comments).to.be.undefined;
+        expect(result.results[2].comments).to.be.undefined;
     });
 
     it('returns read metadata', async () => {
@@ -146,12 +174,12 @@ describe('ModelApiBackend - read()', () => {
         });
     });
 
-    it('throws error with received data if response is empty', () => {
+    it('throws error with received data if response is empty', async () => {
         const mockResponse: AxiosResponse = {
             data: null,
             status: 200, statusText: '', headers: {}, config: {}
         };
-        setup({ responseType: 'mock', mockResponse: mockResponse });
+        await setup({ responseType: 'mock', mockResponse: mockResponse });
 
         return apiBackend.read(manager, Comment, readOptions, readResult)
             .then(() => { throw new Error('expected to reject'); })
@@ -161,7 +189,7 @@ describe('ModelApiBackend - read()', () => {
             });
     });
 
-    it('re-throws graphql errors if they have been returned', () => {
+    it('re-throws graphql errors if they have been returned', async () => {
         const mockResponse: AxiosResponse = {
             data: {
                 errors: [
@@ -170,7 +198,7 @@ describe('ModelApiBackend - read()', () => {
             },
             status: 200, statusText: '', headers: {}, config: {}
         };
-        setup({ responseType: 'mock', mockResponse: mockResponse });
+        await setup({ responseType: 'mock', mockResponse: mockResponse });
 
         return apiBackend.read(manager, Comment, readOptions, readResult)
             .then(() => { throw new Error('expected to reject'); })
@@ -180,12 +208,12 @@ describe('ModelApiBackend - read()', () => {
             });
     });
 
-    it('throws error with received data if response does not contain graphql "data" key', () => {
+    it('throws error with received data if response does not contain graphql "data" key', async () => {
         const mockResponse: AxiosResponse = {
             data: {},
             status: 200, statusText: '', headers: {}, config: {}
         };
-        setup({ responseType: 'mock', mockResponse: mockResponse });
+        await setup({ responseType: 'mock', mockResponse: mockResponse });
 
         return apiBackend.read(manager, Comment, readOptions, readResult)
             .then(() => { throw new Error('expected to reject'); })
@@ -195,7 +223,7 @@ describe('ModelApiBackend - read()', () => {
             });
     });
 
-    it('throws error with received data if response does not contain the expected model results', () => {
+    it('throws error with received data if response does not contain the expected model results', async () => {
         const mockResponse: AxiosResponse = {
             data: {
                 data: {
@@ -206,7 +234,7 @@ describe('ModelApiBackend - read()', () => {
             },
             status: 200, statusText: '', headers: {}, config: {}
         };
-        setup({ responseType: 'mock', mockResponse: mockResponse });
+        await setup({ responseType: 'mock', mockResponse: mockResponse });
 
         return apiBackend.read(manager, Comment, readOptions, readResult)
             .then(() => { throw new Error('expected to reject'); })

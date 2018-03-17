@@ -1,17 +1,18 @@
 
 import { expect } from 'chai';
 
-import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
-import { getMockApiHttpClient, getMockHttpClient } from '../__test_utils__/mockHttpClient';
+import { AxiosResponse } from 'axios';
+import { getMockHttpClient } from '../__test_utils__/mockHttpClient';
+import { backendWithMockApi } from '../__test_utils__/mockApiProxy';
 import { ModelApiBackend } from '../backend';
 import { getModelManager, Comment, Post } from '../__fixtures__/models';
 import { ModelManager, ModelOperationResult } from 'rev-models';
 import { IRemoveOptions, IRemoveMeta } from 'rev-models/lib/models/types';
+import { createData } from '../__fixtures__/modeldata';
 
 describe('ModelApiBackend - remove()', () => {
 
     let manager: ModelManager;
-    let mockHttpClient: (config: AxiosRequestConfig) => AxiosPromise;
     let apiBackend: ModelApiBackend;
     let removeOptions: IRemoveOptions;
     let removeResult: ModelOperationResult<any, IRemoveMeta>;
@@ -21,13 +22,14 @@ describe('ModelApiBackend - remove()', () => {
         mockResponse?: AxiosResponse<any>
     }) {
         manager = getModelManager();
+        await createData(manager);
         if (options.responseType == 'rev-api') {
-            mockHttpClient = await getMockApiHttpClient(manager);
+            apiBackend = backendWithMockApi(new ModelApiBackend('/api'));
         }
         else {
-            mockHttpClient = getMockHttpClient(options.mockResponse);
+            const mockHttpClient = getMockHttpClient(options.mockResponse);
+            apiBackend = new ModelApiBackend('/api', mockHttpClient);
         }
-        apiBackend = new ModelApiBackend('/api', mockHttpClient);
         removeOptions = {};
         removeResult = new ModelOperationResult<Comment, IRemoveMeta>({operationName: 'remove'});
     }
@@ -70,12 +72,12 @@ describe('ModelApiBackend - remove()', () => {
         });
     });
 
-    it('throws error with received data if response is empty', () => {
+    it('throws error with received data if response is empty', async () => {
         const mockResponse: AxiosResponse = {
             data: null,
             status: 200, statusText: '', headers: {}, config: {}
         };
-        setup({ responseType: 'mock', mockResponse: mockResponse });
+        await setup({ responseType: 'mock', mockResponse: mockResponse });
 
         return apiBackend.remove(manager, new Comment(), removeOptions, removeResult)
             .then(() => { throw new Error('expected to reject'); })
@@ -85,7 +87,7 @@ describe('ModelApiBackend - remove()', () => {
             });
     });
 
-    it('re-throws graphql errors if they have been returned', () => {
+    it('re-throws graphql errors if they have been returned', async () => {
         const mockResponse: AxiosResponse = {
             data: {
                 errors: [
@@ -94,7 +96,7 @@ describe('ModelApiBackend - remove()', () => {
             },
             status: 200, statusText: '', headers: {}, config: {}
         };
-        setup({ responseType: 'mock', mockResponse: mockResponse });
+        await setup({ responseType: 'mock', mockResponse: mockResponse });
 
         return apiBackend.remove(manager, new Comment(), removeOptions, removeResult)
             .then(() => { throw new Error('expected to reject'); })
@@ -104,12 +106,12 @@ describe('ModelApiBackend - remove()', () => {
             });
     });
 
-    it('throws error with received data if response does not contain graphql "data" key', () => {
+    it('throws error with received data if response does not contain graphql "data" key', async () => {
         const mockResponse: AxiosResponse = {
             data: {},
             status: 200, statusText: '', headers: {}, config: {}
         };
-        setup({ responseType: 'mock', mockResponse: mockResponse });
+        await setup({ responseType: 'mock', mockResponse: mockResponse });
 
         return apiBackend.remove(manager, new Comment(), removeOptions, removeResult)
             .then(() => { throw new Error('expected to reject'); })

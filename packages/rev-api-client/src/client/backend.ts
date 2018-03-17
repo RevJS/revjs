@@ -13,8 +13,8 @@ import { jsonToGraphQLQuery } from 'json-to-graphql-query';
 export class ModelApiBackend implements IBackend {
 
     constructor(
-        private apiUrl: string,
-        private _httpClient?: (config: AxiosRequestConfig) => AxiosPromise
+        public apiUrl: string,
+        public _httpClient?: (config: AxiosRequestConfig) => AxiosPromise
     ) {
         if (!this.apiUrl) {
             throw new Error('ModelApiBackend Error: You must provide an apiUrl');
@@ -24,7 +24,7 @@ export class ModelApiBackend implements IBackend {
         }
     }
 
-    async _getGraphQLQueryResult(query: object) {
+    private async _getGraphQLQueryResult(query: object) {
         const httpResult = await this._httpClient({
             url: this.apiUrl,
             method: 'POST',
@@ -39,13 +39,13 @@ export class ModelApiBackend implements IBackend {
         return httpResult;
     }
 
-    _createHttpError(message: string, response: AxiosResponse) {
+    private _createHttpError(message: string, response: AxiosResponse) {
         const error = new Error(message);
         error.response = response;
         return error;
     }
 
-    _buildGraphQLQuery(meta: IModelMeta<any>, options: IReadOptions) {
+    private _buildGraphQLQuery(meta: IModelMeta<any>, options: IReadOptions) {
         const fieldObj: any = {};
         for (const field of meta.fields) {
             if (!(field instanceof fields.RelatedModelFieldBase)) {
@@ -75,7 +75,7 @@ export class ModelApiBackend implements IBackend {
         };
     }
 
-    _buildGraphQLModelData(manager: ModelManager, meta: IModelMeta<any>, model: IModel, fieldNames?: string[]) {
+    private _buildGraphQLModelData(manager: ModelManager, meta: IModelMeta<any>, model: IModel, fieldNames?: string[]) {
         const data = {};
         meta.fields.forEach((field) => {
             if (field.options.stored

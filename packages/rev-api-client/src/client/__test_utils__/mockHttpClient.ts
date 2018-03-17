@@ -1,9 +1,7 @@
 
 import { ModelApiManager, GraphQLApi } from 'rev-api';
-import * as models from '../__fixtures__/models';
 import { graphql } from 'graphql';
 import { ModelManager } from 'rev-models';
-import { createData } from '../__fixtures__/modeldata';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ExecutionResult } from 'graphql/execution/execute';
 
@@ -18,18 +16,21 @@ export function getMockHttpClient(mockResponse: AxiosResponse<any>) {
 }
 
 /**
- * Returns a mock axios function which makes actual graphql queries against rev-api
+ * Returns a mock axios function which makes actual graphql queries against
+ * any models defined in the passed modelManager
  * @param modelManager
  */
-export async function getMockApiHttpClient(modelManager: ModelManager) {
+export function getMockApiHttpClient(modelManager: ModelManager) {
+
     const apiManager = new ModelApiManager(modelManager);
-    apiManager.register(models.Post, { operations: ['create', 'read', 'update', 'remove'] });
-    apiManager.register(models.User, { operations: ['create', 'read', 'update', 'remove'] });
-    apiManager.register(models.Comment, { operations: ['create', 'read', 'update', 'remove'] });
+
+    const modelNames = modelManager.getModelNames();
+    modelNames.forEach((modelName) => {
+        const meta = modelManager.getModelMeta(modelName);
+        apiManager.register(meta.ctor, { operations: ['create', 'read', 'update', 'remove']});
+    });
+
     const api = new GraphQLApi(apiManager);
-
-    await createData(modelManager);
-
     const schema = api.getSchema();
 
     return async (config: AxiosRequestConfig): Promise<AxiosResponse<ExecutionResult>> => {
