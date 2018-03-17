@@ -170,10 +170,10 @@ export class ModelApiBackend implements IBackend {
         for (const field of meta.fields) {
             if (field instanceof fields.RelatedModelFieldBase) {
                 if (related) {
-                    // If this field is a RelatedModelField and it is in the list of "related" fields to select, then
+                    // If this field is a RelatedModel field and it is in the list of "related" fields to select, then
                     // select the field and all of its child scalar fields
                     const relFieldNames = getOwnRelatedFieldNames(related);
-                    if (field instanceof fields.RelatedModelField && relFieldNames.indexOf(field.name) > -1) {
+                    if (field instanceof fields.RelatedModelFieldBase && relFieldNames.indexOf(field.name) > -1) {
                         const relMeta = manager.getModelMeta(field.options.model);
                         fieldObj[field.name] = {};
                         const childRelFieldNames = getChildRelatedFieldNames(related, field.name);
@@ -232,15 +232,23 @@ export class ModelApiBackend implements IBackend {
             const relFieldNames = getOwnRelatedFieldNames(related);
             meta.fields.forEach((field) => {
                 if (relFieldNames.indexOf(field.name) > -1 && typeof recordData[field.name] != 'undefined') {
+
+                    const relMeta = manager.getModelMeta(field.options.model);
+                    const childRelFieldNames = getChildRelatedFieldNames(related, field.name);
+
                     if (field instanceof fields.RelatedModelField) {
                         if (recordData[field.name] == null) {
                             model[field.name] = null;
                         }
                         else {
-                            const relMeta = manager.getModelMeta(field.options.model);
-                            const childRelFieldNames = getChildRelatedFieldNames(related, field.name);
                             model[field.name] = this._hydrateRecordWithRelated(manager, relMeta, recordData[field.name], childRelFieldNames);
                         }
+                    }
+                    else if (field instanceof fields.RelatedModelListField && recordData[field.name] instanceof Array) {
+                        model[field.name] = [];
+                        recordData[field.name].forEach((record: any) => {
+                            model[field.name].push(this._hydrateRecordWithRelated(manager, relMeta, record, childRelFieldNames));
+                        });
                     }
                 }
             });
