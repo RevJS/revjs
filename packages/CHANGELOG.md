@@ -16,7 +16,9 @@
 
 * `<ListView />` Renamed `rowLimit` property to `limit` (to match IReadOptions)
 * `<ListView />` Added `where` property for setting list filter
+* `<ListView />` Added `related` property to included related model data
 * `<ListView />` Added `orderBy` property for sorting results
+* `<ListView />` supports RelatedModelFields (will use toString() on the class)
 
 ### 0.12.0
 
