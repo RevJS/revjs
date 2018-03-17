@@ -133,7 +133,7 @@ export class MongoDBBackend implements IBackend {
      */
     async update<T extends IModel>(manager: ModelManager, model: T, options: IUpdateOptions, result: ModelOperationResult<T, IUpdateMeta>): Promise<ModelOperationResult<T, IUpdateMeta>> {
         if (!options.where) {
-            throw new Error('update() requires the \'where\' parameter');
+            throw new Error(`update() requires the 'where' option to be set.`);
         }
 
         let meta = manager.getModelMeta(model);

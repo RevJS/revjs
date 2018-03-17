@@ -91,7 +91,7 @@ export class InMemoryBackend implements IBackend {
             result: ModelOperationResult<T, IUpdateMeta>): Promise<ModelOperationResult<T, IUpdateMeta>> {
 
         if (!options.where) {
-            throw new Error('update() requires the \'where\' parameter');
+            throw new Error(`update() requires the 'where' option to be set.`);
         }
 
         if (this.OPERATION_DELAY) {

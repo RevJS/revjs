@@ -143,7 +143,7 @@ export function updateTests(backendName: string, config: IBackendTestConfig) {
                 return backend.update(manager, model, {}, updateResult)
                     .then(() => { throw new Error('expected to reject'); })
                     .catch((err) => {
-                        expect(err.message).to.contain('update() requires the \'where\' parameter');
+                        expect(err.message).to.contain(`update() requires the 'where' option to be set.`);
                     });
             });
 

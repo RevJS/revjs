@@ -19,7 +19,7 @@ describe('ModelApiBackend - remove() - graphql response tests', () => {
         manager = getModelManager();
         const mockHttpClient = getMockHttpClient(mockResponse);
         apiBackend = new ModelApiBackend('/api', mockHttpClient);
-        removeOptions = {};
+        removeOptions = { where: {} };
         removeResult = new ModelOperationResult<Comment, IRemoveMeta>({operationName: 'remove'});
     }
 

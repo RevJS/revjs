@@ -120,6 +120,11 @@ export class ModelApiBackend implements IBackend {
     }
 
     async update<T extends IModel>(manager: ModelManager, model: T, options: IUpdateOptions, result: ModelOperationResult<T, IUpdateMeta>): Promise<ModelOperationResult<T, IUpdateMeta>> {
+
+        if (!options.where) {
+            throw new Error(`update() requires the 'where' option to be set.`);
+        }
+
         const meta = manager.getModelMeta(model);
         const data = this._buildGraphQLModelData(manager, meta, model, options.fields);
         const mutationName = meta.name + '_update';
@@ -149,6 +154,11 @@ export class ModelApiBackend implements IBackend {
     }
 
     async remove<T extends IModel>(manager: ModelManager, model: T, options: IRemoveOptions, result: ModelOperationResult<T, IRemoveMeta>): Promise<ModelOperationResult<T, IRemoveMeta>> {
+
+        if (!options.where) {
+            throw new Error(`remove() requires the 'where' option to be set.`);
+        }
+
         const meta = manager.getModelMeta(model);
         const mutationName = meta.name + '_remove';
         // options.where should be set, assuming we are called from ModelManager

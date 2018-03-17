@@ -19,7 +19,7 @@ describe('ModelApiBackend - update() - graphql response tests', () => {
         manager = getModelManager();
         const mockHttpClient = getMockHttpClient(mockResponse);
         apiBackend = new ModelApiBackend('/api', mockHttpClient);
-        updateOptions = {};
+        updateOptions = { where: {} };
         updateResult = new ModelOperationResult<Comment, IUpdateMeta>({operationName: 'update'});
     }
 
