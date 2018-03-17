@@ -1,7 +1,7 @@
 
 ## RevJS Module Releases
 
-### Next Release
+### 0.13.0
 
 **`rev-models`**
 
@@ -19,10 +19,6 @@
 * `<ListView />` Added `related` property to included related model data
 * `<ListView />` Added `orderBy` property for sorting results
 * `<ListView />` supports RelatedModelFields (uses toString() on the class)
-
-**`examples`**
-
-* Added Simple List example
 
 ### 0.12.0
 

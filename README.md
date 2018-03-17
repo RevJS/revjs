@@ -1,55 +1,54 @@
 # RevJS - Rev up your data-driven JS app development!
 
-RevJS is a rapid application development toolkit designed to simplify creation
-of data-driven JS apps.
+RevJS is a suite of JavaScript modules designed to speed up development of
+data-driven JS applications.
 
-The RevJS suite of modules aims to provide the following functionality:
- * Data models & model metadata
- * Fully customiseable field types and validation
- * Data persistence to a variety of databases, and simple in-memory data storage
-   to speed up initial app development
- * Customiseable, automatically generated GraphQL API
- * Helpers for various front-end frameworks for rendering, validating and
-   submitting form data
+RevJS allows you to
+
+ * Define a relational **data model** using plain JS classes, and built-in or custom field types
+ * Define custom **validation logic** directly in your models
+ * Easily create a **GraphQL API** to make your models available over the network
+ * Quickly build a **user interface** for the web or mobile, using our React higher-order components
 
 This project will shortly be in BETA. Watch this space!! :)
-You can see what we're currently working on our
-[Trello Board](https://trello.com/b/4H5uL73T/revjs)
+You can see what we're currently working in our
+[Github Projects](https://github.com/RevJS/revjs/projects)
 
 The basic idea is, this code:
 
 ```typescript
-// Pseudo code - example needs updating - will do soon!
-// See revjs.org for working samples
-import * as rev from 'rev-models';
+import { AutoNumberField, TextField, SelectField } from 'rev-models';
 
-class Person {
-    @rev.IntegerField()
-        id: number;    
-    @rev.TextField({label: 'Name'})
-        name: string;
-    @rev.EmailField({label: 'Email', required: false})
-        email: string;
+const POST_STATUS = [
+    ['draft', 'Draft'],
+    ['published', 'Published']
+];
+
+export class Post {
+    @AutoNumberField({ primaryKey: true })
+        id: number;
+    @TextField({ minLength: 5, maxLength: 100 })
+        title: string;
+    @TextField({ multiLine: true })
+        body: string;
+    @SelectField({ selection: POST_STATUS })
+        status: string;
+
+    constructor(data?: Partial<Post>) {
+        Object.assign(this, data);
+    }
 }
-
-rev.register(Person)
-
-let bob = new Person({
-    id: 1,
-    name: 'Bob',
-    email: 'bob@bob.com'
-});
-
-rev.create(bob);
 
 ```
 
 ...plus a small amount of configuration, gives you:
 
- * Create, Read, Update, Delete access to Person records from a database
+ * Create, Read, Update, Delete access to Post records from a database
 
  * A full GraphQL API for front-end integration
 
- * Fully-customiseable, automatically generated forms for a variety of UI frameworks
+ * Higher-order React UI components to make it easy to create front-ends for your data
 
  * Data-validation and other model methods shared between client and server (write once, validate everywhere :) )
+
+Check out the documentation on [revjs.org](https://revjs.org/)

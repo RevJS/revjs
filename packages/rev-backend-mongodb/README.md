@@ -6,6 +6,8 @@ of data-driven JS apps.
 The `rev-backend-mongodb` module provides a backend which retrieves and
 saves data to a MongoDB database.
 
+Check out the documentation on [revjs.org](https://revjs.org/)
+
 **PLEASE NOTE: This project is currently in alpha**
 
 Breaking API changes are possible while we refine the way the modules interoperate.

@@ -5,6 +5,8 @@ of data-driven JS apps.
 
 This module provides a set of MaterialUI components for use with the rev-ui module
 
+Check out the documentation on [revjs.org](https://revjs.org/)
+
 **PLEASE NOTE: This project is currently in alpha**
 
 Breaking API changes are possible while we refine the way the modules interoperate.

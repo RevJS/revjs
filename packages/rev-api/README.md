@@ -6,6 +6,8 @@ of data-driven JS apps.
 The `rev-api` module provides the API layer for RevJS - allowing you to expose
 your models easily via a GraphQL API.
 
+Check out the documentation on [revjs.org](https://revjs.org/)
+
 **PLEASE NOTE: This project is currently in alpha**
 
 Breaking API changes are possible while we refine the way the modules interoperate.

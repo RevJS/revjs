@@ -6,6 +6,8 @@ of data-driven JS apps.
 The `rev-api-client` module provides a revjs model backend which retrieves and
 saves data to an API created by the `rev-api` module.
 
+Check out the documentation on [revjs.org](https://revjs.org/)
+
 **PLEASE NOTE: This project is currently in alpha**
 
 Breaking API changes are possible while we refine the way the modules interoperate.
