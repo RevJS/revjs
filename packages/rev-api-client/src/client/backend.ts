@@ -3,6 +3,7 @@ import { IModel, ModelManager, fields } from 'rev-models';
 import axios, { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
 
 import { IBackend } from 'rev-models/lib/backends/backend';
+import { getOwnRelatedFieldNames, getChildRelatedFieldNames } from 'rev-models/lib/backends/utils';
 import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
 import {
     ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IRemoveMeta,
@@ -22,74 +23,6 @@ export class ModelApiBackend implements IBackend {
         if (!this._httpClient) {
             this._httpClient = axios;
         }
-    }
-
-    private async _getGraphQLQueryResult(query: object) {
-        const httpResult = await this._httpClient({
-            url: this.apiUrl,
-            method: 'POST',
-            data: { query: jsonToGraphQLQuery(query) }
-        });
-        if (!httpResult.data) {
-            throw this._createHttpError('Received no data from the API', httpResult);
-        }
-        if (httpResult.data.errors) {
-            let message = 'GraphQL errors were returned';
-            if (httpResult.data.errors[0] && httpResult.data.errors[0].message) {
-                message += ': ' + httpResult.data.errors[0].message;
-            }
-            throw this._createHttpError(message, httpResult);
-        }
-        return httpResult;
-    }
-
-    private _createHttpError(message: string, response: AxiosResponse) {
-        const error = new Error(message);
-        error.response = response;
-        return error;
-    }
-
-    private _buildGraphQLQuery(meta: IModelMeta<any>, options: IReadOptions) {
-        const fieldObj: any = {};
-        for (const field of meta.fields) {
-            if (!(field instanceof fields.RelatedModelFieldBase)) {
-                fieldObj[field.name] = true;
-            }
-        }
-        const readOptions: IReadOptions = {
-            where: options.where,
-            offset: options.offset,
-            limit: options.limit
-        };
-        if (options.orderBy) {
-            readOptions.orderBy = options.orderBy;
-        }
-        return {
-            query: {
-                [meta.name]: {
-                    __args: readOptions,
-                    results: fieldObj,
-                    meta: {
-                        offset: true,
-                        limit: true,
-                        totalCount: true
-                    }
-                }
-            }
-        };
-    }
-
-    private _buildGraphQLModelData(manager: ModelManager, meta: IModelMeta<any>, model: IModel, fieldNames?: string[]) {
-        const data = {};
-        meta.fields.forEach((field) => {
-            if (field.options.stored
-                && (!fieldNames || fieldNames.indexOf(field.name) > -1)
-                && typeof model[field.name] != 'undefined'
-            ) {
-                data[field.name] = field.toBackendValue(manager, model[field.name]);
-            }
-        });
-        return data;
     }
 
     async create<T extends IModel>(manager: ModelManager, model: T, options: ICreateOptions, result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
@@ -184,7 +117,7 @@ export class ModelApiBackend implements IBackend {
 
     async read<T extends IModel>(manager: ModelManager, model: new() => T, options: IReadOptions, result: ModelOperationResult<T, IReadMeta>): Promise<ModelOperationResult<T, IReadMeta>> {
         const meta = manager.getModelMeta(model);
-        const query = this._buildGraphQLQuery(meta, options);
+        const query = this._buildGraphQLQuery(manager, meta, options);
         const httpResult = await this._getGraphQLQueryResult(query);
         if (!httpResult.data.data
             || !httpResult.data.data[meta.name]
@@ -194,7 +127,7 @@ export class ModelApiBackend implements IBackend {
         const returnedData = httpResult.data.data[meta.name].results;
         result.results = [];
         returnedData.forEach((record: any) => {
-            result.results.push(manager.hydrate(model, record));
+            result.results.push(this._hydrateRecordWithRelated(manager, meta, record, options.related));
         });
         const returnedMeta = httpResult.data.data[meta.name].meta;
         result.setMeta(returnedMeta);
@@ -203,6 +136,116 @@ export class ModelApiBackend implements IBackend {
 
     async exec<R>(manager: ModelManager, model: IModel, options: IExecOptions, result: ModelOperationResult<R, IExecMeta>): Promise<ModelOperationResult<R, IExecMeta>> {
         return Promise.reject(new Error('Not yet implemented'));
+    }
+
+    private async _getGraphQLQueryResult(query: object) {
+        const httpResult = await this._httpClient({
+            url: this.apiUrl,
+            method: 'POST',
+            data: { query: jsonToGraphQLQuery(query) }
+        });
+        if (!httpResult.data) {
+            throw this._createHttpError('Received no data from the API', httpResult);
+        }
+        if (httpResult.data.errors) {
+            let message = 'GraphQL errors were returned';
+            if (httpResult.data.errors[0] && httpResult.data.errors[0].message) {
+                message += ': ' + httpResult.data.errors[0].message;
+            }
+            throw this._createHttpError(message, httpResult);
+        }
+        return httpResult;
+    }
+
+    private _createHttpError(message: string, response: AxiosResponse) {
+        const error = new Error(message);
+        error.response = response;
+        return error;
+    }
+
+    /**
+     * Builds an object representing all the graphql nodes to select for the specified query
+     */
+    private _buildGraphQLSelectFields(manager: ModelManager, meta: IModelMeta<any>, related: string[], fieldObj: any) {
+        for (const field of meta.fields) {
+            if (field instanceof fields.RelatedModelFieldBase) {
+                if (related) {
+                    // If this field is a RelatedModelField and it is in the list of "related" fields to select, then
+                    // select the field and all of its child scalar fields
+                    const relFieldNames = getOwnRelatedFieldNames(related);
+                    if (field instanceof fields.RelatedModelField && relFieldNames.indexOf(field.name) > -1) {
+                        const relMeta = manager.getModelMeta(field.options.model);
+                        fieldObj[field.name] = {};
+                        const childRelFieldNames = getChildRelatedFieldNames(related, field.name);
+                        this._buildGraphQLSelectFields(manager, relMeta, childRelFieldNames, fieldObj[field.name]);
+                    }
+                }
+            }
+            else {
+                fieldObj[field.name] = true;
+            }
+        }
+        return fieldObj;
+    }
+
+    private _buildGraphQLQuery(manager: ModelManager, meta: IModelMeta<any>, options: IReadOptions) {
+        const fieldObj = this._buildGraphQLSelectFields(manager, meta, options.related, {});
+        const readOptions: IReadOptions = {
+            where: options.where,
+            offset: options.offset,
+            limit: options.limit
+        };
+        if (options.orderBy) {
+            readOptions.orderBy = options.orderBy;
+        }
+        return {
+            query: {
+                [meta.name]: {
+                    __args: readOptions,
+                    results: fieldObj,
+                    meta: {
+                        offset: true,
+                        limit: true,
+                        totalCount: true
+                    }
+                }
+            }
+        };
+    }
+
+    private _buildGraphQLModelData(manager: ModelManager, meta: IModelMeta<any>, model: IModel, fieldNames?: string[]) {
+        const data = {};
+        meta.fields.forEach((field) => {
+            if (field.options.stored
+                && (!fieldNames || fieldNames.indexOf(field.name) > -1)
+                && typeof model[field.name] != 'undefined'
+            ) {
+                data[field.name] = field.toBackendValue(manager, model[field.name]);
+            }
+        });
+        return data;
+    }
+
+    private _hydrateRecordWithRelated(manager: ModelManager, meta: IModelMeta<any>, recordData: any, related: string[]) {
+        const model = manager.hydrate(meta.ctor, recordData);
+        if (related) {
+            const relFieldNames = getOwnRelatedFieldNames(related);
+            meta.fields.forEach((field) => {
+                if (relFieldNames.indexOf(field.name) > -1 && typeof recordData[field.name] != 'undefined') {
+                    if (field instanceof fields.RelatedModelField) {
+                        if (recordData[field.name] == null) {
+                            model[field.name] = null;
+                        }
+                        else {
+                            const relMeta = manager.getModelMeta(field.options.model);
+                            const childRelFieldNames = getChildRelatedFieldNames(related, field.name);
+                            model[field.name] = this._hydrateRecordWithRelated(manager, relMeta, recordData[field.name], childRelFieldNames);
+                        }
+                    }
+                }
+            });
+        }
+        return model;
     }
 
 }
