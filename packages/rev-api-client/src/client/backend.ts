@@ -34,7 +34,11 @@ export class ModelApiBackend implements IBackend {
             throw this._createHttpError('Received no data from the API', httpResult);
         }
         if (httpResult.data.errors) {
-            throw this._createHttpError('GraphQL errors were returned', httpResult);
+            let message = 'GraphQL errors were returned';
+            if (httpResult.data.errors[0] && httpResult.data.errors[0].message) {
+                message += ': ' + httpResult.data.errors[0].message;
+            }
+            throw this._createHttpError(message, httpResult);
         }
         return httpResult;
     }

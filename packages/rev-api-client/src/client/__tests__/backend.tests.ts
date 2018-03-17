@@ -38,7 +38,11 @@ describe('ModelApiBackend - RevJS Backend Tests', () => {
         // Create the backend ready for testing
         backend = new ModelApiBackend('/api', mockHttpClient);
         config.backend = backend;
+
     });
+
+    // Configure capabilities
+    config.disableRawValues = true;
 
     standardBackendTests('ModelApiBackend', config);
 
