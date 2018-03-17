@@ -36,3 +36,14 @@ export function withTimeout<T>(promise: Promise<T>, timeout: number, name: strin
         })
     ]);
 }
+
+/**
+ * @private
+ */
+export function dedupeStringArray(array: string[]) {
+    const items = {};
+    array.forEach((item) => {
+        items[item] = true;
+    });
+    return Object.keys(items);
+}

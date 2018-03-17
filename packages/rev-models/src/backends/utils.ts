@@ -1,6 +1,7 @@
 import { IReadOptions, IModelManager, IModelMeta, IModel } from '../models/types';
 import { IModelOperationResult } from '../operations/operationresult';
 import { RelatedModelField, RelatedModelListField } from '../fields';
+import { dedupeStringArray } from '../utils';
 
 /**
  * @private
@@ -31,9 +32,9 @@ export interface IRelatedModelListInstances {
  * @private
  */
 export function getOwnRelatedFieldNames(related: string[]) {
-    return related && related.map((fieldName) => {
+    return related && dedupeStringArray(related.map((fieldName) => {
         return fieldName.split('.')[0];
-    });
+    }));
 }
 
 /**

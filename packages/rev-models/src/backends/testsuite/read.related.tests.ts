@@ -108,12 +108,12 @@ export function readWithRelatedModelTests(backendName: string, config: IBackendT
                             { id: 3, name: 'Nerdy McNerdface', company: expectedCompany1, city: expectedCity2  },
                             { id: 4, name: 'Bilbo Baggins', company: expectedCompany2, city: null  },
                             { id: 5, name: 'Captain JavaScript', company: expectedCompany2, city: expectedCity1  },
-                            { id: 6, name: 'Kim Jong Fail', company: null, city: 4  }
+                            { id: 6, name: 'Kim Jong Fail', company: null, city: null  }
                         ]);
                     });
             });
 
-            it('returns the plain foreign key value if it does not match a record', () => {
+            it('returns null for a foreign key if it does not match a record', () => {
                 return backend.read(manager, Developer, getReadOpts({
                     where: { id: 6 },
                     related: [ 'city' ]
@@ -124,7 +124,7 @@ export function readWithRelatedModelTests(backendName: string, config: IBackendT
                         expect(res.results[0]).to.deep.equal({
                             id: 6,
                             name: 'Kim Jong Fail',
-                            city: 4
+                            city: null
                         });
                     });
             });

@@ -200,6 +200,9 @@ export class InMemoryBackend implements IBackend {
                             && relatedModelInstances[fieldName][instance[fieldName]]) {
                                 instance[fieldName] = relatedModelInstances[fieldName][instance[fieldName]];
                         }
+                        else {
+                            instance[fieldName] = null;
+                        }
                     }
                     else if (field instanceof RelatedModelListField) {
                         if (relatedModelListInstances[fieldName]
