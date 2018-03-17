@@ -8,7 +8,7 @@ let GENDERS = [
 ];
 
 export class TestModel {
-    @d.IntegerField({ primaryKey: true })
+    @d.AutoNumberField({ primaryKey: true })
         id: number;
     @d.TextField()
         name: string;

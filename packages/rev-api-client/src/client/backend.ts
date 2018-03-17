@@ -83,8 +83,7 @@ export class ModelApiBackend implements IBackend {
         const data = {};
         meta.fields.forEach((field) => {
             if (field.options.stored
-                && (!fieldNames || fieldNames.indexOf(field.name) > -1
-                    || field.name == meta.primaryKey)
+                && (!fieldNames || fieldNames.indexOf(field.name) > -1)
                 && typeof model[field.name] != 'undefined'
             ) {
                 data[field.name] = field.toBackendValue(manager, model[field.name]);
