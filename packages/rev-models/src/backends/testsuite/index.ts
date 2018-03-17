@@ -10,6 +10,7 @@ import { updateWithRelatedModelTests } from './update.related.tests';
 
 export interface IBackendTestConfig {
     backend: IBackend;
+    disableRawValues?: boolean;
 }
 
 export function standardBackendTests(backendName: string, config: IBackendTestConfig) {

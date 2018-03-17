@@ -207,23 +207,25 @@ export function readTests(backendName: string, config: IBackendTestConfig) {
                     });
             });
 
-            it('returns raw values when options.rawValues is set', () => {
-                return backend.read(manager, TestModel, getReadOpts({
-                    rawValues: ['id']
-                }), readResult)
-                    .then((res) => {
-                        expect(res.success).to.be.true;
-                        expect(res.result).to.be.undefined;
-                        expect(res.results).to.have.length(5);
-                        expect(res.results[0]).to.be.instanceof(TestModel);
-                        expect(res.results[1]).to.be.instanceof(TestModel);
-                        expect(res.results[2]).to.be.instanceof(TestModel);
-                        expect(res.meta.rawValues).to.exist;
-                        expect(res.meta.rawValues).to.have.length(5);
-                        expect(res.meta.rawValues[1].id).to.equal(1);
-                        expect(res.meta.rawValues[2].id).to.equal(2);
-                    });
-            });
+            if (!config.disableRawValues) {
+                it('returns raw values when options.rawValues is set', () => {
+                    return backend.read(manager, TestModel, getReadOpts({
+                        rawValues: ['id']
+                    }), readResult)
+                        .then((res) => {
+                            expect(res.success).to.be.true;
+                            expect(res.result).to.be.undefined;
+                            expect(res.results).to.have.length(5);
+                            expect(res.results[0]).to.be.instanceof(TestModel);
+                            expect(res.results[1]).to.be.instanceof(TestModel);
+                            expect(res.results[2]).to.be.instanceof(TestModel);
+                            expect(res.meta.rawValues).to.exist;
+                            expect(res.meta.rawValues).to.have.length(5);
+                            expect(res.meta.rawValues[1].id).to.equal(1);
+                            expect(res.meta.rawValues[2].id).to.equal(2);
+                        });
+                });
+            }
 
             it('throws when an invalid query is specified', () => {
                 return backend.read(manager, TestModel, getReadOpts({
