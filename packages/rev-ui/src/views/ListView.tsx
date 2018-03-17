@@ -153,7 +153,7 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
             onRecordPress: (record: IModel) => this.onRecordPress(record)
         };
 
-        if (this.state.loadState == 'loaded') {
+        if (this.state.modelData) {
             const readMeta = this.state.modelData.meta;
             cProps.firstRecordNumber = readMeta.totalCount ? readMeta.offset + 1 : 0;
             cProps.lastRecordNumber = Math.min(
