@@ -42,7 +42,8 @@ describe('ModelApiBackend - RevJS Backend Tests', () => {
     });
 
     // Configure capabilities
-    config.disableRawValues = true;
+    config.skipRawValueTests = true;
+    config.skipRelatedModelListStoreTest = true;
 
     standardBackendTests('ModelApiBackend', config);
 

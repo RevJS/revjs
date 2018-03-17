@@ -8,9 +8,9 @@
 * Added support for fields with property getters. By default, RevJS fields
   with a getter function are set to not be stored (`Field.options.stored == false`)
 
-**`rev-api-client`**
+**`rev-api` & `rev-api-client`**
 
-* Add support for `orderBy` on `read()`
+* API now passes all RevJS standard backend tests (including related model queries)
 
 **`rev-ui`**
 

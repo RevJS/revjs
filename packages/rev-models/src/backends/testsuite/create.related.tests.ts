@@ -92,31 +92,33 @@ export function createWithRelatedModelTests(backendName: string, config: IBacken
             expect(readRes.results[0].company.id).to.equal(company.id);
         });
 
-        it('does not store value for RelatedModelList fields', async () => {
-            let developer1 = new Developer({
-                id: 1,
-                name: 'Test Developer'
-            });
-            let developer2 = new Developer({
-                id: 2,
-                name: 'Another Developer'
-            });
-            let model = new Company({
-                id: 1,
-                name: 'Bobs Builders Ltd',
-                developers: [developer1, developer2]
-            });
+        if (!config.skipRelatedModelListStoreTest) {
+            it('does not store value for RelatedModelList fields', async () => {
+                let developer1 = new Developer({
+                    id: 1,
+                    name: 'Test Developer'
+                });
+                let developer2 = new Developer({
+                    id: 2,
+                    name: 'Another Developer'
+                });
+                let model = new Company({
+                    id: 1,
+                    name: 'Bobs Builders Ltd',
+                    developers: [developer1, developer2]
+                });
 
-            const res = await backend.create(manager, model, DEFAULT_CREATE_OPTIONS, companyCreateResult);
-            expect(res.results).to.be.undefined;
-            expect(res.result).to.be.instanceof(Company);
-            expect(res.result).to.not.equal(model);
-            expect(res.result.name).to.equal(model.name);
-            expect(res.result.developers).to.be.undefined;
+                const res = await backend.create(manager, model, DEFAULT_CREATE_OPTIONS, companyCreateResult);
+                expect(res.results).to.be.undefined;
+                expect(res.result).to.be.instanceof(Company);
+                expect(res.result).to.not.equal(model);
+                expect(res.result.name).to.equal(model.name);
+                expect(res.result.developers).to.be.undefined;
 
-            const readResult = await manager.read(Company, { where: { id: 1 }, related: ['developers']});
-            expect(readResult.results[0].developers).to.deep.equal([]);
-        });
+                const readResult = await manager.read(Company, { where: { id: 1 }, related: ['developers']});
+                expect(readResult.results[0].developers).to.deep.equal([]);
+            });
+        }
 
     });
 

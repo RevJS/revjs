@@ -207,7 +207,7 @@ export function readTests(backendName: string, config: IBackendTestConfig) {
                     });
             });
 
-            if (!config.disableRawValues) {
+            if (!config.skipRawValueTests) {
                 it('returns raw values when options.rawValues is set', () => {
                     return backend.read(manager, TestModel, getReadOpts({
                         rawValues: ['id']

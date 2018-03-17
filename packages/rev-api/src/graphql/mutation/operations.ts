@@ -11,17 +11,21 @@ export function getModelOperationMutations(api: IGraphQLApi, meta: IApiMeta): Gr
 
     async function hydrateRelatedModelFields(model: IModel, data: any) {
         for (const field of modelMeta.fields) {
-            if (typeof data[field.name] != 'undefined' && data[field.name] !== null
-                    && field instanceof fields.RelatedModelField) {
-                const relatedModel = field.options.model;
-                const relatedMeta = modelManager.getModelMeta(relatedModel);
-                const relatedPKField = relatedMeta.fieldsByName[relatedMeta.primaryKey].name;
-                const res = await modelManager.read(relatedMeta.ctor, {
-                    where: { [relatedPKField]: data[field.name] },
-                    limit: 1
-                });
-                if (res.meta.totalCount == 1) {
-                    model[field.name] = res.results[0];
+            if (typeof data[field.name] != 'undefined' && field instanceof fields.RelatedModelField) {
+                if (data[field.name] === null) {
+                    model[field.name] = null;
+                }
+                else {
+                    const relatedModel = field.options.model;
+                    const relatedMeta = modelManager.getModelMeta(relatedModel);
+                    const relatedPKField = relatedMeta.fieldsByName[relatedMeta.primaryKey].name;
+                    const res = await modelManager.read(relatedMeta.ctor, {
+                        where: { [relatedPKField]: data[field.name] },
+                        limit: 1
+                    });
+                    if (res.meta.totalCount == 1) {
+                        model[field.name] = res.results[0];
+                    }
                 }
             }
         }
