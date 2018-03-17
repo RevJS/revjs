@@ -18,7 +18,11 @@
 * `<ListView />` Added `where` property for setting list filter
 * `<ListView />` Added `related` property to included related model data
 * `<ListView />` Added `orderBy` property for sorting results
-* `<ListView />` supports RelatedModelFields (will use toString() on the class)
+* `<ListView />` supports RelatedModelFields (uses toString() on the class)
+
+**`examples`**
+
+* Added Simple List example
 
 ### 0.12.0
 

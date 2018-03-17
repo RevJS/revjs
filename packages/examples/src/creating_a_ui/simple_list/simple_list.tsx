@@ -37,11 +37,12 @@ ReactDOM.render((
                     title="Current Posts"
                     model="Post"
                     fields={[
+                        'post_date',
                         'title',
-                        'body',
-                        'user'
+                        'description',
                     ]}
-                    orderBy={['title']}
+                    orderBy={['post_date desc']}
+                    limit={5}
                     onRecordPress={(record) => {
                         alert('Selected a record:\n' + JSON.stringify(record, null, 2));
                     }}

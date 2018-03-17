@@ -7,7 +7,8 @@ import { ModelApiManager } from 'rev-api';
 // Register server models
 
 export const modelManager = new ModelManager();
-modelManager.registerBackend('default', new InMemoryBackend());
+const backend = new InMemoryBackend();
+modelManager.registerBackend('default', backend);
 modelManager.register(models.User);
 modelManager.register(models.Post);
 modelManager.register(models.Comment);
@@ -53,7 +54,8 @@ console.log(`GraphiQL UI is running at http://localhost:${port}/graphiql`);
 
 createData(modelManager)
 .then(() => {
-    console.log('Data Loaded.');
+    console.log('Data Loaded. Simulating API Delay of 500ms.');
+    backend.OPERATION_DELAY = 500;
 })
 .catch((e) => {
     console.error('Error loading data', e);

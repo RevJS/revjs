@@ -1,6 +1,7 @@
 
 import {
-    AutoNumberField, TextField, RelatedModel, RelatedModelList
+    AutoNumberField, TextField, RelatedModel, RelatedModelList,
+    DateField
 } from 'rev-models';
 import { ApiOperations } from 'rev-api/lib/decorators';
 
@@ -12,6 +13,10 @@ export class User {
         id: number;
     @TextField()
         username: string;
+    @TextField()
+        first_name: string;
+    @TextField()
+        last_name: string;
     @RelatedModelList({ model: 'Post', field: 'user' })
         posts: Post[];
     @RelatedModelList({ model: 'Comment', field: 'user' })
@@ -19,6 +24,10 @@ export class User {
 
     constructor(data?: Partial<User>) {
         Object.assign(this, data);
+    }
+
+    toString() {
+        return this.first_name + ' ' + this.last_name;
     }
 }
 
@@ -30,9 +39,13 @@ export class Post {
         id: number;
     @RelatedModel({ model: 'User', label: 'Author' })
         user: User;
+    @DateField({ label: 'Date' })
+        post_date: string;
     @TextField({ label: 'Post Title' })
         title: string;
-    @TextField({ multiLine: true, label: 'Post Content' })
+    @TextField({ label: 'Description' })
+        description: string;
+    @TextField({ multiLine: true, label: 'Content', required: false })
         body: string;
     @RelatedModelList({ model: 'Comment', field: 'post', label: 'Comments' })
         comments: Comment[];
