@@ -8,6 +8,7 @@ import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
 import Table, { TableHead, TableBody, TableRow, TableCell } from 'material-ui/Table';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
+import { CircularProgress } from 'material-ui/Progress';
 import { IListViewComponentProps } from 'rev-ui/lib/views/ListView';
 
 const styles = withStyles({
@@ -32,7 +33,7 @@ type IMUIListViewProps = IListViewComponentProps & StyledComponentProps;
 
 export const MUIListView = styles<IMUIListViewProps>((props) => {
 
-    let paginationText = 'Loading...';
+    let paginationText = 'Loading';
 
     if (props.loadState == 'loaded') {
         paginationText = `Records ${props.firstRecordNumber}-${props.lastRecordNumber} of ${props.totalCount}`;
@@ -44,6 +45,8 @@ export const MUIListView = styles<IMUIListViewProps>((props) => {
             <div className={props.classes.pagination}>
                 <Typography variant="caption">
                     {paginationText}
+                    {props.loadState == 'loading' &&
+                        <CircularProgress size={20} style={{marginLeft: 15, verticalAlign: 'middle'}} />}
                 </Typography>
                 <IconButton
                     onClick={() => props.onBackButtonPress()}

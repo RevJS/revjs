@@ -10,6 +10,7 @@ import { getData, IModelTestData } from '../../__fixtures__/modeldata';
 
 import Table from 'material-ui/Table';
 import { getClasses } from 'material-ui/test-utils';
+import { CircularProgress } from 'material-ui/Progress';
 
 import { MUIListView } from '../MUIListView';
 import { IListViewComponentProps } from 'rev-ui/lib/views/ListView';
@@ -80,9 +81,14 @@ describe('MUIListView', () => {
                 expect(listTitle.at(0).text()).to.equal(props.title);
             });
 
-            it('renders "Loading..." in the pagination area', () => {
+            it('renders "Loading" in the pagination area', () => {
                 const paginationText = pagination.childAt(0).text();
-                expect(paginationText).to.equal('Loading...');
+                expect(paginationText).to.equal('Loading');
+            });
+
+            it('renders a circular spinner in the pagination area', () => {
+                const spinner = pagination.find(CircularProgress);
+                expect(spinner).to.have.length(1);
             });
 
             it('remders the go-forward and go-back buttons', () => {
