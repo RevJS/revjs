@@ -1,62 +1,6 @@
 
-import * as d from '../../decorators';
 import { IModelManager } from '../../models/types';
-
-export class Company {
-    @d.IntegerField({ primaryKey: true })
-        id: number;
-    @d.TextField()
-        name: string;
-    @d.RelatedModelList({ model: 'Department', field: 'company' })
-        departments: Department[];
-    @d.RelatedModelList({ model: 'Developer', field: 'company' })
-        developers: Developer[];
-    @d.RelatedModel({ model: 'Developer', required: false })
-        leadDeveloper: Developer;
-
-    constructor(data?: Partial<Company>) {
-        Object.assign(this, data);
-    }
-}
-
-export class Department {
-    @d.IntegerField({ primaryKey: true })
-        id: number;
-    @d.RelatedModel({ model: 'Company' })
-        company: Company;
-    @d.TextField()
-        name: string;
-
-    constructor(data?: Partial<Department>) {
-        Object.assign(this, data);
-    }
-}
-
-export class City {
-    @d.IntegerField({ primaryKey: true })
-        id: number;
-    @d.TextField()
-        name: string;
-
-    constructor(data?: Partial<City>) {
-        Object.assign(this, data);
-    }
-}
-
-export class Developer {
-    @d.IntegerField({ primaryKey: true })
-        id: number;
-    @d.TextField()
-        name: string;
-    @d.RelatedModel({ model: 'Company', required: false })
-        company: Company;
-    @d.RelatedModel({ model: 'City', required: false })
-        city: City;
-
-    constructor(data?: Partial<Developer>) {
-        Object.assign(this, data);
-    }
-}
+import { Company, City, Developer, Department } from './models';
 
 export const testCompanyData = [
     new Company({

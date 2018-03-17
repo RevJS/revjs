@@ -3,7 +3,8 @@ import { expect } from 'chai';
 
 import { ModelManager } from '../../models/manager';
 import { ModelOperationResult } from '../../operations/operationresult';
-import { Company, Developer, City, testCityData, Department, removeRelatedTestData, createRelatedTestData } from './testdata.related';
+import { Company, Developer, City, Department } from './models';
+import { testCityData, removeRelatedTestData, createRelatedTestData } from './modeldata.related';
 import { DEFAULT_READ_OPTIONS } from '../../operations/read';
 import { IReadMeta } from '../../models/types';
 import { IBackend } from '../backend';

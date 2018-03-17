@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { ModelManager } from '../../models/manager';
 import { ModelOperationResult } from '../../operations/operationresult';
-import { TestModel } from './testdata';
+import { TestModel } from './models';
 import { DEFAULT_CREATE_OPTIONS } from '../../operations/create';
 import { ICreateMeta } from '../../models/types';
 import { IBackendTestConfig } from '.';

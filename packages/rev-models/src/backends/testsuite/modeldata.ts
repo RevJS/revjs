@@ -1,45 +1,6 @@
 
-import * as d from '../../decorators';
 import { IModelManager } from '../../models/types';
-
-let GENDERS = [
-    ['male', 'Male'],
-    ['female', 'Female']
-];
-
-export class TestModel {
-    @d.IntegerField({ primaryKey: true })
-        id: number;
-    @d.TextField()
-        name: string;
-    @d.IntegerField({ required: false })
-        age: number;
-    @d.SelectField({ required: false, selection: GENDERS })
-        gender: string;
-    @d.BooleanField({ required: false })
-        newsletter: boolean;
-    @d.DateField({ required: false })
-        date_registered: string;
-
-    getDescription?() {
-        return `${this.name}, age ${this.age}`;
-    }
-
-    constructor(data?: Partial<TestModel>) {
-        Object.assign(this, data);
-    }
-}
-
-export class TestModelNoPK {
-    @d.TextField()
-        name: string;
-    @d.TextField()
-        description: string;
-
-    constructor(data?: Partial<TestModelNoPK>) {
-        Object.assign(this, data);
-    }
-}
+import { TestModel, TestModelNoPK } from './models';
 
 export const testData = [
     new TestModel({

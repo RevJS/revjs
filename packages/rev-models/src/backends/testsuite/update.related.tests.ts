@@ -4,7 +4,8 @@ import { expect } from 'chai';
 import { ModelManager } from '../../models/manager';
 import { IBackend } from '../backend';
 import { ModelOperationResult } from '../../operations/operationresult';
-import { Company, Developer, removeRelatedTestData, createRelatedTestData, testCompanyData, City, Department, testCityData, testDeveloperData } from './testdata.related';
+import { Company, Developer, City, Department } from './models';
+import { removeRelatedTestData, createRelatedTestData, testCompanyData, testCityData, testDeveloperData } from './modeldata.related';
 import { IUpdateMeta } from '../../models/types';
 import { IBackendTestConfig } from '.';
 

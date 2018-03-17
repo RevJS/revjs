@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { ModelManager } from '../../models/manager';
 import { IBackend } from '../backend';
 import { ModelOperationResult } from '../../operations/operationresult';
-import { Company, Developer } from './testdata.related';
+import { Company, Developer } from './models';
 import { DEFAULT_CREATE_OPTIONS } from '../../operations/create';
 import { ICreateMeta } from '../../models/types';
 import { IBackendTestConfig } from '.';
