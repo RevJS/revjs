@@ -12,5 +12,3 @@ Check out the documentation on [revjs.org](https://revjs.org/)
 
 Breaking API changes are possible while we refine the way the modules interoperate.
 Once we reach version 1.0.0 then we will be following strict semantic versioning.
-
-Full documentation TODO - check out the `examples` folder to get started!
