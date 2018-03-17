@@ -2,11 +2,12 @@ site_name: RevJS Guide
 pages:
   - Welcome to RevJS!: index.md
   - Working with Models:
-    - Creating Models: models/creating_models.md
-    - Creating Model Data: models/creating_data.md
-    - Reading Model Data: models/reading_data.md
-    - Updating Model Data: models/updating_data.md
-    - Deleting Model Data: models/deleting_data.md
+    - Defining Models: models/creating_models.md
+    - Adding Validation: models/model_validation.md
+    - Creating Data: models/creating_data.md
+    - Reading Data: models/reading_data.md
+    - Updating Data: models/updating_data.md
+    - Deleting Data: models/deleting_data.md
     - Working with Related Models: models/related_data.md
   - Creating a GraphQL API:
     - Creating an API: api/creating_an_api.md
@@ -23,6 +24,7 @@ docs_dir: /mkdocs/src
 site_dir: /mkdocs/dist
 repo_url: https://github.com/RevJS/revjs
 edit_uri: /RevJS/revjs/edit/master/docs/mkdocs/src/
+google_analytics: ['UA-115939002-1','revjs.org']
 markdown_extensions:
   - toc:
       permalink: True

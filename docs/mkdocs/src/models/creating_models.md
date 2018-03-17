@@ -40,27 +40,6 @@ by extending the [Field](/api/rev-models/classes/field.html) class.
  * **[RelatedModelField](/api/rev-models/classes/relatedmodelfield.html)** - Foreign-key link to a related model
  * **[RelatedModelListField](/api/rev-models/classes/relatedmodellistfield.html)** - List of related models
 
-## Validation
-
-In addition to the built-in, configurable validation provided by fields, you
-can specify your own validation logic directly on your models by defining a
-**validate()** or **validateAsync()** method, as shown in the
-example below:
-
-```ts
-{!examples/src/defining_and_using_models/custom_validation.ts!}
-```
-
-The output of the above code is:
-
-```
-ValidationError
- * title: Cannot create post with a duplicate title!
-```
-
-For further information on model validation functions, check out the
-[IModel](/api/rev-models/interfaces/imodel.html) interface
-
 ## RevJS Backends
 
 RevJS has the concept of a **pluggable backend architecture**, to allow it to
