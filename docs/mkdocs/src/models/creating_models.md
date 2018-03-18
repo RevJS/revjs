@@ -39,21 +39,3 @@ by extending the [Field](/api/rev-models/classes/field.html) class.
  * **[DateTimeField](/api/rev-models/classes/datetimefield.html)** - Date & Time field
  * **[RelatedModelField](/api/rev-models/classes/relatedmodelfield.html)** - Foreign-key link to a related model
  * **[RelatedModelListField](/api/rev-models/classes/relatedmodellistfield.html)** - List of related models
-
-## RevJS Backends
-
-RevJS has the concept of a **pluggable backend architecture**, to allow it to
-support storage of models in a variety of databases and across the network
-using APIs. The following backends are currently available:
-
- * [InMemoryBackend](/api/rev-models/classes/inmemorybackend.html) - stores your
-   model data in-memory. Ideal for initial development and automated testing.
- * **ModelApiBackend** - designed for use in the browser or a mobile app.
-   Uses the API created by `rev-api` to store and retrieve your models.
- * **MongoDBBackend** - stores and retrieves your data from MongoDB
-
-We have defined a standard [IBackend](/api/rev-models/interfaces/ibackend.html)
-interface, as well as a
-[Standard Test Suite](https://github.com/RevJS/revjs/blob/master/packages/rev-models/src/backends/testsuite/index.ts)
-to aid with new backend development, and are keen to accept any contributions
-from the community!

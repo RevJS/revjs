@@ -4,6 +4,7 @@ pages:
   - Working with Models:
     - Defining Models: models/creating_models.md
     - Adding Validation: models/model_validation.md
+    - Storage Backends: models/revjs_backends.md
     - Creating Data: models/creating_data.md
     - Reading Data: models/reading_data.md
     - Updating Data: models/updating_data.md

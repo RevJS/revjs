@@ -11,8 +11,26 @@ import {
 } from 'rev-models/lib/models/types';
 import { jsonToGraphQLQuery } from 'json-to-graphql-query';
 
+/**
+ * A RevJS Backend class that stores and retrieves data from a GraphQL API
+ * created by the `rev-api` module of RevJS
+ *
+ * Usage example:
+ *
+ * ```ts
+ * [[include:examples/src/using_backends/using_an_api_backend.ts]]
+ * ```
+ */
 export class ModelApiBackend implements IBackend {
 
+    /**
+     * Creates a rev-api client backend.
+     *
+     * @param apiUrl The URL of the GraphQL API. Can be a relative or absolute URL
+     * @param _httpClient You can optionally override the HTTP Client used by the
+     * backend. This must be an axios-compatible client. If not specified then
+     * axios is used.
+     */
     constructor(
         public apiUrl: string,
         public _httpClient?: (config: AxiosRequestConfig) => AxiosPromise
@@ -25,6 +43,9 @@ export class ModelApiBackend implements IBackend {
         }
     }
 
+    /**
+     * @private
+     */
     async create<T extends IModel>(manager: ModelManager, model: T, options: ICreateOptions, result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
         const meta = manager.getModelMeta(model);
         const data = this._buildGraphQLModelData(manager, meta, model);
@@ -52,6 +73,9 @@ export class ModelApiBackend implements IBackend {
         return result;
     }
 
+    /**
+     * @private
+     */
     async update<T extends IModel>(manager: ModelManager, model: T, options: IUpdateOptions, result: ModelOperationResult<T, IUpdateMeta>): Promise<ModelOperationResult<T, IUpdateMeta>> {
 
         if (!options.where) {
@@ -86,6 +110,9 @@ export class ModelApiBackend implements IBackend {
         return result;
     }
 
+    /**
+     * @private
+     */
     async remove<T extends IModel>(manager: ModelManager, model: T, options: IRemoveOptions, result: ModelOperationResult<T, IRemoveMeta>): Promise<ModelOperationResult<T, IRemoveMeta>> {
 
         if (!options.where) {
@@ -115,6 +142,9 @@ export class ModelApiBackend implements IBackend {
         return result;
     }
 
+    /**
+     * @private
+     */
     async read<T extends IModel>(manager: ModelManager, model: new() => T, options: IReadOptions, result: ModelOperationResult<T, IReadMeta>): Promise<ModelOperationResult<T, IReadMeta>> {
         const meta = manager.getModelMeta(model);
         const query = this._buildGraphQLQuery(manager, meta, options);
@@ -134,6 +164,9 @@ export class ModelApiBackend implements IBackend {
         return result;
     }
 
+    /**
+     * @private
+     */
     async exec<R>(manager: ModelManager, model: IModel, options: IExecOptions, result: ModelOperationResult<R, IExecMeta>): Promise<ModelOperationResult<R, IExecMeta>> {
         return Promise.reject(new Error('Not yet implemented'));
     }

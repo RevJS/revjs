@@ -13,6 +13,12 @@ import { IForeignKeyValues, getOwnRelatedFieldNames, getRelatedModelInstances, g
  * The InMemoryBackend stores your model data in JavaScript objects. This
  * backend is useful during initial development and testing but **should not be
  * used in production!**
+ *
+ * Usage example:
+ *
+ * ```ts
+ * [[include:examples/src/using_backends/using_an_inmemory_backend.ts]]
+ * ```
  */
 export class InMemoryBackend implements IBackend {
     private _storage: {
@@ -23,10 +29,12 @@ export class InMemoryBackend implements IBackend {
             [fieldName: string]: number
         }
     } = {};
+
     /**
-     * @private
+     * This property can be used to artificially slow-down model operations,
+     * so, for example, you can see how your UI behaves while loading data.
      */
-    OPERATION_DELAY = 0;  // Useful for testing
+    OPERATION_DELAY = 0;
 
     constructor() {
         this._storage = {};
