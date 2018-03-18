@@ -1,14 +1,15 @@
 
 ## RevJS Module Releases
 
-### 0.14.0
+### 0.14.0 - 18th March 2018
 
 **`rev-ui`**
 
-* Misc refactoring to make ListView and DetailView consistent
+* Refactoring to make ListView and DetailView consistent
+* IModelContext -> IDetailViewContext
 * Added initial API documentation
 
-### 0.13.0
+### 0.13.0 - 17th March 2018
 
 **`rev-models`**
 
@@ -27,7 +28,7 @@
 * `<ListView />` Added `orderBy` property for sorting results
 * `<ListView />` supports RelatedModelFields (uses toString() on the class)
 
-### 0.12.0
+### 0.12.0 - 11th March 2018
 
 **`rev-api`**
 
