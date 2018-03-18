@@ -21,7 +21,7 @@ export interface IListViewProps {
     component?: React.ComponentType<IListViewComponentProps>;
 }
 
-export type IListViewLoadState = 'loading' | 'loaded' | 'load_error';
+export type IListViewLoadState = 'NONE' | 'LOADING';
 
 export interface IListViewComponentProps {
     title: string;
@@ -86,7 +86,7 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
         }
 
         this.state = {
-            loadState: 'loading',
+            loadState: 'LOADING',
             where: props.where || {},
             related: props.related || null,
             orderBy: props.orderBy || null,
@@ -112,7 +112,7 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
 
     async loadData(limit: number, offset: number) {
         this.setState({
-            loadState: 'loading'
+            loadState: 'LOADING'
         });
         const modelData = await this.context.modelManager.read(
             this.modelMeta.ctor,
@@ -125,7 +125,7 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
             });
         if (modelData.success && modelData.results) {
             this.setState({
-                loadState: 'loaded',
+                loadState: 'LOADING',
                 modelData,
                 limit,
                 offset
@@ -182,6 +182,9 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
 
 }
 
+/**
+ * @private
+ */
 export const lifecycleOptions = {
     enableComponentDidMount: true
 };
