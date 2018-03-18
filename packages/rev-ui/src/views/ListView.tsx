@@ -7,38 +7,100 @@ import { IModelMeta, IModelOperationResult, IModel, fields } from 'rev-models';
 import { IReadMeta } from 'rev-models/lib/models/types';
 import { UI_COMPONENTS } from '../config';
 
+/**
+ * A `<ListView />` renders a list of model records. By default it renders a
+ * Table view with pagination, however you can pass your own component in order
+ * to render the list of records in another way.
+ *
+ * A `<ListView />` component accepts a single sub-component, which is passed
+ * [[IListViewComponentProps]] to be rendered as required.
+ */
 export interface IListViewProps {
+
+    /** The name of the model class to search & render */
     model: string;
+
+    /** A list of fields to be rendered */
     fields: string[];
+
+    /** A list of any related model fields to be read */
     related?: string[];
+
+    /** An optional title for the rendered list */
     title?: string;
+
+    /** A standard RevJS 'where' clause to use to filter the data */
     where?: object;
+
+    /** A standard RevJS 'orderBy' clause to sort the data  */
     orderBy?: string[];
+
+    /** The meximum number of records to retrieve and render at a time */
     limit?: number;
 
+    /** This method will be called when a user clicks on a record in the list */
     onRecordPress?: (model: IModel) => void;
 
+    /**
+     * If you provide a React component to this property, it will be used
+     * instead of the component configured in [[UI_COMPONENTS]]. It will
+     * be passed [[IListViewComponentProps]]
+     */
     component?: React.ComponentType<IListViewComponentProps>;
 }
 
+/**
+ * @private
+ */
 export type IListViewLoadState = 'NONE' | 'LOADING';
 
+/**
+ * These props are passed down to the `<ListView />` sub-component, selected
+ * via its `component` property, or via the [[UI_COMPONENTS]] option.
+ * @private
+ */
 export interface IListViewComponentProps {
+
+    /** The title for the rendered list */
     title: string;
+
+    /** The ListView loading state */
     loadState: IListViewLoadState;
+
+    /** The list of fields (columns) to be rendered */
     fields: fields.Field[];
+
+    /** The retrieved model data */
     records: IModel[];
+
+    /** The record number of the first record in `records` */
     firstRecordNumber: number;
+
+    /** The record number of the last record in `records` */
     lastRecordNumber: number;
+
+    /** The total number of records matching the specified query */
     totalCount: number;
+
+    /** Whether the Back button should be disabled (e.g. firstRecordNumber = 1) */
     backButtonDisabled: boolean;
+
+    /** Whether the Forward button should be disabled (e.g. we're on the last page of data) */
     forwardButtonDisabled: boolean;
 
+    /** Back button press event handler */
     onBackButtonPress(): void;
+
+    /** Forward button press event handler */
     onForwardButtonPress(): void;
+
+    /** Record press event handler */
     onRecordPress(model: IModel): void;
 }
 
+/**
+ * @private
+ */
 export interface IListViewState {
     loadState: IListViewLoadState;
     modelData?: IModelOperationResult<any, IReadMeta>;
@@ -49,6 +111,10 @@ export interface IListViewState {
     offset: number;
 }
 
+/**
+ * See [[IListViewProps]]
+ * @private
+ */
 export class ListView extends React.Component<IListViewProps, IListViewState> {
 
     context: IModelProviderContext;
