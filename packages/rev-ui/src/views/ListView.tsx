@@ -191,7 +191,7 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
             });
         if (modelData.success && modelData.results) {
             this.setState({
-                loadState: 'LOADING',
+                loadState: 'NONE',
                 modelData,
                 limit,
                 offset

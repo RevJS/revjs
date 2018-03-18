@@ -35,7 +35,7 @@ export const MUIListView = styles<IMUIListViewProps>((props) => {
 
     let paginationText = 'Loading';
 
-    if (props.loadState == 'loaded') {
+    if (props.loadState == 'NONE') {
         paginationText = `Records ${props.firstRecordNumber}-${props.lastRecordNumber} of ${props.totalCount}`;
     }
 
@@ -45,7 +45,7 @@ export const MUIListView = styles<IMUIListViewProps>((props) => {
             <div className={props.classes.pagination}>
                 <Typography variant="caption">
                     {paginationText}
-                    {props.loadState == 'loading' &&
+                    {props.loadState == 'LOADING' &&
                         <CircularProgress size={20} style={{marginLeft: 15, verticalAlign: 'middle'}} />}
                 </Typography>
                 <IconButton

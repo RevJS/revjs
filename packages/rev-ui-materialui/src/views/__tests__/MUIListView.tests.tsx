@@ -35,7 +35,7 @@ describe('MUIListView', () => {
 
     function getComponentProps(options: {loaded: boolean, count: number}) {
         const cProps: IListViewComponentProps = {
-            loadState: 'loading',
+            loadState: 'LOADING',
             title: 'Test List',
             fields: modelMeta.fields,
             records: [],
@@ -49,7 +49,7 @@ describe('MUIListView', () => {
             onRecordPress: sinon.spy()
         };
         if (options.loaded) {
-            cProps.loadState = 'loaded';
+            cProps.loadState = 'NONE';
             cProps.records = modelData.posts.slice(0, options.count);
             cProps.firstRecordNumber = options.count > 0 ? 1 : 0;
             cProps.lastRecordNumber = options.count;
