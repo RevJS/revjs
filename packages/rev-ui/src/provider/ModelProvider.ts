@@ -4,15 +4,31 @@ import * as PropTypes from 'prop-types';
 
 import { IModelManager } from 'rev-models';
 
-export interface IModelManagerProp {
+/**
+ * @private
+ */
+export interface IModelProviderProps {
     modelManager: IModelManager;
 }
 
+/**
+ * @private
+ */
 export interface IModelProviderContext {
     modelManager: IModelManager;
 }
 
-export class ModelProvider extends React.Component<IModelManagerProp> {
+/**
+ * The `<ModelProvider />` component provides access to a shared RevJS
+ * **ModelManager** for child components. Components such as
+ * `<DetailView />` and `<ListView />` must be nested inside a
+ * `<ModelManager />` component.
+ *
+ * You can give your own components access to the specified modelManager
+ * using the [[withModelManager]] higher order component, which will
+ * provide the component with a `modelManager` prop.
+ */
+export class ModelProvider extends React.Component<IModelProviderProps> {
 
     static childContextTypes = {
         modelManager: PropTypes.object

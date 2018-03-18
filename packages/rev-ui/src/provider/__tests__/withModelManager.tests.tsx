@@ -4,8 +4,8 @@ import { expect } from 'chai';
 import { mount } from 'enzyme';
 import * as models from '../../__fixtures__/models';
 import { ModelManager } from 'rev-models';
-import { ModelProvider, IModelManagerProp } from '../ModelProvider';
-import { withModelManager } from '../withModelManager';
+import { ModelProvider } from '../ModelProvider';
+import { withModelManager, IModelManagerProp } from '../withModelManager';
 
 interface ISpyComponentProps {
     prop1: string;

@@ -1,6 +1,6 @@
 
-export { ModelProvider, IModelManagerProp } from './provider/ModelProvider';
-export { withModelManager } from './provider/withModelManager';
+export { ModelProvider } from './provider/ModelProvider';
+export { withModelManager, IModelManagerProp } from './provider/withModelManager';
 
 export { DetailView, IDetailViewContextProp } from './views/DetailView';
 export { ListView } from './views/ListView';
