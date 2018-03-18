@@ -1,7 +1,21 @@
 
-# `rev-backend-mongodb`
+# rev-backend-mongodb - RevJS MongoDB Backend
 
-[rev-backend-mongodb API Documentation](/api/rev-backend-mongodb)
+The `rev-backend-mongodb` module provides the following:
+
+ * A **MongoDBBackend** class, which creates the interface between a RevJS
+   ModelManager and a MongoDB Database server
+
+*Jump to the [rev-backend-mongodb API Documentation](/api/rev-backend-mongodb)*
+
+## Example
+
+The example below shows how to create an instance of a MongoDBBackend, and
+store some data using it:
+
+```ts
+{!examples/src/using_backends/using_a_mongodb_backend.ts!}
+```
 
 ## Contributing
 
