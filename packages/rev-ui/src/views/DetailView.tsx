@@ -8,33 +8,102 @@ import { isSet } from 'rev-models/lib/utils';
 import { UI_COMPONENTS } from '../config';
 import { IModelOperationResult } from 'rev-models/lib/operations/operationresult';
 
+/**
+ * A `<DetailView />` renders a single model record. When used in conjunction
+ * with `<Field />` components then it allows the properties of the record to
+ * be edited by the user.
+ *
+ * A `<DetailView />` component provides its sub-components with access to
+ * [[IDetailViewContext]] to allow them to read and update the current model
+ * information. You can connect your own components to IDetailViewContext
+ * using the [[withDetailViewContext]] higher-order component.
+ *
+ * By default, a `<DetailView />` renders a simple wrapper that sets up a
+ * 12-column grid. This can be overridden via the `component` prop, or the
+ * [[UI_COMPONENTS]] option.
+ */
 export interface IDetailViewProps {
+
+    /** The name of the model class to render */
     model: string;
+
+    /**
+     * Use this prop to specify the primary key value of the record you want to
+     * load. To create a new, empty record, leave this property unset.
+     */
     primaryKeyValue?: string;
+
+    /**
+     * If you provide a React component to this property, it will be used
+     * instead of the component configured in [[UI_COMPONENTS]]. This component
+     * will receive the same props as the `<DetailView />`
+     */
     component?: React.ComponentType;
 }
 
+/**
+ * @private
+ */
 export type IDetailViewLoadState = 'NONE' | 'LOADING' | 'SAVING' ;
 
+/**
+ * This interface represents the properties and methods available to components
+ * nested in a `<DetailView />`.
+ * @private
+ */
 export interface IDetailViewContext<T extends IModel = IModel> {
+
+    /** The current loading state of the DetailView */
     loadState: IDetailViewLoadState;
+
+    /** The ModelManager associated with this DetailView */
     manager: IModelManager;
+
+    /** The current model data being displayed / edited in this DetailView */
     model: T;
+
+    /** The current model's metadata */
     modelMeta: IModelMeta<T>;
+
+    /** The results of the most recent model validation */
     validation: IModelValidationResult;
+
+    /** Whether the model's data has been changed since last save */
     dirty: boolean;
+
+    /** Set the DetaiView's `loadState` and trigger a re-render */
     setLoadState(state: IDetailViewLoadState): void;
+
+    /** Set or unset the `dirty` flag and trigger a re-render */
     setDirty(dirty: boolean): void;
+
+    /** Trigger validation of the current model data */
     validate(): Promise<IModelValidationResult>;
+
+    /**
+     * Save the current model data. Uses the model's primaryKey to determine
+     * whether to create or update the record
+     */
     save(): Promise<IModelOperationResult<T, any>>;
+
+    /** Remove the current model record */
     remove(): Promise<IModelOperationResult<T, any>>;
+
+    /** Trigger a re-render of the DetailView */
     refresh(): void;
 }
 
+/**
+ * @private
+ */
 export interface IDetailViewContextProp<T extends IModel = IModel> {
     detailViewContext: IDetailViewContext<T>;
 }
 
+/**
+ * See [[IDetailViewProps]]
+ * @private
+ */
 export class DetailView extends React.Component<IDetailViewProps> {
 
     context: IModelProviderContext;

@@ -5,7 +5,14 @@ import * as PropTypes from 'prop-types';
 import { IModelManager } from 'rev-models';
 
 /**
- * @private
+ * The `<ModelProvider />` component provides access to a shared RevJS
+ * **ModelManager** for child components. Components such as
+ * `<DetailView />` and `<ListView />` must be nested inside a
+ * `<ModelManager />` component.
+ *
+ * You can give your own components access to the specified modelManager
+ * using the [[withModelManager]] higher order component, which will
+ * provide the component with a `modelManager` prop.
  */
 export interface IModelProviderProps {
     modelManager: IModelManager;
@@ -19,14 +26,7 @@ export interface IModelProviderContext {
 }
 
 /**
- * The `<ModelProvider />` component provides access to a shared RevJS
- * **ModelManager** for child components. Components such as
- * `<DetailView />` and `<ListView />` must be nested inside a
- * `<ModelManager />` component.
- *
- * You can give your own components access to the specified modelManager
- * using the [[withModelManager]] higher order component, which will
- * provide the component with a `modelManager` prop.
+ * @private
  */
 export class ModelProvider extends React.Component<IModelProviderProps> {
 
