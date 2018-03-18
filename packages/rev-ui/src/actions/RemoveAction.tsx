@@ -97,7 +97,7 @@ class RemoveActionC extends React.Component<IRemoveActionProps & IDetailViewCont
 }
 
 /**
- * @private
  * See [[IRemoveActionProps]]
+ * @private
  */
 export const RemoveAction = withDetailViewContext(RemoveActionC);

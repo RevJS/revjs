@@ -125,7 +125,7 @@ class PostActionC extends React.Component<IPostActionProps & IDetailViewContextP
 }
 
 /**
- * @private
  * See [[IPostActionProps]]
+ * @private
  */
 export const PostAction = withDetailViewContext(PostActionC);

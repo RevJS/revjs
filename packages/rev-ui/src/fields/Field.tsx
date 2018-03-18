@@ -8,21 +8,55 @@ import { IFieldError } from 'rev-models/lib/validation/validationresult';
 import { withDetailViewContext } from '../views/withDetailViewContext';
 import { UI_COMPONENTS } from '../config';
 
+/**
+ * @private
+ */
 export type ColspanOptions = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
+/**
+ * The `<Field />` component is designed to be included in a `<DetailView />`.
+ * When passed the name of a model field, it will render an appropriate input
+ * field to allow the value of the field to be modified.
+ *
+ * If any validation errors occur, a `<Field />` will display the corresponding
+ * validation message(s) and allow the error to be corrected.
+ */
 export interface IFieldProps {
+
+    /**
+     * Model field name. Must correspond with a field on the model specified
+     * for the `<DetailView />` component
+     */
     name: string;
+
+    /** How many columns to span for narrow screens (1-12). Default = 12 */
     colspanNarrow?: ColspanOptions;
+
+    /** How many columns to span for normal screens (1-12). Default = 6 */
     colspan?: ColspanOptions;
+
+    /** How many columns to span for wide screens (1-12). Default = 6 */
     colspanWide?: ColspanOptions;
 
+    /**
+     * If you provide a React component to this property, it will be used
+     * instead of the component configured in [[UI_COMPONENTS]] for the
+     * corresponding Field type. This component will be passed
+     * [[IFieldComponentProps]]
+     */
     component?: React.ComponentType<IFieldComponentProps>;
 }
 
+/**
+ * @private
+ */
 export interface IFieldState {
     value: any;
 }
 
+/**
+ * @private
+ */
 export interface IFieldComponentProps  {
     field: fields.Field;
     label: string;
@@ -88,4 +122,8 @@ class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFiel
 
 }
 
+/**
+ * See [[IFieldProps]]
+ * @private
+ */
 export const Field = withDetailViewContext(FieldC);

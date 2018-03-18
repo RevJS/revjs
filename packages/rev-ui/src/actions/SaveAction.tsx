@@ -98,4 +98,8 @@ class SaveActionC extends React.Component<ISaveActionProps & IDetailViewContextP
     }
 }
 
+/**
+ * See [[ISaveActionProps]]
+ * @private
+ */
 export const SaveAction = withDetailViewContext(SaveActionC);

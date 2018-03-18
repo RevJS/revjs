@@ -2,6 +2,7 @@
  * The props passed to ActionComponents, when they are set up via e.g.
  * `<SaveAction component={MyCustomComponent} />`, or via the
  * [[UI_COMPONENTS]] configuration.
+ * @private
  */
 export interface IActionComponentProps {
 
