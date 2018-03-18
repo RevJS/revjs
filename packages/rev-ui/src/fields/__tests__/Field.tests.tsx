@@ -9,8 +9,8 @@ import { mount } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
 import { Field, IFieldComponentProps } from '../Field';
 import { sleep } from '../../__test_utils__/utils';
-import { DetailView, IModelContextProp } from '../../views/DetailView';
-import { withModelContext } from '../../views/withModelContext';
+import { DetailView, IDetailViewContextProp } from '../../views/DetailView';
+import { withDetailViewContext } from '../../views/withDetailViewContext';
 
 describe('Field', () => {
 
@@ -45,11 +45,11 @@ describe('Field', () => {
 
     });
 
-    type SpyComponentProps = IFieldComponentProps & IModelContextProp;
+    type SpyComponentProps = IFieldComponentProps & IDetailViewContextProp;
     let receivedProps: SpyComponentProps;
     let renderCount: number;
 
-    const SpyComponent = withModelContext<IFieldComponentProps>((props) => {
+    const SpyComponent = withDetailViewContext<IFieldComponentProps>((props) => {
         receivedProps = props;
         renderCount++;
         return <p>SpyComponent</p>;
@@ -266,10 +266,10 @@ describe('Field', () => {
                 expect(receivedProps.value).to.equal('Awesome Post');
             });
 
-            it('sets the "dirty" property in the modelContext', () => {
-                expect(receivedProps.modelContext.dirty).to.be.false;
+            it('sets the "dirty" property in the detailViewContext', () => {
+                expect(receivedProps.detailViewContext.dirty).to.be.false;
                 receivedProps.onChange('Awesome Post');
-                expect(receivedProps.modelContext.dirty).to.be.true;
+                expect(receivedProps.detailViewContext.dirty).to.be.true;
             });
 
         });

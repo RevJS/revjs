@@ -5,21 +5,21 @@ import { mount } from 'enzyme';
 import * as models from '../../../__fixtures__/models';
 import { ModelManager } from 'rev-models';
 import { ModelProvider } from '../../../provider/ModelProvider';
-import { DetailView, IModelContextProp } from '../../DetailView';
-import { withModelContext } from '../../withModelContext';
+import { DetailView, IDetailViewContextProp } from '../../DetailView';
+import { withDetailViewContext } from '../../withDetailViewContext';
 
 interface ISpyComponentProps {
     prop1: string;
     prop2: string;
 }
 
-describe('withModelContext()', () => {
+describe('withDetailViewContext()', () => {
 
     let modelManager: ModelManager;
 
-    let receivedProps: ISpyComponentProps & IModelContextProp;
+    let receivedProps: ISpyComponentProps & IDetailViewContextProp;
 
-    class SpyComponentC extends React.Component<ISpyComponentProps & IModelContextProp> {
+    class SpyComponentC extends React.Component<ISpyComponentProps & IDetailViewContextProp> {
         constructor(props: any) {
             super(props);
             receivedProps = props;
@@ -29,7 +29,7 @@ describe('withModelContext()', () => {
         }
     }
 
-    const SpyComponent = withModelContext(SpyComponentC);
+    const SpyComponent = withDetailViewContext(SpyComponentC);
 
     before(() => {
         receivedProps = null;
@@ -43,9 +43,9 @@ describe('withModelContext()', () => {
         );
     });
 
-    it('passes down modelContext from context', () => {
-        expect(receivedProps.modelContext).not.to.be.undefined;
-        expect(receivedProps.modelContext.modelMeta.name).to.equal('Post');
+    it('passes down detailViewContext from context', () => {
+        expect(receivedProps.detailViewContext).not.to.be.undefined;
+        expect(receivedProps.detailViewContext.modelMeta.name).to.equal('Post');
     });
 
     it('passes through other props', () => {

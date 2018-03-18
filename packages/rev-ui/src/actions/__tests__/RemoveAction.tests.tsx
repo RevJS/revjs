@@ -8,9 +8,9 @@ import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
-import { DetailView, IModelContextProp, IModelContext } from '../../views/DetailView';
+import { DetailView, IDetailViewContextProp, IDetailViewContext } from '../../views/DetailView';
 import { RemoveAction, IRemoveActionProps } from '../RemoveAction';
-import { withModelContext } from '../../views/withModelContext';
+import { withDetailViewContext } from '../../views/withDetailViewContext';
 import { IActionComponentProps } from '../types';
 
 describe('RemoveAction', () => {
@@ -34,10 +34,10 @@ describe('RemoveAction', () => {
 
     });
 
-    type SpyComponentProps = IActionComponentProps & IModelContextProp;
+    type SpyComponentProps = IActionComponentProps & IDetailViewContextProp;
     let receivedProps: SpyComponentProps;
 
-    const SpyComponent = withModelContext<IActionComponentProps>((props) => {
+    const SpyComponent = withDetailViewContext<IActionComponentProps>((props) => {
         receivedProps = props;
         return props.children as any || <p>SpyComponent</p>;
     });
@@ -228,16 +228,16 @@ describe('RemoveAction', () => {
         });
 
         it('sets loadState = "SAVING" when the action is triggered', () => {
-            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
             receivedProps.doAction().catch((e) => null);
-            expect(receivedProps.modelContext.loadState).to.equal('SAVING');
+            expect(receivedProps.detailViewContext.loadState).to.equal('SAVING');
         });
 
         it('resets loadState and calls onError() if an error is returned from remove()', async () => {
-            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
 
             const expectedError = new Error('ack!!!');
-            receivedProps.modelContext.remove = () => Promise.reject(expectedError);
+            receivedProps.detailViewContext.remove = () => Promise.reject(expectedError);
 
             await receivedProps.doAction();
 
@@ -245,14 +245,14 @@ describe('RemoveAction', () => {
             const err = onErrorCallback.getCall(0).args[0];
             expect(err).to.equal(expectedError);
 
-            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
         });
 
         it('resets loadState and calls onSuccess() if the remove() method is successful', async () => {
-            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
 
             const expectedResult = 'Yay!';
-            receivedProps.modelContext.remove = () => Promise.resolve(expectedResult) as any;
+            receivedProps.detailViewContext.remove = () => Promise.resolve(expectedResult) as any;
 
             await receivedProps.doAction();
 
@@ -260,7 +260,7 @@ describe('RemoveAction', () => {
             const result = onSuccessCallback.getCall(0).args[0];
             expect(result).to.equal(expectedResult);
 
-            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
         });
 
     });
@@ -278,7 +278,7 @@ describe('RemoveAction', () => {
                         <RemoveAction
                             label="Remove"
 
-                            disabled={(ctx: IModelContext<models.User>) => {
+                            disabled={(ctx: IDetailViewContext<models.User>) => {
                                 return ctx.model.name == 'should be disabled';
                             }}
 
@@ -295,8 +295,8 @@ describe('RemoveAction', () => {
         });
 
         it('control disabled when disabled function returns true', () => {
-            receivedProps.modelContext.model.name = 'should be disabled';
-            receivedProps.modelContext.refresh();
+            receivedProps.detailViewContext.model.name = 'should be disabled';
+            receivedProps.detailViewContext.refresh();
             expect(receivedProps.disabled).to.be.true;
         });
 

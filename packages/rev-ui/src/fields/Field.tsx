@@ -3,9 +3,9 @@ import * as React from 'react';
 import { fields } from 'rev-models';
 
 import { IModelProviderContext } from '../provider/ModelProvider';
-import { IModelContextProp } from '../views/DetailView';
+import { IDetailViewContextProp } from '../views/DetailView';
 import { IFieldError } from 'rev-models/lib/validation/validationresult';
-import { withModelContext } from '../views/withModelContext';
+import { withDetailViewContext } from '../views/withDetailViewContext';
 import { UI_COMPONENTS } from '../config';
 
 export type ColspanOptions = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
@@ -35,16 +35,16 @@ export interface IFieldComponentProps  {
     onChange: (value: any) => void;
 }
 
-class FieldC extends React.Component<IFieldProps & IModelContextProp, IFieldState> {
+class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFieldState> {
 
     modelField: fields.Field;
 
-    constructor(props: IFieldProps & IModelContextProp, context: IModelProviderContext & IModelContextProp) {
+    constructor(props: IFieldProps & IDetailViewContextProp, context: IModelProviderContext & IDetailViewContextProp) {
         super(props, context);
-        if (!this.props.modelContext) {
+        if (!this.props.detailViewContext) {
             throw new Error('Field Error: must be nested inside a DetailView.');
         }
-        const meta = this.props.modelContext.modelMeta;
+        const meta = this.props.detailViewContext.modelMeta;
         if (!(props.name in meta.fieldsByName)) {
             throw new Error(`Field Error: Model '${meta.name}' does not have a field called '${props.name}'.`);
         }
@@ -52,20 +52,20 @@ class FieldC extends React.Component<IFieldProps & IModelContextProp, IFieldStat
     }
 
     onChange(value: any) {
-        this.props.modelContext.model[this.modelField.name] = value;
-        this.props.modelContext.setDirty(true);
+        this.props.detailViewContext.model[this.modelField.name] = value;
+        this.props.detailViewContext.setDirty(true);
         this.setState({ value });
     }
 
     render() {
 
-        const ctx = this.props.modelContext;
+        const ctx = this.props.detailViewContext;
         let fieldErrors: IFieldError[] = [];
         if (ctx.validation
             && this.modelField.name in ctx.validation.fieldErrors) {
             fieldErrors = ctx.validation.fieldErrors[this.modelField.name];
         }
-        const disabled = this.props.modelContext.loadState != 'NONE';
+        const disabled = this.props.detailViewContext.loadState != 'NONE';
 
         let cProps: IFieldComponentProps = {
             field: this.modelField,
@@ -88,4 +88,4 @@ class FieldC extends React.Component<IFieldProps & IModelContextProp, IFieldStat
 
 }
 
-export const Field = withModelContext(FieldC);
+export const Field = withDetailViewContext(FieldC);

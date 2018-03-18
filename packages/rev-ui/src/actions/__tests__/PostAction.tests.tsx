@@ -6,9 +6,9 @@ import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
-import { DetailView, IModelContextProp, IModelContext } from '../../views/DetailView';
+import { DetailView, IDetailViewContextProp, IDetailViewContext } from '../../views/DetailView';
 import { PostAction, IPostActionProps } from '../PostAction';
-import { withModelContext } from '../../views/withModelContext';
+import { withDetailViewContext } from '../../views/withDetailViewContext';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 import { IActionComponentProps } from '../types';
 
@@ -46,10 +46,10 @@ describe('PostAction', () => {
 
     });
 
-    type SpyComponentProps = IActionComponentProps & IModelContextProp<models.User>;
+    type SpyComponentProps = IActionComponentProps & IDetailViewContextProp<models.User>;
     let receivedProps: SpyComponentProps;
 
-    const SpyComponent = withModelContext((props: SpyComponentProps) => {
+    const SpyComponent = withDetailViewContext((props: SpyComponentProps) => {
         receivedProps = props;
         return props.children as any || <p>SpyComponent</p>;
     });
@@ -221,18 +221,18 @@ describe('PostAction', () => {
             const user = new models.User({
                 id: 100, name: 'Bob'
             });
-            receivedProps.modelContext.model = user;
+            receivedProps.detailViewContext.model = user;
             return user;
         }
 
         it('sets loadState = "SAVING" when the action is triggered', () => {
-            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
             receivedProps.doAction().catch((e) => null);
-            expect(receivedProps.modelContext.loadState).to.equal('SAVING');
+            expect(receivedProps.detailViewContext.loadState).to.equal('SAVING');
         });
 
         it('resets loadState and calls onError() if model is not valid', async () => {
-            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
 
             await receivedProps.doAction();
 
@@ -241,7 +241,7 @@ describe('PostAction', () => {
             expect(err).to.be.instanceof(rev.ValidationError);
             expect(err.validation).to.be.instanceof(ModelValidationResult);
             expect(err.validation.valid).to.be.false;
-            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
         });
 
         it('calls fetch() with model data if model is valid', async () => {
@@ -277,7 +277,7 @@ describe('PostAction', () => {
         });
 
         it('resets loadState and calls onResponse() if fetch is successful', async () => {
-            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
 
             setupValidModel();
             const expectedResponse = { status: 200 };
@@ -285,13 +285,13 @@ describe('PostAction', () => {
 
             await receivedProps.doAction();
 
-            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
             expect(onResponseCallback.callCount).to.equal(1);
             expect(onResponseCallback.getCall(0).args[0]).to.equal(expectedResponse);
         });
 
         it('resets loadState and calls onError() if fetch throws an error', async () => {
-            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
             setupValidModel();
 
             const expectedError = new Error('Boom!!!');
@@ -301,7 +301,7 @@ describe('PostAction', () => {
 
             expect(onErrorCallback.callCount).to.equal(1);
             expect(onErrorCallback.getCall(0).args[0]).to.equal(expectedError);
-            expect(receivedProps.modelContext.loadState).to.equal('NONE');
+            expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
         });
 
     });
@@ -319,7 +319,7 @@ describe('PostAction', () => {
                             label="Submit"
                             url="/api"
 
-                            disabled={(ctx: IModelContext<models.User>) => {
+                            disabled={(ctx: IDetailViewContext<models.User>) => {
                                 return ctx.model.name == 'should be disabled';
                             }}
 
@@ -335,8 +335,8 @@ describe('PostAction', () => {
         });
 
         it('control disabled when disabled function returns true', () => {
-            receivedProps.modelContext.model.name = 'should be disabled';
-            receivedProps.modelContext.refresh();
+            receivedProps.detailViewContext.model.name = 'should be disabled';
+            receivedProps.detailViewContext.refresh();
             expect(receivedProps.disabled).to.be.true;
         });
 

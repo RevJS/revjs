@@ -1,8 +1,8 @@
 
 import * as React from 'react';
 
-import { IModelContextProp, IModelContext } from '../views/DetailView';
-import { withModelContext } from '../views/withModelContext';
+import { IDetailViewContextProp, IDetailViewContext } from '../views/DetailView';
+import { withDetailViewContext } from '../views/withDetailViewContext';
 import { UI_COMPONENTS } from '../config';
 import { IActionComponentProps } from './types';
 import { IModelOperationResult } from 'rev-models';
@@ -12,16 +12,16 @@ export interface ISaveActionProps {
     onSuccess?: (result: IModelOperationResult<any, any>) => void;
     onError?: (error: Error) => void;
 
-    disabled?: (context: IModelContext) => boolean;
+    disabled?: (context: IDetailViewContext) => boolean;
 
     component?: React.ComponentType;
 }
 
-class SaveActionC extends React.Component<ISaveActionProps & IModelContextProp> {
+class SaveActionC extends React.Component<ISaveActionProps & IDetailViewContextProp> {
 
-    constructor(props: ISaveActionProps & IModelContextProp) {
+    constructor(props: ISaveActionProps & IDetailViewContextProp) {
         super(props);
-        if (!this.props.modelContext) {
+        if (!this.props.detailViewContext) {
             throw new Error('SaveAction Error: must be nested inside a DetailView');
         }
     }
@@ -29,20 +29,20 @@ class SaveActionC extends React.Component<ISaveActionProps & IModelContextProp> 
     async doAction() {
 
         const success = (res: IModelOperationResult<any, any>) => {
-            this.props.modelContext.setLoadState('NONE');
+            this.props.detailViewContext.setLoadState('NONE');
             if (this.props.onSuccess) {
                 this.props.onSuccess(res);
             }
         };
 
         const failure = (err: any) => {
-            this.props.modelContext.setLoadState('NONE');
+            this.props.detailViewContext.setLoadState('NONE');
             if (this.props.onError) {
                 this.props.onError(err);
             }
         };
 
-        const ctx = this.props.modelContext;
+        const ctx = this.props.detailViewContext;
         ctx.setLoadState('SAVING');
 
         try {
@@ -55,10 +55,10 @@ class SaveActionC extends React.Component<ISaveActionProps & IModelContextProp> 
     }
 
     render() {
-        let disabled = this.props.modelContext.loadState != 'NONE';
+        let disabled = this.props.detailViewContext.loadState != 'NONE';
 
         if (!disabled && this.props.disabled) {
-            disabled = this.props.disabled(this.props.modelContext);
+            disabled = this.props.disabled(this.props.detailViewContext);
         }
 
         const cProps: IActionComponentProps = {
@@ -73,4 +73,4 @@ class SaveActionC extends React.Component<ISaveActionProps & IModelContextProp> 
     }
 }
 
-export const SaveAction = withModelContext(SaveActionC);
+export const SaveAction = withDetailViewContext(SaveActionC);

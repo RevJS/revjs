@@ -2,8 +2,8 @@
 import * as React from 'react';
 
 import { ValidationError } from 'rev-models';
-import { IModelContextProp, IModelContext } from '../views/DetailView';
-import { withModelContext } from '../views/withModelContext';
+import { IDetailViewContextProp, IDetailViewContext } from '../views/DetailView';
+import { withDetailViewContext } from '../views/withDetailViewContext';
 import { UI_COMPONENTS } from '../config';
 import { IActionComponentProps } from './types';
 
@@ -14,16 +14,16 @@ export interface IPostActionProps {
     onResponse?: (response: Response) => void;
     onError?: (error: Error) => void;
 
-    disabled?: (context: IModelContext) => boolean;
+    disabled?: (context: IDetailViewContext) => boolean;
 
     component?: React.ComponentType;
 }
 
-class PostActionC extends React.Component<IPostActionProps & IModelContextProp> {
+class PostActionC extends React.Component<IPostActionProps & IDetailViewContextProp> {
 
-    constructor(props: IPostActionProps & IModelContextProp) {
+    constructor(props: IPostActionProps & IDetailViewContextProp) {
         super(props);
-        if (!this.props.modelContext) {
+        if (!this.props.detailViewContext) {
             throw new Error('PostAction Error: must be nested inside a DetailView');
         }
         if (!this.props.url) {
@@ -32,17 +32,17 @@ class PostActionC extends React.Component<IPostActionProps & IModelContextProp> 
     }
 
     async doAction() {
-        this.props.modelContext.setLoadState('SAVING');
-        const validationResult = await this.props.modelContext.validate();
+        this.props.detailViewContext.setLoadState('SAVING');
+        const validationResult = await this.props.detailViewContext.validate();
 
         const success = (res: any) => {
-            this.props.modelContext.setLoadState('NONE');
+            this.props.detailViewContext.setLoadState('NONE');
             if (this.props.onResponse) {
                 this.props.onResponse(res);
             }
         };
         const failure = (err: any) => {
-            this.props.modelContext.setLoadState('NONE');
+            this.props.detailViewContext.setLoadState('NONE');
             if (this.props.onError) {
                 this.props.onError(err);
             }
@@ -62,7 +62,7 @@ class PostActionC extends React.Component<IPostActionProps & IModelContextProp> 
                         'Content-Type': 'application/json'
                     },
                     credentials: 'same-origin',
-                    body: JSON.stringify(this.props.modelContext.model)
+                    body: JSON.stringify(this.props.detailViewContext.model)
                 });
             }
             catch (e) {
@@ -74,10 +74,10 @@ class PostActionC extends React.Component<IPostActionProps & IModelContextProp> 
     }
 
     render() {
-        let disabled = this.props.modelContext.loadState != 'NONE';
+        let disabled = this.props.detailViewContext.loadState != 'NONE';
 
         if (!disabled && this.props.disabled) {
-            disabled = this.props.disabled(this.props.modelContext);
+            disabled = this.props.disabled(this.props.detailViewContext);
         }
 
         const cProps: IActionComponentProps = {
@@ -92,4 +92,4 @@ class PostActionC extends React.Component<IPostActionProps & IModelContextProp> 
     }
 }
 
-export const PostAction = withModelContext(PostActionC);
+export const PostAction = withDetailViewContext(PostActionC);

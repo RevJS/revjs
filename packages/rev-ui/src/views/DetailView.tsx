@@ -14,16 +14,16 @@ export interface IDetailViewProps {
     component?: React.ComponentType;
 }
 
-export type IModelLoadState = 'NONE' | 'LOADING' | 'SAVING' ;
+export type IDetailViewLoadState = 'NONE' | 'LOADING' | 'SAVING' ;
 
-export interface IModelContext<T extends IModel = IModel> {
-    loadState: IModelLoadState;
+export interface IDetailViewContext<T extends IModel = IModel> {
+    loadState: IDetailViewLoadState;
     manager: IModelManager;
     model: T;
     modelMeta: IModelMeta<T>;
     validation: IModelValidationResult;
     dirty: boolean;
-    setLoadState(state: IModelLoadState): void;
+    setLoadState(state: IDetailViewLoadState): void;
     setDirty(dirty: boolean): void;
     validate(): Promise<IModelValidationResult>;
     save(): Promise<IModelOperationResult<T, any>>;
@@ -31,8 +31,8 @@ export interface IModelContext<T extends IModel = IModel> {
     refresh(): void;
 }
 
-export interface IModelContextProp<T extends IModel = IModel> {
-    modelContext: IModelContext<T>;
+export interface IDetailViewContextProp<T extends IModel = IModel> {
+    detailViewContext: IDetailViewContext<T>;
 }
 
 export class DetailView extends React.Component<IDetailViewProps> {
@@ -42,7 +42,7 @@ export class DetailView extends React.Component<IDetailViewProps> {
         modelManager: PropTypes.object
     };
 
-    modelContext: IModelContext;
+    detailViewContext: IDetailViewContext;
 
     constructor(props: IDetailViewProps, context: any) {
         super(props, context);
@@ -52,7 +52,7 @@ export class DetailView extends React.Component<IDetailViewProps> {
         }
         const modelMeta = this.context.modelManager.getModelMeta(this.props.model);
 
-        this.modelContext = {
+        this.detailViewContext = {
             loadState: 'NONE',
             manager: this.context.modelManager,
             model: null,
@@ -76,11 +76,11 @@ export class DetailView extends React.Component<IDetailViewProps> {
     }
 
     async loadModel() {
-        const meta = this.modelContext.modelMeta;
+        const meta = this.detailViewContext.modelMeta;
         if (!meta.primaryKey) {
             throw new Error(`DetailView Error: Cannot load data for model '${meta.name}' because it doesn't have a primaryKey field defined.`);
         }
-        this.modelContext.loadState = 'LOADING';
+        this.detailViewContext.loadState = 'LOADING';
         const result = await this.context.modelManager.read(
             meta.ctor,
             {
@@ -90,8 +90,8 @@ export class DetailView extends React.Component<IDetailViewProps> {
                 limit: 1
             }
         );
-        if (this.modelContext.loadState == 'LOADING') {
-            this.modelContext.loadState = 'NONE';
+        if (this.detailViewContext.loadState == 'LOADING') {
+            this.detailViewContext.loadState = 'NONE';
             if (result.results.length == 1) {
                 this.setModel(result.results[0]);
                 this.forceUpdate();
@@ -100,34 +100,34 @@ export class DetailView extends React.Component<IDetailViewProps> {
     }
 
     setModel(model: IModel) {
-        this.modelContext.model = model;
-        this.modelContext.dirty = false;
-        this.modelContext.validation = null;
+        this.detailViewContext.model = model;
+        this.detailViewContext.dirty = false;
+        this.detailViewContext.validation = null;
     }
 
-    setLoadState(state: IModelLoadState) {
-        if (state != this.modelContext.loadState) {
-            this.modelContext.loadState = state;
+    setLoadState(state: IDetailViewLoadState) {
+        if (state != this.detailViewContext.loadState) {
+            this.detailViewContext.loadState = state;
             this.forceUpdate();
         }
     }
 
     setDirty(dirty: boolean) {
-        if (dirty != this.modelContext.dirty) {
-            this.modelContext.dirty = dirty;
+        if (dirty != this.detailViewContext.dirty) {
+            this.detailViewContext.dirty = dirty;
             this.forceUpdate();
         }
     }
 
     async validate() {
-        const ctx = this.modelContext;
+        const ctx = this.detailViewContext;
         ctx.validation = await this.context.modelManager.validate(ctx.model);
         this.forceUpdate();
         return ctx.validation;
     }
 
     async save() {
-        const ctx = this.modelContext;
+        const ctx = this.detailViewContext;
         if (!ctx.modelMeta.primaryKey) {
             throw new Error(`DetailView Error: Cannot save data for model '${ctx.modelMeta.name}' because it doesn't have a primaryKey field defined.`);
         }
@@ -153,7 +153,7 @@ export class DetailView extends React.Component<IDetailViewProps> {
     }
 
     async remove(): Promise<any> {
-        const ctx = this.modelContext;
+        const ctx = this.detailViewContext;
         if (!ctx.modelMeta.primaryKey) {
             throw new Error(`DetailView Error: Cannot remove record for model '${ctx.modelMeta.name}' because it doesn't have a primaryKey field defined.`);
         }
@@ -170,12 +170,12 @@ export class DetailView extends React.Component<IDetailViewProps> {
     }
 
     static childContextTypes = {
-        modelContext: PropTypes.object
+        detailViewContext: PropTypes.object
     };
 
-    getChildContext(): IModelContextProp {
+    getChildContext(): IDetailViewContextProp {
         return {
-            modelContext: this.modelContext
+            detailViewContext: this.detailViewContext
         };
     }
 

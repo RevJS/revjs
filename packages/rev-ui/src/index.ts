@@ -2,9 +2,9 @@
 export { ModelProvider, IModelManagerProp } from './provider/ModelProvider';
 export { withModelManager } from './provider/withModelManager';
 
-export { DetailView, IModelContextProp } from './views/DetailView';
+export { DetailView, IDetailViewContextProp } from './views/DetailView';
 export { ListView } from './views/ListView';
-export { withModelContext } from './views/withModelContext';
+export { withDetailViewContext } from './views/withDetailViewContext';
 
 export { Field } from './fields/Field';
 export { PostAction } from './actions/PostAction';

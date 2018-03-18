@@ -1,6 +1,12 @@
 
 ## RevJS Module Releases
 
+### Next Release
+
+**`rev-ui`**
+
+* Misc renames to make ListView and DetailView more consistent
+
 ### 0.13.0
 
 **`rev-models`**

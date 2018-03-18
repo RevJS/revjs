@@ -1,8 +1,8 @@
 
 import * as React from 'react';
 
-import { IModelContextProp, IModelContext } from '../views/DetailView';
-import { withModelContext } from '../views/withModelContext';
+import { IDetailViewContextProp, IDetailViewContext } from '../views/DetailView';
+import { withDetailViewContext } from '../views/withDetailViewContext';
 import { UI_COMPONENTS } from '../config';
 import { IActionComponentProps } from './types';
 import { IModelOperationResult } from 'rev-models';
@@ -12,16 +12,16 @@ export interface IRemoveActionProps {
     onSuccess?: (result: IModelOperationResult<any, any>) => void;
     onError?: (error: Error) => void;
 
-    disabled?: (context: IModelContext) => boolean;
+    disabled?: (context: IDetailViewContext) => boolean;
 
     component?: React.ComponentType;
 }
 
-class RemoveActionC extends React.Component<IRemoveActionProps & IModelContextProp> {
+class RemoveActionC extends React.Component<IRemoveActionProps & IDetailViewContextProp> {
 
-    constructor(props: IRemoveActionProps & IModelContextProp) {
+    constructor(props: IRemoveActionProps & IDetailViewContextProp) {
         super(props);
-        if (!this.props.modelContext) {
+        if (!this.props.detailViewContext) {
             throw new Error('RemoveAction Error: must be nested inside a DetailView');
         }
     }
@@ -29,20 +29,20 @@ class RemoveActionC extends React.Component<IRemoveActionProps & IModelContextPr
     async doAction() {
 
         const success = (res: IModelOperationResult<any, any>) => {
-            this.props.modelContext.setLoadState('NONE');
+            this.props.detailViewContext.setLoadState('NONE');
             if (this.props.onSuccess) {
                 this.props.onSuccess(res);
             }
         };
 
         const failure = (err: any) => {
-            this.props.modelContext.setLoadState('NONE');
+            this.props.detailViewContext.setLoadState('NONE');
             if (this.props.onError) {
                 this.props.onError(err);
             }
         };
 
-        const ctx = this.props.modelContext;
+        const ctx = this.props.detailViewContext;
         ctx.setLoadState('SAVING');
 
         try {
@@ -55,12 +55,12 @@ class RemoveActionC extends React.Component<IRemoveActionProps & IModelContextPr
     }
 
     render() {
-        const ctx = this.props.modelContext;
+        const ctx = this.props.detailViewContext;
         let disabled = ctx.loadState != 'NONE'
             || ctx.manager.isNew(ctx.model);
 
         if (!disabled && this.props.disabled) {
-            disabled = this.props.disabled(this.props.modelContext);
+            disabled = this.props.disabled(this.props.detailViewContext);
         }
 
         const cProps: IActionComponentProps = {
@@ -75,4 +75,4 @@ class RemoveActionC extends React.Component<IRemoveActionProps & IModelContextPr
     }
 }
 
-export const RemoveAction = withModelContext(RemoveActionC);
+export const RemoveAction = withDetailViewContext(RemoveActionC);
