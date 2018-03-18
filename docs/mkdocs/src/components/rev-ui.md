@@ -1,7 +1,7 @@
 
 # `rev-ui`
 
-// TODO
+*Jump to the [rev-ui API Documentation](/api/rev-ui)*
 
 ## Contributing
 
