@@ -7,13 +7,34 @@ import { UI_COMPONENTS } from '../config';
 import { IActionComponentProps } from './types';
 import { IModelOperationResult } from 'rev-models';
 
+/**
+ * A `<RemoveAction />` component is designed to be included inside a
+ * `<DetailView />`. By defailt it renders a button which causes the current
+ * record to be deleted.
+ */
 export interface IRemoveActionProps {
+
+    /** Action label (default = "Delete") */
     label?: string;
+
+    /** This method is called when the operation is successful */
     onSuccess?: (result: IModelOperationResult<any, any>) => void;
+
+    /** This method is called if an error occurs */
     onError?: (error: Error) => void;
 
+    /**
+     * If you provide a function to this prop, it will be called to determine
+     * whether the action should be disabled. (actions are always disabled
+     * while the DetaiView is Loading or Saving)
+     */
     disabled?: (context: IDetailViewContext) => boolean;
 
+    /**
+     * If you provide a React component to this property, it will be used
+     * instead of the component configured in [[UI_COMPONENTS]]. It will
+     * be passed [[IActionComponentProps]]
+     */
     component?: React.ComponentType;
 }
 
@@ -75,4 +96,8 @@ class RemoveActionC extends React.Component<IRemoveActionProps & IDetailViewCont
     }
 }
 
+/**
+ * @private
+ * See [[IRemoveActionProps]]
+ */
 export const RemoveAction = withDetailViewContext(RemoveActionC);
