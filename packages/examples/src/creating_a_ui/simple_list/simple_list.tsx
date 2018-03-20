@@ -41,6 +41,9 @@ ReactDOM.render((
                         'title',
                         'description',
                     ]}
+                    where={{
+                        post_date: { _gt: '2017-01-01' }
+                    }}
                     orderBy={['post_date desc']}
                     limit={5}
                     onRecordPress={(record) => {
