@@ -28,11 +28,8 @@ maintaining a revjs ES6+ guide!...)
 ## Components
 
  * **[rev-models](components/rev-models.md)** - Define your Data Models and Validation,
-   and easily test them out with the in-memory storage provided.
- * **[rev-backend-mongodb](components/rev-backend-mongodb.md)** - Store your RevJS models in a MongoDB Database
+   and store and retrieve them from one of several [backends](using_models/revjs_backends.md).
  * **[rev-api](components/rev-api.md)** - Expose your data model via an automatically-generated GraphQL API
- * **[rev-api-client](components/rev-api-client.md)** - Access your server-side models
-   in the browser or on a mobile device, using the same API and validation logic.
  * **[rev-ui](components/rev-ui.md)** - Quickly build user interfaces with data from your RevJS backend using our
   React higher-order components.
 

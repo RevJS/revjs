@@ -10,7 +10,7 @@ The `rev-api` module provides the following:
  * An **@ApiMethod** decorator, for annotating any model methods that you
    want to expose as GraphQL mutations.
 
-For more information, check out [Creating an API](../api/creating_an_api.md)
+For more information, check out [Creating an API](../creating_an_api/overview.md)
 
 *Jump to the [rev-api API Documentation](/api/rev-api)*
 

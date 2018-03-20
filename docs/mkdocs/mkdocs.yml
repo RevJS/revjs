@@ -2,21 +2,21 @@ site_name: RevJS Guide
 pages:
   - Welcome to RevJS!: index.md
   - Working with Models:
-    - Defining Models: models/creating_models.md
-    - Adding Validation: models/model_validation.md
-    - Storage Backends: models/revjs_backends.md
-    - Creating Data: models/creating_data.md
-    - Reading Data: models/reading_data.md
-    - Updating Data: models/updating_data.md
-    - Deleting Data: models/deleting_data.md
-    - Working with Related Models: models/related_data.md
+    - Defining Models: using_models/creating_models.md
+    - Adding Validation: using_models/model_validation.md
+    - Storage Backends: using_models/revjs_backends.md
+    - Creating Data: using_models/creating_data.md
+    - Reading Data: using_models/reading_data.md
+    - Updating Data: using_models/updating_data.md
+    - Deleting Data: using_models/deleting_data.md
+    - Working with Related Models: using_models/related_data.md
   - Creating a GraphQL API:
-    - Creating an API: api/creating_an_api.md
+    - Creating an API: creating_an_api/overview.md
+  - Creating a User Interface:
+    - RevJS UI Overview: creating_a_ui/overview.md
   - RevJS Module Reference:
     - rev-models: components/rev-models.md
-    - rev-backend-mongodb: components/rev-backend-mongodb.md
     - rev-api: components/rev-api.md
-    - rev-api-client: components/rev-api-client.md
     - rev-ui: components/rev-ui.md
     - Change Log: changelog.md
 strict: true
