@@ -1,4 +1,5 @@
 site_name: RevJS Guide
+site_description: Rev up your data-driven JS app development! RevJS is a suite of JavaScript modules designed to speed up development of data-driven applications. It allows you to easily define a relational data model with field types and validation, and automatically generate a GraphQL API and React user interface.
 pages:
   - Welcome to RevJS!: index.md
   - Working with Models:
