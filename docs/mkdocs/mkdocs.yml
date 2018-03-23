@@ -14,7 +14,8 @@ pages:
     - Creating an API: creating_an_api/overview.md
   - Creating a User Interface:
     - RevJS UI Overview: creating_a_ui/overview.md
-    - Simple List: creating_a_ui/simple_list.md
+    - Simple ListView: creating_a_ui/simple_list.md
+    - Custom ListView: creating_a_ui/custom_list.md
   - RevJS Module Reference:
     - rev-models: components/rev-models.md
     - rev-api: components/rev-api.md

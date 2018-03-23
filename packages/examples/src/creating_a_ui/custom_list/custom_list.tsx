@@ -25,7 +25,8 @@ modelManager.register(models.Post);
 modelManager.register(models.Comment);
 
 // Custom ListView Component
-const MyListView = (props: IListViewComponentProps<models.Post>) => {
+
+const MyCustomListView = (props: IListViewComponentProps<models.Post>) => {
 
     if (props.loadState == 'LOADING') {
         // Loading State
@@ -91,10 +92,7 @@ ReactDOM.render((
                     }}
                     orderBy={['post_date desc']}
                     limit={5}
-                    onRecordPress={(record) => {
-                        alert('Selected a record:\n' + JSON.stringify(record, null, 2));
-                    }}
-                    component={MyListView}
+                    component={MyCustomListView}
                 />
             </div>
 

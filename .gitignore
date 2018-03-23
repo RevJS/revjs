@@ -1,6 +1,7 @@
 node_modules
 *.map
 *.tgz
+packages/examples/src/creating_a_ui/js
 lib
 npm-debug.log
 lerna-debug.log

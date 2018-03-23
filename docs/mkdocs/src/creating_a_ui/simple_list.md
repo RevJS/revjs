@@ -1,10 +1,10 @@
 
-# Rendering a Simple List
+# Rendering a Simple ListView
 
 By default, a [&lt;ListView /&gt;](/api/rev-ui/interfaces/ilistviewprops.html)
 will render a table, as shown in the screenshot below:
 
-![RevJS Simple List](../img/ui-simple-list.png)
+![RevJS Simple ListView](../img/ui-simple-list.png)
 
 The data starts loading as soon as the ListView is rendered. A Loading
 indicator is shown until the data has finished loading. Once the data is loaded,
