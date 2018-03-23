@@ -8,7 +8,8 @@ module.exports = function() {
     return {
         entry: {
             simple_list: './src/creating_a_ui/simple_list/simple_list.tsx',
-            custom_list: './src/creating_a_ui/custom_list/custom_list.tsx'
+            custom_list: './src/creating_a_ui/custom_list/custom_list.tsx',
+            related_data: './src/creating_a_ui/related_data/related_data.tsx',
         },
         output: {
             path: outputPath, 

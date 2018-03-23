@@ -1,7 +1,7 @@
 
 import {
     AutoNumberField, TextField, RelatedModel, RelatedModelList,
-    DateField
+    DateField, IntegerField
 } from 'rev-models';
 import { ApiOperations } from 'rev-api/lib/decorators';
 
@@ -49,6 +49,11 @@ export class Post {
         body: string;
     @RelatedModelList({ model: 'Comment', field: 'post', label: 'Comments' })
         comments: Comment[];
+
+    @IntegerField({ label: 'No. of Comments' })
+        get number_of_comments() {
+            return (this.comments && this.comments.length) || 0;
+        }
 
     constructor(data?: Partial<Post>) {
         Object.assign(this, data);
