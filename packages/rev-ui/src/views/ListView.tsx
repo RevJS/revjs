@@ -21,7 +21,7 @@ export interface IListViewProps {
     model: string;
 
     /** A list of fields to be rendered */
-    fields: string[];
+    fields?: string[];
 
     /** A list of any related model fields to be read */
     related?: string[];
@@ -59,7 +59,7 @@ export type IListViewLoadState = 'NONE' | 'LOADING';
  * via its `component` property, or via the [[UI_COMPONENTS]] option.
  * @private
  */
-export interface IListViewComponentProps {
+export interface IListViewComponentProps<T extends IModel = any> {
 
     /** The title for the rendered list */
     title: string;
@@ -68,10 +68,10 @@ export interface IListViewComponentProps {
     loadState: IListViewLoadState;
 
     /** The list of fields (columns) to be rendered */
-    fields: fields.Field[];
+    fields?: fields.Field[];
 
     /** The retrieved model data */
-    records: IModel[];
+    records: T[];
 
     /** The record number of the first record in `records` */
     firstRecordNumber: number;
@@ -134,19 +134,21 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
             throw new Error(`ListView Error: Model '${props.model}' is not registered.`);
         }
         this.modelMeta = this.context.modelManager.getModelMeta(this.props.model);
-        for (const fieldName of props.fields) {
-            const field = this.modelMeta.fieldsByName[fieldName];
-            if (!field) {
-                throw new Error(`ListView Error: Model '${props.model}' does not have a field called '${fieldName}'.`);
-            }
-            else if (field instanceof fields.RelatedModelFieldBase) {
-                if (field instanceof fields.RelatedModelField) {
-                    if (!props.related || props.related.indexOf(field.name) == -1) {
-                        throw new Error(`To render the related model field '${fieldName}', it must be included in the "related" prop of the ListView.`);
-                    }
+        if (props.fields) {
+            for (const fieldName of props.fields) {
+                const field = this.modelMeta.fieldsByName[fieldName];
+                if (!field) {
+                    throw new Error(`ListView Error: Model '${props.model}' does not have a field called '${fieldName}'.`);
                 }
-                else {
-                    throw new Error(`Related model field '${fieldName}' is invalid. Only RelatedModel fields are supported in ListViews currently.`);
+                else if (field instanceof fields.RelatedModelFieldBase) {
+                    if (field instanceof fields.RelatedModelField) {
+                        if (!props.related || props.related.indexOf(field.name) == -1) {
+                            throw new Error(`To render the related model field '${fieldName}', it must be included in the "related" prop of the ListView.`);
+                        }
+                    }
+                    else {
+                        throw new Error(`Related model field '${fieldName}' is invalid. Only RelatedModel fields are supported in ListViews currently.`);
+                    }
                 }
             }
         }
@@ -201,7 +203,7 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
 
     render() {
 
-        const listFields = this.props.fields.map((fieldName) => this.modelMeta.fieldsByName[fieldName]);
+        const listFields = this.props.fields && this.props.fields.map((fieldName) => this.modelMeta.fieldsByName[fieldName]);
 
         const cProps: IListViewComponentProps & {children?: any} = {
             loadState: this.state.loadState,

@@ -316,6 +316,82 @@ describe('MUIListView', () => {
 
     });
 
+    describe('fields is not defined - data not loaded', () => {
+        let pagination: ReactWrapper;
+        let paginationButtons: ReactWrapper;
+
+        before(() => {
+            props = getComponentProps({ loaded: false, count: 0 });
+            props.fields = undefined;
+            wrapper = mount(
+                <MUIListView {...props} />
+            );
+            pagination = wrapper.find('div.' + classes.pagination).at(0);
+            paginationButtons = pagination.find('button');
+        });
+
+        it('renders the list title', () => {
+            const listTitle = wrapper.find('h2');
+            expect(listTitle).to.have.length(1);
+            expect(listTitle.at(0).text()).to.equal(props.title);
+        });
+
+        it('renders "Loading" in the pagination area', () => {
+            const paginationText = pagination.childAt(0).text();
+            expect(paginationText).to.equal('Loading');
+        });
+
+        it('renders a circular spinner in the pagination area', () => {
+            const spinner = pagination.find(CircularProgress);
+            expect(spinner).to.have.length(1);
+        });
+
+        it('remders the go-forward and go-back buttons', () => {
+            expect(paginationButtons).to.have.length(2);
+        });
+
+        it('does not render the table', () => {
+            expect(wrapper.find(Table)).to.have.length(0);
+        });
+
+    });
+
+    describe('fields is not defined - data loaded', () => {
+        let pagination: ReactWrapper;
+        let paginationButtons: ReactWrapper;
+
+        before(() => {
+            props = getComponentProps({ loaded: true, count: 0 });
+            props.fields = undefined;
+            wrapper = mount(
+                <MUIListView {...props} />
+            );
+            pagination = wrapper.find('div.' + classes.pagination).at(0);
+            paginationButtons = pagination.find('button');
+        });
+
+        it('renders the list title', () => {
+            const listTitle = wrapper.find('h2');
+            expect(listTitle).to.have.length(1);
+            expect(listTitle.at(0).text()).to.equal(props.title);
+        });
+
+        it('remders the current offset and total record count', () => {
+            const paginationText = pagination.childAt(0).text();
+            expect(paginationText).to.equal(
+                `Records ${props.firstRecordNumber}-${props.lastRecordNumber} of ${props.totalCount}`);
+        });
+
+        it('remders the go-forward and go-back buttons', () => {
+            expect(paginationButtons).to.have.length(2);
+        });
+
+        it('does not render the table', () => {
+            expect(wrapper.find(Table)).to.have.length(0);
+        });
+
+    });
+
     describe('Event Handlers', () => {
         let pagination: ReactWrapper;
 

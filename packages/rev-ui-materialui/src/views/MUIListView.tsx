@@ -64,45 +64,58 @@ export const MUIListView = styles<IMUIListViewProps>((props) => {
         </Toolbar>
     );
 
-    const tableHead = (
-        <TableHead>
-            <TableRow>
-                {props.fields.map((field, idx) => {
-                    return (
-                        <TableCell key={idx} padding="dense">{field.options.label || field.name}</TableCell>
-                    );
-                })}
-            </TableRow>
-        </TableHead>);
+    if (props.fields && props.fields.length) {
 
-    const tableBody = props.records.length > 0 && (
-        <TableBody>
-            {props.records.map((record, rowIdx) => (
-
-                <TableRow
-                    key={rowIdx} hover
-                    onClick={() => props.onRecordPress(record)}
-                >
-                    {props.fields.map((field, colIdx) => {
-                        const data = record[field.name];
+        const tableHead = (
+            <TableHead>
+                <TableRow>
+                    {props.fields.map((field, idx) => {
                         return (
-                            <TableCell key={colIdx} padding="dense">{data ? data.toString() : ''}</TableCell>
+                            <TableCell key={idx} padding="dense">{field.options.label || field.name}</TableCell>
                         );
                     })}
                 </TableRow>
+            </TableHead>);
 
-            ))}
-        </TableBody>
-    );
+        const tableBody = props.records.length > 0 && (
+            <TableBody>
+                {props.records.map((record, rowIdx) => (
 
-    return (
-        <div className={props.classes.root}>
-            {toolbar}
-            <Table className={props.classes.table}>
-                {tableHead}
-                {tableBody}
-            </Table>
-        </div>
-    );
+                    <TableRow
+                        key={rowIdx} hover
+                        onClick={() => props.onRecordPress(record)}
+                    >
+                        {props.fields.map((field, colIdx) => {
+                            const data = record[field.name];
+                            return (
+                                <TableCell key={colIdx} padding="dense">{data ? data.toString() : ''}</TableCell>
+                            );
+                        })}
+                    </TableRow>
+
+                ))}
+            </TableBody>
+        );
+
+        return (
+            <div className={props.classes.root}>
+                {toolbar}
+                <Table className={props.classes.table}>
+                    {tableHead}
+                    {tableBody}
+                </Table>
+            </div>
+        );
+
+    }
+    else {
+
+        return (
+            <div className={props.classes.root}>
+                {toolbar}
+            </div>
+        );
+
+    }
 
 });
