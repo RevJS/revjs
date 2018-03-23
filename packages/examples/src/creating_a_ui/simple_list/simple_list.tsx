@@ -27,7 +27,7 @@ ReactDOM.render((
             <AppBar position="static">
                 <Toolbar>
                     <Typography variant="title" color="inherit">
-                        RevJS - ListView Demo
+                        RevJS - Simple List Demo
                     </Typography>
                 </Toolbar>
             </AppBar>

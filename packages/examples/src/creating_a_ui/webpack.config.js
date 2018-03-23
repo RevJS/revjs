@@ -7,7 +7,8 @@ const outputPath = path.join(__dirname, 'js');
 module.exports = function() {
     return {
         entry: {
-            simple_list: './src/creating_a_ui/simple_list/simple_list.tsx'
+            simple_list: './src/creating_a_ui/simple_list/simple_list.tsx',
+            custom_list: './src/creating_a_ui/custom_list/custom_list.tsx'
         },
         output: {
             path: outputPath, 

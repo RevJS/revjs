@@ -138,12 +138,10 @@ describe('ListView field tests', () => {
 
     describe('with no specific fields selected', () => {
         const scalarFieldList = ['id', 'title', 'body', 'published', 'post_date'];
-        let meta: IModelMeta<models.Post>;
         let modelData: IModelTestData;
 
         before(async () => {
             modelManager = models.getModelManager();
-            meta = modelManager.getModelMeta(models.Post);
             modelData = await createData(modelManager);
 
             receivedProps = null;
