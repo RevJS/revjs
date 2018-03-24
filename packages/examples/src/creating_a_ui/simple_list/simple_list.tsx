@@ -46,8 +46,8 @@ ReactDOM.render((
                     }}
                     orderBy={['post_date desc']}
                     limit={5}
-                    onRecordPress={(record) => {
-                        alert('Selected a record:\n' + JSON.stringify(record, null, 2));
+                    onItemPress={(post) => {
+                        alert('Selected a post:\n' + JSON.stringify(post, null, 2));
                     }}
                 />
 

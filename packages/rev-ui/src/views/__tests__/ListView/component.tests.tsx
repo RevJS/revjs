@@ -94,12 +94,12 @@ describe('ListView basic component', () => {
         });
 
         it('passes an empty records list', () => {
-            expect(receivedProps.records).to.deep.equal([]);
+            expect(receivedProps.results).to.deep.equal([]);
         });
 
         it('record numbers are zeros', () => {
-            expect(receivedProps.firstRecordNumber).to.equal(0);
-            expect(receivedProps.lastRecordNumber).to.equal(0);
+            expect(receivedProps.firstItemNumber).to.equal(0);
+            expect(receivedProps.lastItemNumber).to.equal(0);
             expect(receivedProps.totalCount).to.equal(0);
         });
 
@@ -114,7 +114,7 @@ describe('ListView basic component', () => {
         it('passes event handlers', () => {
             expect(receivedProps.onBackButtonPress).to.be.a('function');
             expect(receivedProps.onForwardButtonPress).to.be.a('function');
-            expect(receivedProps.onRecordPress).to.be.a('function');
+            expect(receivedProps.onItemPress).to.be.a('function');
         });
 
     });
@@ -181,7 +181,7 @@ describe('ListView basic component', () => {
         it('passes the correct record data', () => {
             expectedData.forEach((record, recordIdx) => {
                 fieldList.forEach((fieldName) => {
-                    expect(receivedProps.records[recordIdx][fieldName])
+                    expect(receivedProps.results[recordIdx][fieldName])
                         .to.equal(record[fieldName]);
                 });
             });
@@ -227,7 +227,7 @@ describe('ListView basic component', () => {
         it('returns records in the expected order', () => {
             expectedData.forEach((record, recordIdx) => {
                 fieldList.forEach((fieldName) => {
-                    expect(receivedProps.records[recordIdx][fieldName])
+                    expect(receivedProps.results[recordIdx][fieldName])
                         .to.equal(record[fieldName]);
                 });
             });
@@ -276,7 +276,7 @@ describe('ListView basic component', () => {
         it('passes the correct record data', () => {
             expectedData.forEach((record, recordIdx) => {
                 fieldList.forEach((fieldName) => {
-                    expect(receivedProps.records[recordIdx][fieldName])
+                    expect(receivedProps.results[recordIdx][fieldName])
                         .to.equal(record[fieldName]);
                 });
             });
@@ -284,8 +284,8 @@ describe('ListView basic component', () => {
 
         it('includes the related field data', () => {
             expectedData.forEach((record, recordIdx) => {
-                expect(receivedProps.records[recordIdx].user).to.be.instanceof(models.User);
-                expect(receivedProps.records[recordIdx].user).to.deep.equal(record.user);
+                expect(receivedProps.results[recordIdx].user).to.be.instanceof(models.User);
+                expect(receivedProps.results[recordIdx].user).to.deep.equal(record.user);
             });
         });
 
@@ -305,7 +305,7 @@ describe('ListView basic component', () => {
             receivedProps = null;
             const wrapper = mountComponent(
                 <ListView model={model} fields={fieldList}
-                    onRecordPress={onRecordClickSpy}
+                    onItemPress={onRecordClickSpy}
                     component={SpyComponent}
                 />
             );
@@ -316,7 +316,7 @@ describe('ListView basic component', () => {
         describe('onRecordClick()', () => {
 
             it('called with record data when a row is clicked', () => {
-                receivedProps.onRecordPress(expectedData.posts[1]);
+                receivedProps.onItemPress(expectedData.posts[1]);
 
                 expect(onRecordClickSpy.callCount).to.equal(1);
 

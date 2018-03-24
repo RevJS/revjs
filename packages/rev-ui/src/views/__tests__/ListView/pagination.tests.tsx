@@ -62,8 +62,8 @@ describe('ListView data & pagination', () => {
         });
 
         it('record numbers are set based on offset + limut', () => {
-            expect(receivedProps.firstRecordNumber).to.equal(1);
-            expect(receivedProps.lastRecordNumber).to.equal(rowLimit);
+            expect(receivedProps.firstItemNumber).to.equal(1);
+            expect(receivedProps.lastItemNumber).to.equal(rowLimit);
             expect(receivedProps.totalCount).to.equal(modelData.posts.length);
         });
 
@@ -82,7 +82,7 @@ describe('ListView data & pagination', () => {
         it('passes the correct record data', () => {
             expectedData.forEach((record, recordIdx) => {
                 fieldList.forEach((fieldName) => {
-                    expect(receivedProps.records[recordIdx][fieldName])
+                    expect(receivedProps.results[recordIdx][fieldName])
                         .to.equal(record[fieldName]);
                 });
             });
@@ -119,8 +119,8 @@ describe('ListView data & pagination', () => {
         });
 
         it('record numbers are set based on offset + limut', () => {
-            expect(receivedProps.firstRecordNumber).to.equal(4);
-            expect(receivedProps.lastRecordNumber).to.equal(6);
+            expect(receivedProps.firstItemNumber).to.equal(4);
+            expect(receivedProps.lastItemNumber).to.equal(6);
             expect(receivedProps.totalCount).to.equal(modelData.posts.length);
         });
 
@@ -135,7 +135,7 @@ describe('ListView data & pagination', () => {
         it('passes the correct record data', () => {
             expectedData.forEach((record, recordIdx) => {
                 fieldList.forEach((fieldName) => {
-                    expect(receivedProps.records[recordIdx][fieldName])
+                    expect(receivedProps.results[recordIdx][fieldName])
                         .to.equal(record[fieldName]);
                 });
             });
@@ -175,8 +175,8 @@ describe('ListView data & pagination', () => {
         });
 
         it('record numbers are set based on offset + limut', () => {
-            expect(receivedProps.firstRecordNumber).to.equal(7);
-            expect(receivedProps.lastRecordNumber).to.equal(modelData.posts.length);
+            expect(receivedProps.firstItemNumber).to.equal(7);
+            expect(receivedProps.lastItemNumber).to.equal(modelData.posts.length);
             expect(receivedProps.totalCount).to.equal(modelData.posts.length);
         });
 
@@ -191,7 +191,7 @@ describe('ListView data & pagination', () => {
         it('passes the correct record data', () => {
             expectedData.forEach((record, recordIdx) => {
                 fieldList.forEach((fieldName) => {
-                    expect(receivedProps.records[recordIdx][fieldName])
+                    expect(receivedProps.results[recordIdx][fieldName])
                         .to.equal(record[fieldName]);
                 });
             });
@@ -231,8 +231,8 @@ describe('ListView data & pagination', () => {
         });
 
         it('record numbers are set based on offset + limut', () => {
-            expect(receivedProps.firstRecordNumber).to.equal(1);
-            expect(receivedProps.lastRecordNumber).to.equal(3);
+            expect(receivedProps.firstItemNumber).to.equal(1);
+            expect(receivedProps.lastItemNumber).to.equal(3);
             expect(receivedProps.totalCount).to.equal(modelData.posts.length);
         });
 
@@ -247,7 +247,7 @@ describe('ListView data & pagination', () => {
         it('passes the correct record data', () => {
             expectedData.forEach((record, recordIdx) => {
                 fieldList.forEach((fieldName) => {
-                    expect(receivedProps.records[recordIdx][fieldName])
+                    expect(receivedProps.results[recordIdx][fieldName])
                         .to.equal(record[fieldName]);
                 });
             });
@@ -278,8 +278,8 @@ describe('ListView data & pagination', () => {
         });
 
         it('record numbers are set to zero', () => {
-            expect(receivedProps.firstRecordNumber).to.equal(0);
-            expect(receivedProps.lastRecordNumber).to.equal(0);
+            expect(receivedProps.firstItemNumber).to.equal(0);
+            expect(receivedProps.lastItemNumber).to.equal(0);
             expect(receivedProps.totalCount).to.equal(0);
         });
 
@@ -296,7 +296,7 @@ describe('ListView data & pagination', () => {
         });
 
         it('passes empty record data', () => {
-            expect(receivedProps.records).to.deep.equal([]);
+            expect(receivedProps.results).to.deep.equal([]);
         });
 
     });

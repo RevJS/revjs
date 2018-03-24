@@ -38,21 +38,21 @@ describe('MUIListView', () => {
             loadState: 'LOADING',
             title: 'Test List',
             fields: modelMeta.fields,
-            records: [],
-            firstRecordNumber: 0,
-            lastRecordNumber: 0 ,
+            results: [],
+            firstItemNumber: 0,
+            lastItemNumber: 0,
             totalCount: 0,
             backButtonDisabled: true,
             forwardButtonDisabled: true,
             onBackButtonPress: sinon.spy(),
             onForwardButtonPress: sinon.spy(),
-            onRecordPress: sinon.spy()
+            onItemPress: sinon.spy()
         };
         if (options.loaded) {
             cProps.loadState = 'NONE';
-            cProps.records = modelData.posts.slice(0, options.count);
-            cProps.firstRecordNumber = options.count > 0 ? 1 : 0;
-            cProps.lastRecordNumber = options.count;
+            cProps.results = modelData.posts.slice(0, options.count);
+            cProps.firstItemNumber = options.count > 0 ? 1 : 0;
+            cProps.lastItemNumber = options.count;
             cProps.totalCount = modelData.posts.length;
             cProps.backButtonDisabled = true;
             cProps.forwardButtonDisabled = false;
@@ -165,7 +165,7 @@ describe('MUIListView', () => {
             it('remders the current offset and total record count', () => {
                 const paginationText = pagination.childAt(0).text();
                 expect(paginationText).to.equal(
-                    `Records ${props.firstRecordNumber}-${props.lastRecordNumber} of ${props.totalCount}`);
+                    `${props.firstItemNumber}-${props.lastItemNumber} of ${props.totalCount}`);
             });
 
             it('remders the go-forward and go-back buttons', () => {
@@ -202,15 +202,15 @@ describe('MUIListView', () => {
                 expect(wrapper.find('tbody')).to.have.length(1);
             });
 
-            it('renders all records in props.records', () => {
+            it('renders all records in props.results', () => {
                 expect(
                     wrapper.find('tbody')
                     .at(0).find('tr')
-                ).to.have.length(props.records.length);
+                ).to.have.length(props.results.length);
             });
 
             it('renders the correct data in each cell', () => {
-                for (let i = 0; i < props.records.length; i++) {
+                for (let i = 0; i < props.results.length; i++) {
                     const post = modelData.posts[i];
                     const row = wrapper.find('tbody')
                         .at(0).find('tr').at(i);
@@ -268,7 +268,7 @@ describe('MUIListView', () => {
             it('remders the current offset and total record count', () => {
                 const paginationText = pagination.childAt(0).text();
                 expect(paginationText).to.equal(
-                    `Records ${props.firstRecordNumber}-${props.lastRecordNumber} of ${props.totalCount}`);
+                    `${props.firstItemNumber}-${props.firstItemNumber} of ${props.totalCount}`);
             });
 
             it('remders the go-forward and go-back buttons', () => {
@@ -379,7 +379,7 @@ describe('MUIListView', () => {
         it('remders the current offset and total record count', () => {
             const paginationText = pagination.childAt(0).text();
             expect(paginationText).to.equal(
-                `Records ${props.firstRecordNumber}-${props.lastRecordNumber} of ${props.totalCount}`);
+                `${props.firstItemNumber}-${props.lastItemNumber} of ${props.totalCount}`);
         });
 
         it('remders the go-forward and go-back buttons', () => {
@@ -431,8 +431,8 @@ describe('MUIListView', () => {
             expect(pressSpy.getCall(0).args).to.deep.equal([]);
         });
 
-        it('when I click a table row, the onRecordPress handler is called', () => {
-            const pressSpy = getSpy(props.onRecordPress);
+        it('when I click a table row, the onItemPress handler is called', () => {
+            const pressSpy = getSpy(props.onItemPress);
             expect(pressSpy.callCount).to.equal(0);
 
             const tableBody = wrapper.find('tbody').at(0);
@@ -442,9 +442,9 @@ describe('MUIListView', () => {
             expect(pressSpy.callCount).to.equal(1);
             expect(pressSpy.getCall(0).args).to.have.length(1);
 
-            const passedRecord = pressSpy.getCall(0).args[0];
-            expect(passedRecord.id).to.equal(modelData.posts[1].id);
-            expect(passedRecord.title).to.equal(modelData.posts[1].title);
+            const passedItem = pressSpy.getCall(0).args[0];
+            expect(passedItem.id).to.equal(modelData.posts[1].id);
+            expect(passedItem.title).to.equal(modelData.posts[1].title);
         });
 
     });

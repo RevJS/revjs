@@ -38,7 +38,7 @@ const MyCustomListView = (props: IListViewComponentProps<models.Post>) => {
     }
     else {
         // Loaded State
-        const postCards = props.records.map((post) => (
+        const postCards = props.results.map((post) => (
             <Grid item xs={12} md={6}>
                 <Card style={{ height: '100%' }}>
                     <CardHeader

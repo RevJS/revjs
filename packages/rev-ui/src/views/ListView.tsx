@@ -39,7 +39,7 @@ export interface IListViewProps {
     limit?: number;
 
     /** This method will be called when a user clicks on a record in the list */
-    onRecordPress?: (model: IModel) => void;
+    onItemPress?: (model: IModel) => void;
 
     /**
      * If you provide a React component to this property, it will be used
@@ -71,18 +71,18 @@ export interface IListViewComponentProps<T extends IModel = any> {
     fields?: fields.Field[];
 
     /** The retrieved model data */
-    records: T[];
+    results: T[];
 
-    /** The record number of the first record in `records` */
-    firstRecordNumber: number;
+    /** The item number of the first item in `results` */
+    firstItemNumber: number;
 
-    /** The record number of the last record in `records` */
-    lastRecordNumber: number;
+    /** The item number of the last item in `results` */
+    lastItemNumber: number;
 
-    /** The total number of records matching the specified query */
+    /** The total number of items matching the specified query */
     totalCount: number;
 
-    /** Whether the Back button should be disabled (e.g. firstRecordNumber = 1) */
+    /** Whether the Back button should be disabled (e.g. firstItemNumber = 1) */
     backButtonDisabled: boolean;
 
     /** Whether the Forward button should be disabled (e.g. we're on the last page of data) */
@@ -94,8 +94,8 @@ export interface IListViewComponentProps<T extends IModel = any> {
     /** Forward button press event handler */
     onForwardButtonPress(): void;
 
-    /** Record press event handler */
-    onRecordPress(model: IModel): void;
+    /** Item press event handler */
+    onItemPress(model: IModel): void;
 }
 
 /**
@@ -172,9 +172,9 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
         this.loadData(this.state.limit, offset);
     }
 
-    onRecordPress(record: IModel) {
-        if (this.props.onRecordPress) {
-            this.props.onRecordPress(record);
+    onItemPress(model: IModel) {
+        if (this.props.onItemPress) {
+            this.props.onItemPress(model);
         }
     }
 
@@ -209,33 +209,33 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
             loadState: this.state.loadState,
             title: this.props.title ? this.props.title : this.modelMeta.label + ' List',
             fields: listFields,
-            records: [],
-            firstRecordNumber: 0,
-            lastRecordNumber: 0,
+            results: [],
+            firstItemNumber: 0,
+            lastItemNumber: 0,
             totalCount: 0,
             backButtonDisabled: true,
             forwardButtonDisabled: true,
 
             onBackButtonPress: () => this.onBackButtonPress(),
             onForwardButtonPress: () => this.onForwardButtonPress(),
-            onRecordPress: (record: IModel) => this.onRecordPress(record)
+            onItemPress: (model: IModel) => this.onItemPress(model)
         };
 
         if (this.state.modelData) {
             const readMeta = this.state.modelData.meta;
-            cProps.firstRecordNumber = readMeta.totalCount ? readMeta.offset + 1 : 0;
-            cProps.lastRecordNumber = Math.min(
+            cProps.firstItemNumber = readMeta.totalCount ? readMeta.offset + 1 : 0;
+            cProps.lastItemNumber = Math.min(
                 readMeta.offset + readMeta.limit,
                 readMeta.totalCount
             );
-            if (cProps.lastRecordNumber < readMeta.totalCount) {
+            if (cProps.lastItemNumber < readMeta.totalCount) {
                 cProps.forwardButtonDisabled = false;
             }
-            if (cProps.firstRecordNumber > 1) {
+            if (cProps.firstItemNumber > 1) {
                 cProps.backButtonDisabled = false;
             }
             cProps.totalCount = readMeta.totalCount;
-            cProps.records = this.state.modelData.results;
+            cProps.results = this.state.modelData.results;
         }
 
         const Component = this.props.component || UI_COMPONENTS.views.ListView;

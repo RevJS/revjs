@@ -31,7 +31,7 @@ const MyCustomListView = (props: IListViewComponentProps<models.Post>) => {
     }
     else {
         // Render the posts as a list of cards
-        const postCards = props.records.map((post) => (
+        const postCards = props.results.map((post) => (
             <Card>
                 <CardHeader
                     avatar={

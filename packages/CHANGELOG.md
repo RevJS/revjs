@@ -8,6 +8,7 @@
 * Exported 'Component' interfaces from the root, for easier use
 * IListViewComponentProps now generic to enable types on props.records
 * ListView.fields prop now optional
+* IListViewComponentProps.records -> results (to be consistent with IModelOperationResult)
 
 ### 0.14.0 - 18th March 2018
 

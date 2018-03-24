@@ -63,7 +63,7 @@ describe('ListView field tests', () => {
         it('passes the correct record data', () => {
             modelData.posts.forEach((record, recordIdx) => {
                 fieldList.forEach((fieldName) => {
-                    expect(receivedProps.records[recordIdx][fieldName])
+                    expect(receivedProps.results[recordIdx][fieldName])
                         .to.equal(record[fieldName]);
                 });
             });
@@ -163,7 +163,7 @@ describe('ListView field tests', () => {
         it('passes the correct record data', () => {
             modelData.posts.forEach((record, recordIdx) => {
                 scalarFieldList.forEach((fieldName) => {
-                    expect(receivedProps.records[recordIdx][fieldName])
+                    expect(receivedProps.results[recordIdx][fieldName])
                         .to.equal(record[fieldName]);
                 });
             });

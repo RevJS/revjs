@@ -36,7 +36,7 @@ export const MUIListView = styles<IMUIListViewProps>((props) => {
     let paginationText = 'Loading';
 
     if (props.loadState == 'NONE') {
-        paginationText = `Records ${props.firstRecordNumber}-${props.lastRecordNumber} of ${props.totalCount}`;
+        paginationText = `${props.firstItemNumber}-${props.lastItemNumber} of ${props.totalCount}`;
     }
 
     const toolbar = (
@@ -77,16 +77,16 @@ export const MUIListView = styles<IMUIListViewProps>((props) => {
                 </TableRow>
             </TableHead>);
 
-        const tableBody = props.records.length > 0 && (
+        const tableBody = props.results.length > 0 && (
             <TableBody>
-                {props.records.map((record, rowIdx) => (
+                {props.results.map((model, rowIdx) => (
 
                     <TableRow
                         key={rowIdx} hover
-                        onClick={() => props.onRecordPress(record)}
+                        onClick={() => props.onItemPress(model)}
                     >
                         {props.fields.map((field, colIdx) => {
-                            const data = record[field.name];
+                            const data = model[field.name];
                             return (
                                 <TableCell key={colIdx} padding="dense">{data ? data.toString() : ''}</TableCell>
                             );

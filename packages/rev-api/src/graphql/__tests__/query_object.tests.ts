@@ -27,7 +27,7 @@ describe('GraphQL query type - top-level objects', () => {
         schema = api.getSchema();
     });
 
-    it('Returns "records" and "meta" objects at the top level', async () => {
+    it('Returns "results" and "meta" objects at the top level', async () => {
         const query = `
             query {
                 Post {
@@ -58,7 +58,7 @@ describe('GraphQL query type - top-level objects', () => {
         });
     });
 
-    it('does not return "records" and "meta" objects at lower levels', async () => {
+    it('does not return "results" and "meta" objects at lower levels', async () => {
         const query = `
             query {
                 Post {
