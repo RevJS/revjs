@@ -6,6 +6,7 @@ import { IDetailViewContextProp, IDetailViewContext } from '../views/DetailView'
 import { withDetailViewContext } from '../views/withDetailViewContext';
 import { UI_COMPONENTS } from '../config';
 import { IActionComponentProps } from './types';
+import { IStandardComponentProps, getStandardProps } from '../utils/props';
 
 /**
  * A `<PostAction />` component is designed to be included inside a
@@ -16,7 +17,7 @@ import { IActionComponentProps } from './types';
  * model data. If validation is successful, the data is sent via an HTTP POST
  * or PUT request to the specified url.
  */
-export interface IPostActionProps {
+export interface IPostActionProps extends IStandardComponentProps {
 
     /** Action label (default = "Submit") */
     label?: string;
@@ -118,9 +119,10 @@ class PostActionC extends React.Component<IPostActionProps & IDetailViewContextP
             doAction: () => this.doAction(),
             children: this.props.children
         };
+        const sProps = getStandardProps(this.props);
 
         const Component = this.props.component || UI_COMPONENTS.actions.PostAction;
-        return <Component {...cProps} />;
+        return <Component {...cProps} {...sProps} />;
     }
 }
 

@@ -7,6 +7,7 @@ import { IDetailViewContextProp } from '../views/DetailView';
 import { IFieldError } from 'rev-models/lib/validation/validationresult';
 import { withDetailViewContext } from '../views/withDetailViewContext';
 import { UI_COMPONENTS } from '../config';
+import { IStandardComponentProps, getStandardProps } from '../utils/props';
 
 /**
  * @private
@@ -21,7 +22,7 @@ export type ColspanOptions = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
  * If any validation errors occur, a `<Field />` will display the corresponding
  * validation message(s) and allow the error to be corrected.
  */
-export interface IFieldProps {
+export interface IFieldProps extends IStandardComponentProps {
 
     /**
      * Model field name. Must correspond with a field on the model specified
@@ -57,7 +58,7 @@ export interface IFieldState {
 /**
  * @private
  */
-export interface IFieldComponentProps  {
+export interface IFieldComponentProps extends IStandardComponentProps  {
     field: fields.Field;
     label: string;
     colspanNarrow: ColspanOptions;
@@ -117,9 +118,10 @@ class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFiel
             disabled,
             onChange: (value) => this.onChange(value)
         };
+        const sProps = getStandardProps(this.props);
 
         const Component = this.props.component || UI_COMPONENTS.fields[this.fieldComponentName];
-        return <Component {...cProps} />;
+        return <Component {...cProps} {...sProps} />;
 
     }
 

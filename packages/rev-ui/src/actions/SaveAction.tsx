@@ -6,6 +6,7 @@ import { withDetailViewContext } from '../views/withDetailViewContext';
 import { UI_COMPONENTS } from '../config';
 import { IActionComponentProps } from './types';
 import { IModelOperationResult } from 'rev-models';
+import { IStandardComponentProps, getStandardProps } from '../utils/props';
 
 /**
  * A `<SaveAction />` component is designed to be included inside a
@@ -13,7 +14,7 @@ import { IModelOperationResult } from 'rev-models';
  * either creates or updates the current record, depending on whether it has
  * a primaryKey value or not.
  */
-export interface ISaveActionProps {
+export interface ISaveActionProps extends IStandardComponentProps {
 
     /** Action label (default = "Submit") */
     label?: string;
@@ -92,9 +93,10 @@ class SaveActionC extends React.Component<ISaveActionProps & IDetailViewContextP
             doAction: () => this.doAction(),
             children: this.props.children
         };
+        const sProps = getStandardProps(this.props);
 
         const Component = this.props.component || UI_COMPONENTS.actions.SaveAction;
-        return <Component {...cProps} />;
+        return <Component {...cProps} {...sProps} />;
     }
 }
 

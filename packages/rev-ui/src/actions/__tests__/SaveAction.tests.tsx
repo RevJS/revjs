@@ -264,4 +264,29 @@ describe('SaveAction', () => {
 
     });
 
+    describe('Standard Props', () => {
+        let modelManager: rev.ModelManager;
+
+        before(() => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post">
+                        <SaveAction
+                            label="Save"
+                            component={SpyComponent}
+                            style={{marginTop: 10}}
+                        />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
+
+        it('style prop is passed to rendered component', () => {
+            expect(receivedProps.style).to.deep.equal({marginTop: 10});
+        });
+
+    });
+
 });

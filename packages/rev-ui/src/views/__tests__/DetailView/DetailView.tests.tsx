@@ -8,7 +8,7 @@ import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../../../provider/ModelProvider';
-import { DetailView, IDetailViewContext } from '../../DetailView';
+import { DetailView, IDetailViewContext, IDetailViewProps } from '../../DetailView';
 import { sleep } from '../../../__test_utils__/utils';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
@@ -615,6 +615,35 @@ describe('DetailView', () => {
 
         it('renders children directly', () => {
             expect(wrapper.at(0).text()).to.equal('content');
+        });
+
+    });
+
+    describe('Standard Component Properties', () => {
+        let modelManager: rev.ModelManager;
+        let receivedProps: IDetailViewProps;
+
+        const SpyComponent = (props: any) => {
+            receivedProps = props;
+            return <p>SpyComponent</p>;
+        };
+
+        before(() => {
+            receivedProps = null;
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView
+                        model="Post"
+                        component={SpyComponent}
+                        style={{marginTop: 10}}
+                    />
+                </ModelProvider>
+            );
+        });
+
+        it('style prop is passed to rendered component', () => {
+            expect(receivedProps.style).to.deep.equal({marginTop: 10});
         });
 
     });

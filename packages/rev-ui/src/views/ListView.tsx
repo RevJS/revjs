@@ -6,6 +6,7 @@ import { IModelProviderContext } from '../provider/ModelProvider';
 import { IModelMeta, IModelOperationResult, IModel, fields } from 'rev-models';
 import { IReadMeta } from 'rev-models/lib/models/types';
 import { UI_COMPONENTS } from '../config';
+import { IStandardComponentProps, getStandardProps } from '../utils/props';
 
 /**
  * A `<ListView />` renders a list of model records. By default it renders a
@@ -15,7 +16,7 @@ import { UI_COMPONENTS } from '../config';
  * A `<ListView />` component accepts a single sub-component, which is passed
  * [[IListViewComponentProps]] to be rendered as required.
  */
-export interface IListViewProps {
+export interface IListViewProps extends IStandardComponentProps {
 
     /** The name of the model class to search & render */
     model: string;
@@ -59,7 +60,7 @@ export type IListViewLoadState = 'NONE' | 'LOADING';
  * via its `component` property, or via the [[UI_COMPONENTS]] option.
  * @private
  */
-export interface IListViewComponentProps<T extends IModel = any> {
+export interface IListViewComponentProps<T extends IModel = any> extends IStandardComponentProps {
 
     /** The title for the rendered list */
     title: string;
@@ -238,8 +239,10 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
             cProps.results = this.state.modelData.results;
         }
 
+        const sProps = getStandardProps(this.props);
+
         const Component = this.props.component || UI_COMPONENTS.views.ListView;
-        return <Component {...cProps} />;
+        return <Component {...cProps} {...sProps} />;
     }
 
     async componentDidMount() {

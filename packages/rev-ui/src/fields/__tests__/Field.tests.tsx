@@ -274,6 +274,31 @@ describe('Field', () => {
 
     });
 
+    describe('Standard Component Properties', () => {
+        let modelManager: rev.ModelManager;
+
+        before(() => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post">
+                        <Field
+                            name="title"
+                            component={SpyComponent}
+                            style={{marginTop: 10}}
+                        />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
+
+        it('style prop is passed to rendered component', () => {
+            expect(receivedProps.style).to.deep.equal({marginTop: 10});
+        });
+
+    });
+
     describe('Event Handlers', () => {
         let modelManager: rev.ModelManager;
 

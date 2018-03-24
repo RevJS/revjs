@@ -291,6 +291,27 @@ describe('ListView basic component', () => {
 
     });
 
+    describe('Standard Component Properties', () => {
+
+        before(() => {
+            lifecycleOptions.enableComponentDidMount = false;
+            receivedProps = null;
+            mountComponent(
+                <ListView
+                    title="Test List"
+                    model={model}
+                    component={SpyComponent}
+                    style={{marginTop: 10}}
+                />
+            );
+        });
+
+        it('style prop is passed to rendered component', () => {
+            expect(receivedProps.style).to.deep.equal({marginTop: 10});
+        });
+
+    });
+
     describe('Event Handlers', () => {
         const fieldList = ['id', 'title', 'published', 'post_date'];
         let expectedData: IModelTestData;

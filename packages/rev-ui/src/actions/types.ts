@@ -1,10 +1,12 @@
+import { IStandardComponentProps } from '../utils/props';
+
 /**
  * The props passed to ActionComponents, when they are set up via e.g.
  * `<SaveAction component={MyCustomComponent} />`, or via the
  * [[UI_COMPONENTS]] configuration.
  * @private
  */
-export interface IActionComponentProps {
+export interface IActionComponentProps extends IStandardComponentProps {
 
     /** The label to be displayed */
     label: string;

@@ -6,13 +6,14 @@ import { withDetailViewContext } from '../views/withDetailViewContext';
 import { UI_COMPONENTS } from '../config';
 import { IActionComponentProps } from './types';
 import { IModelOperationResult } from 'rev-models';
+import { IStandardComponentProps, getStandardProps } from '../utils/props';
 
 /**
  * A `<RemoveAction />` component is designed to be included inside a
  * `<DetailView />`. By defailt it renders a button which causes the current
  * record to be deleted.
  */
-export interface IRemoveActionProps {
+export interface IRemoveActionProps extends IStandardComponentProps {
 
     /** Action label (default = "Delete") */
     label?: string;
@@ -90,9 +91,10 @@ class RemoveActionC extends React.Component<IRemoveActionProps & IDetailViewCont
             doAction: () => this.doAction(),
             children: this.props.children
         };
+        const sProps = getStandardProps(this.props);
 
         const Component = this.props.component || UI_COMPONENTS.actions.RemoveAction;
-        return <Component {...cProps} />;
+        return <Component {...cProps} {...sProps} />;
     }
 }
 

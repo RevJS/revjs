@@ -7,6 +7,7 @@ import { IModelValidationResult } from 'rev-models/lib/validation/validationresu
 import { isSet } from 'rev-models/lib/utils';
 import { UI_COMPONENTS } from '../config';
 import { IModelOperationResult } from 'rev-models/lib/operations/operationresult';
+import { IStandardComponentProps } from '../utils/props';
 
 /**
  * A `<DetailView />` renders a single model record. When used in conjunction
@@ -22,7 +23,7 @@ import { IModelOperationResult } from 'rev-models/lib/operations/operationresult
  * 12-column grid. This can be overridden via the `component` prop, or the
  * [[UI_COMPONENTS]] option.
  */
-export interface IDetailViewProps {
+export interface IDetailViewProps extends IStandardComponentProps {
 
     /** The name of the model class to render */
     model: string;
