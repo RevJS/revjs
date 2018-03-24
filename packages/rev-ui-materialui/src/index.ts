@@ -14,16 +14,20 @@ export function registerComponents() {
     UI_COMPONENTS.actions.SaveAction = MUIActionButton;
     UI_COMPONENTS.actions.RemoveAction = MUIActionButton;
 
-    UI_COMPONENTS.fields.DateField = MUITextField;
-    UI_COMPONENTS.fields.TimeField = MUITextField;
-    UI_COMPONENTS.fields.DateTimeField = MUITextField;
-    UI_COMPONENTS.fields.IntegerField = MUITextField;
-    UI_COMPONENTS.fields.NumberField = MUITextField;
-    UI_COMPONENTS.fields.BooleanField = MUITextField;
-    UI_COMPONENTS.fields.SelectField = MUITextField;
+    UI_COMPONENTS.fields.TextField = MUITextField;
     UI_COMPONENTS.fields.EmailField = MUITextField;
     UI_COMPONENTS.fields.URLField = MUITextField;
     UI_COMPONENTS.fields.PasswordField = MUITextField;
-    UI_COMPONENTS.fields.TextField = MUITextField;
+    UI_COMPONENTS.fields.NumberField = MUITextField;
+    UI_COMPONENTS.fields.IntegerField = MUITextField;
+    UI_COMPONENTS.fields.AutoNumberField = MUITextField;
+    UI_COMPONENTS.fields.BooleanField = MUITextField;
+    UI_COMPONENTS.fields.SelectField = MUITextField;
+    UI_COMPONENTS.fields.MultiSelectField = MUITextField;
+    UI_COMPONENTS.fields.DateField = MUITextField;
+    UI_COMPONENTS.fields.TimeField = MUITextField;
+    UI_COMPONENTS.fields.DateTimeField = MUITextField;
+    UI_COMPONENTS.fields.RelatedModelField = MUITextField;
+    UI_COMPONENTS.fields.RelatedModelListField = MUITextField;
 
 }

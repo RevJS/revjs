@@ -14,18 +14,20 @@ export const UI_COMPONENTS = {
         RemoveAction: PassthroughComponent
     },
     fields: {
-        DateField: PassthroughComponent,
-        TimeField: PassthroughComponent,
-        DateTimeField: PassthroughComponent,
-        IntegerField: PassthroughComponent,
-        NumberField: PassthroughComponent,
-        RelatedModelField: PassthroughComponent,
-        RelatedModelListField: PassthroughComponent,
-        BooleanField: PassthroughComponent,
-        SelectField: PassthroughComponent,
+        TextField: PassthroughComponent,
         EmailField: PassthroughComponent,
         URLField: PassthroughComponent,
         PasswordField: PassthroughComponent,
-        TextField: PassthroughComponent
+        NumberField: PassthroughComponent,
+        IntegerField: PassthroughComponent,
+        AutoNumberField: PassthroughComponent,
+        BooleanField: PassthroughComponent,
+        SelectField: PassthroughComponent,
+        MultiSelectField: PassthroughComponent,
+        DateField: PassthroughComponent,
+        TimeField: PassthroughComponent,
+        DateTimeField: PassthroughComponent,
+        RelatedModelField: PassthroughComponent,
+        RelatedModelListField: PassthroughComponent,
     }
 };

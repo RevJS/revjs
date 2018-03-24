@@ -241,6 +241,39 @@ describe('Field', () => {
         });
     });
 
+    describe('Field Component Configuration', () => {
+        let modelManager: rev.ModelManager;
+        let errorStub: sinon.SinonStub;
+
+        beforeEach(() => {
+            modelManager = models.getModelManager();
+            errorStub = sinon.stub(console, 'error');
+        });
+
+        afterEach(() => {
+            errorStub.restore();
+        });
+
+        it('throws render error when a field type does not have a component registered', () => {
+            class ModelWithUnknownField {
+                test: string;
+            }
+            class UnknownField extends rev.fields.Field {}
+            modelManager.register(ModelWithUnknownField, { fields: [
+                new UnknownField('test')
+            ]});
+
+            expect(() => {
+                mount(<ModelProvider modelManager={modelManager}>
+                    <DetailView model="ModelWithUnknownField">
+                        <Field name="test" />
+                    </DetailView>
+                </ModelProvider>);
+            }).to.throw(`Field Error: There is no UI_COMPONENT registered for field type \'UnknownField\'`);
+        });
+
+    });
+
     describe('Event Handlers', () => {
         let modelManager: rev.ModelManager;
 

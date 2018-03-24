@@ -72,6 +72,7 @@ export interface IFieldComponentProps  {
 class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFieldState> {
 
     modelField: fields.Field;
+    fieldComponentName: string;
 
     constructor(props: IFieldProps & IDetailViewContextProp, context: IModelProviderContext & IDetailViewContextProp) {
         super(props, context);
@@ -83,6 +84,10 @@ class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFiel
             throw new Error(`Field Error: Model '${meta.name}' does not have a field called '${props.name}'.`);
         }
         this.modelField = meta.fieldsByName[props.name];
+        this.fieldComponentName = this.modelField.constructor.name;
+        if (!this.props.component && !UI_COMPONENTS.fields[this.fieldComponentName]) {
+            throw new Error(`Field Error: There is no UI_COMPONENT registered for field type '${this.fieldComponentName}'`);
+        }
     }
 
     onChange(value: any) {
@@ -113,9 +118,7 @@ class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFiel
             onChange: (value) => this.onChange(value)
         };
 
-        const fieldComponentName = this.modelField.constructor.name;
-
-        const Component = this.props.component || UI_COMPONENTS.fields[fieldComponentName];
+        const Component = this.props.component || UI_COMPONENTS.fields[this.fieldComponentName];
         return <Component {...cProps} />;
 
     }
