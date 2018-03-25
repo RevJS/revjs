@@ -1,7 +1,7 @@
 
 import {
     AutoNumberField, TextField, RelatedModel, RelatedModelList,
-    DateField, IntegerField
+    DateField, IntegerField, IValidationContext
 } from 'rev-models';
 import { ApiOperations } from 'rev-api/lib/decorators';
 
@@ -57,6 +57,13 @@ export class Post {
 
     constructor(data?: Partial<Post>) {
         Object.assign(this, data);
+    }
+
+    validate(ctx: IValidationContext) {
+        if (this.description.includes('fake news')) {
+            ctx.result.addFieldError(
+                'description', 'Description must not include fake news!');
+        }
     }
 }
 

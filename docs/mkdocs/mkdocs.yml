@@ -17,8 +17,8 @@ pages:
     - RevJS UI Overview: creating_a_ui/overview.md
     - Simple ListView: creating_a_ui/simple_list.md
     - Custom ListView: creating_a_ui/custom_list.md
-    - Showing Related Model Data: creating_a_ui/related_data.md
-    - Creating a DetailView: creating_a_ui/detail_view.md
+    - Listing Related Model Data: creating_a_ui/related_data.md
+    - DetailViews: creating_a_ui/detail_view.md
   - RevJS Module Reference:
     - rev-models: components/rev-models.md
     - rev-api: components/rev-api.md

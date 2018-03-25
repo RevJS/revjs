@@ -21,8 +21,8 @@ modelManager.register(models.User);
 modelManager.register(models.Post);
 modelManager.register(models.Comment);
 
-const urlParams = (new URL(window.location.href)).searchParams;
-const postId = urlParams.get('id');
+const currentUrl = new URL(window.location.href);
+const postId = currentUrl.searchParams.get('id');
 console.log('Post ID', postId);
 
 ReactDOM.render((

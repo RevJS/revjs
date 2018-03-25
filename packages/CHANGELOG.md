@@ -1,7 +1,7 @@
 
 ## RevJS Module Releases
 
-### Next Release
+### 0.15.0 - 25th March 2018
 
 **`rev-ui`**
 
