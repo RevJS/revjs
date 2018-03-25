@@ -49,16 +49,13 @@ class MUIRelatedModelFieldC extends React.Component<IFieldComponentProps & IMode
 
     onSelectionChange(primaryKey: any) {
         if (primaryKey === null) {
-            console.log('pk null');
             this.props.onChange(null);
         }
         else if (this.state.selection) {
-            console.log('searching pk', primaryKey);
             const match = this.state.selection.find(
                 (model) => model[this.modelMeta.primaryKey] == primaryKey
             );
             if (match) {
-                console.log('match', match);
                 this.props.onChange(match);
             }
         }
@@ -88,9 +85,6 @@ class MUIRelatedModelFieldC extends React.Component<IFieldComponentProps & IMode
         }
 
         const value = (this.props.value && this.props.value[this.modelMeta.primaryKey].toString()) || '';
-
-        console.log('selections', this.state.selection);
-        console.log('value', value);
 
         return (
             <Grid item {...gridWidthProps} style={this.props.style}>

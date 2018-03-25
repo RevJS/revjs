@@ -455,7 +455,8 @@ describe('DetailView', () => {
                 expect(result.success).to.be.true;
                 expect(result.result).not.to.be.undefined;
                 expect(result.result).to.be.instanceof(models.Post);
-                expect(result.result.id).not.to.be.null;
+                expect(result.result.id).to.be.a('number');
+                expect(receivedDetailViewContext.model.id).to.be.a('number');
                 expect(receivedDetailViewContext.validation).to.equal(result.validation);
                 expect(renderCount).to.equal(2);
             });

@@ -205,6 +205,8 @@ export class DetailView extends React.Component<IDetailViewProps> {
         try {
             if (ctx.manager.isNew(ctx.model)) {
                 result = await ctx.manager.create(ctx.model);
+                // replace model data with created result
+                ctx.model = result.result;
             }
             else {
                 result = await ctx.manager.update(ctx.model);

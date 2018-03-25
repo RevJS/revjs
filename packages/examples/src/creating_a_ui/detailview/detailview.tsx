@@ -21,6 +21,10 @@ modelManager.register(models.User);
 modelManager.register(models.Post);
 modelManager.register(models.Comment);
 
+const urlParams = (new URL(window.location.href)).searchParams;
+const postId = urlParams.get('id');
+console.log('Post ID', postId);
+
 ReactDOM.render((
         <ModelProvider modelManager={modelManager} >
             <Reboot />
@@ -33,9 +37,9 @@ ReactDOM.render((
             </AppBar>
             <Card style={{ maxWidth: 800, padding: 20, margin: '30px auto' }}>
 
-                <Typography variant="display1" style={{marginBottom: 20}}>Create Post</Typography>
+                <Typography variant="display1" style={{marginBottom: 20}}>Edit Post</Typography>
 
-                <DetailView model="Post">
+                <DetailView model="Post" primaryKeyValue={postId}>
                     <Field name="title" colspan={12} />
                     <Field name="description" colspan={12} />
                     <Field name="body" colspan={12} />
@@ -43,9 +47,10 @@ ReactDOM.render((
                     <Field name="user" />
 
                     <SaveAction
-                        label="Create Post"
+                        label="Save Post"
                         style={{marginTop: 20}}
                         onError={(err) => alert('Save Error: ' + JSON.stringify(err, null, 2))}
+                        onSuccess={() => alert('Post Saved')}
                     />
                 </DetailView>
 
