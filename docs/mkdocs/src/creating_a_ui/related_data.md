@@ -1,5 +1,5 @@
 
-# Rendering Related Model Data
+# Showing Related Model Data
 
 One of the key things about a well structured Data Model is how the models
 are related.
@@ -17,7 +17,7 @@ Once you have these relationships defined, you'll probably want to be able to
 display this related information to the user. The following sections
 describe a couple of ways this can be done.
 
-## Displaying RelatedModel fields
+## Showing RelatedModel fields
 
 In the example above, we mentioned that a User can be an Author of a Post.
 
