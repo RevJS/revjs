@@ -29,7 +29,8 @@ export const MUITextField: React.StatelessComponent<IFieldComponentProps> = (pro
     const mlOptions: any = {};
     if (opts.multiLine) {
         mlOptions.multiline = true;
-        mlOptions.rowsMax = 4;
+        mlOptions.rowsMax = 5;
+        mlOptions.rows = 5;
     }
 
     return (

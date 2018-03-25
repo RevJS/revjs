@@ -45,7 +45,7 @@ export class Post {
         title: string;
     @TextField({ label: 'Description' })
         description: string;
-    @TextField({ multiLine: true, label: 'Content', required: false })
+    @TextField({ multiLine: true, label: 'Body Text', required: false })
         body: string;
     @RelatedModelList({ model: 'Comment', field: 'post', label: 'Comments' })
         comments: Comment[];

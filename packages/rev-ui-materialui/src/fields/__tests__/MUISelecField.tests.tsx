@@ -11,7 +11,6 @@ import { fields } from 'rev-models';
 import InputLabel from 'material-ui/Input/InputLabel';
 import Select from 'material-ui/Select';
 import { FormHelperText } from 'material-ui/Form';
-import { MenuItem } from 'material-ui/Menu';
 
 describe('MUISelectField', () => {
 

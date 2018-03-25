@@ -5,6 +5,7 @@ import { MUIDetailView } from './views/MUIDetailView';
 import { MUITextField } from './fields/MUITextField';
 import { MUISelectField } from './fields/MUISelectField';
 import { MUIActionButton } from './actions/MUIActionButton';
+import { MUIRelatedModelField } from './fields/MUIRelatedModelField';
 
 export function registerComponents() {
 
@@ -28,7 +29,7 @@ export function registerComponents() {
     UI_COMPONENTS.fields.DateField = MUITextField;
     UI_COMPONENTS.fields.TimeField = MUITextField;
     UI_COMPONENTS.fields.DateTimeField = MUITextField;
-    UI_COMPONENTS.fields.RelatedModelField = MUITextField;
+    UI_COMPONENTS.fields.RelatedModelField = MUIRelatedModelField;
     UI_COMPONENTS.fields.RelatedModelListField = MUITextField;
 
 }

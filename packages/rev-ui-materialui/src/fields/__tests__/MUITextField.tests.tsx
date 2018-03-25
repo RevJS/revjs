@@ -132,7 +132,7 @@ describe('MUITextField', () => {
             const input = wrapper.find(Input);
             expect(input).to.have.length(1);
             expect(input.prop('multiline')).to.equal(true);
-            expect(input.prop('rowsMax')).to.equal(4);
+            expect(input.prop('rowsMax')).to.equal(5);
         });
 
     });
