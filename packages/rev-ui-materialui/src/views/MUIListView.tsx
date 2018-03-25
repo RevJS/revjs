@@ -98,7 +98,7 @@ export const MUIListView = styles<IMUIListViewProps>((props) => {
         );
 
         return (
-            <div className={props.classes.root}>
+            <div className={props.classes.root} style={props.style}>
                 {toolbar}
                 <Table className={props.classes.table}>
                     {tableHead}
@@ -111,7 +111,7 @@ export const MUIListView = styles<IMUIListViewProps>((props) => {
     else {
 
         return (
-            <div className={props.classes.root}>
+            <div className={props.classes.root} style={props.style}>
                 {toolbar}
             </div>
         );

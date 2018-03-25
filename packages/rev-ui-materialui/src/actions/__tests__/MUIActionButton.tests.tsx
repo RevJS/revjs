@@ -18,7 +18,8 @@ describe('MUIActionButton', () => {
         return {
             label: 'Button Label',
             doAction: sinon.stub(),
-            disabled: false
+            disabled: false,
+            style: {marginTop: 10}
         };
     }
 
@@ -46,6 +47,10 @@ describe('MUIActionButton', () => {
         props.disabled = true;
         render();
         expect(button.prop('disabled')).to.equal(true);
+    });
+
+    it('applies passed-in styles', () => {
+        expect(button.prop('style')).to.deep.equal({marginTop: 10});
     });
 
     it('renders passed in label prop', () => {

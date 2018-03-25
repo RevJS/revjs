@@ -17,7 +17,7 @@ type IMUIDetailViewProps = IDetailViewProps & StyledComponentProps;
 export const MUIDetailView = styles<IMUIDetailViewProps>((props) => {
 
     return (
-        <Grid container spacing={8}>
+        <Grid container spacing={8} style={props.style}>
             {props.children}
         </Grid>
     );

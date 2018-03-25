@@ -46,7 +46,8 @@ describe('MUIListView', () => {
             forwardButtonDisabled: true,
             onBackButtonPress: sinon.spy(),
             onForwardButtonPress: sinon.spy(),
-            onItemPress: sinon.spy()
+            onItemPress: sinon.spy(),
+            style: {marginTop: 10}
         };
         if (options.loaded) {
             cProps.loadState = 'NONE';
@@ -120,6 +121,11 @@ describe('MUIListView', () => {
 
             it('does not render a table body', () => {
                 expect(wrapper.find('tbody')).to.have.length(0);
+            });
+
+            it('style is applied to outer div', () => {
+                const outerDiv = wrapper.find('div').at(0);
+                expect(outerDiv.prop('style')).to.deep.equal({marginTop: 10});
             });
 
         });

@@ -27,6 +27,7 @@ describe('MUITextField', () => {
             value: 'some value',
             errors: [],
             disabled: false,
+            style: {marginTop: 10},
             onChange: sinon.stub()
         };
     }
@@ -83,6 +84,11 @@ describe('MUITextField', () => {
         it('does not render form helper text when there are no errors', () => {
             const helpText = wrapper.find(FormHelperText);
             expect(helpText).to.have.length(0);
+        });
+
+        it('applies passed-in style', () => {
+            const outerDiv = wrapper.find('div').at(0);
+            expect(outerDiv.prop('style')).to.deep.equal({marginTop: 10});
         });
 
     });

@@ -12,6 +12,7 @@ export const MUIActionButton: React.SFC<IActionComponentProps> = (props) => {
         <Button variant="raised" color="primary"
             onClick={() => props.doAction()}
             disabled={props.disabled}
+            style={props.style}
         >
             {childContent}
         </Button>
