@@ -3,6 +3,7 @@ import { UI_COMPONENTS } from 'rev-ui/lib/config';
 import { MUIListView } from './views/MUIListView';
 import { MUIDetailView } from './views/MUIDetailView';
 import { MUITextField } from './fields/MUITextField';
+import { MUISelectField } from './fields/MUISelectField';
 import { MUIActionButton } from './actions/MUIActionButton';
 
 export function registerComponents() {
@@ -22,7 +23,7 @@ export function registerComponents() {
     UI_COMPONENTS.fields.IntegerField = MUITextField;
     UI_COMPONENTS.fields.AutoNumberField = MUITextField;
     UI_COMPONENTS.fields.BooleanField = MUITextField;
-    UI_COMPONENTS.fields.SelectField = MUITextField;
+    UI_COMPONENTS.fields.SelectField = MUISelectField;
     UI_COMPONENTS.fields.MultiSelectField = MUITextField;
     UI_COMPONENTS.fields.DateField = MUITextField;
     UI_COMPONENTS.fields.TimeField = MUITextField;
