@@ -109,6 +109,34 @@ describe('MUITextField', () => {
 
     });
 
+    describe('multiline text entry', () => {
+
+        beforeEach(() => {
+            props = getComponentProps();
+        });
+
+        it('not multi-line by default', () => {
+            props.field = new fields.TextField('normal_field');
+            render();
+
+            const input = wrapper.find(Input);
+            expect(input).to.have.length(1);
+            expect(input.prop('multiline')).to.be.undefined;
+            expect(input.prop('rowsMax')).to.be.undefined;
+        });
+
+        it('when options.multiline = true, input is multi-line', () => {
+            props.field = new fields.TextField('multiline_field', { multiLine: true });
+            render();
+
+            const input = wrapper.find(Input);
+            expect(input).to.have.length(1);
+            expect(input.prop('multiline')).to.equal(true);
+            expect(input.prop('rowsMax')).to.equal(4);
+        });
+
+    });
+
     describe('when the errors property contains items', () => {
 
         before(() => {

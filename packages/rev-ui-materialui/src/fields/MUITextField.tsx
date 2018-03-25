@@ -5,7 +5,7 @@ import Grid from 'material-ui/Grid';
 import { FormControl, FormHelperText } from 'material-ui/Form';
 import Input, { InputLabel } from 'material-ui/Input';
 
-import { PasswordField } from 'rev-models/lib/fields';
+import { PasswordField, ITextFieldOptions } from 'rev-models/lib/fields';
 import { IFieldComponentProps } from 'rev-ui/lib/fields/Field';
 import { getGridWidthProps } from './utils';
 
@@ -25,6 +25,13 @@ export const MUITextField: React.StatelessComponent<IFieldComponentProps> = (pro
         errorText += err.message + '. ';
     });
 
+    const opts: ITextFieldOptions = props.field.options;
+    const mlOptions: any = {};
+    if (opts.multiLine) {
+        mlOptions.multiline = true;
+        mlOptions.rowsMax = 4;
+    }
+
     return (
         <Grid item {...gridWidthProps} style={props.style}>
 
@@ -42,6 +49,7 @@ export const MUITextField: React.StatelessComponent<IFieldComponentProps> = (pro
                     onChange={(event) => props.onChange(event.target.value)}
                     error={error}
                     disabled={props.disabled}
+                    {...mlOptions}
                 />
                 {errorText &&
                     <FormHelperText error>
