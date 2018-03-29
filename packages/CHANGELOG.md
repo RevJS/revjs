@@ -1,6 +1,12 @@
 
 ## RevJS Module Releases
 
+### 0.15.1 - 30th March 2018
+
+**`rev-ui`**
+
+* Added missing `@types/prop-types` dependency
+
 ### 0.15.0 - 25th March 2018
 
 **`rev-ui`**

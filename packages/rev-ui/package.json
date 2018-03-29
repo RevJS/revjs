@@ -21,15 +21,14 @@
   },
   "typings": "lib/index.d.ts",
   "dependencies": {
+    "@types/prop-types": "^15.5.2",
+    "@types/react": "^16.0.0",
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "rev-models": "^0.15.0",
     "tslib": "1.x"
   },
   "devDependencies": {
-    "@types/prop-types": "^15.5.2",
-    "@types/react": "^16.0.0",
-    "@types/react-dom": "^16.0.0",
     "run-bin": "^1.0.0"
   }
 }
