@@ -12,7 +12,8 @@ export const UI_COMPONENTS = {
     actions: {
         PostAction: PassthroughComponent,
         SaveAction: PassthroughComponent,
-        RemoveAction: PassthroughComponent
+        RemoveAction: PassthroughComponent,
+        SearchAction: PassthroughComponent
     },
     fields: {
         TextField: PassthroughComponent,
