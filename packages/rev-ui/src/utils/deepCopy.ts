@@ -1,4 +1,7 @@
 
+/**
+ * @private
+ */
 export function deepCopy(obj: object) {
     const clone = {};
     for (let key in obj) {

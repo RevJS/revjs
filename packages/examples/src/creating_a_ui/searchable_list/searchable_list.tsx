@@ -25,7 +25,7 @@ interface ISearchableListState {
     where: object;
 }
 
-class SearchableList extends React.Component<any, ISearchableListState> {
+export class SearchableList extends React.Component<any, ISearchableListState> {
 
     constructor(props: any) {
         super(props);
@@ -34,9 +34,9 @@ class SearchableList extends React.Component<any, ISearchableListState> {
         };
     }
 
-    onSearch(where: object) {
+    onSearch(newWhere: object) {
         this.setState({
-            where
+            where: newWhere
         });
     }
 
@@ -56,7 +56,7 @@ class SearchableList extends React.Component<any, ISearchableListState> {
                         <SearchField name="title" />
                         <SearchField name="description" />
 
-                        <div style={{ width: '100%', textAlign: 'right', paddingTop: 16 }}>
+                        <div style={{ width: '100%', textAlign: 'right', paddingTop: 20 }}>
                             <SearchAction
                                 label="Search Posts"
                             />

@@ -10,6 +10,9 @@ a very minimal amount of front-end code. Check out the
 [ListView example](simple_list.md) and the
 [DetailView example](detail_view.md).
 
+![RevJS UI Example](../img/ui-overview.png)
+
+
 ## RevJS UI Components
 
 RevJS provides the follwing basic components, as building blocks for your data
