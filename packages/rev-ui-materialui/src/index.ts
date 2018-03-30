@@ -2,16 +2,19 @@
 import { UI_COMPONENTS } from 'rev-ui/lib/config';
 import { MUIListView } from './views/MUIListView';
 import { MUIDetailView } from './views/MUIDetailView';
+import { MUISearchView } from './views/MUISearchView';
 import { MUITextField } from './fields/MUITextField';
 import { MUIDateField } from './fields/MUIDateField';
 import { MUISelectField } from './fields/MUISelectField';
 import { MUIActionButton } from './actions/MUIActionButton';
 import { MUIRelatedModelField } from './fields/MUIRelatedModelField';
+import { MUITextSearchField } from './searchFields/MUITextSearchField';
 
 export function registerComponents() {
 
     UI_COMPONENTS.views.ListView = MUIListView;
     UI_COMPONENTS.views.DetailView = MUIDetailView;
+    UI_COMPONENTS.views.SearchView = MUISearchView;
 
     UI_COMPONENTS.actions.PostAction = MUIActionButton;
     UI_COMPONENTS.actions.SaveAction = MUIActionButton;
@@ -32,5 +35,21 @@ export function registerComponents() {
     UI_COMPONENTS.fields.DateTimeField = MUITextField;
     UI_COMPONENTS.fields.RelatedModelField = MUIRelatedModelField;
     UI_COMPONENTS.fields.RelatedModelListField = MUITextField;
+
+    UI_COMPONENTS.searchFields.TextField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.EmailField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.URLField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.PasswordField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.NumberField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.IntegerField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.AutoNumberField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.BooleanField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.SelectField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.MultiSelectField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.DateField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.TimeField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.DateTimeField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.RelatedModelField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.RelatedModelListField = MUITextSearchField;
 
 }
