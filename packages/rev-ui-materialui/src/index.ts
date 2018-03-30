@@ -1,14 +1,19 @@
 
 import { UI_COMPONENTS } from 'rev-ui/lib/config';
+
 import { MUIListView } from './views/MUIListView';
 import { MUIDetailView } from './views/MUIDetailView';
 import { MUISearchView } from './views/MUISearchView';
+
+import { MUIActionButton } from './actions/MUIActionButton';
+
 import { MUITextField } from './fields/MUITextField';
 import { MUIDateField } from './fields/MUIDateField';
 import { MUISelectField } from './fields/MUISelectField';
-import { MUIActionButton } from './actions/MUIActionButton';
 import { MUIRelatedModelField } from './fields/MUIRelatedModelField';
+
 import { MUITextSearchField } from './searchFields/MUITextSearchField';
+import { MUISelectSearchField } from './searchFields/MUISelectSearchField';
 
 export function registerComponents() {
 
@@ -45,7 +50,7 @@ export function registerComponents() {
     UI_COMPONENTS.searchFields.IntegerField = MUITextSearchField;
     UI_COMPONENTS.searchFields.AutoNumberField = MUITextSearchField;
     UI_COMPONENTS.searchFields.BooleanField = MUITextSearchField;
-    UI_COMPONENTS.searchFields.SelectField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.SelectField = MUISelectSearchField;
     UI_COMPONENTS.searchFields.MultiSelectField = MUITextSearchField;
     UI_COMPONENTS.searchFields.DateField = MUITextSearchField;
     UI_COMPONENTS.searchFields.TimeField = MUITextSearchField;

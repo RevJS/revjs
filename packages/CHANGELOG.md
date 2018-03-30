@@ -1,6 +1,12 @@
 
 ## RevJS Module Releases
 
+### Next Release
+
+**`rev-ui-materialui`**
+
+* Added `<SearchField />` for `SelectField`
+
 ### 0.16.0 - 30th March 2018
 
 **`rev-models`**
