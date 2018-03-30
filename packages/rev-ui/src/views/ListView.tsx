@@ -161,18 +161,16 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
 
     async componentDidMount() {
         if (lifecycleOptions.enableComponentDidMount) {
-            this.loadData();
+            this.loadData({});
         }
     }
 
     onForwardButtonPress() {
-        this.setState({ offset: this.state.offset + this.state.limit });
-        this.loadData();
+        this.loadData({ offset: this.state.offset + this.state.limit });
     }
 
     onBackButtonPress() {
-        this.setState({ offset: Math.max(this.state.offset - this.state.limit, 0) });
-        this.loadData();
+        this.loadData({ offset: Math.max(this.state.offset - this.state.limit, 0) });
     }
 
     onItemPress(model: IModel) {
@@ -181,19 +179,21 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
         }
     }
 
-    async loadData() {
+    async loadData(readOptions: IReadOptions) {
+        const readOpts: IReadOptions = {
+            where: readOptions.where || this.state.where,
+            related: readOptions.related || this.state.related,
+            orderBy: readOptions.orderBy || this.state.orderBy,
+            limit: typeof readOptions.limit != 'undefined' ? readOptions.limit : this.state.limit,
+            offset: typeof readOptions.offset != 'undefined' ? readOptions.offset : this.state.offset,
+        };
         this.setState({
-            loadState: 'LOADING'
+            loadState: 'LOADING',
+            ...readOpts
         });
         const modelData = await this.context.modelManager.read(
-            this.state.modelMeta.ctor,
-            {
-                where: this.state.where,
-                related: this.state.related,
-                orderBy: this.state.orderBy,
-                limit: this.state.limit,
-                offset: this.state.offset,
-            });
+            this.state.modelMeta.ctor, readOpts
+        );
         if (modelData.success && modelData.results) {
             this.setState({
                 loadState: 'NONE',
@@ -204,10 +204,9 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
 
     componentWillReceiveProps(newProps: IListViewProps) {
         if (newProps.where != this.state.where) {
-            this.setState({
+            this.loadData({
                 where: newProps.where
             });
-            this.loadData();
         }
     }
 
