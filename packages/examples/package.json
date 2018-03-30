@@ -4,9 +4,9 @@
   "description": "RevJS Examples",
   "private": true,
   "scripts": {
-    "build": "run-bin tslint -p . && run-bin tsc --noEmit && npm run build-ui-js",
-    "build-ui-js": "run-bin webpack --mode production --config src/creating_a_ui/webpack.config.js",
-    "build-ui-js-watch": "run-bin webpack --watch --mode development --config src/creating_a_ui/webpack.config.js",
+    "build": "run-bin tslint -p . && run-bin tsc --noEmit && npm run build-ui",
+    "build-ui": "run-bin webpack --mode development --config src/creating_a_ui/webpack.config.js",
+    "build-ui-watch": "run-bin webpack --watch --mode development --config src/creating_a_ui/webpack.config.js",
     "start-ui-api": "run-bin ts-node src/creating_a_ui/api.ts",
     "ts-node": "run-bin ts-node"
   },
