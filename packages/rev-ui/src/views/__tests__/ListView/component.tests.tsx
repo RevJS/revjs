@@ -2,9 +2,9 @@
 import * as React from 'react';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { mount } from 'enzyme';
+import { mount, shallow, ShallowWrapper } from 'enzyme';
 import { sleep } from '../../../__test_utils__/utils';
-import { ListView, lifecycleOptions, IListViewComponentProps } from '../../ListView';
+import { ListView, lifecycleOptions, IListViewComponentProps, IListViewProps } from '../../ListView';
 import * as models from '../../../__fixtures__/models';
 import { ModelManager, IModelMeta, fields } from 'rev-models';
 import { ModelProvider } from '../../../provider/ModelProvider';
@@ -289,6 +289,46 @@ describe('ListView basic component', () => {
             });
         });
 
+    });
+
+    describe('prop updates', () => {
+        const fieldList = ['id', 'title', 'published'];
+        let wrapper: ShallowWrapper<IListViewProps>;
+        const initialWhere = {};
+        const newWhere = { title: 'test' };
+
+        before(async () => {
+            modelManager = models.getModelManager();
+            lifecycleOptions.enableComponentDidMount = true;
+            receivedProps = null;
+            wrapper = shallow(
+                <ListView
+                    title="Test List"
+                    model={model}
+                    fields={fieldList}
+                    where={initialWhere}
+                    component={SpyComponent} />,
+                {
+                    context: {
+                        modelManager: modelManager
+                    }
+                }
+            );
+            await sleep(10);
+        });
+
+        it('initial state is as expected', () => {
+            const state = wrapper.state();
+            expect(state).to.have.property('loadState', 'NONE');
+            expect(state).to.have.property('where', initialWhere);
+        });
+
+        it('when the "where" property is updated, the state is changed and a reload is triggered', () => {
+            wrapper.setProps({ where: newWhere });
+            const state = wrapper.state();
+            expect(state).to.have.property('where', newWhere);
+            expect(state).to.have.property('loadState', 'LOADING');
+        });
     });
 
     describe('Standard Component Properties', () => {

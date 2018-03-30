@@ -4,7 +4,7 @@ import * as PropTypes from 'prop-types';
 
 import { IModelProviderContext } from '../provider/ModelProvider';
 import { IModelMeta, IModelOperationResult, IModel, fields } from 'rev-models';
-import { IReadMeta } from 'rev-models/lib/models/types';
+import { IReadMeta, IReadOptions } from 'rev-models/lib/models/types';
 import { UI_COMPONENTS } from '../config';
 import { IStandardComponentProps, getStandardProps } from '../utils/props';
 
@@ -102,14 +102,10 @@ export interface IListViewComponentProps<T extends IModel = any> extends IStanda
 /**
  * @private
  */
-export interface IListViewState {
+export interface IListViewState extends IReadOptions {
     loadState: IListViewLoadState;
+    modelMeta?: IModelMeta<any>;
     modelData?: IModelOperationResult<any, IReadMeta>;
-    where: object;
-    related: string[];
-    orderBy: string[];
-    limit: number;
-    offset: number;
 }
 
 /**
@@ -123,8 +119,6 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
         modelManager: PropTypes.object,
     };
 
-    modelMeta: IModelMeta<any>;
-
     constructor(props: IListViewProps, context: any) {
         super(props, context);
         this.context.modelManager = context.modelManager;
@@ -134,10 +128,10 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
         if (!props.model || !this.context.modelManager.isRegistered(props.model)) {
             throw new Error(`ListView Error: Model '${props.model}' is not registered.`);
         }
-        this.modelMeta = this.context.modelManager.getModelMeta(this.props.model);
+        const meta = this.context.modelManager.getModelMeta(this.props.model);
         if (props.fields) {
             for (const fieldName of props.fields) {
-                const field = this.modelMeta.fieldsByName[fieldName];
+                const field = meta.fieldsByName[fieldName];
                 if (!field) {
                     throw new Error(`ListView Error: Model '${props.model}' does not have a field called '${fieldName}'.`);
                 }
@@ -155,22 +149,30 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
         }
 
         this.state = {
+            modelMeta: meta,
             loadState: 'LOADING',
             where: props.where || {},
             related: props.related || null,
             orderBy: props.orderBy || null,
             limit: props.limit || 20,
-            offset: 0,
+            offset: 0
         };
     }
 
+    async componentDidMount() {
+        if (lifecycleOptions.enableComponentDidMount) {
+            this.loadData();
+        }
+    }
+
     onForwardButtonPress() {
-        this.loadData(this.state.limit, this.state.offset + this.state.limit);
+        this.setState({ offset: this.state.offset + this.state.limit });
+        this.loadData();
     }
 
     onBackButtonPress() {
-        const offset = Math.max(this.state.offset - this.state.limit, 0);
-        this.loadData(this.state.limit, offset);
+        this.setState({ offset: Math.max(this.state.offset - this.state.limit, 0) });
+        this.loadData();
     }
 
     onItemPress(model: IModel) {
@@ -179,36 +181,43 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
         }
     }
 
-    async loadData(limit: number, offset: number) {
+    async loadData() {
         this.setState({
             loadState: 'LOADING'
         });
         const modelData = await this.context.modelManager.read(
-            this.modelMeta.ctor,
+            this.state.modelMeta.ctor,
             {
                 where: this.state.where,
                 related: this.state.related,
                 orderBy: this.state.orderBy,
-                limit,
-                offset,
+                limit: this.state.limit,
+                offset: this.state.offset,
             });
         if (modelData.success && modelData.results) {
             this.setState({
                 loadState: 'NONE',
-                modelData,
-                limit,
-                offset
+                modelData
             });
+        }
+    }
+
+    componentWillReceiveProps(newProps: IListViewProps) {
+        if (newProps.where != this.state.where) {
+            this.setState({
+                where: newProps.where
+            });
+            this.loadData();
         }
     }
 
     render() {
 
-        const listFields = this.props.fields && this.props.fields.map((fieldName) => this.modelMeta.fieldsByName[fieldName]);
+        const listFields = this.props.fields && this.props.fields.map((fieldName) => this.state.modelMeta.fieldsByName[fieldName]);
 
         const cProps: IListViewComponentProps & {children?: any} = {
             loadState: this.state.loadState,
-            title: this.props.title ? this.props.title : this.modelMeta.label + ' List',
+            title: this.props.title ? this.props.title : this.state.modelMeta.label + ' List',
             fields: listFields,
             results: [],
             firstItemNumber: 0,
@@ -243,12 +252,6 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
 
         const Component = this.props.component || UI_COMPONENTS.views.ListView;
         return <Component {...cProps} {...sProps} />;
-    }
-
-    async componentDidMount() {
-        if (lifecycleOptions.enableComponentDidMount) {
-            this.loadData(this.state.limit, this.state.offset);
-        }
     }
 
 }

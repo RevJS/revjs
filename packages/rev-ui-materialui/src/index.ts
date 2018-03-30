@@ -19,6 +19,7 @@ export function registerComponents() {
     UI_COMPONENTS.actions.PostAction = MUIActionButton;
     UI_COMPONENTS.actions.SaveAction = MUIActionButton;
     UI_COMPONENTS.actions.RemoveAction = MUIActionButton;
+    UI_COMPONENTS.actions.SearchAction = MUIActionButton;
 
     UI_COMPONENTS.fields.TextField = MUITextField;
     UI_COMPONENTS.fields.EmailField = MUITextField;

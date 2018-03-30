@@ -13,4 +13,5 @@ export { SearchField, ISearchFieldComponentProps } from './fields/SearchField';
 export { PostAction } from './actions/PostAction';
 export { SaveAction } from './actions/SaveAction';
 export { RemoveAction } from './actions/RemoveAction';
+export { SearchAction } from './actions/SearchAction';
 export { IActionComponentProps } from './actions/types';
