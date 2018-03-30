@@ -1,6 +1,6 @@
 {
   "name": "examples",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "description": "RevJS Examples",
   "private": true,
   "scripts": {
@@ -26,7 +26,7 @@
     "rev-backend-mongodb": "^0.16.0",
     "rev-models": "^0.16.0",
     "rev-ui": "^0.16.0",
-    "rev-ui-materialui": "^0.16.0"
+    "rev-ui-materialui": "^0.16.1"
   },
   "devDependencies": {
     "@types/koa": "2.0.44",
