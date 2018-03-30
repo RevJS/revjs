@@ -1,6 +1,12 @@
 
 ## RevJS Module Releases
 
+### 0.15.2 - 30th March 2018
+
+**`rev-ui`**
+
+* Added `MUIDateField` component
+
 ### 0.15.1 - 30th March 2018
 
 **`rev-ui`**

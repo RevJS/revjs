@@ -3,6 +3,7 @@ import { UI_COMPONENTS } from 'rev-ui/lib/config';
 import { MUIListView } from './views/MUIListView';
 import { MUIDetailView } from './views/MUIDetailView';
 import { MUITextField } from './fields/MUITextField';
+import { MUIDateField } from './fields/MUIDateField';
 import { MUISelectField } from './fields/MUISelectField';
 import { MUIActionButton } from './actions/MUIActionButton';
 import { MUIRelatedModelField } from './fields/MUIRelatedModelField';
@@ -26,7 +27,7 @@ export function registerComponents() {
     UI_COMPONENTS.fields.BooleanField = MUITextField;
     UI_COMPONENTS.fields.SelectField = MUISelectField;
     UI_COMPONENTS.fields.MultiSelectField = MUITextField;
-    UI_COMPONENTS.fields.DateField = MUITextField;
+    UI_COMPONENTS.fields.DateField = MUIDateField;
     UI_COMPONENTS.fields.TimeField = MUITextField;
     UI_COMPONENTS.fields.DateTimeField = MUITextField;
     UI_COMPONENTS.fields.RelatedModelField = MUIRelatedModelField;
