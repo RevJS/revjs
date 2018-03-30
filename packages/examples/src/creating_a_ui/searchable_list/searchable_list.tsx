@@ -55,6 +55,8 @@ export class SearchableList extends React.Component<any, ISearchableListState> {
                     >
                         <SearchField name="title" />
                         <SearchField name="description" />
+                        <SearchField name="status" />
+                        <SearchField name="post_date" />
 
                         <div style={{ width: '100%', textAlign: 'right', paddingTop: 20 }}>
                             <SearchAction

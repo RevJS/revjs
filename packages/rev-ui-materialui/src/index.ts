@@ -14,6 +14,7 @@ import { MUIRelatedModelField } from './fields/MUIRelatedModelField';
 
 import { MUITextSearchField } from './searchFields/MUITextSearchField';
 import { MUISelectSearchField } from './searchFields/MUISelectSearchField';
+import { MUIDateSearchField } from './searchFields/MUIDateSearchField';
 
 export function registerComponents() {
 
@@ -52,7 +53,7 @@ export function registerComponents() {
     UI_COMPONENTS.searchFields.BooleanField = MUITextSearchField;
     UI_COMPONENTS.searchFields.SelectField = MUISelectSearchField;
     UI_COMPONENTS.searchFields.MultiSelectField = MUITextSearchField;
-    UI_COMPONENTS.searchFields.DateField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.DateField = MUIDateSearchField;
     UI_COMPONENTS.searchFields.TimeField = MUITextSearchField;
     UI_COMPONENTS.searchFields.DateTimeField = MUITextSearchField;
     UI_COMPONENTS.searchFields.RelatedModelField = MUITextSearchField;

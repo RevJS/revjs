@@ -1,7 +1,7 @@
 
 import {
     AutoNumberField, TextField, RelatedModel, RelatedModelList,
-    DateField, IntegerField, IValidationContext
+    SelectField, DateField, IntegerField, IValidationContext
 } from 'rev-models';
 import { ApiOperations } from 'rev-api/lib/decorators';
 
@@ -31,6 +31,11 @@ export class User {
     }
 }
 
+export const POST_STATUS = [
+    ['draft', 'Draft'],
+    ['published', 'Published']
+];
+
 @ApiOperations(
     ['create', 'read', 'update', 'remove']
 )
@@ -39,8 +44,10 @@ export class Post {
         id: number;
     @RelatedModel({ model: 'User', label: 'Author' })
         user: User;
-    @DateField({ label: 'Date' })
+    @DateField({ label: 'Post Date' })
         post_date: string;
+    @SelectField({ label: 'Status', selection: POST_STATUS })
+        status: string;
     @TextField({ label: 'Post Title' })
         title: string;
     @TextField({ label: 'Description' })
