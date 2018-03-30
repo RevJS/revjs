@@ -5,6 +5,7 @@ import { IModelProviderContext } from '../provider/ModelProvider';
 import { IModel, IModelMeta, IModelManager } from 'rev-models';
 import { UI_COMPONENTS } from '../config';
 import { IStandardComponentProps } from '../utils/props';
+import { deepCopy } from '../utils/deepCopy';
 
 /**
  * A `<SearchView />` serves as a wrapper for a set of `<SearchField />`s
@@ -97,7 +98,8 @@ export class SearchView extends React.Component<ISearchViewProps> {
     }
 
     search() {
-        this.props.onSearch(this.searchViewContext.where);
+        const toReturn = deepCopy(this.searchViewContext.where);
+        this.props.onSearch(toReturn);
     }
 
     static childContextTypes = {

@@ -128,6 +128,13 @@ describe('SearchView', () => {
             expect(onSearchSpy.getCall(0).args[0]).to.deep.equal({ test: 1 });
         });
 
+        it('the where clause that is passed is a copy of the internal object', () => {
+            const internalWhere = receivedSearchViewContext.where;
+            expect(onSearchSpy.callCount).to.equal(1);
+            expect(onSearchSpy.getCall(0).args[0]).to.deep.equal(internalWhere);
+            expect(onSearchSpy.getCall(0).args[0]).not.to.equal(internalWhere);
+        });
+
     });
 
     describe('rendering', () => {
