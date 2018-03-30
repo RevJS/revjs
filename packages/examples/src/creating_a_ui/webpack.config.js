@@ -9,6 +9,7 @@ module.exports = function() {
         entry: {
             simple_list: './src/creating_a_ui/simple_list/simple_list.tsx',
             custom_list: './src/creating_a_ui/custom_list/custom_list.tsx',
+            searchable_list: './src/creating_a_ui/searchable_list/searchable_list.tsx',
             related_data: './src/creating_a_ui/related_data/related_data.tsx',
             detailview: './src/creating_a_ui/detailview/detailview.tsx',
         },
