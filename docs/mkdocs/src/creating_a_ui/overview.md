@@ -25,6 +25,8 @@ via the `component` property of each, or globally via the
 * **[&lt;ListView /&gt;](/api/rev-ui/interfaces/ilistviewprops.html)** - Loads and
   renders a list of records, including **filtering**, **sorting** and
   **pagination**.
+* **[&lt;SearchView /&gt;](/api/rev-ui/interfaces/isearchviewprops.html)** - Combine
+  this with a ListView to allow **user-defined searching**.
 * **[&lt;DetailView /&gt;](/api/rev-ui/interfaces/idetailviewprops.html)** - Loads
   a single record, and provides functions for **validating**, **saving**
   and **removing** it.

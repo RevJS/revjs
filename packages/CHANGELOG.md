@@ -1,6 +1,17 @@
 
 ## RevJS Module Releases
 
+### 0.16.0 - 30th March 2018
+
+**`rev-models`**
+
+* The `_like` query operator is now case-insensitive by default
+
+**`rev-ui` & `rev-ui-materialui`**
+
+* Added new `<SearchView />`, `<SearchField />` and `<SearchAction />` components.
+* Update Docs & Examples
+
 ### 0.15.2 - 30th March 2018
 
 **`rev-ui`**
