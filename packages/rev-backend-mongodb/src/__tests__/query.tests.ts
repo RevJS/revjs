@@ -248,13 +248,13 @@ describe('MongoDB convertQuery()', () => {
     });
 
     [
-        ['test', '/^test$/m'],
-        ['%test', '/^.*test$/m'],
-        ['test%', '/^test.*$/m'],
-        ['%test%', '/^.*test.*$/m'],
-        ['%test%test%', '/^.*test.*test.*$/m'],
-        [' % test % ', '/^ .* test .* $/m'],
-        ['te%st%', '/^te.*st.*$/m'],
+        ['test', '/^test$/im'],
+        ['%test', '/^.*test$/im'],
+        ['test%', '/^test.*$/im'],
+        ['%test%', '/^.*test.*$/im'],
+        ['%test%test%', '/^.*test.*test.*$/im'],
+        [' % test % ', '/^ .* test .* $/im'],
+        ['te%st%', '/^te.*st.*$/im'],
     ].forEach((value) => {
         it('converts _like statements as expected: ' + value[0], () => {
             const res = convertQuery(manager, TestModel, {

@@ -22,11 +22,13 @@ export function getLikeOperatorRegExp(likeStr: string) {
         return /^.{0}$/m; // match only empty strings
     }
     let m: RegExpExecArray;
+    // First, find instances of '%%' (which should match '%' in the data)
     let doubleMatcher = /%%/g;
     let doubleLocs: number[] = [];
     while(m = doubleMatcher.exec(likeStr)) {  // tslint:disable-line
         doubleLocs.push(m.index);
     }
+    // Now find instances of single '%'s
     let singleMatcher = /%/g;
     let singleLocs: number[] = [];
     while(m = singleMatcher.exec(likeStr)) {  // tslint:disable-line
@@ -36,6 +38,7 @@ export function getLikeOperatorRegExp(likeStr: string) {
             singleLocs.push(m.index);
         }
     }
+    // Replace single '%'s with '.*'
     let wildcardedStr = '';
     let startLoc = 0;
     if (singleLocs.length > 0) {
@@ -49,5 +52,5 @@ export function getLikeOperatorRegExp(likeStr: string) {
         wildcardedStr = likeStr;
     }
     wildcardedStr = wildcardedStr.replace(/%%/g, '%');
-    return new RegExp('^' + wildcardedStr + '$', 'm');
+    return new RegExp('^' + wildcardedStr + '$', 'im');
 }

@@ -43,27 +43,27 @@ describe('getLikeOperatorRegExp()', () => {
 
     it('returns a simple string as an unescaped regex', () => {
         let r = getLikeOperatorRegExp('i have no special chars');
-        expect(r.toString()).to.equal('/^i have no special chars$/m');
+        expect(r.toString()).to.equal('/^i have no special chars$/im');
     });
 
     it('escapes special regex characters', () => {
         let r = getLikeOperatorRegExp('*some* [$pecial] ^{C}harac|ers?');
-        expect(r.toString()).to.equal('/^\\*some\\* \\[\\$pecial\\] \\^\\{C\\}harac\\|ers\\?$/m');
+        expect(r.toString()).to.equal('/^\\*some\\* \\[\\$pecial\\] \\^\\{C\\}harac\\|ers\\?$/im');
     });
 
     it('replaces single % signs with .*', () => {
         let r = getLikeOperatorRegExp('%contains % this%');
-        expect(r.toString()).to.equal('/^.*contains .* this.*$/m');
+        expect(r.toString()).to.equal('/^.*contains .* this.*$/im');
     });
 
     it('replaces double % signs with single %', () => {
         let r = getLikeOperatorRegExp('we are 99%% sure this will 100%% work');
-        expect(r.toString()).to.equal('/^we are 99% sure this will 100% work$/m');
+        expect(r.toString()).to.equal('/^we are 99% sure this will 100% work$/im');
     });
 
     it('does all of the above things at once', () => {
         let r = getLikeOperatorRegExp('% con|ain$ 100%% ^awesome!?');
-        expect(r.toString()).to.equal('/^.* con\\|ain\\$ 100% \\^awesome!\\?$/m');
+        expect(r.toString()).to.equal('/^.* con\\|ain\\$ 100% \\^awesome!\\?$/im');
     });
 
     it('throws when value is not a string', () => {

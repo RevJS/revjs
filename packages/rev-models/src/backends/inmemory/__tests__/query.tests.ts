@@ -321,9 +321,10 @@ describe('InMemoryQuery', () => {
         it('_like matches with wildcards in the middle of the query', () => {
             expectResult('name', '_like', '%oh%oe', true);
         });
+        it('_like is case-insensitive', () => {
+            expectResult('name', '_like', '%dOe', true);
+        });
         it('_like allows matches on non-string fields', () => {
-            // TODO: Formalise how the _like operator should operate on dates
-            // I suggest we convert to ISO format instead of the stock Date.toString()
             expectResult('registration_date', '_like', '%2017%', true);
         });
         it('_like throws an Error when comparison value is not a string', () => {
