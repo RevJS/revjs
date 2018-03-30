@@ -250,6 +250,13 @@ describe('SearchField', () => {
                 expect(receivedProps.criteria).to.deep.equal({ _eq: 10 });
             });
 
+            it('removes criteria when criteria is null', () => {
+                receivedProps.onCriteriaChange({ _eq: 10 });
+                expect(receivedProps.criteria).to.deep.equal({ _eq: 10 });
+                receivedProps.onCriteriaChange(null);
+                expect(receivedProps.criteria).to.be.undefined;
+            });
+
         });
 
     });

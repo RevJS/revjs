@@ -37,7 +37,13 @@ export const MUITextSearchField: React.StatelessComponent<ISearchFieldComponentP
                     type={type}
                     value={value}
                     onChange={(event) => {
-                        props.onCriteriaChange({ _like: '%' + event.target.value + '%'});
+                        const val = event.target.value;
+                        if (val) {
+                            props.onCriteriaChange({ _like: '%' + event.target.value + '%'});
+                        }
+                        else {
+                            props.onCriteriaChange(null);
+                        }
                     }}
                 />
             </FormControl>

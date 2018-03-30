@@ -86,7 +86,12 @@ class SearchFieldC extends React.Component<ISearchFieldProps & ISearchViewContex
     }
 
     onCriteriaChange(criteria: any) {
-        this.props.searchViewContext.where[this.modelField.name] = criteria;
+        if (criteria) {
+            this.props.searchViewContext.where[this.modelField.name] = criteria;
+        }
+        else {
+            delete this.props.searchViewContext.where[this.modelField.name];
+        }
         this.setState({ criteria });
     }
 
