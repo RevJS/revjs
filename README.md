@@ -1,5 +1,7 @@
 # RevJS - Rev up your data-driven JS app development!
 
+[![Join the chat at https://gitter.im/RevJS/revjs](https://badges.gitter.im/RevJS/revjs.svg)](https://gitter.im/RevJS/revjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 RevJS is a suite of JavaScript modules designed to speed up development of
 data-driven JS applications.
 
