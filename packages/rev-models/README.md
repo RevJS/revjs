@@ -1,7 +1,19 @@
+
+[![CircleCI](https://img.shields.io/circleci/project/github/RevJS/revjs.svg)](https://circleci.com/gh/RevJS/revjs)
+[![npm version](https://badge.fury.io/js/rev-models.svg)](https://badge.fury.io/js/rev-models)
+[![Join the chat at https://gitter.im/RevJS/revjs](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/RevJS/revjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+[![NPM](https://nodei.co/npm/rev-models.png)](https://www.npmjs.com/package/rev-models)
+[![NPM](https://nodei.co/npm/rev-ui.png)](https://www.npmjs.com/package/rev-ui)
+
 # RevJS - Rev up your data-driven JS app development!
 
 RevJS is a suite of JavaScript modules designed to speed up development of
 data-driven JS applications.
+
+The `rev-models` module is the core component of RevJS, which includes a model metadata
+registry, field types, CRUD functions and simple in-memory data storage to help new
+users get up and running quickly.
 
 RevJS allows you to
 
@@ -10,49 +22,135 @@ RevJS allows you to
  * Easily create a **GraphQL API** to make your models available over the network
  * Quickly build a **user interface** for the web or mobile, using our React higher-order components
 
-The `rev-models` module is the core component of RevJS, which includes a model metadata
-registry, field types, CRUD functions and simple in-memory data storage to help new
-users get up and running quickly.
+## Getting Started
 
-Check out the documentation on [revjs.org](https://revjs.org/)
+ * Check out the [Client-side Demo App](https://revjs.org/tasks_demo/) and its
+   [source code](https://github.com/RevJS/demo_app)
 
-This project will shortly be in BETA. Watch this space!! :)
-You can see what we're currently working in our
-[Github Projects](https://github.com/RevJS/revjs/projects)
+ * Take a look at the [Documentation](https://revjs.org/):
 
-The basic idea is, this code:
+   * [Creating Models](http://revjs.org/using_models/creating_models/)
+   * [Defining a GraphQL API](http://revjs.org/creating_an_api/overview/)
+   * [Building a UI](http://revjs.org/creating_a_ui/overview/)
 
-```typescript
-import { AutoNumberField, TextField, SelectField } from 'rev-models';
+## Development Status
 
-const POST_STATUS = [
-    ['draft', 'Draft'],
-    ['published', 'Published']
+We're on our way to v1.0.0, and are keen to get more users and contributors
+on board. You can see what we're currently working in our
+[Github Projects](https://github.com/RevJS/revjs/projects).
+
+## Examples
+
+Theres a full set of working examples
+[in the repo](https://github.com/RevJS/revjs/tree/master/packages/examples/src)
+but heres a few snippets of code to give you an idea of what RevJS is all about!:
+
+### Defining and Using Models
+
+```ts
+// Define a new Post model
+const POST_CATEGORIES = [
+    ['agriculture', 'Agriculture'],
+    ['music', 'Music'],
+    ['science', 'Science'],
+    ['technology', 'Technology'],
 ];
 
 export class Post {
     @AutoNumberField({ primaryKey: true })
         id: number;
-    @TextField({ minLength: 5, maxLength: 100 })
+    @SelectField({ selection: POST_CATEGORIES })
+        category: string;
+    @TextField()
         title: string;
     @TextField({ multiLine: true })
         body: string;
-    @SelectField({ selection: POST_STATUS })
-        status: string;
+    @IntegerField({ required: false })
+        rating: number;
+    @BooleanField()
+        published: boolean;
 
     constructor(data?: Partial<Post>) {
         Object.assign(this, data);
     }
 }
 
+// Add the Post model to a ModelManager
+export const modelManager = new ModelManager();
+modelManager.registerBackend('default', new InMemoryBackend());
+modelManager.register(Post);
+
+// Create some data
+await modelManager.create(new Post({
+    category: 'agriculture',
+    title: 'My First Post',
+    body: 'This is a really cool post made in RevJS!',
+    rating: 5,
+    published: true
+}));
 ```
 
-...plus a small amount of configuration, gives you:
+### Creating a GraphQL API
 
- * Create, Read, Update, Delete access to Post records from a database
+```ts
+export const api = new ModelApiManager(modelManager);
 
- * A full GraphQL API for front-end integration
+api.register(Post, { operations: ['read', 'create', 'update', 'remove']});
 
- * Higher-order React UI components to make it easy to create front-ends for your data
+const schema = api.getGraphQLSchema();
 
- * Data-validation and other model methods shared between client and server (write once, validate everywhere :) )
+router.post('/graphql', graphqlKoa({ schema: schema }));
+```
+
+### Building a User Interface
+
+```tsx
+<ModelProvider modelManager={modelManager} >
+    <ListView
+        title="Popular Posts"
+        model="Post"
+        fields={[
+            'title',
+            'category',
+            'rating',
+        ]}
+        where={{
+            rating: { _gt: 3 }
+        }}
+        orderBy={['rating desc']}
+        limit={10}
+    />
+</ModelProvider>
+```
+
+```tsx
+<ModelProvider modelManager={modelManager} >
+
+    <Typography variant="display1">Create Post</Typography>
+
+    <DetailView model="Post">
+        <Field name="title" />
+        <Field name="category" />
+        <Field name="body" colspan={12} />
+        <Field name="rating" />
+        <Field name="published" />
+
+        <SaveAction label="Create Post" />
+    </DetailView>
+
+</ModelProvider>
+```
+
+## Screenshots
+
+![Screenshot 0](docs/screenshot0.png)
+
+![Screenshot 1](docs/screenshot1.png)
+
+![Screenshot 2](docs/screenshot2.png)
+
+![Screenshot 3](docs/screenshot3.png)
+
+## Licence
+
+MIT

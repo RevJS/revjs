@@ -146,3 +146,7 @@ router.post('/graphql', graphqlKoa({ schema: schema }));
 ![Screenshot 2](docs/screenshot2.png)
 
 ![Screenshot 3](docs/screenshot3.png)
+
+## Licence
+
+MIT
