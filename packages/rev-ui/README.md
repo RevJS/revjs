@@ -25,7 +25,7 @@ RevJS allows you to
 ## Getting Started
 
  * Check out the [Client-side Demo App](https://revjs.org/tasks_demo/) and its
-   [source code](https://github.com/RevJS/demo_app)
+   [source code](https://github.com/RevJS/tasks_demo)
 
  * Take a look at the [Documentation](https://revjs.org/):
 

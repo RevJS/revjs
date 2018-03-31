@@ -1,6 +1,10 @@
 
 ## RevJS Module Releases
 
+### 0.16.2 - 1st April 2018
+
+* README updates
+
 ### 0.16.1 - 31th March 2018
 
 **`rev-ui-materialui`**
