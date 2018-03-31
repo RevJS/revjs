@@ -1,3 +1,12 @@
+
+[![Join the chat at https://gitter.im/RevJS/revjs](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/RevJS/revjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![CircleCI](https://circleci.com/gh/RevJS/revjs.svg?style=svg)](https://circleci.com/gh/RevJS/revjs)
+
+[![NPM](https://nodei.co/npm/rev-models.png)](https://www.npmjs.com/package/rev-models)
+[![NPM](https://nodei.co/npm/rev-backend-mongodb.png)](https://www.npmjs.com/package/rev-backend-mongodb)
+[![NPM](https://nodei.co/npm/rev-api.png)](https://www.npmjs.com/package/rev-api)
+[![NPM](https://nodei.co/npm/rev-ui.png)](https://www.npmjs.com/package/rev-ui)
+
 # RevJS - Rev up your data-driven JS app development!
 
 RevJS is a suite of JavaScript modules designed to speed up development of
