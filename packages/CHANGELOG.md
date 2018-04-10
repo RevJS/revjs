@@ -1,11 +1,12 @@
 
 ## RevJS Module Releases
 
-### Next Release
+### 0.16.3 - 10th April 2018
 
 **`rev-ui-materialui`**
 
 * Added `MUIBooleanField` (checkbox)
+* Added `<SearchField />` for `BooleanField`
 
 ### 0.16.2 - 1st April 2018
 
