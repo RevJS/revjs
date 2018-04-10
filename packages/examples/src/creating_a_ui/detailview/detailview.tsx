@@ -37,10 +37,11 @@ ReactDOM.render((
             </AppBar>
             <Card style={{ maxWidth: 800, padding: 20, margin: '30px auto' }}>
 
-                <Typography variant="display1" style={{marginBottom: 20}}>Edit Post</Typography>
+                <Typography variant="display1" style={{marginBottom: 20}}>Post</Typography>
 
                 <DetailView model="Post" primaryKeyValue={postId}>
-                    <Field name="title" colspan={12} />
+                    <Field name="title" />
+                    <Field name="status" />
                     <Field name="description" colspan={12} />
                     <Field name="body" colspan={12} />
                     <Field name="post_date" />
@@ -49,7 +50,10 @@ ReactDOM.render((
                     <SaveAction
                         label="Save Post"
                         style={{marginTop: 20}}
-                        onError={(err) => alert('Save Error: ' + JSON.stringify(err, null, 2))}
+                        onError={(err) => {
+                            console.log('Save Error', err);
+                            alert('Save Error: ' + JSON.stringify(err, null, 2));
+                        }}
                         onSuccess={() => alert('Post Saved')}
                     />
                 </DetailView>

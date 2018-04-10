@@ -67,7 +67,7 @@ export class Post {
     }
 
     validate(ctx: IValidationContext) {
-        if (this.description.includes('fake news')) {
+        if (String(this.description).includes('fake news')) {
             ctx.result.addFieldError(
                 'description', 'Description must not include fake news!');
         }
