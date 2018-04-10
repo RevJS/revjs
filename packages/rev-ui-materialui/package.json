@@ -1,6 +1,6 @@
 {
   "name": "rev-ui-materialui",
-  "version": "0.16.2",
+  "version": "0.16.3",
   "description": "React MaterialUI components for RevJS",
   "main": "lib/index.js",
   "scripts": {
