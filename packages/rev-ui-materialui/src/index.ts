@@ -8,6 +8,7 @@ import { MUISearchView } from './views/MUISearchView';
 import { MUIActionButton } from './actions/MUIActionButton';
 
 import { MUITextField } from './fields/MUITextField';
+import { MUIBooleanField } from './fields/MUIBooleanField';
 import { MUIDateField } from './fields/MUIDateField';
 import { MUISelectField } from './fields/MUISelectField';
 import { MUIRelatedModelField } from './fields/MUIRelatedModelField';
@@ -34,7 +35,7 @@ export function registerComponents() {
     UI_COMPONENTS.fields.NumberField = MUITextField;
     UI_COMPONENTS.fields.IntegerField = MUITextField;
     UI_COMPONENTS.fields.AutoNumberField = MUITextField;
-    UI_COMPONENTS.fields.BooleanField = MUITextField;
+    UI_COMPONENTS.fields.BooleanField = MUIBooleanField;
     UI_COMPONENTS.fields.SelectField = MUISelectField;
     UI_COMPONENTS.fields.MultiSelectField = MUITextField;
     UI_COMPONENTS.fields.DateField = MUIDateField;
