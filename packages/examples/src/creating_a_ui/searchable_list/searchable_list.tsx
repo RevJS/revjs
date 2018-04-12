@@ -6,7 +6,7 @@ import { ModelApiBackend } from 'rev-api-client';
 import { ModelProvider, SearchView, SearchField, SearchAction, ListView } from 'rev-ui';
 import * as models from '../models';
 
-import Reboot from 'material-ui/Reboot';
+import CssBaseline from 'material-ui/CssBaseline';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
@@ -92,7 +92,7 @@ export class SearchableList extends React.Component<any, ISearchableListState> {
 
 ReactDOM.render((
         <ModelProvider modelManager={modelManager} >
-            <Reboot />
+            <CssBaseline />
             <AppBar position="static">
                 <Toolbar>
                     <Typography variant="title" color="inherit">

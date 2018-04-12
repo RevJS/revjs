@@ -1,6 +1,13 @@
 
 ## RevJS Module Releases
 
+### 0.17.0 - 
+
+**`rev-ui-materialui`**
+
+* Upgrade to `material-ui@1.0.0-beta.41` 
+* Upgrade to `@material-ui/icons@1.0.0-beta.42`
+
 ### 0.16.3 - 10th April 2018
 
 **`rev-ui-materialui`**
