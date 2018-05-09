@@ -90,6 +90,7 @@ export class InMemoryQuery<T extends IModel> {
             if (valueNode.operator == 'nin') {
                 return (valueNode.values.indexOf(record[fieldName]) == -1);
             }
+            return false;
         }
         else {
             throw new Error('Unknown Field Value Operator: ' + valueNode.operator);

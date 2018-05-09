@@ -17,7 +17,7 @@ export const DEFAULT_READ_OPTIONS: IReadOptions = {
  * @private
  * Documentation in ModelManager class
  */
-export async function read<T extends IModel>(manager: IModelManager, model: new() => T, options?: IReadOptions): Promise<ModelOperationResult<T, IReadMeta>> {
+export async function read<T extends IModel>(manager: IModelManager, model: new() => T, options?: Partial<IReadOptions>): Promise<ModelOperationResult<T, IReadMeta>> {
 
     let meta = manager.getModelMeta(model) as IModelMeta<T>;
     if (options) {
@@ -36,7 +36,7 @@ export async function read<T extends IModel>(manager: IModelManager, model: new(
     }
 
     let backend = manager.getBackend(meta.backend);
-    let opts = Object.assign({}, DEFAULT_READ_OPTIONS, options);
+    let opts = Object.assign({}, DEFAULT_READ_OPTIONS, options) as IReadOptions;
 
     let operation: IModelOperation = {
         operationName: 'read',

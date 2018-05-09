@@ -214,8 +214,8 @@ export class InMemoryBackend implements IBackend {
                     }
                     else if (field instanceof RelatedModelListField) {
                         if (relatedModelListInstances[fieldName]
-                            && relatedModelListInstances[fieldName][instance[meta.primaryKey]]) {
-                                instance[fieldName] = relatedModelListInstances[fieldName][instance[meta.primaryKey]];
+                            && relatedModelListInstances[fieldName][instance[meta.primaryKey!]]) {
+                                instance[fieldName] = relatedModelListInstances[fieldName][instance[meta.primaryKey!]];
                         }
                         else {
                             instance[fieldName] = [];
@@ -238,8 +238,8 @@ export class InMemoryBackend implements IBackend {
             totalCount: result.results.length
         });
         result.results = result.results.slice(
-            result.meta.offset,
-            result.meta.offset + result.meta.limit);
+            result.meta!.offset,
+            result.meta!.offset + result.meta!.limit);
 
         return result;
     }

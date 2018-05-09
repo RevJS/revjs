@@ -73,11 +73,11 @@ export interface IModelMeta<T> {
     /**
      * The model Class / constructor function
      */
-    ctor?: new(...args: any[]) => T;
+    ctor: new(...args: any[]) => T;
     /**
      * The model name
      */
-    name?: string;
+    name: string;
     /**
      * A user-friendly name for the model
      */
@@ -85,11 +85,11 @@ export interface IModelMeta<T> {
     /**
      * The array of [[Field]]s defined for the object
      */
-    fields?: Field[];
+    fields: Field[];
     /**
      * The model [[Field]]s, indexed by field name
      */
-    fieldsByName?: {
+    fieldsByName: {
         [fieldName: string]: Field
     };
     /**
@@ -99,11 +99,11 @@ export interface IModelMeta<T> {
     /**
      * The name of the backend used to store the model
      */
-    backend?: string;
+    backend: string;
     /**
      * A boolean indicating whether the model can be stored in the backend
      */
-    stored?: boolean;
+    stored: boolean;
 }
 
 /**
@@ -159,10 +159,10 @@ export interface IRemoveMeta extends IOperationMeta {
  * @private
  */
 export interface IReadOptions {
-    where?: object;
+    where: object;
     orderBy?: string[];
-    limit?: number;
-    offset?: number;
+    limit: number;
+    offset: number;
     related?: string[];
     rawValues?: string[];
 }
@@ -227,7 +227,7 @@ export interface IModelManager {
     remove: <T extends IModel>(model: T, options?: IRemoveOptions) => Promise<IModelOperationResult<T, IRemoveMeta>>;
     read: <T extends IModel>(model: new() => T, options?: IReadOptions) => Promise<IModelOperationResult<T, IReadMeta>>;
     validate: <T extends IModel>(model: T, options?: IValidationOptions) => Promise<IModelValidationResult>;
-    exec: <R>(model: IModel, options?: IExecOptions) => Promise<IModelOperationResult<R, any>>;
+    exec: <R>(model: IModel, options: IExecOptions) => Promise<IModelOperationResult<R, any>>;
 
     hydrate: <T extends IModel>(model: new() => T, data: any) => T;
 }

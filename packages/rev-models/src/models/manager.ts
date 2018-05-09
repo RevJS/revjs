@@ -295,7 +295,7 @@ export class ModelManager implements IModelManager {
      * @param where The where clause (documentation of the query language TODO!)
      * @param options Options for record retrieval (e.g. record limit)
      */
-    read<T extends IModel>(model: new() => T, options?: IReadOptions): Promise<IModelOperationResult<T, IReadMeta>> {
+    read<T extends IModel>(model: new() => T, options?: Partial<IReadOptions>): Promise<IModelOperationResult<T, IReadMeta>> {
         return read(this, model, options);
     }
 
