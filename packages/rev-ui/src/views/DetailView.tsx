@@ -32,7 +32,7 @@ export interface IDetailViewProps extends IStandardComponentProps {
      * Use this prop to specify the primary key value of the record you want to
      * load. To create a new, empty record, leave this property unset.
      */
-    primaryKeyValue?: string;
+    primaryKeyValue?: string | null;
 
     /**
      * If you provide a React component to this property, it will be used
@@ -61,13 +61,13 @@ export interface IDetailViewContext<T extends IModel = IModel> {
     manager: IModelManager;
 
     /** The current model data being displayed / edited in this DetailView */
-    model: T;
+    model: T | null;
 
     /** The current model's metadata */
     modelMeta: IModelMeta<T>;
 
     /** The results of the most recent model validation */
-    validation: IModelValidationResult;
+    validation: IModelValidationResult | null;
 
     /** Whether the model's data has been changed since last save */
     dirty: boolean;
@@ -162,8 +162,8 @@ export class DetailView extends React.Component<IDetailViewProps> {
         );
         if (this.detailViewContext.loadState == 'LOADING') {
             this.detailViewContext.loadState = 'NONE';
-            if (result.results.length == 1) {
-                this.setModel(result.results[0]);
+            if (result.results!.length == 1) {
+                this.setModel(result.results![0]);
                 this.forceUpdate();
             }
         }
@@ -191,7 +191,7 @@ export class DetailView extends React.Component<IDetailViewProps> {
 
     async validate() {
         const ctx = this.detailViewContext;
-        ctx.validation = await this.context.modelManager.validate(ctx.model);
+        ctx.validation = await this.context.modelManager.validate(ctx.model!);
         this.forceUpdate();
         return ctx.validation;
     }
@@ -203,13 +203,13 @@ export class DetailView extends React.Component<IDetailViewProps> {
         }
         let result: IModelOperationResult<any, any>;
         try {
-            if (ctx.manager.isNew(ctx.model)) {
-                result = await ctx.manager.create(ctx.model);
+            if (ctx.manager.isNew(ctx.model!)) {
+                result = await ctx.manager.create(ctx.model!);
                 // replace model data with created result
                 ctx.model = result.result;
             }
             else {
-                result = await ctx.manager.update(ctx.model);
+                result = await ctx.manager.update(ctx.model!);
             }
         }
         catch (e) {
@@ -219,7 +219,7 @@ export class DetailView extends React.Component<IDetailViewProps> {
             }
             throw e;
         }
-        ctx.validation = result.validation;
+        ctx.validation = result.validation!;
         this.forceUpdate();
         return result;
     }
@@ -230,11 +230,11 @@ export class DetailView extends React.Component<IDetailViewProps> {
             throw new Error(`DetailView Error: Cannot remove record for model '${ctx.modelMeta.name}' because it doesn't have a primaryKey field defined.`);
         }
         let result: IModelOperationResult<any, any>;
-        if (ctx.manager.isNew(ctx.model)) {
+        if (ctx.manager.isNew(ctx.model!)) {
             throw new Error('Cannot call remove() on a new model record.');
         }
         else {
-            result = await ctx.manager.remove(ctx.model);
+            result = await ctx.manager.remove(ctx.model!);
         }
         this.setModel(new ctx.modelMeta.ctor());
         this.forceUpdate();

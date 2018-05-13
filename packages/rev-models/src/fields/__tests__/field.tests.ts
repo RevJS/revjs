@@ -4,22 +4,22 @@ import { requiredValidator } from '../../validation/validators';
 import { ModelValidationResult } from '../../validation/validationresult';
 import { IModelOperation } from '../../operations/operation';
 import { ModelManager } from '../../models/manager';
-import { IModel } from '../../models/types';
+import { IModel, IModelManager } from '../../models/types';
 
-function quickValidAsyncValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
+function quickValidAsyncValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         resolve();
     });
 }
 
-function quickInvalidAsyncValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
+function quickInvalidAsyncValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         result.addFieldError('name', 'name field is invalid');
         resolve();
     });
 }
 
-function slowInvalidAsyncValidator<T extends IModel>(manager: ModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
+function slowInvalidAsyncValidator<T extends IModel>(manager: IModelManager, model: T, field: Field, operation: IModelOperation, result: ModelValidationResult) {
     return new Promise<void>((resolve, reject) => {
         setTimeout(() => {
             result.addFieldError('name', 'name field is invalid');
@@ -29,7 +29,7 @@ function slowInvalidAsyncValidator<T extends IModel>(manager: ModelManager, mode
 }
 
 class TestModel {
-    name: string;
+    name: string | null;
 }
 
 let models = new ModelManager();
@@ -53,7 +53,7 @@ describe('rev.fields.field', () => {
 
         it('cannot be created without a name', () => {
             expect(() => {
-                new Field(undefined, undefined);
+                new Field(undefined as any, undefined);
             }).to.throw('new fields must have a name');
         });
 

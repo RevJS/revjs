@@ -49,7 +49,7 @@ export interface IPostActionProps extends IStandardComponentProps {
      * instead of the component configured in [[UI_COMPONENTS]]. It will
      * be passed [[IActionComponentProps]]
      */
-    component?: React.ComponentType;
+    component?: React.ComponentType<any>;
 }
 
 class PostActionC extends React.Component<IPostActionProps & IDetailViewContextProp> {

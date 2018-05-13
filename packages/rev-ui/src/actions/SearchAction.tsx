@@ -22,7 +22,7 @@ export interface ISearchActionProps extends IStandardComponentProps {
      * instead of the component configured in [[UI_COMPONENTS]]. It will
      * be passed [[IActionComponentProps]]
      */
-    component?: React.ComponentType;
+    component?: React.ComponentType<any>;
 }
 
 class SearchActionC extends React.Component<ISearchActionProps & ISearchViewContextProp> {

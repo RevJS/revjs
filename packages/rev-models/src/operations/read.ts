@@ -3,6 +3,7 @@ import { IModel, IModelMeta, IModelManager, IReadOptions, IReadMeta } from '../m
 import { ModelOperationResult } from './operationresult';
 import { IModelOperation } from './operation';
 import { RelatedModelFieldBase } from '../fields/relatedfields';
+import { IReadParams } from '../backends/backend';
 
 /**
  * @private
@@ -36,7 +37,7 @@ export async function read<T extends IModel>(manager: IModelManager, model: new(
     }
 
     let backend = manager.getBackend(meta.backend);
-    let opts = Object.assign({}, DEFAULT_READ_OPTIONS, options);
+    let opts = Object.assign({}, DEFAULT_READ_OPTIONS, options) as IReadParams;
 
     let operation: IModelOperation = {
         operationName: 'read',

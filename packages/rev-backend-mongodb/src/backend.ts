@@ -7,10 +7,11 @@ import { getOwnRelatedFieldNames, IForeignKeyValues, getRelatedModelInstances, g
 
 import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
 import {
-    ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IRemoveMeta,
-    IRemoveOptions, IReadMeta, IReadOptions, IExecMeta, IExecOptions, IModelMeta, IRawValues
+    ICreateMeta, IUpdateMeta, IRemoveMeta,
+    IReadMeta, IExecMeta, IModelMeta, IRawValues
 } from 'rev-models/lib/models/types';
 import { convertQuery } from './query';
+import { ICreateParams, IUpdateParams, IRemoveParams, IReadParams, IExecParams } from '../../rev-models/lib/backends/backend';
 
 /**
  * Configuration used to initialise the MongoDB connection for [[MongoDBBackend]]
@@ -36,7 +37,7 @@ export const AUTONUMBER_COLLECTION_NAME = '__revjs_autonumber';
  * ```
  */
 export class MongoDBBackend implements IBackend {
-    private client: MongoClient;
+    private client: MongoClient | null;
     private db: Db;
 
     /**
@@ -97,7 +98,7 @@ export class MongoDBBackend implements IBackend {
     /**
      * @private
      */
-    async create<T extends IModel>(manager: ModelManager, model: T, options: ICreateOptions, result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
+    async create<T extends IModel>(manager: ModelManager, model: T, params: ICreateParams, result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
         const meta = manager.getModelMeta(model);
 
         const document = {};
@@ -131,16 +132,16 @@ export class MongoDBBackend implements IBackend {
     /**
      * @private
      */
-    async update<T extends IModel>(manager: ModelManager, model: T, options: IUpdateOptions, result: ModelOperationResult<T, IUpdateMeta>): Promise<ModelOperationResult<T, IUpdateMeta>> {
-        if (!options.where) {
+    async update<T extends IModel>(manager: ModelManager, model: T, params: IUpdateParams, result: ModelOperationResult<T, IUpdateMeta>): Promise<ModelOperationResult<T, IUpdateMeta>> {
+        if (!params.where) {
             throw new Error(`update() requires the 'where' option to be set.`);
         }
 
         let meta = manager.getModelMeta(model);
-        const mongoQuery = convertQuery(manager, meta.ctor, options.where);
+        const mongoQuery = convertQuery(manager, meta.ctor, params.where);
 
         const fieldUpdates = {};
-        options.fields.forEach((fieldName) => {
+        params.fields!.forEach((fieldName) => {
             const field = meta.fieldsByName[fieldName];
             if (field.options.stored && typeof model[fieldName] != 'undefined') {
                 let value = field.toBackendValue(manager, model[fieldName]);
@@ -160,13 +161,13 @@ export class MongoDBBackend implements IBackend {
     /**
      * @private
      */
-    async remove<T extends IModel>(manager: ModelManager, model: T, options: IRemoveOptions, result: ModelOperationResult<T, IRemoveMeta>): Promise<ModelOperationResult<T, IRemoveMeta>> {
-        if (!options.where) {
+    async remove<T extends IModel>(manager: ModelManager, model: T, params: IRemoveParams, result: ModelOperationResult<T, IRemoveMeta>): Promise<ModelOperationResult<T, IRemoveMeta>> {
+        if (!params.where) {
             throw new Error('remove() requires the \'where\' option to be set');
         }
 
         let meta = manager.getModelMeta(model);
-        const mongoQuery = convertQuery(manager, meta.ctor, options.where);
+        const mongoQuery = convertQuery(manager, meta.ctor, params.where);
 
         const colName = this._getCollectionName(meta);
         const removeResult = await this.db.collection(colName).deleteMany(mongoQuery);
@@ -178,29 +179,29 @@ export class MongoDBBackend implements IBackend {
     /**
      * @private
      */
-    async read<T extends IModel>(manager: ModelManager, model: new() => T, options: IReadOptions, result: ModelOperationResult<T, IReadMeta>): Promise<ModelOperationResult<T, IReadMeta>> {
+    async read<T extends IModel>(manager: ModelManager, model: new() => T, params: IReadParams, result: ModelOperationResult<T, IReadMeta>): Promise<ModelOperationResult<T, IReadMeta>> {
         const meta = manager.getModelMeta(model);
         const colName = this._getCollectionName(meta);
 
-        const mongoQuery = convertQuery(manager, model, options.where);
+        const mongoQuery = convertQuery(manager, model, params.where);
 
         const records = await this.db.collection(colName)
             .find(mongoQuery)
-            .sort(this._convertOrderBy(options.orderBy))
-            .skip(options.offset)
-            .limit(options.limit)
+            .sort(this._convertOrderBy(params.orderBy))
+            .skip(params.offset)
+            .limit(params.limit)
             .toArray();
 
         const primaryKeyValues: any[] = [];
         const foreignKeyValues: IForeignKeyValues = {};
         const rawValues: IRawValues = [];
-        const relatedFieldNames = getOwnRelatedFieldNames(options.related);
+        const relatedFieldNames = getOwnRelatedFieldNames(params.related);
 
         result.results = [];
         records.forEach((record) => {
 
             const modelInstance = manager.hydrate(meta.ctor, record);
-            result.results.push(modelInstance);
+            result.results!.push(modelInstance);
 
             if (meta.primaryKey) {
                 primaryKeyValues.push(modelInstance[meta.primaryKey]);
@@ -228,9 +229,9 @@ export class MongoDBBackend implements IBackend {
                 }
             }
 
-            if (options.rawValues) {
+            if (params.rawValues) {
                 let rawValueObj = {};
-                for (let fieldName of options.rawValues) {
+                for (let fieldName of params.rawValues) {
                     rawValueObj[fieldName] = record[fieldName];
                 }
                 rawValues.push(rawValueObj);
@@ -241,8 +242,8 @@ export class MongoDBBackend implements IBackend {
         if (relatedFieldNames) {
             // Get related record data
             const related = await Promise.all([
-                getRelatedModelInstances(manager, meta, foreignKeyValues, options),
-                getRelatedModelListInstances(manager, meta, primaryKeyValues, options)
+                getRelatedModelInstances(manager, meta, foreignKeyValues, params),
+                getRelatedModelListInstances(manager, meta, primaryKeyValues, params)
             ]);
             const [relatedModelInstances, relatedModelListInstances] = related;
 
@@ -261,8 +262,8 @@ export class MongoDBBackend implements IBackend {
                     }
                     else if (field instanceof fields.RelatedModelListField) {
                         if (relatedModelListInstances[fieldName]
-                            && relatedModelListInstances[fieldName][instance[meta.primaryKey]]) {
-                                instance[fieldName] = relatedModelListInstances[fieldName][instance[meta.primaryKey]];
+                            && relatedModelListInstances[fieldName][instance[meta.primaryKey!]]) {
+                                instance[fieldName] = relatedModelListInstances[fieldName][instance[meta.primaryKey!]];
                         }
                         else {
                             instance[fieldName] = [];
@@ -272,13 +273,13 @@ export class MongoDBBackend implements IBackend {
             }
         }
 
-        if (options.rawValues) {
+        if (params.rawValues) {
             result.setMeta({ rawValues });
         }
 
         result.setMeta({
-            offset: options.offset,
-            limit: options.limit,
+            offset: params.offset,
+            limit: params.limit,
             totalCount: result.results.length
         });
 
@@ -288,7 +289,7 @@ export class MongoDBBackend implements IBackend {
     /**
      * @private
      */
-    async exec<R>(manager: ModelManager, model: IModel, options: IExecOptions, result: ModelOperationResult<R, IExecMeta>): Promise<ModelOperationResult<R, IExecMeta>> {
+    async exec<R>(manager: ModelManager, model: IModel, params: IExecParams, result: ModelOperationResult<R, IExecMeta>): Promise<ModelOperationResult<R, IExecMeta>> {
         return Promise.reject(new Error('Not yet implemented'));
     }
 

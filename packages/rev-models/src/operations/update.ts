@@ -28,7 +28,7 @@ export async function update<T extends IModel>(manager: IModelManager, model: T,
     }
 
     let backend = manager.getBackend(meta.backend);
-    let opts: IUpdateOptions = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
+    let opts = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
     let validationOpts = opts.validation || {};
 
     if (!opts.where || typeof opts.where != 'object') {
@@ -47,7 +47,7 @@ export async function update<T extends IModel>(manager: IModelManager, model: T,
         opts.fields = [];
         meta.fields.forEach((field) => {
             if (typeof model[field.name] != 'undefined') {
-                opts.fields.push(field.name);
+                opts.fields!.push(field.name);
             }
         });
     }

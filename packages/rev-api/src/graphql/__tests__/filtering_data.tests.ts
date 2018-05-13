@@ -41,7 +41,7 @@ describe('GraphQL query type - filtering model data', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post.results).to.deep.equal([{
+            expect(result.data!.Post.results).to.deep.equal([{
                 id: 2,
                 title: 'JavaScript is Awesome'
             }]);
@@ -63,7 +63,7 @@ describe('GraphQL query type - filtering model data', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post.results).to.deep.equal([{
+            expect(result.data!.Post.results).to.deep.equal([{
                 id: 2,
                 title: 'JavaScript is Awesome'
             }]);
@@ -81,7 +81,7 @@ describe('GraphQL query type - filtering model data', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.errors[0].message).to.contain('The "where" argument must be an object');
+            expect(result.errors![0].message).to.contain('The "where" argument must be an object');
         });
 
         it('If the "where" argument specifies an invalid field I get an error', async () => {
@@ -96,7 +96,7 @@ describe('GraphQL query type - filtering model data', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.errors[0].message).to.contain(`fred' is not a recognised field`);
+            expect(result.errors![0].message).to.contain(`fred' is not a recognised field`);
         });
 
     });
@@ -133,7 +133,7 @@ describe('GraphQL query type - filtering model data', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post.results).to.deep.equal([
+            expect(result.data!.Post.results).to.deep.equal([
                 {
                     id: 1,
                     title: 'RevJS v1.0.0 Released!'
@@ -157,7 +157,7 @@ describe('GraphQL query type - filtering model data', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post.results).to.deep.equal([
+            expect(result.data!.Post.results).to.deep.equal([
                 {
                     id: 2,
                     title: 'JavaScript is Awesome'
@@ -181,7 +181,7 @@ describe('GraphQL query type - filtering model data', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post.results).to.deep.equal([
+            expect(result.data!.Post.results).to.deep.equal([
                 {
                     id: 2,
                     title: 'JavaScript is Awesome'
@@ -202,7 +202,7 @@ describe('GraphQL query type - filtering model data', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post.results).to.deep.equal([
+            expect(result.data!.Post.results).to.deep.equal([
                 { id: 2, title: 'JavaScript is Awesome'},
                 { id: 1, title: 'RevJS v1.0.0 Released!'},
                 { id: 3, title: 'Ruby Sucks'},
@@ -221,7 +221,7 @@ describe('GraphQL query type - filtering model data', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post.results).to.deep.equal([
+            expect(result.data!.Post.results).to.deep.equal([
                 { id: 3, title: 'Ruby Sucks'},
                 { id: 2, title: 'JavaScript is Awesome'},
                 { id: 1, title: 'RevJS v1.0.0 Released!'},
@@ -240,7 +240,7 @@ describe('GraphQL query type - filtering model data', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post.results).to.deep.equal([
+            expect(result.data!.Post.results).to.deep.equal([
                 { id: 2, title: 'JavaScript is Awesome'},
                 { id: 3, title: 'Ruby Sucks'},
                 { id: 1, title: 'RevJS v1.0.0 Released!'},
@@ -259,7 +259,7 @@ describe('GraphQL query type - filtering model data', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.Post.results).to.deep.equal([
+            expect(result.data!.Post.results).to.deep.equal([
                 { id: 1, title: 'RevJS v1.0.0 Released!'}
             ]);
         });

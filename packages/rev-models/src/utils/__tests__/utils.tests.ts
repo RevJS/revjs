@@ -56,7 +56,7 @@ describe('escapeForRegex()', () => {
 
     it('throws an error if value is not a string', () => {
         expect(() => {
-            escapeForRegex(null);
+            escapeForRegex(null as any);
         }).to.throw('Supplied value is not a string');
         expect(() => {
             escapeForRegex({} as any);

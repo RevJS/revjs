@@ -55,7 +55,7 @@ describe('rev.operations.create()', () => {
                 expect(createCall.args[1]).to.equal(model);
                 expect(res.success).to.be.true;
                 expect(res.validation).to.be.instanceOf(ModelValidationResult);
-                expect(res.validation.valid).to.be.true;
+                expect(res.validation!.valid).to.be.true;
             });
     });
 
@@ -63,7 +63,7 @@ describe('rev.operations.create()', () => {
         let model = new TestModel();
         model.name = 'Bob';
         model.gender = 'male';
-        return rwCreate.create(manager, model, null)
+        return rwCreate.create(manager, model, undefined)
             .then((res) => {
                 expect(mockBackend.createStub.callCount).to.equal(1);
                 let readCall = mockBackend.createStub.getCall(0);

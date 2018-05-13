@@ -65,7 +65,7 @@ describe('getMethodResolver()', () => {
         smellyArgs = undefined;
     });
 
-    function registerUserApi(apiMeta?: IApiMeta) {
+    function registerUserApi(apiMeta?: Partial<IApiMeta>) {
         if (!apiMeta) {
             apiMeta = {
                 methods: {
@@ -278,8 +278,8 @@ describe('getMethodResolver()', () => {
             .then((res) => {
                 expect(smellyArgs).to.be.undefined; // not called
                 expect(res.success).to.be.false;
-                expect(res.errors[0].code).to.equal('invalid_args');
-                expect(res.validation.fieldErrors['textArg'][0].code).to.equal('required');
+                expect(res.errors![0].code).to.equal('invalid_args');
+                expect(res.validation!.fieldErrors['textArg'][0].code).to.equal('required');
             });
         });
 
@@ -292,8 +292,8 @@ describe('getMethodResolver()', () => {
             .then((res) => {
                 expect(smellyArgs).to.be.undefined; // not called
                 expect(res.success).to.be.false;
-                expect(res.errors[0].code).to.equal('invalid_args');
-                expect(res.validation.fieldErrors['intArg'][0].code).to.equal('not_a_number');
+                expect(res.errors![0].code).to.equal('invalid_args');
+                expect(res.validation!.fieldErrors['intArg'][0].code).to.equal('not_a_number');
             });
         });
 

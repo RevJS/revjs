@@ -50,7 +50,7 @@ describe('GraphQL "mutation" type - Model_update()', () => {
             `;
 
             const result = await graphql(schema, query);
-            signature = result.data.__schema.mutationType.fields[0];
+            signature = result.data!.__schema.mutationType.fields[0];
         });
 
         it('Mutation name is the model name plus _update', () => {
@@ -192,7 +192,7 @@ describe('GraphQL "mutation" type - Model_update()', () => {
             `;
             const result = await graphql(schema, query);
             expect(result.errors).to.have.length(1);
-            expect(result.errors[0].message).to.contain('argument "model" of type "Post_input!" is required but not provided');
+            expect(result.errors![0].message).to.contain('argument "model" of type "Post_input!" is required but not provided');
         });
 
         it('When model has validation errors, an unsuccessful result is returned with the errors', async () => {
@@ -207,13 +207,13 @@ describe('GraphQL "mutation" type - Model_update()', () => {
             const result = await graphql(schema, query);
             expect(result.errors).to.be.undefined;
             expect(result.data).to.be.an('object');
-            expect(result.data.Post_update).to.be.an('object');
+            expect(result.data!.Post_update).to.be.an('object');
 
-            const opResult: IModelOperationResult<any, IUpdateMeta> = result.data.Post_update;
+            const opResult: IModelOperationResult<any, IUpdateMeta> = result.data!.Post_update;
             expect(opResult.success).to.be.false;
             expect(opResult.validation).to.be.an('object');
-            expect(opResult.validation.modelErrors).to.have.length(1);
-            expect(opResult.validation.modelErrors[0].message).to.equal('Fake News is not allowed!');
+            expect(opResult.validation!.modelErrors).to.have.length(1);
+            expect(opResult.validation!.modelErrors[0].message).to.equal('Fake News is not allowed!');
         });
 
         it('When the updated fields are valid, a successful result is returned with the number of updated records', async () => {
@@ -228,9 +228,9 @@ describe('GraphQL "mutation" type - Model_update()', () => {
             const result = await graphql(schema, query);
             expect(result.errors).to.be.undefined;
             expect(result.data).to.be.an('object');
-            expect(result.data.Post_update).to.be.an('object');
+            expect(result.data!.Post_update).to.be.an('object');
 
-            const opResult: IModelOperationResult<any, IUpdateMeta> = result.data.Post_update;
+            const opResult: IModelOperationResult<any, IUpdateMeta> = result.data!.Post_update;
             expect(opResult.success).to.be.true;
             expect(opResult.result).to.be.undefined;
             expect(opResult.results).to.be.undefined;
@@ -255,9 +255,9 @@ describe('GraphQL "mutation" type - Model_update()', () => {
             const result = await graphql(schema, query);
             expect(result.errors).to.be.undefined;
             expect(result.data).to.be.an('object');
-            expect(result.data.Post_update).to.be.an('object');
+            expect(result.data!.Post_update).to.be.an('object');
 
-            const opResult: IModelOperationResult<any, IUpdateMeta> = result.data.Post_update;
+            const opResult: IModelOperationResult<any, IUpdateMeta> = result.data!.Post_update;
             expect(opResult.success).to.be.true;
             expect(opResult.result).to.be.undefined;
             expect(opResult.results).to.be.undefined;
@@ -278,7 +278,7 @@ describe('GraphQL "mutation" type - Model_update()', () => {
             `;
             const result = await graphql(schema, query);
             expect(result.errors).to.have.length(1);
-            expect(result.errors[0].message).to.equal(expectedError.message);
+            expect(result.errors![0].message).to.equal(expectedError.message);
         });
 
     });

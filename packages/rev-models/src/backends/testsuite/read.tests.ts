@@ -76,6 +76,7 @@ export function readTests(backendName: string, config: IBackendTestConfig) {
                         expect(res.success).to.be.true;
                         expect(res.result).to.be.undefined;
                         expect(res.results).to.have.length(5);
+                        res.results = res.results!;
                         expect(res.results[0]).to.be.instanceof(TestModel);
                         expect(res.results[1]).to.be.instanceof(TestModel);
                         expect(res.results[2]).to.be.instanceof(TestModel);
@@ -107,8 +108,8 @@ export function readTests(backendName: string, config: IBackendTestConfig) {
                         expect(res.success).to.be.true;
                         expect(res.result).to.be.undefined;
                         expect(res.results).to.have.length(2);
-                        expect(res.results[0].name).to.equal('John Doe');
-                        expect(res.results[1].name).to.equal('Jane Doe');
+                        expect(res.results![0].name).to.equal('John Doe');
+                        expect(res.results![1].name).to.equal('Jane Doe');
                     });
             });
 
@@ -119,6 +120,7 @@ export function readTests(backendName: string, config: IBackendTestConfig) {
                     .then((res) => {
                         expect(res.success).to.be.true;
                         expect(res.result).to.be.undefined;
+                        res.results = res.results!;
                         expect(res.results).to.have.length(3);
                         expect(res.results[0].id).to.equal(0);
                         expect(res.results[1].id).to.equal(1);
@@ -134,6 +136,7 @@ export function readTests(backendName: string, config: IBackendTestConfig) {
                         expect(res.success).to.be.true;
                         expect(res.result).to.be.undefined;
                         expect(res.results).to.have.length(3);
+                        res.results = res.results!;
                         expect(res.results[0].id).to.equal(2);
                         expect(res.results[1].id).to.equal(3);
                         expect(res.results[2].id).to.equal(4);
@@ -149,7 +152,7 @@ export function readTests(backendName: string, config: IBackendTestConfig) {
                         expect(res.success).to.be.true;
                         expect(res.result).to.be.undefined;
                         expect(res.results).to.have.length(1);
-                        expect(res.results[0].id).to.equal(3);
+                        expect(res.results![0].id).to.equal(3);
                     });
             });
 
@@ -182,6 +185,7 @@ export function readTests(backendName: string, config: IBackendTestConfig) {
                     .then((res) => {
                         expect(res.success).to.be.true;
                         expect(res.results).to.have.length(5);
+                        res.results = res.results!;
                         expect(res.results[0].name).to.equal('Felix The Cat');
                         expect(res.results[0].id).to.equal(2);
                         expect(res.results[1].name).to.equal('Frostella the Snowlady');
@@ -198,6 +202,7 @@ export function readTests(backendName: string, config: IBackendTestConfig) {
                     .then((res) => {
                         expect(res.success).to.be.true;
                         expect(res.results).to.have.length(5);
+                        res.results = res.results!;
                         expect(res.results[0].name).to.equal('Felix The Cat');
                         expect(res.results[0].id).to.equal(2);
                         expect(res.results[1].name).to.equal('John Doe');
@@ -216,13 +221,14 @@ export function readTests(backendName: string, config: IBackendTestConfig) {
                             expect(res.success).to.be.true;
                             expect(res.result).to.be.undefined;
                             expect(res.results).to.have.length(5);
+                            res.results = res.results!;
                             expect(res.results[0]).to.be.instanceof(TestModel);
                             expect(res.results[1]).to.be.instanceof(TestModel);
                             expect(res.results[2]).to.be.instanceof(TestModel);
                             expect(res.meta.rawValues).to.exist;
                             expect(res.meta.rawValues).to.have.length(5);
-                            expect(res.meta.rawValues[1].id).to.equal(1);
-                            expect(res.meta.rawValues[2].id).to.equal(2);
+                            expect(res.meta.rawValues![1].id).to.equal(1);
+                            expect(res.meta.rawValues![2].id).to.equal(2);
                         });
                 });
             }
@@ -252,6 +258,7 @@ export function readTests(backendName: string, config: IBackendTestConfig) {
                         expect(res.success).to.be.true;
                         expect(res.result).to.be.undefined;
                         expect(res.results).to.have.length(3);
+                        res.results = res.results!;
                         expect(res.results[0]).to.be.instanceof(TestModelNoPK);
                         expect(res.results[1]).to.be.instanceof(TestModelNoPK);
                         expect(res.results[2]).to.be.instanceof(TestModelNoPK);
@@ -269,6 +276,7 @@ export function readTests(backendName: string, config: IBackendTestConfig) {
                         expect(res.success).to.be.true;
                         expect(res.result).to.be.undefined;
                         expect(res.results).to.have.length(1);
+                        res.results = res.results!;
                         expect(res.results[0].name).to.equal('record2');
                         expect(res.results[0].description).to.equal('This is the second record');
                     });

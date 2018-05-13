@@ -32,7 +32,7 @@ describe('withSearchViewContext()', () => {
     const SpyComponent = withSearchViewContext(SpyComponentC);
 
     before(() => {
-        receivedProps = null;
+        receivedProps = null as any;
         modelManager = models.getModelManager();
         mount(
             <ModelProvider modelManager={modelManager}>

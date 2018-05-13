@@ -36,7 +36,7 @@ export interface IRemoveActionProps extends IStandardComponentProps {
      * instead of the component configured in [[UI_COMPONENTS]]. It will
      * be passed [[IActionComponentProps]]
      */
-    component?: React.ComponentType;
+    component?: React.ComponentType<any>;
 }
 
 class RemoveActionC extends React.Component<IRemoveActionProps & IDetailViewContextProp> {
@@ -79,7 +79,7 @@ class RemoveActionC extends React.Component<IRemoveActionProps & IDetailViewCont
     render() {
         const ctx = this.props.detailViewContext;
         let disabled = ctx.loadState != 'NONE'
-            || ctx.manager.isNew(ctx.model);
+            || ctx.manager.isNew(ctx.model!);
 
         if (!disabled && this.props.disabled) {
             disabled = this.props.disabled(this.props.detailViewContext);

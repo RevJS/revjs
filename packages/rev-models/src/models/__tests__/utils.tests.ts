@@ -39,7 +39,7 @@ describe('rev.model', () => {
 
         it('throws when fields arg is not set', () => {
             expect(() => {
-                checkFieldsList(meta, null);
+                checkFieldsList(meta, null as any);
             }).to.throw('"fields" must be an array of field names');
         });
 

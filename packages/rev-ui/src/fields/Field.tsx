@@ -92,7 +92,7 @@ class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFiel
     }
 
     onChange(value: any) {
-        this.props.detailViewContext.model[this.modelField.name] = value;
+        this.props.detailViewContext.model![this.modelField.name] = value;
         this.props.detailViewContext.setDirty(true);
         this.setState({ value });
     }

@@ -31,16 +31,19 @@ export class ModelApiBackend implements IBackend {
      * backend. This must be an axios-compatible client. If not specified then
      * axios is used.
      */
+
+    apiUrl: string;
+    _httpClient: (config: AxiosRequestConfig) => AxiosPromise;
+
     constructor(
-        public apiUrl: string,
-        public _httpClient?: (config: AxiosRequestConfig) => AxiosPromise
+        apiUrl: string,
+        httpClient?: (config: AxiosRequestConfig) => AxiosPromise
     ) {
-        if (!this.apiUrl) {
+        if (!apiUrl) {
             throw new Error('ModelApiBackend Error: You must provide an apiUrl');
         }
-        if (!this._httpClient) {
-            this._httpClient = axios;
-        }
+        this.apiUrl = apiUrl;
+        this._httpClient = httpClient || axios;
     }
 
     /**
@@ -157,7 +160,7 @@ export class ModelApiBackend implements IBackend {
         const returnedData = httpResult.data.data[meta.name].results;
         result.results = [];
         returnedData.forEach((record: any) => {
-            result.results.push(this._hydrateRecordWithRelated(manager, meta, record, options.related));
+            result.results!.push(this._hydrateRecordWithRelated(manager, meta, record, options.related));
         });
         const returnedMeta = httpResult.data.data[meta.name].meta;
         result.setMeta(returnedMeta);
@@ -199,7 +202,7 @@ export class ModelApiBackend implements IBackend {
     /**
      * Builds an object representing all the graphql nodes to select for the specified query
      */
-    private _buildGraphQLSelectFields(manager: ModelManager, meta: IModelMeta<any>, related: string[], fieldObj: any) {
+    private _buildGraphQLSelectFields(manager: ModelManager, meta: IModelMeta<any>, fieldObj: any, related?: string[]) {
         for (const field of meta.fields) {
             if (field instanceof fields.RelatedModelFieldBase) {
                 if (related) {
@@ -209,8 +212,8 @@ export class ModelApiBackend implements IBackend {
                     if (field instanceof fields.RelatedModelFieldBase && relFieldNames.indexOf(field.name) > -1) {
                         const relMeta = manager.getModelMeta(field.options.model);
                         fieldObj[field.name] = {};
-                        const childRelFieldNames = getChildRelatedFieldNames(related, field.name);
-                        this._buildGraphQLSelectFields(manager, relMeta, childRelFieldNames, fieldObj[field.name]);
+                        const childRelFieldNames = getChildRelatedFieldNames(field.name, related);
+                        this._buildGraphQLSelectFields(manager, relMeta, fieldObj[field.name], childRelFieldNames);
                     }
                 }
             }
@@ -222,7 +225,7 @@ export class ModelApiBackend implements IBackend {
     }
 
     private _buildGraphQLQuery(manager: ModelManager, meta: IModelMeta<any>, options: IReadOptions) {
-        const fieldObj = this._buildGraphQLSelectFields(manager, meta, options.related, {});
+        const fieldObj = this._buildGraphQLSelectFields(manager, meta, {}, options.related);
         const readOptions: IReadOptions = {
             where: options.where,
             offset: options.offset,
@@ -259,7 +262,7 @@ export class ModelApiBackend implements IBackend {
         return data;
     }
 
-    private _hydrateRecordWithRelated(manager: ModelManager, meta: IModelMeta<any>, recordData: any, related: string[]) {
+    private _hydrateRecordWithRelated(manager: ModelManager, meta: IModelMeta<any>, recordData: any, related?: string[]) {
         const model = manager.hydrate(meta.ctor, recordData);
         if (related) {
             const relFieldNames = getOwnRelatedFieldNames(related);
@@ -267,7 +270,7 @@ export class ModelApiBackend implements IBackend {
                 if (relFieldNames.indexOf(field.name) > -1 && typeof recordData[field.name] != 'undefined') {
 
                     const relMeta = manager.getModelMeta(field.options.model);
-                    const childRelFieldNames = getChildRelatedFieldNames(related, field.name);
+                    const childRelFieldNames = getChildRelatedFieldNames(field.name, related);
 
                     if (field instanceof fields.RelatedModelField) {
                         if (recordData[field.name] == null) {

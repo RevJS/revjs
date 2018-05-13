@@ -48,7 +48,7 @@ describe('GraphQL "mutation" type - Model_create()', () => {
             `;
 
             const result = await graphql(schema, query);
-            signature = result.data.__schema.mutationType.fields[0];
+            signature = result.data!.__schema.mutationType.fields[0];
         });
 
         it('Mutation name is the model name plus _create', () => {
@@ -92,7 +92,7 @@ describe('GraphQL "mutation" type - Model_create()', () => {
             `;
             const result = await graphql(schema, query);
             expect(result.errors).to.have.length(1);
-            expect(result.errors[0].message).to.contain('argument "model" of type "Post_input!" is required but not provide');
+            expect(result.errors![0].message).to.contain('argument "model" of type "Post_input!" is required but not provide');
         });
 
         it('When model has validation errors, an unsuccessful result is returned with the errors', async () => {
@@ -106,11 +106,12 @@ describe('GraphQL "mutation" type - Model_create()', () => {
             const result = await graphql(schema, query);
             expect(result.errors).to.be.undefined;
             expect(result.data).to.be.an('object');
-            expect(result.data.Post_create).to.be.an('object');
+            expect(result.data!.Post_create).to.be.an('object');
 
-            const opResult: IModelOperationResult<any, ICreateMeta> = result.data.Post_create;
+            const opResult: IModelOperationResult<any, ICreateMeta> = result.data!.Post_create;
             expect(opResult.success).to.be.false;
             expect(opResult.validation).to.be.an('object');
+            opResult.validation = opResult.validation!;
             expect(opResult.validation.fieldErrors).to.have.property('body');
             expect(opResult.validation.fieldErrors).to.have.property('published');
             expect(opResult.validation.fieldErrors).to.have.property('post_date');
@@ -130,9 +131,9 @@ describe('GraphQL "mutation" type - Model_create()', () => {
             const result = await graphql(schema, query);
             expect(result.errors).to.be.undefined;
             expect(result.data).to.be.an('object');
-            expect(result.data.Post_create).to.be.an('object');
+            expect(result.data!.Post_create).to.be.an('object');
 
-            const opResult: IModelOperationResult<any, ICreateMeta> = result.data.Post_create;
+            const opResult: IModelOperationResult<any, ICreateMeta> = result.data!.Post_create;
             expect(opResult.success).to.be.true;
             expect(opResult.result).to.deep.include({
                 id: 1,
@@ -155,7 +156,7 @@ describe('GraphQL "mutation" type - Model_create()', () => {
             `;
             const result = await graphql(schema, query);
             expect(result.errors).to.have.length(1);
-            expect(result.errors[0].message).to.equal(expectedError.message);
+            expect(result.errors![0].message).to.equal(expectedError.message);
         });
 
     });

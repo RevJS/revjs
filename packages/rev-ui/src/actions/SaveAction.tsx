@@ -40,7 +40,7 @@ export interface ISaveActionProps extends IStandardComponentProps {
      * instead of the component configured in [[UI_COMPONENTS]]. It will
      * be passed [[IActionComponentProps]]
      */
-    component?: React.ComponentType;
+    component?: React.ComponentType<any>;
 }
 
 class SaveActionC extends React.Component<ISaveActionProps & IDetailViewContextProp> {

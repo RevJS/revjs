@@ -86,7 +86,7 @@ export class ModelManager implements IModelManager {
      * instance**
      * @param meta Optional additional metadata about the model being registered
      */
-    register<T extends IModel>(model: new(...args: any[]) => T, meta?: IModelMeta<T>) {
+    register<T extends IModel>(model: new(...args: any[]) => T, meta?: Partial<IModelMeta<T>>) {
 
         // Check model constructor
         checkIsModelConstructor(model);

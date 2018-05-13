@@ -7,9 +7,9 @@ export interface IApiMethodMeta {
 }
 
 export interface IApiMeta {
-    model?: string;
-    operations?: string[];
-    methods?: {
+    model: string;
+    operations: string[];
+    methods: {
         [methodName: string]: IApiMethodMeta;
     };
 }

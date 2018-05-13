@@ -75,7 +75,7 @@ describe('ListView basic component', () => {
             expectedFields = fieldList.map((fieldName) => meta.fieldsByName[fieldName]);
 
             lifecycleOptions.enableComponentDidMount = false;
-            receivedProps = null;
+            receivedProps = null as any;
             mountComponent(
                 <ListView
                     title="Test List"
@@ -125,7 +125,7 @@ describe('ListView basic component', () => {
         before(() => {
             modelManager = models.getModelManager();
             lifecycleOptions.enableComponentDidMount = false;
-            receivedProps = null;
+            receivedProps = null as any;
             mountComponent(
                 <ListView
                     model={model}
@@ -152,11 +152,11 @@ describe('ListView basic component', () => {
             await createData(modelManager);
             expectedData = (await modelManager.read(models.Post, {
                 where: whereClause
-            })).results;
+            })).results!;
             expectedFields = fieldList.map((fieldName) => meta.fieldsByName[fieldName]);
 
             lifecycleOptions.enableComponentDidMount = true;
-            receivedProps = null;
+            receivedProps = null as any;
             const wrapper = mountComponent(
                 <ListView
                     title="List with Data Loaded..."
@@ -202,11 +202,11 @@ describe('ListView basic component', () => {
             await createData(modelManager);
             expectedData = (await modelManager.read(models.Post, {
                 orderBy: orderBy
-            })).results;
+            })).results!;
             expectedFields = fieldList.map((fieldName) => meta.fieldsByName[fieldName]);
 
             lifecycleOptions.enableComponentDidMount = true;
-            receivedProps = null;
+            receivedProps = null as any;
             const wrapper = mountComponent(
                 <ListView
                     title="List with Data Loaded..."
@@ -250,11 +250,11 @@ describe('ListView basic component', () => {
             expectedData = (await modelManager.read(models.Post, {
                 where: whereClause,
                 related: relatedFields
-            })).results;
+            })).results!;
             expectedFields = fieldList.map((fieldName) => meta.fieldsByName[fieldName]);
 
             lifecycleOptions.enableComponentDidMount = true;
-            receivedProps = null;
+            receivedProps = null as any;
             const wrapper = mountComponent(
                 <ListView
                     title="List with Data Loaded..."
@@ -300,7 +300,7 @@ describe('ListView basic component', () => {
         before(async () => {
             modelManager = models.getModelManager();
             lifecycleOptions.enableComponentDidMount = true;
-            receivedProps = null;
+            receivedProps = null as any;
             wrapper = shallow(
                 <ListView
                     title="Test List"
@@ -335,7 +335,7 @@ describe('ListView basic component', () => {
 
         before(() => {
             lifecycleOptions.enableComponentDidMount = false;
-            receivedProps = null;
+            receivedProps = null as any;
             mountComponent(
                 <ListView
                     title="Test List"
@@ -363,7 +363,7 @@ describe('ListView basic component', () => {
             expectedData = await createData(modelManager);
 
             lifecycleOptions.enableComponentDidMount = true;
-            receivedProps = null;
+            receivedProps = null as any;
             const wrapper = mountComponent(
                 <ListView model={model} fields={fieldList}
                     onItemPress={onRecordClickSpy}

@@ -7,7 +7,7 @@ const RESERVED_ARG_NAMES = ['model'];
 export function initialiseApiMeta<T extends IModel>(
         apiManager: IModelApiManager,
         model: T,
-        apiMeta: IApiMeta) {
+        apiMeta?: Partial<IApiMeta>) {
 
     // Check API Metadata
     if (!apiMeta) { apiMeta = {}; }
@@ -25,12 +25,12 @@ export function initialiseApiMeta<T extends IModel>(
     apiMeta.model = apiMeta.model || model.name;
 
     // Check if model is registered
-    if (!apiManager.getModelManager().isRegistered(apiMeta.model)) {
+    if (!apiManager.getModelManager().isRegistered(apiMeta.model!)) {
         throw new Error(`ApiManagerError: Model '${apiMeta.model}' is not registered with the model manager.`);
     }
 
     // Check if model API already registered
-    if (apiManager.isRegistered(apiMeta.model)) {
+    if (apiManager.isRegistered(apiMeta.model!)) {
         throw new Error(`ApiManagerError: Model '${apiMeta.model}' already has a registered API.`);
     }
 
@@ -88,5 +88,5 @@ export function initialiseApiMeta<T extends IModel>(
             throw new Error(`ApiMetadataError: No operations or methods defined for ${apiMeta.model}.`);
     }
 
-    return apiMeta;
+    return apiMeta as IApiMeta;
 }

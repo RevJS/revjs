@@ -135,7 +135,7 @@ describe('validate()', () => {
     });
 
     it('should reject if validation timeout expires', () => {
-        let delayModelMeta: IModelMeta<any> = {
+        let delayModelMeta: Partial<IModelMeta<any>> = {
             fields: []
         };
         let delayField = new TextField('test');
@@ -146,7 +146,7 @@ describe('validate()', () => {
                 }, 10000);
             });
         });
-        delayModelMeta.fields.push(delayField);
+        delayModelMeta.fields!.push(delayField);
 
         class DelayModel {}
         manager.register(DelayModel, delayModelMeta);
@@ -180,7 +180,7 @@ describe('validate()', () => {
 
         it('should return a valid result if model has no validate method', () => {
 
-            TestModel.prototype.validate = undefined;
+            TestModel.prototype.validate = undefined as any;
 
             return validate(manager, validModel, {operationName: 'create'})
                 .then((res) => {
@@ -254,7 +254,7 @@ describe('validate()', () => {
 
         it('should return a valid result if model has no validateAsync method', () => {
 
-            TestModel.prototype.validateAsync = undefined;
+            TestModel.prototype.validateAsync = undefined as any;
 
             return validate(manager, validModel, {operationName: 'create'})
                 .then((res) => {

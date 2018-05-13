@@ -45,7 +45,7 @@ describe('ModelApiManager', () => {
 
         it('throws if not passed a ModelManager', () => {
             expect(() => {
-                testApi = new ModelApiManager(null);
+                testApi = new ModelApiManager(undefined as any);
             }).to.throw('Invalid ModelManager passed in constructor');
         });
 

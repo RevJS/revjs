@@ -99,9 +99,9 @@ export class Developer {
     @d.TextField()
         name: string;
     @d.RelatedModel({ model: 'Company', required: false })
-        company: Company;
+        company: Company | null;
     @d.RelatedModel({ model: 'City', required: false })
-        city: City;
+        city: City | null;
 
     constructor(data?: Partial<Developer>) {
         Object.assign(this, data);

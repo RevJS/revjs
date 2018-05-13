@@ -44,7 +44,7 @@ describe('Querying relational data', () => {
             }
         `;
         const result = await graphql(schema, query);
-        expect(result.data.Post.results).to.deep.equal([
+        expect(result.data!.Post.results).to.deep.equal([
             {
                 id: 1,
                 title: 'RevJS v1.0.0 Released!',
@@ -89,7 +89,7 @@ describe('Querying relational data', () => {
             }
         `;
         const result = await graphql(schema, query);
-        expect(result.data.User.results).to.deep.equal([
+        expect(result.data!.User.results).to.deep.equal([
             {
                 id: 1,
                 name: 'Billy Bob',
@@ -136,7 +136,7 @@ describe('Querying relational data', () => {
             }
         `;
         const result = await graphql(schema, query);
-        expect(result.data.User.results).to.deep.equal([
+        expect(result.data!.User.results).to.deep.equal([
             {
                 id: 1,
                 name: 'Billy Bob',
