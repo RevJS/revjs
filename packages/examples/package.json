@@ -1,6 +1,6 @@
 {
   "name": "examples",
-  "version": "0.16.3",
+  "version": "0.17.0",
   "description": "RevJS Examples",
   "private": true,
   "scripts": {
@@ -21,12 +21,12 @@
     "koa": "2.5.0",
     "koa-bodyparser": "4.2.0",
     "koa-router": "7.4.0",
-    "rev-api": "^0.16.2",
-    "rev-api-client": "^0.16.2",
-    "rev-backend-mongodb": "^0.16.2",
-    "rev-models": "^0.16.2",
-    "rev-ui": "^0.16.2",
-    "rev-ui-materialui": "^0.16.3"
+    "rev-api": "^0.17.0",
+    "rev-api-client": "^0.17.0",
+    "rev-backend-mongodb": "^0.17.0",
+    "rev-models": "^0.17.0",
+    "rev-ui": "^0.17.0",
+    "rev-ui-materialui": "^0.17.0"
   },
   "devDependencies": {
     "@types/koa": "2.0.44",

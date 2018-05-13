@@ -1,7 +1,11 @@
 
 ## RevJS Module Releases
 
-### 0.17.0 - 
+### 0.17.0 - 13th May 2018
+
+* Upgraded to latest devDependencies
+* Added support for TypeScript `strict` mode
+* Added seperate `Params` interfaces for `IBackend` methods
 
 **`rev-ui-materialui`**
 
