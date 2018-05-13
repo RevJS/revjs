@@ -139,7 +139,7 @@ export class InMemoryBackend implements IBackend {
         let meta = manager.getModelMeta(model);
         let modelStorage = this._getModelStorage(meta);
         let parser = new QueryParser(manager);
-        let queryNode = parser.getQueryNodeForQuery(model, options.where);
+        let queryNode = parser.getQueryNodeForQuery(model, options.where || {});
         let query = new InMemoryQuery(queryNode);
 
         const primaryKeyValues: any[] = [];

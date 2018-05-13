@@ -159,10 +159,10 @@ export interface IRemoveMeta extends IOperationMeta {
  * @private
  */
 export interface IReadOptions {
-    where: object;
+    where?: object;
     orderBy?: string[];
-    limit: number;
-    offset: number;
+    limit?: number;
+    offset?: number;
     related?: string[];
     rawValues?: string[];
 }
