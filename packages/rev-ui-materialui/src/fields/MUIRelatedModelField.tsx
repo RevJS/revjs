@@ -15,7 +15,7 @@ import { IModel, IModelMeta } from 'rev-models';
 
 export interface IMUIRelatedModelFieldState {
     loadState: 'NONE' | 'LOADING';
-    selection?: IModel[];
+    selection: IModel[] | null;
 }
 
 class MUIRelatedModelFieldC extends React.Component<IFieldComponentProps & IModelManagerProp, IMUIRelatedModelFieldState> {
@@ -43,7 +43,7 @@ class MUIRelatedModelFieldC extends React.Component<IFieldComponentProps & IMode
         const res = await this.props.modelManager.read(this.modelMeta.ctor, { where: {} });
         this.setState({
             loadState: 'NONE',
-            selection: res.results
+            selection: res.results || null
         });
     }
 
@@ -53,7 +53,7 @@ class MUIRelatedModelFieldC extends React.Component<IFieldComponentProps & IMode
         }
         else if (this.state.selection) {
             const match = this.state.selection.find(
-                (model) => model[this.modelMeta.primaryKey] == primaryKey
+                (model) => model[this.modelMeta.primaryKey!] == primaryKey
             );
             if (match) {
                 this.props.onChange(match);
@@ -75,16 +75,16 @@ class MUIRelatedModelFieldC extends React.Component<IFieldComponentProps & IMode
         let disabled = this.props.disabled;
         const selection: Array<[string, string]> = [['', '']];
 
-        if (this.state.loadState == 'LOADING') {
+        if (this.state.loadState == 'LOADING' || !this.state.selection) {
             disabled = true;
         }
         else {
             this.state.selection.forEach((model) => {
-                selection.push([model[this.modelMeta.primaryKey].toString(), model.toString()]);
+                selection.push([model[this.modelMeta.primaryKey!].toString(), model.toString()]);
             });
         }
 
-        const value = (this.props.value && this.props.value[this.modelMeta.primaryKey].toString()) || '';
+        const value = (this.props.value && this.props.value[this.modelMeta.primaryKey!].toString()) || '';
 
         return (
             <Grid item {...gridWidthProps} style={this.props.style}>

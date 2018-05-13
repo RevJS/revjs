@@ -85,7 +85,7 @@ export const MUIListView = styles<IMUIListViewProps>((props) => {
                         key={rowIdx} hover
                         onClick={() => props.onItemPress(model)}
                     >
-                        {props.fields.map((field, colIdx) => {
+                        {props.fields!.map((field, colIdx) => {
                             const data = model[field.name];
                             return (
                                 <TableCell key={colIdx} padding="dense">{data ? data.toString() : ''}</TableCell>

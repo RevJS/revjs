@@ -106,11 +106,11 @@ describe('MUIListView', () => {
             });
 
             it('renders all column headings', () => {
-                expect(wrapper.find('th')).to.have.length(props.fields.length);
+                expect(wrapper.find('th')).to.have.length(props.fields!.length);
             });
 
             it('renders columns heading labels in correct order', () => {
-                props.fields.forEach((field, idx) => {
+                props.fields!.forEach((field, idx) => {
                     const th = wrapper.find('th').at(idx);
                     expect(th.text()).to.equal(
                         field.options.label
@@ -191,11 +191,11 @@ describe('MUIListView', () => {
         describe('table data', () => {
 
             it('renders all column headings', () => {
-                expect(wrapper.find('th')).to.have.length(props.fields.length);
+                expect(wrapper.find('th')).to.have.length(props.fields!.length);
             });
 
             it('renders columns heading labels in correct order', () => {
-                props.fields.forEach((field, idx) => {
+                props.fields!.forEach((field, idx) => {
                     const th = wrapper.find('th').at(idx);
                     expect(th.text()).to.equal(
                         field.options.label
@@ -221,7 +221,7 @@ describe('MUIListView', () => {
                     const row = wrapper.find('tbody')
                         .at(0).find('tr').at(i);
 
-                    props.fields.forEach((field, fieldIdx) => {
+                    props.fields!.forEach((field, fieldIdx) => {
                         const td = row.find('td').at(fieldIdx);
 
                         expect(td.text()).to.equal(
@@ -294,11 +294,11 @@ describe('MUIListView', () => {
         describe('table data', () => {
 
             it('renders all column headings', () => {
-                expect(wrapper.find('th')).to.have.length(props.fields.length);
+                expect(wrapper.find('th')).to.have.length(props.fields!.length);
             });
 
             it('renders all columns headings', () => {
-                props.fields.forEach((field, idx) => {
+                props.fields!.forEach((field, idx) => {
                     const th = wrapper.find('th').at(idx);
                     expect(th.text()).to.equal(
                         field.options.label
