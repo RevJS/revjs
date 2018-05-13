@@ -5,7 +5,12 @@ module.exports = (moduleName) => ({
 
     readme: 'none',
     includes: '../',
-    exclude: '**/{__tests__,__test_utils__,__fixtures__,testsuite}/**/*',
+    exclude: [
+        '**/__tests__/**/*',
+        '**/__test_utils__/**/*',
+        '**/__fixtures__/**/*',
+        '**/testsuite/**/*'
+    ],
     theme: '../../docs/typedoc/theme/',
 
     gaID: 'UA-115939002-1',
