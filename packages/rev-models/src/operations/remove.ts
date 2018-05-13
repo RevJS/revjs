@@ -3,6 +3,7 @@ import { IModel, IModelManager, IRemoveOptions, IRemoveMeta } from '../models/ty
 import { ModelOperationResult } from './operationresult';
 import { IModelOperation } from './operation';
 import { getModelPrimaryKeyQuery } from './utils';
+import { IRemoveParams } from '../backends/backend';
 
 /**
  * @private
@@ -21,7 +22,7 @@ export async function remove<T extends IModel>(manager: IModelManager, model: T,
     }
 
     let backend = manager.getBackend(meta.backend);
-    let opts = Object.assign({}, DEFAULT_REMOVE_OPTIONS, options);
+    let opts = Object.assign({}, DEFAULT_REMOVE_OPTIONS, options) as IRemoveParams;
 
     if (!opts.where || typeof opts.where != 'object') {
         if (!meta.primaryKey || meta.primaryKey.length == 0) {

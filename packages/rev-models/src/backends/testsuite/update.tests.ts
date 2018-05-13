@@ -143,7 +143,7 @@ export function updateTests(backendName: string, config: IBackendTestConfig) {
 
             it('throws an error if where clause is not provided', () => {
                 let model = new TestModel();
-                return backend.update(manager, model, {}, updateResult)
+                return backend.update(manager, model, {} as any, updateResult)
                     .then(() => { throw new Error('expected to reject'); })
                     .catch((err) => {
                         expect(err.message).to.contain(`update() requires the 'where' option to be set.`);
@@ -154,7 +154,7 @@ export function updateTests(backendName: string, config: IBackendTestConfig) {
                 let model = new TestModel();
                 return backend.update(manager, model, { where: {
                         non_existent_field: 42
-                    }}, updateResult)
+                    }} as any, updateResult)
                     .then(() => { throw new Error('expected to reject'); })
                     .catch((err) => {
                         expect(err.message).to.contain('not a recognised field');

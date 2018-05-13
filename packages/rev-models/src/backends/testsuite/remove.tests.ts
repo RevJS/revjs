@@ -96,7 +96,7 @@ export function removeTests(backendName: string, config: IBackendTestConfig) {
 
             it('throws an error if where clause is not provided', () => {
                 let model = new TestModel();
-                return backend.remove(manager, model, { where: undefined }, removeResult)
+                return backend.remove(manager, model, { where: undefined as any }, removeResult)
                     .then(() => { throw new Error('expected to reject'); })
                     .catch((err) => {
                         expect(err.message).to.contain('remove() requires the \'where\' option');
