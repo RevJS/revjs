@@ -32,7 +32,7 @@ export interface IDetailViewProps extends IStandardComponentProps {
      * Use this prop to specify the primary key value of the record you want to
      * load. To create a new, empty record, leave this property unset.
      */
-    primaryKeyValue?: string;
+    primaryKeyValue?: string | null;
 
     /**
      * If you provide a React component to this property, it will be used

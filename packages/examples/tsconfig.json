@@ -4,7 +4,8 @@
         "outDir": "./lib",
         "rootDir": "./src",
         "jsx": "react",
-        "declaration": false
+        "declaration": false,
+        "strict": false
     },
     "include": [
         "./src/**/*"
