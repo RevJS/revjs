@@ -1,4 +1,3 @@
-import { GraphQLObjectTypeConfig } from 'graphql';
 import { getModelOperationMutations } from './operations';
 import { getModelMethodMutations } from './methods';
 import { IGraphQLApi } from '../types';
