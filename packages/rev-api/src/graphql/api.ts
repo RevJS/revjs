@@ -120,7 +120,7 @@ export class GraphQLApi implements IGraphQLApi {
                     if (field instanceof fields.RelatedModelField) {
                         const relatedModel = field.options.model;
                         const relatedMeta = manager.getModelMeta(relatedModel);
-                        const relatedPKField = relatedMeta.fieldsByName[relatedMeta.primaryKey];
+                        const relatedPKField = relatedMeta.fieldsByName[relatedMeta.primaryKey!];
                         const mapping = this.getGraphQLFieldMapping(relatedPKField);
                         fieldConfig[field.name] = {
                             type: mapping.type
@@ -159,7 +159,7 @@ export class GraphQLApi implements IGraphQLApi {
         // For this node in the GraphQL Query, find all the sub-nodes that
         // are Relational fields (subclasses of RelatedModelFieldBase) and
         // record them in the "relatedNodes" object
-        for (let selection of (node.selectionSet.selections as FieldNode[])) {
+        for (let selection of (node.selectionSet!.selections as FieldNode[])) {
             let fieldName = selection.name.value;
             let field = meta.fieldsByName[fieldName];
             if (field instanceof fields.RelatedModelFieldBase) {
@@ -188,8 +188,8 @@ export class GraphQLApi implements IGraphQLApi {
     getQueryRelatedFieldList(info: GraphQLResolveInfo, meta: IModelMeta<any>): string[] {
         // Build the list of "related" fields in the query, to pass to rev-models
         const rootNode = info.fieldNodes[0];
-        const resultsNode = rootNode.selectionSet.selections.find(
-            (selection: FieldNode) => selection.name.value == 'results'
+        const resultsNode = rootNode.selectionSet!.selections.find(
+            (selection: any) => selection.name.value == 'results'
         ) as FieldNode;
         if (resultsNode) {
             const relatedNodes = {};
@@ -223,9 +223,9 @@ export class GraphQLApi implements IGraphQLApi {
                         orderBy: { type: new GraphQLList(GraphQLString) }
 
                     },
-                    resolve: (rootValue: any, args?: any, context?: any, info?: GraphQLResolveInfo): Promise<any> => {
+                    resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo): Promise<any> => {
                         let selectedRelationalFields = this.getQueryRelatedFieldList(info, modelMeta);
-                        let readOptions: IReadOptions = {
+                        let readOptions: Partial<IReadOptions> = {
                             where: {},
                             related: selectedRelationalFields
                         };

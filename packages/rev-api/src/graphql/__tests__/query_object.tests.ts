@@ -44,7 +44,7 @@ describe('GraphQL query type - top-level objects', () => {
             }
         `;
         const result = await graphql(schema, query);
-        expect(result.data.Post).to.deep.equal({
+        expect(result.data!.Post).to.deep.equal({
             results: [
                 { id: 1, title: 'RevJS v1.0.0 Released!' },
                 { id: 2, title: 'JavaScript is Awesome' },
@@ -79,7 +79,7 @@ describe('GraphQL query type - top-level objects', () => {
             }
         `;
         const result = await graphql(schema, query);
-        expect(result.data.Post).to.deep.equal({
+        expect(result.data!.Post).to.deep.equal({
             results: [
                 {
                     id: 1, title: 'RevJS v1.0.0 Released!',

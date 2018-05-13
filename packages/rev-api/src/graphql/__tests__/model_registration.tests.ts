@@ -36,6 +36,7 @@ describe('GraphQL "query" type - model list', () => {
                 }
             `;
             const result = await graphql(schema, query);
+            result.data = result.data!;
             expect(result.data.__schema.queryType.fields).to.have.length(1);
             expect(result.data.__schema.queryType.fields[0].name).to.equal('no_models');
             expect(result.data.__schema.queryType.fields[0].type.name).to.equal('String');
@@ -48,7 +49,7 @@ describe('GraphQL "query" type - model list', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.no_models).to.equal('No models have been registered for read access');
+            expect(result.data!.no_models).to.equal('No models have been registered for read access');
         });
 
     });
@@ -86,6 +87,7 @@ describe('GraphQL "query" type - model list', () => {
                 }
             `;
             const result = await graphql(schema, query);
+            result.data = result.data!;
             expect(result.data.__schema.queryType.fields).to.have.length(3);
             expect(result.data.__schema.queryType.fields[0].name).to.equal('User');
             expect(result.data.__schema.queryType.fields[0].type.kind).to.equal('OBJECT');
@@ -125,8 +127,8 @@ describe('GraphQL "query" type - model list', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.__schema.queryType.fields).to.have.length(1);
-            expect(result.data.__schema.queryType.fields[0].name).to.equal('UnrelatedModel');
+            expect(result.data!.__schema.queryType.fields).to.have.length(1);
+            expect(result.data!.__schema.queryType.fields[0].name).to.equal('UnrelatedModel');
         });
 
         it('attempts to read unreadable models fail', async () => {
@@ -142,7 +144,7 @@ describe('GraphQL "query" type - model list', () => {
             const result = await graphql(schema, query);
             expect(result.data).to.be.undefined;
             expect(result.errors).to.have.length(1);
-            expect(result.errors[0].message).to.equal('Cannot query field "Post" on type "query".');
+            expect(result.errors![0].message).to.equal('Cannot query field "Post" on type "query".');
         });
 
     });

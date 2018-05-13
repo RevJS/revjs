@@ -31,7 +31,7 @@ describe('GraphQL "mutation" type - function list', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.__schema.mutationType).to.be.null;
+            expect(result.data!.__schema.mutationType).to.be.null;
         });
 
     });
@@ -63,7 +63,7 @@ describe('GraphQL "mutation" type - function list', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.__schema.mutationType).to.be.null;
+            expect(result.data!.__schema.mutationType).to.be.null;
         });
 
     });
@@ -95,7 +95,7 @@ describe('GraphQL "mutation" type - function list', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.__schema.mutationType.fields).to.deep.equal([
+            expect(result.data!.__schema.mutationType.fields).to.deep.equal([
                 { name: 'Post_create' },
                 { name: 'Post_update' },
                 { name: 'Post_remove' },
@@ -131,7 +131,7 @@ describe('GraphQL "mutation" type - function list', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.__schema.mutationType.fields).to.deep.equal([
+            expect(result.data!.__schema.mutationType.fields).to.deep.equal([
                 { name: 'User_userMethod1' },
                 { name: 'Post_postMethod1' },
             ]);
@@ -171,7 +171,7 @@ describe('GraphQL "mutation" type - function list', () => {
                 }
             `;
             const result = await graphql(schema, query);
-            expect(result.data.__schema.mutationType.fields).to.deep.equal([
+            expect(result.data!.__schema.mutationType.fields).to.deep.equal([
                 { name: 'User_create' },
                 { name: 'User_update' },
                 { name: 'User_userMethod1' },
