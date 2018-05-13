@@ -15,7 +15,7 @@ describe('ModelOperationResult - constructor()', () => {
         expect(res.validation).to.be.undefined;
         expect(res.result).to.be.undefined;
         expect(res.results).to.be.undefined;
-        expect(res.meta).to.be.undefined;
+        expect(res.meta).to.deep.equal({});
     });
 
 });
@@ -114,8 +114,8 @@ describe('ModelOperationResult - setMeta()', () => {
         res = new ModelOperationResult<any, IReadMeta>({operationName: 'read'});
     });
 
-    it('able to add meta when ressult.meta is not defined', () => {
-        expect(res.meta).to.be.undefined;
+    it('able to add meta when ressult.meta is empty', () => {
+        expect(res.meta).to.deep.equal({});
         res.setMeta({ limit: 10 });
         expect(res.meta).to.deep.equal({ limit: 10 });
     });
@@ -140,7 +140,7 @@ describe('ModelOperationResult - setMeta()', () => {
     });
 
     it('throws if metadata is not an object', () => {
-        expect(res.meta).to.be.undefined;
+        expect(res.meta).to.deep.equal({});
         expect(() => {
             res.setMeta('limit: 10' as any);
         }).to.throw('metadata must be an object');
