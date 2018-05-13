@@ -1,6 +1,6 @@
 
 import { ModelOperationResult } from '../operations/operationresult';
-import { IModel, IModelManager, ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IRemoveMeta, IRemoveOptions, IReadMeta, IReadOptions, IExecMeta, IExecOptions, IExecArgs } from '../models/types';
+import { IModel, IModelManager, ICreateMeta, IUpdateMeta, IRemoveMeta, IReadMeta, IExecMeta, IExecArgs } from '../models/types';
 
 /**
  * Interface that all RevJS backends are required to implement

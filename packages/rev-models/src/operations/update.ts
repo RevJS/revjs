@@ -6,7 +6,6 @@ import { IModelOperation } from './operation';
 import { getModelPrimaryKeyQuery } from './utils';
 import { checkFieldsList } from '../models/utils';
 import { ValidationError } from '../validation/validationerror';
-import { IUpdateParams } from '../backends/backend';
 
 /**
  * @private
