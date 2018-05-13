@@ -43,7 +43,7 @@ describe('ListView field tests', () => {
             modelData = await createData(modelManager);
             expectedFields = fieldList.map((fieldName) => meta.fieldsByName[fieldName]);
 
-            receivedProps = null;
+            receivedProps = null as any;
             const wrapper = mountComponent(
                 <ListView
                     title="List with Data Loaded..."
@@ -144,7 +144,7 @@ describe('ListView field tests', () => {
             modelManager = models.getModelManager();
             modelData = await createData(modelManager);
 
-            receivedProps = null;
+            receivedProps = null as any;
             const wrapper = mountComponent(
                 <ListView
                     title="List with no fields selected"

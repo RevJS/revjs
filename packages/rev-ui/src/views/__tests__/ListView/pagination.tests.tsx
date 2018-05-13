@@ -48,7 +48,7 @@ describe('ListView data & pagination', () => {
             expectedFields = fieldList.map((fieldName) => meta.fieldsByName[fieldName]);
 
             lifecycleOptions.enableComponentDidMount = true;
-            receivedProps = null;
+            receivedProps = null as any;
             const wrapper = mountComponent(
                 <ListView
                     title="List with Data Loaded..."
@@ -102,7 +102,7 @@ describe('ListView data & pagination', () => {
             expectedData = modelData.posts.slice(3, 6);
 
             lifecycleOptions.enableComponentDidMount = true;
-            receivedProps = null;
+            receivedProps = null as any;
             const wrapper = mountComponent(
                 <ListView
                     title="List with Data Loaded..."
@@ -155,7 +155,7 @@ describe('ListView data & pagination', () => {
             expectedData = modelData.posts.slice(6);
 
             lifecycleOptions.enableComponentDidMount = true;
-            receivedProps = null;
+            receivedProps = null as any;
             const wrapper = mountComponent(
                 <ListView
                     title="List with Data Loaded..."
@@ -211,7 +211,7 @@ describe('ListView data & pagination', () => {
             expectedData = modelData.posts.slice(0, 3);
 
             lifecycleOptions.enableComponentDidMount = true;
-            receivedProps = null;
+            receivedProps = null as any;
             const wrapper = mountComponent(
                 <ListView
                     title="List with Data Loaded..."
@@ -265,7 +265,7 @@ describe('ListView data & pagination', () => {
             expectedFields = fieldList.map((fieldName) => meta.fieldsByName[fieldName]);
 
             lifecycleOptions.enableComponentDidMount = true;
-            receivedProps = null;
+            receivedProps = null as any;
             const wrapper = mountComponent(
                 <ListView
                     title="List with Data Loaded..."

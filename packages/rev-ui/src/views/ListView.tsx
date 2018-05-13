@@ -102,10 +102,15 @@ export interface IListViewComponentProps<T extends IModel = any> extends IStanda
 /**
  * @private
  */
-export interface IListViewState extends IReadOptions {
+export interface IListViewState {
     loadState: IListViewLoadState;
-    modelMeta?: IModelMeta<any>;
+    modelMeta: IModelMeta<any>;
     modelData?: IModelOperationResult<any, IReadMeta>;
+    where: object;
+    limit: number;
+    offset: number;
+    related?: string[];
+    orderBy?: string[];
 }
 
 /**
@@ -152,8 +157,8 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
             modelMeta: meta,
             loadState: 'LOADING',
             where: props.where || {},
-            related: props.related || null,
-            orderBy: props.orderBy || null,
+            related: props.related,
+            orderBy: props.orderBy,
             limit: props.limit || 20,
             offset: 0
         };
@@ -180,7 +185,7 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
     }
 
     async loadData(readOptions: IReadOptions) {
-        const readOpts: IReadOptions = {
+        const readOpts = {
             where: readOptions.where || this.state.where,
             related: readOptions.related || this.state.related,
             orderBy: readOptions.orderBy || this.state.orderBy,
@@ -244,7 +249,7 @@ export class ListView extends React.Component<IListViewProps, IListViewState> {
                 cProps.backButtonDisabled = false;
             }
             cProps.totalCount = readMeta.totalCount;
-            cProps.results = this.state.modelData.results;
+            cProps.results = this.state.modelData.results!;
         }
 
         const sProps = getStandardProps(this.props);

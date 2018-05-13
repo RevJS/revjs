@@ -63,7 +63,7 @@ describe('DetailView', () => {
     }
 
     function resetTestView() {
-        receivedDetailViewContext = null;
+        receivedDetailViewContext = null as any;
         renderCount = 0;
     }
 
@@ -149,7 +149,7 @@ describe('DetailView', () => {
         it('a new model instance is created', () => {
             expect(receivedDetailViewContext.model).not.to.be.null;
             expect(receivedDetailViewContext.model).to.be.instanceof(models.Post);
-            expect(modelManager.isNew(receivedDetailViewContext.model)).to.be.true;
+            expect(modelManager.isNew(receivedDetailViewContext.model!)).to.be.true;
         });
 
         it('modelMeta is set', () => {
@@ -242,8 +242,8 @@ describe('DetailView', () => {
         it('model data is the requested model instance', () => {
             const ctx = receivedDetailViewContext;
             expect(ctx.model).to.be.instanceof(models.Post);
-            expect(ctx.model.id).to.equal(expectedData.posts[0].id);
-            expect(ctx.model.title).to.equal(expectedData.posts[0].title);
+            expect(ctx.model!.id).to.equal(expectedData.posts[0].id);
+            expect(ctx.model!.title).to.equal(expectedData.posts[0].title);
         });
 
         it('modelMeta is set', () => {
@@ -407,7 +407,7 @@ describe('DetailView', () => {
 
             beforeEach(() => {
                 const meta = modelManager.getModelMeta(models.Post);
-                meta.primaryKey = null;
+                meta.primaryKey = undefined;
             });
 
             it('save() throws an error and does not rerender', async () => {
@@ -455,7 +455,7 @@ describe('DetailView', () => {
                 expect(result.success).to.be.true;
                 expect(result.result).not.to.be.undefined;
                 expect(result.result).to.be.instanceof(models.Post);
-                expect(result.result.id).to.be.a('number');
+                expect(result.result!.id).to.be.a('number');
                 expect(receivedDetailViewContext.model.id).to.be.a('number');
                 expect(receivedDetailViewContext.validation).to.equal(result.validation);
                 expect(renderCount).to.equal(2);
@@ -509,7 +509,7 @@ describe('DetailView', () => {
 
             beforeEach(() => {
                 const meta = modelManager.getModelMeta(models.Post);
-                meta.primaryKey = null;
+                meta.primaryKey = undefined;
             });
 
             it('remove() throws an error and does not rerender', async () => {
@@ -630,7 +630,7 @@ describe('DetailView', () => {
         };
 
         before(() => {
-            receivedProps = null;
+            receivedProps = null as any;
             modelManager = models.getModelManager();
             mount(
                 <ModelProvider modelManager={modelManager}>

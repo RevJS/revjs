@@ -57,7 +57,7 @@ describe('SearchView', () => {
     }
 
     function resetTestView() {
-        receivedSearchViewContext = null;
+        receivedSearchViewContext = null as any;
     }
 
     describe('initial searchViewContext', () => {
@@ -168,7 +168,7 @@ describe('SearchView', () => {
         };
 
         before(() => {
-            receivedProps = null;
+            receivedProps = null as any;
             modelManager = models.getModelManager();
             mount(
                 <ModelProvider modelManager={modelManager}>

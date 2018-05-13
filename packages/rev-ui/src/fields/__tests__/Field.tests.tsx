@@ -56,7 +56,7 @@ describe('Field', () => {
     });
 
     function resetSpyComponent() {
-        receivedProps = null;
+        receivedProps = null as any;
         renderCount = 0;
     }
 

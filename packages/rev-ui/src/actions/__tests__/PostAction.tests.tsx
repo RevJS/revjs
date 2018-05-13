@@ -6,7 +6,7 @@ import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
-import { DetailView, IDetailViewContextProp, IDetailViewContext } from '../../views/DetailView';
+import { DetailView, IDetailViewContextProp } from '../../views/DetailView';
 import { PostAction, IPostActionProps } from '../PostAction';
 import { withDetailViewContext } from '../../views/withDetailViewContext';
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
@@ -55,7 +55,7 @@ describe('PostAction', () => {
     });
 
     function resetSpyComponent() {
-        receivedProps = null;
+        receivedProps = null as any;
     }
 
     describe('rendering', () => {
@@ -105,7 +105,7 @@ describe('PostAction', () => {
         });
 
         it('default label = "Submit"', () => {
-            expect(receivedProps.label).to.equal('Submit');
+            expect(receivedProps!.label).to.equal('Submit');
         });
 
     });
@@ -319,8 +319,8 @@ describe('PostAction', () => {
                             label="Submit"
                             url="/api"
 
-                            disabled={(ctx: IDetailViewContext<models.User>) => {
-                                return ctx.model.name == 'should be disabled';
+                            disabled={(ctx) => {
+                                return ctx.model!.name == 'should be disabled';
                             }}
 
                             component={SpyComponent}
@@ -335,7 +335,7 @@ describe('PostAction', () => {
         });
 
         it('control disabled when disabled function returns true', () => {
-            receivedProps.detailViewContext.model.name = 'should be disabled';
+            receivedProps.detailViewContext.model!.name = 'should be disabled';
             receivedProps.detailViewContext.refresh();
             expect(receivedProps.disabled).to.be.true;
         });
