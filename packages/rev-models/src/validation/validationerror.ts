@@ -24,10 +24,10 @@ export class ValidationError extends Error {
     /**
      * The details of the validation problem
      */
-    validation: IModelValidationResult;
+    validation: IModelValidationResult | null;
 
     constructor(
-        validationResult: IModelValidationResult = null,
+        validationResult: IModelValidationResult | null = null,
         detailsInMessage = true
     ) {
         let message = 'ValidationError';

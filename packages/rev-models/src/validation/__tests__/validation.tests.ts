@@ -140,7 +140,7 @@ describe('rev.model.validation', () => {
 
         it('throws an error when fieldName is not specified', () => {
             expect(() => {
-                valid.addFieldError(undefined, undefined);
+                valid.addFieldError(undefined as any, undefined as any);
             }).to.throw('You must specify fieldName');
         });
 
@@ -226,7 +226,7 @@ describe('rev.model.validation', () => {
 
         it('throws an error when no message is specified', () => {
             expect(() => {
-                valid.addModelError(undefined);
+                valid.addModelError(undefined as any);
             }).to.throw('You must specify a message for a model error');
         });
 

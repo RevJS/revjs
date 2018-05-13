@@ -9,7 +9,7 @@ import { checkFieldsList } from '../models/utils';
  * @private
  * Documentation in ModelManager class
  */
-export async function validate<T extends IModel>(manager: IModelManager, model: T, operation?: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
+export async function validate<T extends IModel>(manager: IModelManager, model: T, operation: IModelOperation, options?: IValidationOptions): Promise<ModelValidationResult> {
 
     let meta = manager.getModelMeta(model);
 

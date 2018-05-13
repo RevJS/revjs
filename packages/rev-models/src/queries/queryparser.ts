@@ -58,6 +58,7 @@ export class QueryParser implements IQueryParser {
             && prefixedOperatorName.substr(0, prefix.length) == prefix) {
                 return prefixedOperatorName.substr(prefix.length);
         }
+        return prefixedOperatorName;
     }
 
     getQueryNodeForQuery<T extends IModel>(

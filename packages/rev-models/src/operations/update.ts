@@ -47,7 +47,7 @@ export async function update<T extends IModel>(manager: IModelManager, model: T,
         opts.fields = [];
         meta.fields.forEach((field) => {
             if (typeof model[field.name] != 'undefined') {
-                opts.fields.push(field.name);
+                opts.fields!.push(field.name);
             }
         });
     }

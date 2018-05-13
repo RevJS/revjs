@@ -6,7 +6,7 @@ import { IModel, IModelManager } from '../models/types';
  */
 export interface IQueryNode<T extends IModel> {
     operator: string;
-    parent: IQueryNode<T>;
+    parent?: IQueryNode<T>;
     children: Array<IQueryNode<T>>;
 }
 
@@ -19,7 +19,7 @@ export interface IOperatorRegister {
             model: new() => IModel,
             operator: string,
             value: any,
-            parent: IQueryNode<any>) => IQueryNode<any>;
+            parent?: IQueryNode<any>) => IQueryNode<any>;
 }
 
 /**

@@ -94,7 +94,7 @@ describe('ModelOperationResult - addError()', () => {
 
     it('throws an error when no message is specified', () => {
         expect(() => {
-            res.addError(undefined);
+            res.addError(undefined as any);
         }).to.throw('A message must be specified for the operation error');
     });
 

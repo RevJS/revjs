@@ -31,7 +31,7 @@ export interface IMethodContext<T> {
  * @private
  */
 export const DEFAULT_EXEC_OPTIONS: IExecOptions = {
-    method: null
+    method: ''
 };
 
 /**
@@ -54,7 +54,7 @@ export async function exec<R>(manager: IModelManager, model: IModel, options: IE
         operationName: options.method
     };
     let result = new ModelOperationResult<R, IExecMeta>(operation);
-    let ctx: IMethodContext<R> = { manager, args: options.args, result, options };
+    let ctx: IMethodContext<R> = { manager, args: options.args || {}, result, options };
 
     let callResult: any;
     if (model[options.method]) {

@@ -21,7 +21,7 @@ export function getLikeOperatorRegExp(likeStr: string) {
     if (likeStr == '') {
         return /^.{0}$/m; // match only empty strings
     }
-    let m: RegExpExecArray;
+    let m: RegExpExecArray | null;
     // First, find instances of '%%' (which should match '%' in the data)
     let doubleMatcher = /%%/g;
     let doubleLocs: number[] = [];

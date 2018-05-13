@@ -17,8 +17,8 @@ export class MockBackend implements IBackend {
     execStub = sinon.stub();
 
     errorsToAdd: string[] = [];
-    errorToThrow: Error = null;
-    results: any[] = null;
+    errorToThrow: Error;
+    results: any[];
 
     create<T extends IModel>(manager: ModelManager, model: T, options: ICreateOptions, result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
         this.addErrors(result);

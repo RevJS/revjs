@@ -8,7 +8,7 @@ import { InMemoryBackend } from '../../backends/inmemory/backend';
 import { IModelMeta } from '../../models/types';
 
 class TestModel {
-    id: number;
+    id: number | null;
     name: string;
     date: Date;
 }
@@ -19,8 +19,8 @@ class EmptyModel {}
 
 describe('ModelManager', () => {
     let testReg: manager.ModelManager;
-    let testMeta: IModelMeta<TestModel>;
-    let testMeta2: IModelMeta<TestModel>;
+    let testMeta: Partial<IModelMeta<TestModel>>;
+    let testMeta2: Partial<IModelMeta<TestModel>>;
     let testBackend: IBackend;
 
     beforeEach(() => {
@@ -225,7 +225,7 @@ describe('ModelManager', () => {
 
         it('throws an error when backendName is not specified', () => {
             expect(() => {
-                testReg.registerBackend(undefined, undefined);
+                testReg.registerBackend(undefined as any, undefined as any);
             }).to.throw('you must specify a name');
         });
 
@@ -252,7 +252,7 @@ describe('ModelManager', () => {
 
         it('throws an error if backendName not specified', () => {
             expect(() => {
-                testReg.getBackend(undefined);
+                testReg.getBackend(undefined as any);
             }).to.throw('you must specify the name of the backend to get');
         });
 
