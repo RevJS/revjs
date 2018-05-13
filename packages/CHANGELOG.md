@@ -3,6 +3,12 @@
 
 ### 0.17.0 - 
 
+**`General`**
+
+* Upgraded to latest devDependencies
+* Added support for TypeScript `strict` mode
+* Added seperate `Params` interfaces for `IBackend` methods
+
 **`rev-ui-materialui`**
 
 * Upgrade to `material-ui@1.0.0-beta.41` 
