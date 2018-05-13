@@ -88,6 +88,7 @@ export function removeTests(backendName: string, config: IBackendTestConfig) {
                 expect(res.meta.totalCount).to.equal(2);  // total removed
 
                 const readRes = await manager.read(TestModel, { orderBy: ['id'] });
+                readRes.results = readRes.results!;
                 expect(readRes.results[0].id).to.equal(testData[0].id);
                 expect(readRes.results[1].id).to.equal(testData[1].id);
                 expect(readRes.results[2].id).to.equal(testData[4].id);
@@ -95,7 +96,7 @@ export function removeTests(backendName: string, config: IBackendTestConfig) {
 
             it('throws an error if where clause is not provided', () => {
                 let model = new TestModel();
-                return backend.remove(manager, model, { where: null }, removeResult)
+                return backend.remove(manager, model, { where: undefined }, removeResult)
                     .then(() => { throw new Error('expected to reject'); })
                     .catch((err) => {
                         expect(err.message).to.contain('remove() requires the \'where\' option');

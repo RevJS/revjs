@@ -238,8 +238,8 @@ export class InMemoryBackend implements IBackend {
             totalCount: result.results.length
         });
         result.results = result.results.slice(
-            result.meta!.offset,
-            result.meta!.offset + result.meta!.limit);
+            result.meta.offset,
+            result.meta.offset + result.meta.limit);
 
         return result;
     }

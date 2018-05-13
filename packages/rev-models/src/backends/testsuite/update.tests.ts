@@ -76,6 +76,7 @@ export function updateTests(backendName: string, config: IBackendTestConfig) {
                 expect(res.meta.totalCount).to.equal(testData.length);
 
                 const readRes = await manager.read(TestModel);
+                readRes.results = readRes.results!;
                 expect(readRes.results[0].name).to.equal(model.name);
                 expect(readRes.results[1].name).to.equal(model.name);
                 expect(readRes.results[2].name).to.equal(model.name);
@@ -101,6 +102,7 @@ export function updateTests(backendName: string, config: IBackendTestConfig) {
                 expect(res.meta.totalCount).to.equal(2);
 
                 const readRes = await manager.read(TestModel, { orderBy: ['id'] });
+                readRes.results = readRes.results!;
                 expect(readRes.results[0].name).to.equal(testData[0].name);
                 expect(readRes.results[1].name).to.equal(model.name);
                 expect(readRes.results[2].name).to.equal(model.name);
@@ -131,6 +133,7 @@ export function updateTests(backendName: string, config: IBackendTestConfig) {
                 expect(res.meta.totalCount).to.equal(1);
 
                 const readRes = await manager.read(TestModel, { where: { id: 2 } });
+                readRes.results = readRes.results!;
                 expect(readRes.results[0].id).to.equal(testData[2].id);
                 expect(readRes.results[0].name).to.equal(testData[2].name);
                 expect(readRes.results[0].gender).to.equal(testData[2].gender);

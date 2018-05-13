@@ -121,7 +121,7 @@ export function readWithRelatedModelTests(backendName: string, config: IBackendT
                     .then((res) => {
                         expect(res.success).to.be.true;
                         expect(res.result).to.be.undefined;
-                        expect(res.results[0]).to.deep.equal({
+                        expect(res.results![0]).to.deep.equal({
                             id: 6,
                             name: 'Kim Jong Fail',
                             city: null

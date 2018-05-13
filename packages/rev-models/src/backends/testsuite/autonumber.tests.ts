@@ -45,10 +45,10 @@ export function autoNumberTests(backendName: string, config: IBackendTestConfig)
             const res2 = await backend.create(manager, model2, DEFAULT_CREATE_OPTIONS, createResult2);
 
             expect(res1.result).to.be.instanceof(TestAutoNumberModel);
-            expect(res1.result.id).to.be.a('number');
+            expect(res1.result!.id).to.be.a('number');
             expect(res2.result).to.be.instanceof(TestAutoNumberModel);
-            expect(res2.result.id).to.be.a('number');
-            expect(res2.result.id).to.equal(res1.result.id + 1);
+            expect(res2.result!.id).to.be.a('number');
+            expect(res2.result!.id).to.equal(res1.result!.id + 1);
         });
 
         it('create() - values provided for AutoNumberField are stored', async () => {
@@ -65,9 +65,9 @@ export function autoNumberTests(backendName: string, config: IBackendTestConfig)
                 backend.create(manager, model2, DEFAULT_CREATE_OPTIONS, createResult2)
             ]);
             expect(res[0].result).to.be.instanceof(TestAutoNumberModel);
-            expect(res[0].result.id).to.equal(99);
+            expect(res[0].result!.id).to.equal(99);
             expect(res[1].result).to.be.instanceof(TestAutoNumberModel);
-            expect(res[1].result.id).to.equal(227);
+            expect(res[1].result!.id).to.equal(227);
         });
 
         it('update() - values provided for AutoNumberField are stored', async () => {
@@ -95,7 +95,7 @@ export function autoNumberTests(backendName: string, config: IBackendTestConfig)
 
             const updateReadRes = await manager.read(TestAutoNumberModel, { where: { id: 10 }});
             expect(updateReadRes.meta.totalCount).to.equal(1);
-            expect(updateReadRes.results[0].name).to.equal('Frank');
+            expect(updateReadRes.results![0].name).to.equal('Frank');
 
         });
 

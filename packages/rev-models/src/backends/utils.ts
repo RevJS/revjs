@@ -98,7 +98,7 @@ export async function getRelatedModelInstances(manager: IModelManager, meta: IMo
     let results = await Promise.all(foreignKeyPromises);
     foreignKeyFields.forEach((fieldName, i) => {
         relatedModelInstances[fieldName] = {};
-        for (let instance of results[i].results) {
+        for (let instance of results[i].results!) {
             relatedModelInstances[fieldName][instance[foreignKeyPKFields[i]]] = instance;
         }
     });
@@ -146,7 +146,7 @@ export async function getRelatedModelListInstances(manager: IModelManager, meta:
     let results = await Promise.all(modelListFieldPromises);
     modelListFields.forEach((fieldName, i) => {
         relatedModelListInstances[fieldName] = {};
-        results[i].results.forEach((instance, resultIdx) => {
+        results[i].results!.forEach((instance, resultIdx) => {
             let fkValue = results[i].meta.rawValues[resultIdx][modelListFieldFKs[i]];
             if (!relatedModelListInstances[fieldName][fkValue]) {
                 relatedModelListInstances[fieldName][fkValue] = [];

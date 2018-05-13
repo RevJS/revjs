@@ -34,7 +34,7 @@ describe('rev.backends.inmemory', () => {
                 .then(() => {
                     expect(readResult.result).to.be.undefined;
                     expect(readResult.results).to.be.instanceOf(Array);
-                    expect(readResult.results.length).to.equal(0);
+                    expect(readResult.results!.length).to.equal(0);
                 });
         });
 
@@ -46,8 +46,8 @@ describe('rev.backends.inmemory', () => {
             await backend.load(manager, TestModel, testData);
             const res = await backend.read(manager, TestModel, getReadOpts(), readResult);
             expect(res.results).to.have.length(testData.length);
-            expect(res.results[0].id).to.deep.equal(testData[0].id);
-            expect(res.results[4].id).to.deep.equal(testData[4].id);
+            expect(res.results![0].id).to.deep.equal(testData[0].id);
+            expect(res.results![4].id).to.deep.equal(testData[4].id);
         });
 
         it('rejects if passed data is not an array of objects', () => {
