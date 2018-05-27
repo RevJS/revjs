@@ -4,7 +4,7 @@
   "description": "React UI base components for RevJS",
   "main": "lib/index.js",
   "scripts": {
-    "build": "run-bin tslint -p . && rm -r lib/ && run-bin tsc",
+    "build": "run-bin tslint -p . && rm -rf lib/ && run-bin tsc",
     "build-docs": "run-bin typedoc --options ./typedoc.js ./src",
     "build-watch": "run-bin tsc --watch",
     "test": "run-bin mocha -r ./testsetup -r ts-node/register --recursive \"./src/**/__tests__/**/*.ts{,x}\"",

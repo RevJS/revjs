@@ -4,7 +4,7 @@
   "description": "RevJS Isomorphic Data Library - API Library",
   "main": "lib/index.js",
   "scripts": {
-    "build": "run-bin tslint -p . && rm -r lib/ && run-bin tsc",
+    "build": "run-bin tslint -p . && rm -rf lib/ && run-bin tsc",
     "build-docs": "echo DOCS_TODO",
     "build-watch": "run-bin tsc --watch",
     "test": "run-bin mocha -r ts-node/register --recursive \"./src/**/__tests__/**/*\"",
