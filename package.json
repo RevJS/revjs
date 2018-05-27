@@ -13,7 +13,7 @@
     "updated": "lerna updated",
     "publish": "npm run build && npm run test && lerna publish",
     "publish-nobuild": "lerna publish",
-    "clean": "lerna clean"
+    "clean-modules": "lerna clean"
   },
   "devDependencies": {
     "@types/chai": "4.1.3",
