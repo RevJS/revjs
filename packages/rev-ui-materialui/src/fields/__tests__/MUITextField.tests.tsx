@@ -5,12 +5,12 @@ import * as sinon from 'sinon';
 import { mount, ReactWrapper } from 'enzyme';
 
 import { MUITextField } from '../MUITextField';
-import Grid from 'material-ui/Grid';
+import Grid from '@material-ui/core/Grid';
 import { IFieldComponentProps } from 'rev-ui/lib/fields/Field';
 import { fields } from 'rev-models';
-import InputLabel from 'material-ui/Input/InputLabel';
-import Input from 'material-ui/Input';
-import { FormHelperText } from 'material-ui/Form';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 describe('MUITextField', () => {
 

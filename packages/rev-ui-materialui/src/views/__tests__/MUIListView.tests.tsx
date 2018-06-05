@@ -8,9 +8,9 @@ import { ModelManager, IModelMeta } from 'rev-models';
 import * as models from '../../__fixtures__/models';
 import { getData, IModelTestData } from '../../__fixtures__/modeldata';
 
-import Table from 'material-ui/Table';
-import { getClasses } from 'material-ui/test-utils';
-import { CircularProgress } from 'material-ui/Progress';
+import Table from '@material-ui/core/Table';
+import { getClasses } from '@material-ui/core/test-utils';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { MUIListView } from '../MUIListView';
 import { IListViewComponentProps } from 'rev-ui/lib/views/ListView';

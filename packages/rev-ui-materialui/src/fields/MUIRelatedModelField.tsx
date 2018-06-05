@@ -1,11 +1,12 @@
 
 import * as React from 'react';
 
-import Grid from 'material-ui/Grid';
-import { FormControl, FormHelperText } from 'material-ui/Form';
-import { InputLabel } from 'material-ui/Input';
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
+import Grid from '@material-ui/core/Grid';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import { IFieldComponentProps } from 'rev-ui/lib/fields/Field';
 import { withModelManager, IModelManagerProp } from 'rev-ui';

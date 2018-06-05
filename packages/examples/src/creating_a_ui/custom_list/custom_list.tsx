@@ -6,13 +6,15 @@ import { ModelApiBackend } from 'rev-api-client';
 import { ModelProvider, ListView, IListViewComponentProps } from 'rev-ui';
 import * as models from '../models';
 
-import CssBaseline from 'material-ui/CssBaseline';
-import AppBar from 'material-ui/AppBar';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
-import Grid from 'material-ui/Grid';
-import Card, { CardHeader, CardContent } from 'material-ui/Card';
-import Avatar from 'material-ui/Avatar';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
+import Avatar from '@material-ui/core/Avatar';
 
 import { registerComponents } from 'rev-ui-materialui';
 import { getColour } from '../utils';

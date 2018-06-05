@@ -5,7 +5,7 @@ import { mount, ReactWrapper } from 'enzyme';
 
 import { MUIDetailView } from '../MUIDetailView';
 import { IDetailViewProps } from 'rev-ui/lib/views/DetailView';
-import Grid from 'material-ui/Grid';
+import Grid from '@material-ui/core/Grid';
 
 describe('MUIDetailView', () => {
 

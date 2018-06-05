@@ -5,12 +5,12 @@ import * as sinon from 'sinon';
 import { mount, ReactWrapper } from 'enzyme';
 
 import { MUIBooleanField } from '../MUIBooleanField';
-import Grid from 'material-ui/Grid';
+import Grid from '@material-ui/core/Grid';
 import { IFieldComponentProps } from 'rev-ui/lib/fields/Field';
 import { fields } from 'rev-models';
-import Checkbox from 'material-ui/Checkbox';
-import { FormHelperText } from 'material-ui/Form';
-import FormControlLabel from 'material-ui/Form/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 describe('MUIBooleanField', () => {
 

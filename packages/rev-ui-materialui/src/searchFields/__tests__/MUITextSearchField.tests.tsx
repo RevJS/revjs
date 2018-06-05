@@ -5,11 +5,11 @@ import * as sinon from 'sinon';
 import { mount, ReactWrapper } from 'enzyme';
 
 import { MUITextSearchField } from '../MUITextSearchField';
-import Grid from 'material-ui/Grid';
+import Grid from '@material-ui/core/Grid';
 import { ISearchFieldComponentProps } from 'rev-ui/lib/fields/SearchField';
 import { fields } from 'rev-models';
-import InputLabel from 'material-ui/Input/InputLabel';
-import Input from 'material-ui/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
 
 describe('MUITextSearchField', () => {
 

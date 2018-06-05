@@ -6,11 +6,11 @@ import { ModelApiBackend } from 'rev-api-client';
 import { ModelProvider, DetailView, Field, SaveAction } from 'rev-ui';
 import * as models from '../models';
 
-import CssBaseline from 'material-ui/CssBaseline';
-import AppBar from 'material-ui/AppBar';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
-import Card from 'material-ui/Card';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Card from '@material-ui/core/Card';
 
 import { registerComponents } from 'rev-ui-materialui';
 registerComponents();

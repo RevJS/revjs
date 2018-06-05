@@ -1,9 +1,10 @@
 
 import * as React from 'react';
 
-import Grid from 'material-ui/Grid';
-import { FormControl } from 'material-ui/Form';
-import Input, { InputLabel } from 'material-ui/Input';
+import Grid from '@material-ui/core/Grid';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
 
 import { ISearchFieldComponentProps } from 'rev-ui/lib/fields/SearchField';
 import { getGridWidthProps } from '../fields/utils';

@@ -5,12 +5,12 @@ import * as sinon from 'sinon';
 import { mount, ReactWrapper } from 'enzyme';
 
 import { MUISelectField } from '../MUISelectField';
-import Grid from 'material-ui/Grid';
+import Grid from '@material-ui/core/Grid';
 import { IFieldComponentProps } from 'rev-ui/lib/fields/Field';
 import { fields } from 'rev-models';
-import InputLabel from 'material-ui/Input/InputLabel';
-import Select from 'material-ui/Select';
-import { FormHelperText } from 'material-ui/Form';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 describe('MUISelectField', () => {
 
