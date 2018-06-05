@@ -1,6 +1,12 @@
 
 ## RevJS Module Releases
 
+### 0.18.0 - 6th June 2018
+
+* Build fix: clean lib/** before building
+* Export IModelApiManager interface from `rev-api` root
+* Updat to @material-ui/core and @material-ui/icons @ 1.x
+
 ### 0.17.0 - 13th May 2018
 
 * Upgraded to latest devDependencies
