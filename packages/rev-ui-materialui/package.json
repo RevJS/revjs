@@ -1,6 +1,6 @@
 {
   "name": "rev-ui-materialui",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "React MaterialUI components for RevJS",
   "main": "lib/index.js",
   "scripts": {
@@ -21,13 +21,13 @@
   },
   "typings": "lib/index.d.ts",
   "dependencies": {
-    "@material-ui/icons": "^1.1.0",
     "@material-ui/core": "^1.2.0",
+    "@material-ui/icons": "^1.1.0",
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "rev-models": "^0.17.0",
-    "rev-ui": "^0.17.0",
+    "rev-models": "^0.18.0",
+    "rev-ui": "^0.18.0",
     "tslib": "1.x"
   },
   "devDependencies": {
