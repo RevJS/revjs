@@ -14,6 +14,9 @@ export interface IActionComponentProps extends IStandardComponentProps {
     /** Whether the component should be disabled */
     disabled: boolean;
 
+    /** Whether the component is the default action */
+    defaultAction: boolean;
+
     /** The method to call to trigger the action */
     doAction(): Promise<void>;
 

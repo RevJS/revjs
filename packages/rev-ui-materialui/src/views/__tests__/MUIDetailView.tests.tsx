@@ -43,8 +43,8 @@ describe('MUIDetailView', () => {
         expect(grid.find(MockComponent)).to.have.length(1);
     });
 
-    it('style is applied to outer div', () => {
-        const outerDiv = wrapper.find('div').at(0);
+    it('style is applied to outer form', () => {
+        const outerDiv = wrapper.find('form');
         expect(outerDiv.prop('style')).to.deep.equal({marginTop: 10});
     });
 

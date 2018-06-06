@@ -137,8 +137,38 @@ describe('PostAction', () => {
             expect(receivedProps.disabled).to.be.false;
         });
 
+        it('defaultAction = false', () => {
+            expect(receivedProps.defaultAction).to.be.false;
+        });
+
         it('passes through doAction() function', () => {
             expect(receivedProps.doAction).to.be.a('function');
+        });
+
+    });
+
+    describe('IActionComponentProps - defaultAction', () => {
+        let modelManager: rev.ModelManager;
+
+        before(() => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="User">
+                        <PostAction
+                            label="Submit"
+                            url="/api"
+                            defaultAction={true}
+                            component={SpyComponent}
+                        />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
+
+        it('defaultAction = true', () => {
+            expect(receivedProps.defaultAction).to.be.true;
         });
 
     });

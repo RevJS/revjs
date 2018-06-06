@@ -1,25 +1,40 @@
 
 import * as React from 'react';
 
-import { withStyles, StyledComponentProps } from '@material-ui/core/styles';
+import { withStyles, WithStyles } from '@material-ui/core/styles';
 
 import Grid from '@material-ui/core/Grid';
 import { IDetailViewProps } from 'rev-ui/lib/views/DetailView';
 
-const styles = withStyles({
+const styles = {
     root: {
         width: '100%'
     }
-});
+};
 
-type IMUIDetailViewProps = IDetailViewProps & StyledComponentProps;
+type IMUIDetailViewProps = IDetailViewProps & WithStyles<typeof styles>;
 
-export const MUIDetailView = styles<IMUIDetailViewProps>((props) => {
+export const MUIDetailView: React.ComponentType<any> = withStyles(styles)(
+    class extends React.Component<IMUIDetailViewProps> {
 
-    return (
-        <Grid container spacing={8} style={props.style}>
-            {props.children}
-        </Grid>
-    );
+        constructor(props: IMUIDetailViewProps) {
+            super(props);
+            this.handleSubmit.bind(this);
+        }
 
-});
+        handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+            e.preventDefault();
+        }
+
+        render() {
+            return (
+                <form onSubmit={this.handleSubmit} style={this.props.style}>
+                    <Grid container spacing={8}>
+                        {this.props.children}
+                    </Grid>
+                </form>
+            );
+        }
+
+    }
+);

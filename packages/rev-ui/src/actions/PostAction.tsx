@@ -28,6 +28,9 @@ export interface IPostActionProps extends IStandardComponentProps {
     /** HTTP Method to use when sending the data */
     httpMethod?: 'post' | 'put';
 
+    /** Set to true to make this the default action for the DetailView */
+    defaultAction?: boolean;
+
     /** This method is called when a response is received from the server */
     onResponse?: (response: Response) => void;
 
@@ -116,6 +119,7 @@ class PostActionC extends React.Component<IPostActionProps & IDetailViewContextP
         const cProps: IActionComponentProps = {
             label: this.props.label || 'Submit',
             disabled,
+            defaultAction: this.props.defaultAction ? true : false,
             doAction: () => this.doAction(),
             children: this.props.children
         };

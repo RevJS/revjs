@@ -18,6 +18,9 @@ export interface IRemoveActionProps extends IStandardComponentProps {
     /** Action label (default = "Delete") */
     label?: string;
 
+    /** Set to true to make this the default action for the DetailView */
+    defaultAction?: boolean;
+
     /** This method is called when the operation is successful */
     onSuccess?: (result: IModelOperationResult<any, any>) => void;
 
@@ -88,6 +91,7 @@ class RemoveActionC extends React.Component<IRemoveActionProps & IDetailViewCont
         const cProps: IActionComponentProps = {
             label: this.props.label || 'Delete',
             disabled,
+            defaultAction: this.props.defaultAction ? true : false,
             doAction: () => this.doAction(),
             children: this.props.children
         };

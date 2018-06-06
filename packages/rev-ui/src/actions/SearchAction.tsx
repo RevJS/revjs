@@ -17,6 +17,9 @@ export interface ISearchActionProps extends IStandardComponentProps {
     /** Action label (default = "Search") */
     label?: string;
 
+    /** Set to true to make this the default action for the DetailView */
+    defaultAction?: boolean;
+
     /**
      * If you provide a React component to this property, it will be used
      * instead of the component configured in [[UI_COMPONENTS]]. It will
@@ -43,6 +46,7 @@ class SearchActionC extends React.Component<ISearchActionProps & ISearchViewCont
         const cProps: IActionComponentProps = {
             label: this.props.label || 'Search',
             disabled: false,
+            defaultAction: this.props.defaultAction ? true : false,
             doAction: () => this.doAction(),
             children: this.props.children
         };
