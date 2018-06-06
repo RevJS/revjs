@@ -1,6 +1,12 @@
 
 ## RevJS Module Releases
 
+### 0.18.1 - TBC
+
+**`rev-ui`**
+
+* Add a `defaultAction` prop for `<PostAction />`, `<SaveAction />`, etc. components
+
 ### 0.18.0 - 6th June 2018
 
 * Build fix: clean lib/** before building
