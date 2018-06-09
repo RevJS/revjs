@@ -37,7 +37,7 @@ export const MUISelectField: React.StatelessComponent<IFieldComponentProps> = (p
                 </InputLabel>
                 <Select
                     value={props.value || ''}
-                    onChange={(event) => props.onChange(event.target.value)}
+                    onChange={(event) => props.onChange(event.target.value || null)}
                     inputProps={{
                         id: fieldId
                     }}

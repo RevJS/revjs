@@ -42,6 +42,9 @@ describe('MUISelectField', () => {
         );
     }
 
+    // TODO: Test onChange function
+    // it('should set value to null when empty option is selected', () => ...)
+
     describe('basic rendering', () => {
 
         before(() => {
