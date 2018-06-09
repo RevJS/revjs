@@ -272,6 +272,18 @@ describe('ModelManager', () => {
             testReg.register(TestModel2, testMeta2);
         });
 
+        it('throws if specified model is undefined', () => {
+            expect(() => {
+                testReg.isNew(undefined as any);
+            }).to.throw('Specified model is not a Model instance');
+        });
+
+        it('throws if specified model is null', () => {
+            expect(() => {
+                testReg.isNew(null as any);
+            }).to.throw('Specified model is not a Model instance');
+        });
+
         it('throws if specified model does not have a primaryKey field', () => {
             const model = new TestModel2();
             expect(() => {

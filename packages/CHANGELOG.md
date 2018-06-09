@@ -1,7 +1,11 @@
 
 ## RevJS Module Releases
 
-### 0.18.1 - TBC
+### 0.19.0 - TBC
+
+**`rev-models`**
+
+* `ModelManager.isNew()` throw better error when model is null or undefined
 
 **`rev-ui`**
 

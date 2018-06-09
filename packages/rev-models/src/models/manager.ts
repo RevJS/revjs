@@ -207,6 +207,9 @@ export class ModelManager implements IModelManager {
      * @param model An instance of a registered model to check
      */
     isNew<T extends IModel>(model: T) {
+        if (model === null || typeof model != 'object') {
+            throw new Error('Specified model is not a Model instance');
+        }
         const meta = this.getModelMeta(model);
         if (!meta.primaryKey) {
             throw new Error('ModelManagerError: isNew() can only be used with models that have a primaryKey field');
