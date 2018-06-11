@@ -7,9 +7,9 @@ import { ModelManager } from '../../models/manager';
 import { IModelMeta } from '../types';
 
 class TestModel {
-    id: number = 1;
-    name: string = 'A Test Model';
-    date: string = '2018-01-02';
+    id: number;
+    name: string;
+    date: string;
 }
 
 class TestModel2 {}

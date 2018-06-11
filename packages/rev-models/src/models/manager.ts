@@ -1,7 +1,7 @@
 
 import { initialiseMeta } from '../models/meta';
 import { IModel, ModelCtor, IModelMeta } from '../models/types';
-import { checkIsModelConstructor } from '../models/utils';
+import { checkIsValidModelConstructor } from '../models/utils';
 import { IBackend } from '../backends/backend';
 import { IModelOperation } from '../operations/operation';
 import { create } from '../operations/create';
@@ -89,7 +89,7 @@ export class ModelManager implements IModelManager {
     register<T extends IModel>(model: new(...args: any[]) => T, meta?: Partial<IModelMeta<T>>) {
 
         // Check model constructor
-        checkIsModelConstructor(model);
+        checkIsValidModelConstructor(model);
 
         // Initialise model metadata
         let modelMeta = initialiseMeta(this, model, meta);

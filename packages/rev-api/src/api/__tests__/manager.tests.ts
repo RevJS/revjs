@@ -12,11 +12,11 @@ const testMethodMeta = { modelData: false };
 class TestModel {
 
     @rev.IntegerField()
-        id: number = 1;
+        id: number;
     @rev.TextField()
-        name: string = 'A Test Model';
+        name: string;
     @rev.DateField()
-        date: Date = new Date();
+        date: Date;
 
     @ApiMethod(testMethodMeta)
     testMethod() {
