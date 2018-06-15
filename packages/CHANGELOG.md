@@ -1,7 +1,7 @@
 
 ## RevJS Module Releases
 
-### 0.19.0 - TBC
+### 0.19.0 - 15th June 2018
 
 **`rev-models`**
 
