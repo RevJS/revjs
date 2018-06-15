@@ -38,6 +38,20 @@ export interface IValidationContext {
 }
 
 /**
+ * The IDefaultsContext interface represents the object passed to the
+ * [[IModel.defaults]] method
+ *
+ * This interface will most likely be extended with additional contextual
+ * information in the future
+ */
+export interface IDefaultsContext {
+    /**
+     * The associated ModelManager
+     */
+    manager: IModelManager;
+}
+
+/**
  * The IModel interface defines the standard methods that RevJS models can
  * implement.
  *
@@ -51,17 +65,23 @@ export interface IValidationContext {
 export interface IModel {
     [fieldName: string]: any;
     /**
+     * You should use this method (and not the constructor) to set any default
+     * field values by assigning them to `this`. You can use the objects
+     * passed in the [[IDefaultsContext]] to help determine what defaults to set.
+     */
+    defaults?(ctx: IDefaultsContext): void;
+    /**
      * You can define any synchronous model validation logic in this method.
      * Use the `vc.result` ([[ModelValidationResult]]) object to record any
      * validation errors.
      */
-    validate?(vc: IValidationContext): void;
+    validate?(ctx: IValidationContext): void;
     /**
      * You can define any asynchronous model validation logic in this method.
      * This method must return a promise. Use the `vc.result`
      * ([[ModelValidationResult]]) object to record any validation errors.
      */
-    validateAsync?(vc: IValidationContext): Promise<void>;
+    validateAsync?(ctx: IValidationContext): Promise<void>;
 }
 
 /**
