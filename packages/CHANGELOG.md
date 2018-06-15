@@ -13,11 +13,11 @@
 **`rev-ui`**
 
 * Add a `defaultAction` prop for `<PostAction />`, `<SaveAction />`, etc. components
+* `<DetailView />` now applies default values set in `IModel.defaults()`
 
 **`rev-ui-materialui`**
 
 * MUISelectField - store `null` instead of empty string when empty option is selected
-
 
 ### 0.18.0 - 6th June 2018
 

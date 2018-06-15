@@ -141,7 +141,7 @@ export class DetailView extends React.Component<IDetailViewProps> {
             this.loadModel();
         }
         else {
-            this.setModel(new modelMeta.ctor());
+            this.setModel(this.context.modelManager.getNew(modelMeta.ctor));
         }
     }
 
@@ -236,7 +236,7 @@ export class DetailView extends React.Component<IDetailViewProps> {
         else {
             result = await ctx.manager.remove(ctx.model!);
         }
-        this.setModel(new ctx.modelMeta.ctor());
+        this.setModel(ctx.manager.getNew(ctx.modelMeta.ctor));
         this.forceUpdate();
         return result;
     }

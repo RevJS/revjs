@@ -73,6 +73,10 @@ describe('DetailView', () => {
         class ModelNoPK {
             @rev.TextField()
                 name: string;
+
+            defaults() {
+                this.name = 'bob';
+            }
         }
 
         before(() => {
@@ -103,6 +107,10 @@ describe('DetailView', () => {
         it('a new model instance is created', () => {
             expect(receivedDetailViewContext.model).not.to.be.null;
             expect(receivedDetailViewContext.model).to.be.instanceof(ModelNoPK);
+        });
+
+        it('model default values are applied', () => {
+            expect(receivedDetailViewContext.model!.name).to.equal('bob');
         });
 
         it('modelMeta is set', () => {
