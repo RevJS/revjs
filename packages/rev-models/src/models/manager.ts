@@ -217,6 +217,23 @@ export class ModelManager implements IModelManager {
         return !isSet(model[meta.primaryKey]);
     }
 
+    /**
+     * Returns a new instance of the passed model, including any default values
+     * defined in its `defaults()` function
+     *
+     * @param model The Class constructor if the model to instantiate
+     */
+    getNew<T extends IModel>(model: new() => T) {
+        this.assertModelClassIsRegistered(model);
+        const instance = new model();
+        if (typeof instance.defaults == 'function') {
+            instance.defaults({
+                manager: this
+            });
+        }
+        return instance;
+    }
+
     /* Model CRUD Functions */
 
     /**

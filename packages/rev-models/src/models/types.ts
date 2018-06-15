@@ -241,6 +241,7 @@ export interface IModelManager {
     getBackendNames: () => string[];
 
     isNew: <T extends IModel>(model: T) => boolean;
+    getNew: <T extends IModel>(model: new() => T) => T;
 
     create: <T extends IModel>(model: T, options?: ICreateOptions) => Promise<IModelOperationResult<T, ICreateMeta>>;
     update: <T extends IModel>(model: T, options?: IUpdateOptions) => Promise<IModelOperationResult<T, IUpdateMeta>>;

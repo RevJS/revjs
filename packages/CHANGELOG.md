@@ -8,6 +8,7 @@
 * `ModelManager.isNew()` throw better error when model is null or undefined
 * `ModelManager.register()` now does a test instantiation of the model, and throws an error if the constructor sets any default values
 * Added `IModel.defaults()` method, to be used for setting default field values
+* Added `ModelManager.getNew()` method, for returning models with default values applied
 
 **`rev-ui`**
 
