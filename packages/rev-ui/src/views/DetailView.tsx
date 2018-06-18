@@ -8,6 +8,7 @@ import { isSet } from 'rev-models/lib/utils';
 import { UI_COMPONENTS } from '../config';
 import { IModelOperationResult } from 'rev-models/lib/operations/operationresult';
 import { IStandardComponentProps } from '../utils/props';
+import { RelatedModelField } from 'rev-models/lib/fields';
 
 /**
  * A `<DetailView />` renders a single model record. When used in conjunction
@@ -33,6 +34,9 @@ export interface IDetailViewProps extends IStandardComponentProps {
      * load. To create a new, empty record, leave this property unset.
      */
     primaryKeyValue?: string | null;
+
+    /** A list of related models to load. Only `RelatedModel` fields are supported. */
+    related?: string[];
 
     /**
      * If you provide a React component to this property, it will be used
@@ -65,6 +69,9 @@ export interface IDetailViewContext<T extends IModel = IModel> {
 
     /** The current model's metadata */
     modelMeta: IModelMeta<T>;
+
+    /** Metadata for any related models being managed by this DetailView */
+    relatedModelMeta: { [fieldName: string]: IModelMeta<any> };
 
     /** The results of the most recent model validation */
     validation: IModelValidationResult | null;
@@ -121,12 +128,27 @@ export class DetailView extends React.Component<IDetailViewProps> {
             throw new Error('DetailView Error: must be nested inside a ModelProvider.');
         }
         const modelMeta = this.context.modelManager.getModelMeta(this.props.model);
+        const relatedModelMeta: { [fieldName: string]: IModelMeta<any> } = {};
+
+        if (this.props.related) {
+            if (!(this.props.related instanceof Array)) {
+                throw new Error('DetailView Error: related prop must be an array of field names');
+            }
+            for (const fieldName of this.props.related) {
+                const field = modelMeta.fieldsByName[fieldName];
+                if (!(field instanceof RelatedModelField)) {
+                    throw new Error(`DetailView Error: invalid RelatedModel field name '${fieldName}' for model '${modelMeta.name}'`);
+                }
+                relatedModelMeta[fieldName] = this.context.modelManager.getModelMeta(field.options.model);
+            }
+        }
 
         this.detailViewContext = {
             loadState: 'NONE',
             manager: this.context.modelManager,
             model: null,
             modelMeta,
+            relatedModelMeta,
             validation: null,
             dirty: false,
             setLoadState: (state) => this.setLoadState(state),
@@ -141,7 +163,12 @@ export class DetailView extends React.Component<IDetailViewProps> {
             this.loadModel();
         }
         else {
-            this.setModel(this.context.modelManager.getNew(modelMeta.ctor));
+            const model = this.context.modelManager.getNew(modelMeta.ctor);
+            for (const fieldName in relatedModelMeta) {
+                const relMeta = relatedModelMeta[fieldName];
+                model[fieldName] = this.context.modelManager.getNew(relMeta.ctor);
+            }
+            this.setModel(model);
         }
     }
 
