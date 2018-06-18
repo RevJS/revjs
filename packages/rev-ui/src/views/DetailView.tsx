@@ -109,6 +109,11 @@ export interface IDetailViewContextProp<T extends IModel = IModel> {
     detailViewContext: IDetailViewContext<T>;
 }
 
+/** @private */
+export const RELATED_MODEL_VALIDATION_ERROR_MSG = 'Related model failed validation';
+/** @private */
+export const RELATED_MODEL_VALIDATION_ERROR_CODE = 'related_model_failed_validation';
+
 /**
  * See [[IDetailViewProps]]
  * @private
@@ -233,22 +238,27 @@ export class DetailView extends React.Component<IDetailViewProps> {
             throw new Error(`DetailView Error: Cannot save data for model '${ctx.modelMeta.name}' because it doesn't have a primaryKey field defined.`);
         }
         let result: IModelOperationResult<any, any>;
+        let relatedResults: {
+            [fieldName: string]: IModelOperationResult<any, any>;
+        } = {};
         if (this.props.related) {
             for (const fieldName of this.props.related) {
                 try {
                     if (ctx.manager.isNew(ctx.model![fieldName])) {
-                        result = await ctx.manager.create(ctx.model![fieldName]);
-                        ctx.model![fieldName] = result.result;
+                        relatedResults[fieldName] = await ctx.manager.create(ctx.model![fieldName]);
+                        ctx.model![fieldName] = relatedResults[fieldName].result;
                     }
                     else {
-                        result = await ctx.manager.update(ctx.model![fieldName]);
+                        relatedResults[fieldName] = await ctx.manager.update(ctx.model![fieldName]);
                     }
                 }
                 catch (e) {
                     if (e instanceof ValidationError) {
                         ctx.validation = new ModelValidationResult();
                         (ctx.validation as ModelValidationResult).addFieldError(
-                            fieldName, 'Related model failed validation', 'related_model_failed_validation',
+                            fieldName,
+                            RELATED_MODEL_VALIDATION_ERROR_MSG,
+                            RELATED_MODEL_VALIDATION_ERROR_CODE,
                             { validation: e.validation }
                         );
                         this.forceUpdate();
@@ -274,6 +284,7 @@ export class DetailView extends React.Component<IDetailViewProps> {
             }
             throw e;
         }
+        result.meta['relatedResults'] = relatedResults;
         ctx.validation = result.validation!;
         this.forceUpdate();
         return result;

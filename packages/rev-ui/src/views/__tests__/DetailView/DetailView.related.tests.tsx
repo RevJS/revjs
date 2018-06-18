@@ -8,10 +8,14 @@ import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount /*, ReactWrapper */ } from 'enzyme';
 import { ModelProvider } from '../../../provider/ModelProvider';
-import { DetailView, IDetailViewContext /*, IDetailViewProps */ } from '../../DetailView';
+import {
+    DetailView, IDetailViewContext, /*, IDetailViewProps */
+    RELATED_MODEL_VALIDATION_ERROR_MSG,
+    RELATED_MODEL_VALIDATION_ERROR_CODE
+} from '../../DetailView';
 import { sleep } from '../../../__test_utils__/utils';
 // import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
-// import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
+import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
 
 describe('DetailView with RelatedModel field data', () => {
 
@@ -199,114 +203,115 @@ describe('DetailView with RelatedModel field data', () => {
     // });
 
     describe('save()', () => {
-        it('needs tests', () => {
-            expect(false).to.be.true;
+        let modelManager: rev.ModelManager;
+
+        beforeEach(() => {
+            resetTestView();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post" related={['user']}>
+                        <TestView />
+                    </DetailView>
+                </ModelProvider>
+            );
         });
+
+        it('detailViewContext.validation is null by default', () => {
+            expect(receivedDetailViewContext.validation).to.be.null;
+        });
+
+        it('initial render has completed', () => {
+            expect(renderCount).to.equal(1);
+        });
+
+        describe('when related model is not valid', () => {
+
+            it('save() triggers validation of the model, re-renders, and returns validation error', async () => {
+                receivedDetailViewContext.model = new models.Post({
+                    id: 1, title: 'Valid New Post', body: 'Posty Posty...',
+                    user: new models.User()
+                });
+                try {
+                    await receivedDetailViewContext.save();
+                    throw new Error('should have thrown');
+                }
+                catch (e) {
+                    expect(e).to.be.instanceof(rev.ValidationError);
+                    expect(e.result).to.be.instanceof(ModelOperationResult);
+                    const relValidation = e.result.validation;
+                    const ctxValid = receivedDetailViewContext.validation;
+                    expect(ctxValid!.valid).to.be.false;
+                    expect(ctxValid!.fieldErrors).to.have.keys('user');
+                    expect(ctxValid!.fieldErrors['user']).to.have.length(1);
+                    const userError = ctxValid!.fieldErrors['user'][0];
+                    expect(userError.message).to.equal(RELATED_MODEL_VALIDATION_ERROR_MSG);
+                    expect(userError.code).to.equal(RELATED_MODEL_VALIDATION_ERROR_CODE);
+                    expect(userError.validation).to.equal(relValidation);
+                    expect(renderCount).to.equal(2);
+                }
+            });
+
+        });
+
+        describe('when related model is valid, and is a new record', () => {
+
+            it('save() triggers creation of the models, adds ID to the parent model, re-renders, and returns operation results', async () => {
+                receivedDetailViewContext.model = new models.Post({
+                    title: 'Valid New Post', body: 'Posty Posty...',
+                    user: new models.User({ name: 'New User Dude' })
+                });
+                const result = await receivedDetailViewContext.save();
+                expect(result).to.be.instanceof(ModelOperationResult);
+                expect(result.operation.operationName).to.equal('create');
+                expect(result.success).to.be.true;
+                expect(result.result).to.be.instanceof(models.Post);
+                expect(result.result!.id).to.be.a('number');
+                expect(receivedDetailViewContext.model.id).to.be.a('number');
+                expect(receivedDetailViewContext.validation).to.equal(result.validation);
+                const relResult = result.meta['relatedResults'];
+                expect(relResult).to.have.key('user');
+                expect(relResult['user']).to.be.instanceof(ModelOperationResult);
+                expect(relResult['user'].operation.operationName).to.equal('create');
+                expect(relResult['user'].success).to.be.true;
+
+                const createdPostWithUser = await modelManager.read(models.Post, {
+                    where: {
+                        id: result!.result!.id
+                    },
+                    related: ['user']
+                });
+                expect(createdPostWithUser.results![0].user.name).to.equal('New User Dude');
+                expect(renderCount).to.equal(2);
+            });
+
+        });
+
+        describe('when related model is valid, and is an updated record', () => {
+
+            it('save() triggers update of the model, re-renders, and returns operation result', async () => {
+                receivedDetailViewContext.model = new models.Post({
+                    id: 100, title: 'Valid New Post', body: 'Posty Posty...',
+                    user: new models.User({ id: 200, name: 'New Name'})
+                });
+                const result = await receivedDetailViewContext.save();
+                expect(result).to.be.instanceof(ModelOperationResult);
+                expect(result.operation.operationName).to.equal('update');
+                expect(result.operation.where).to.deep.equal({ id: 100 });
+                expect(result.success).to.be.true;
+                expect(receivedDetailViewContext.validation).to.equal(result.validation);
+                const relResult = result.meta['relatedResults'];
+                expect(relResult).to.have.key('user');
+                expect(relResult['user']).to.be.instanceof(ModelOperationResult);
+                expect(relResult['user'].operation.operationName).to.equal('update');
+                expect(relResult['user'].operation.where).to.deep.equal({ id: 200 });
+                expect(relResult['user'].success).to.be.true;
+                expect(renderCount).to.equal(2);
+            });
+
+        });
+
     });
-    //     let modelManager: rev.ModelManager;
-
-    //     beforeEach(() => {
-    //         resetTestView();
-    //         modelManager = models.getModelManager();
-    //         mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post">
-    //                     <TestView />
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //     });
-
-    //     it('save() is passed in detailViewContext', () => {
-    //         expect(receivedDetailViewContext.save).to.be.a('function');
-    //     });
-
-    //     it('detailViewContext.validation is null by default', () => {
-    //         expect(receivedDetailViewContext.validation).to.be.null;
-    //     });
-
-    //     it('initial render has completed', () => {
-    //         expect(renderCount).to.equal(1);
-    //     });
-
-    //     describe('when model has no primary key', () => {
-
-    //         beforeEach(() => {
-    //             const meta = modelManager.getModelMeta(models.Post);
-    //             meta.primaryKey = undefined;
-    //         });
-
-    //         it('save() throws an error and does not rerender', async () => {
-    //             try {
-    //                 await receivedDetailViewContext.save();
-    //                 throw new Error('should have thrown');
-    //             }
-    //             catch (e) {
-    //                 expect(e).to.be.instanceof(Error);
-    //                 expect(e.message).to.equal(`DetailView Error: Cannot save data for model 'Post' because it doesn't have a primaryKey field defined.`);
-    //             }
-
-    //             expect(renderCount).to.equal(1);
-    //         });
-
-    //     });
-
-    //     describe('when model is not valid', () => {
-
-    //         it('save() triggers validation of the model, re-renders, and throws an error', async () => {
-    //             try {
-    //                 await receivedDetailViewContext.save();
-    //                 throw new Error('should have thrown');
-    //             }
-    //             catch (e) {
-    //                 expect(e).to.be.instanceof(rev.ValidationError);
-    //                 expect(e.result).to.be.instanceof(ModelOperationResult);
-    //                 const validation = e.result.validation;
-    //                 expect(receivedDetailViewContext.validation).to.equal(validation);
-    //                 expect(renderCount).to.equal(2);
-    //             }
-    //         });
-
-    //     });
-
-    //     describe('when model is valid, and is a new record', () => {
-
-    //         it('save() triggers creation of the model, re-renders, and returns operation result', async () => {
-    //             receivedDetailViewContext.model = new models.Post({
-    //                 title: 'Valid New Post', body: 'Posty Posty...'
-    //             });
-    //             const result = await receivedDetailViewContext.save();
-    //             expect(result).to.be.instanceof(ModelOperationResult);
-    //             expect(result.operation.operationName).to.equal('create');
-    //             expect(result.success).to.be.true;
-    //             expect(result.result).not.to.be.undefined;
-    //             expect(result.result).to.be.instanceof(models.Post);
-    //             expect(result.result!.id).to.be.a('number');
-    //             expect(receivedDetailViewContext.model.id).to.be.a('number');
-    //             expect(receivedDetailViewContext.validation).to.equal(result.validation);
-    //             expect(renderCount).to.equal(2);
-    //         });
-
-    //     });
-
-    //     describe('when model is valid, and is an updated record', () => {
-
-    //         it('save() triggers update of the model, re-renders, and returns operation result', async () => {
-    //             receivedDetailViewContext.model = new models.Post({
-    //                 id: 100, title: 'Valid New Post', body: 'Posty Posty...'
-    //             });
-    //             const result = await receivedDetailViewContext.save();
-    //             expect(result).to.be.instanceof(ModelOperationResult);
-    //             expect(result.operation.operationName).to.equal('update');
-    //             expect(result.operation.where).to.deep.equal({ id: 100 });
-    //             expect(result.success).to.be.true;
-    //             expect(receivedDetailViewContext.validation).to.equal(result.validation);
-    //             expect(renderCount).to.equal(2);
-    //         });
-
-    //     });
-
-    // });
 
     // describe('remove()', () => {
     //     let modelManager: rev.ModelManager;
