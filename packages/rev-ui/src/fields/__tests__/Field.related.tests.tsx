@@ -173,39 +173,39 @@ describe('Field - related field tests', () => {
 
     });
 
-    // describe('Event Handlers', () => {
-    //     let modelManager: rev.ModelManager;
+    describe('Event Handlers', () => {
+        let modelManager: rev.ModelManager;
 
-    //     beforeEach(() => {
-    //         resetSpyComponent();
-    //         modelManager = models.getModelManager();
-    //         mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post">
-    //                     <Field
-    //                         name="title"
-    //                         component={SpyComponent} />
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //     });
+        beforeEach(() => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post" related={['user']}>
+                        <Field
+                            name="user.name"
+                            component={SpyComponent} />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
 
-    //     describe('onChange()', () => {
+        describe('onChange()', () => {
 
-    //         it('updates field value', () => {
-    //             expect(receivedProps.value).to.be.undefined;
-    //             receivedProps.onChange('Awesome Post');
-    //             expect(receivedProps.value).to.equal('Awesome Post');
-    //         });
+            it('updates related field value', () => {
+                expect(receivedProps.value).to.be.undefined;
+                receivedProps.onChange('some other user');
+                expect(receivedProps.value).to.equal('some other user');
+            });
 
-    //         it('sets the "dirty" property in the detailViewContext', () => {
-    //             expect(receivedProps.detailViewContext.dirty).to.be.false;
-    //             receivedProps.onChange('Awesome Post');
-    //             expect(receivedProps.detailViewContext.dirty).to.be.true;
-    //         });
+            it('sets the "dirty" property in the detailViewContext', () => {
+                expect(receivedProps.detailViewContext.dirty).to.be.false;
+                receivedProps.onChange('Awesome Post');
+                expect(receivedProps.detailViewContext.dirty).to.be.true;
+            });
 
-    //     });
+        });
 
-    // });
+    });
 
 });
