@@ -3,7 +3,7 @@ import * as PropTypes from 'prop-types';
 
 import { IModelProviderContext } from '../provider/ModelProvider';
 import { IModel, IModelMeta, IModelManager, ValidationError } from 'rev-models';
-import { IModelValidationResult } from 'rev-models/lib/validation/validationresult';
+import { IModelValidationResult, ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 import { isSet } from 'rev-models/lib/utils';
 import { UI_COMPONENTS } from '../config';
 import { IModelOperationResult } from 'rev-models/lib/operations/operationresult';
@@ -233,6 +233,30 @@ export class DetailView extends React.Component<IDetailViewProps> {
             throw new Error(`DetailView Error: Cannot save data for model '${ctx.modelMeta.name}' because it doesn't have a primaryKey field defined.`);
         }
         let result: IModelOperationResult<any, any>;
+        if (this.props.related) {
+            for (const fieldName of this.props.related) {
+                try {
+                    if (ctx.manager.isNew(ctx.model![fieldName])) {
+                        result = await ctx.manager.create(ctx.model![fieldName]);
+                        ctx.model![fieldName] = result.result;
+                    }
+                    else {
+                        result = await ctx.manager.update(ctx.model![fieldName]);
+                    }
+                }
+                catch (e) {
+                    if (e instanceof ValidationError) {
+                        ctx.validation = new ModelValidationResult();
+                        (ctx.validation as ModelValidationResult).addFieldError(
+                            fieldName, 'Related model failed validation', 'related_model_failed_validation',
+                            { validation: e.validation }
+                        );
+                        this.forceUpdate();
+                    }
+                    throw e;
+                }
+            }
+        }
         try {
             if (ctx.manager.isNew(ctx.model!)) {
                 result = await ctx.manager.create(ctx.model!);

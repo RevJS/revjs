@@ -198,7 +198,11 @@ describe('DetailView with RelatedModel field data', () => {
 
     // });
 
-    // describe('save()', () => {
+    describe('save()', () => {
+        it('needs tests', () => {
+            expect(false).to.be.true;
+        });
+    });
     //     let modelManager: rev.ModelManager;
 
     //     beforeEach(() => {
