@@ -7,6 +7,7 @@
 
 * `<DetailView />` has a new `related` prop for loading `RelatedModel` fields
 * `<Field />` component now supports sub-fields, e.g. `address.address1`
+* `<SaveAction />` now triggers validation before saving
 
 ### 0.19.0 - 15th June 2018
 

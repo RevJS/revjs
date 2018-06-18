@@ -5,12 +5,12 @@ import { IDetailViewContextProp, IDetailViewContext } from '../views/DetailView'
 import { withDetailViewContext } from '../views/withDetailViewContext';
 import { UI_COMPONENTS } from '../config';
 import { IActionComponentProps } from './types';
-import { IModelOperationResult } from 'rev-models';
+import { IModelOperationResult, ValidationError } from 'rev-models';
 import { IStandardComponentProps, getStandardProps } from '../utils/props';
 
 /**
  * A `<SaveAction />` component is designed to be included inside a
- * `<DetailView />`. By default it renders a button that, when clicked,
+ * `<DetailView />`. By default it renders a button that, when clicked, triggers validation, then
  * either creates or updates the current record, depending on whether it has
  * a primaryKey value or not.
  */
@@ -75,6 +75,10 @@ class SaveActionC extends React.Component<ISaveActionProps & IDetailViewContextP
         ctx.setLoadState('SAVING');
 
         try {
+            const valid = await ctx.validate();
+            if (!valid.valid) {
+                throw new ValidationError(valid);
+            }
             const result = await ctx.save();
             success(result);
         }
