@@ -2,13 +2,13 @@
 import * as React from 'react';
 import * as sinon from 'sinon';
 import * as models from '../../__fixtures__/models';
-// import { createData, IModelTestData } from '../../__fixtures__/modeldata';
+import { createData, IModelTestData } from '../../__fixtures__/modeldata';
 import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
 import { Field, IFieldComponentProps } from '../Field';
-// import { sleep } from '../../__test_utils__/utils';
+import { sleep } from '../../__test_utils__/utils';
 import { DetailView, IDetailViewContextProp } from '../../views/DetailView';
 import { withDetailViewContext } from '../../views/withDetailViewContext';
 
@@ -61,17 +61,17 @@ describe('Field - related field tests', () => {
 
     type SpyComponentProps = IFieldComponentProps & IDetailViewContextProp;
     let receivedProps: SpyComponentProps;
-    // let renderCount: number;
+    let renderCount: number;
 
     const SpyComponent = withDetailViewContext<IFieldComponentProps>((props) => {
         receivedProps = props;
-        // renderCount++;
+        renderCount++;
         return <p>SpyComponent</p>;
     });
 
     function resetSpyComponent() {
         receivedProps = null as any;
-        // renderCount = 0;
+        renderCount = 0;
     }
 
     describe('IFieldComponentProps - before model data has loaded', () => {
@@ -124,66 +124,54 @@ describe('Field - related field tests', () => {
 
     });
 
-    // describe('IFieldComponentProps - when model data has loaded', () => {
-    //     let modelManager: rev.ModelManager;
-    //     let meta: rev.IModelMeta<models.Post>;
-    //     let modelData: IModelTestData;
+    describe('IFieldComponentProps - when model data has loaded', () => {
+        let modelManager: rev.ModelManager;
+        let relMeta: rev.IModelMeta<models.Post>;
+        let modelData: IModelTestData;
 
-    //     before(async () => {
-    //         resetSpyComponent();
-    //         modelManager = models.getModelManager();
-    //         modelData = await createData(modelManager);
-    //         meta = modelManager.getModelMeta('Post');
-    //         mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post" primaryKeyValue="1">
-    //                     <Field
-    //                         name="title"
-    //                         component={SpyComponent} />
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //         await sleep(10);
-    //     });
+        before(async () => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            modelData = await createData(modelManager);
+            relMeta = modelManager.getModelMeta('User');
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post" primaryKeyValue="1" related={['user']}>
+                        <Field
+                            name="user.name"
+                            component={SpyComponent} />
+                    </DetailView>
+                </ModelProvider>
+            );
+            await sleep(10);
+        });
 
-    //     it('component has rendered twice (loading, loaded)', () => {
-    //         expect(renderCount).to.equal(2);
-    //     });
+        it('component has rendered twice (loading, loaded)', () => {
+            expect(renderCount).to.equal(2);
+        });
 
-    //     it('passes specified field object', () => {
-    //         const expectedField = meta.fieldsByName['title'];
-    //         expect(receivedProps.field).to.equal(expectedField);
-    //     });
+        it('passes specified field object', () => {
+            const expectedField = relMeta.fieldsByName['name'];
+            expect(receivedProps.field).to.equal(expectedField);
+        });
 
-    //     it('passes label, which should equal the field label or field name', () => {
-    //         const f = meta.fieldsByName['title'];
-    //         const expectedLabel = f.options.label || f.name;
-    //         expect(receivedProps.label).to.equal(expectedLabel);
-    //     });
+        it('passes correct field value', () => {
+            expect(receivedProps.value).to.equal(modelData.posts[0].user.name);
+        });
 
-    //     it('passes default colspans', () => {
-    //         expect(receivedProps.colspanNarrow).to.equal(12);
-    //         expect(receivedProps.colspan).to.equal(6);
-    //         expect(receivedProps.colspanWide).to.equal(6);
-    //     });
+        it('passes empty list of field errors', () => {
+            expect(receivedProps.errors).to.deep.equal([]);
+        });
 
-    //     it('passes correct field value', () => {
-    //         expect(receivedProps.value).to.equal(modelData.posts[0].title);
-    //     });
+        it('disabled = false', () => {
+            expect(receivedProps.disabled).to.be.false;
+        });
 
-    //     it('passes empty list of field errors', () => {
-    //         expect(receivedProps.errors).to.deep.equal([]);
-    //     });
+        it('passes event handlers', () => {
+            expect(receivedProps.onChange).to.be.a('function');
+        });
 
-    //     it('disabled = false', () => {
-    //         expect(receivedProps.disabled).to.be.false;
-    //     });
-
-    //     it('passes event handlers', () => {
-    //         expect(receivedProps.onChange).to.be.a('function');
-    //     });
-
-    // });
+    });
 
     // describe('Event Handlers', () => {
     //     let modelManager: rev.ModelManager;

@@ -9,6 +9,7 @@ import { UI_COMPONENTS } from '../config';
 import { IModelOperationResult } from 'rev-models/lib/operations/operationresult';
 import { IStandardComponentProps } from '../utils/props';
 import { RelatedModelField } from 'rev-models/lib/fields';
+import { IReadOptions } from 'rev-models/lib/models/types';
 
 /**
  * A `<DetailView />` renders a single model record. When used in conjunction
@@ -178,14 +179,17 @@ export class DetailView extends React.Component<IDetailViewProps> {
             throw new Error(`DetailView Error: Cannot load data for model '${meta.name}' because it doesn't have a primaryKey field defined.`);
         }
         this.detailViewContext.loadState = 'LOADING';
+        const readOpts: IReadOptions = {
+            where: {
+                [meta.primaryKey]: this.props.primaryKeyValue
+            },
+            limit: 1
+        };
+        if (this.props.related) {
+            readOpts.related = this.props.related;
+        }
         const result = await this.context.modelManager.read(
-            meta.ctor,
-            {
-                where: {
-                    [meta.primaryKey]: this.props.primaryKeyValue
-                },
-                limit: 1
-            }
+            meta.ctor, readOpts
         );
         if (this.detailViewContext.loadState == 'LOADING') {
             this.detailViewContext.loadState = 'NONE';

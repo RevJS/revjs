@@ -125,6 +125,18 @@ class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFiel
             fieldErrors = ctx.validation.fieldErrors[this.modelField.name];
         }
         const disabled = this.props.detailViewContext.loadState != 'NONE';
+        let value: any;
+        if (ctx.model) {
+            if (this.parentFieldName === null) {
+                value = ctx.model[this.modelField.name];
+            }
+            else {
+                const relModel = ctx.model[this.parentFieldName];
+                if (relModel) {
+                    value = ctx.model[this.parentFieldName][this.modelField.name];
+                }
+            }
+        }
 
         let cProps: IFieldComponentProps = {
             field: this.modelField,
@@ -132,10 +144,10 @@ class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFiel
             colspanNarrow: this.props.colspanNarrow || 12,
             colspan: this.props.colspan || 6,
             colspanWide: this.props.colspanWide || this.props.colspan || 6,
-            value: ctx.model ? ctx.model[this.modelField.name] : undefined,
+            value,
             errors: fieldErrors,
             disabled,
-            onChange: (value) => this.onChange(value)
+            onChange: (newValue) => this.onChange(newValue)
         };
         const sProps = getStandardProps(this.props);
 

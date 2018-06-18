@@ -1,6 +1,13 @@
 
 ## RevJS Module Releases
 
+### 0.20.0 - TBC
+
+**`rev-ui`**
+
+* `<DetailView />` has a new `related` prop for loading `RelatedModel` fields
+* `<Field />` component now supports sub-fields, e.g. `address.address1`
+
 ### 0.19.0 - 15th June 2018
 
 **`rev-models`**

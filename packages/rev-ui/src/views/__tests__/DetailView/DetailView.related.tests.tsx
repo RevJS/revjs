@@ -3,13 +3,13 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import * as sinon from 'sinon';
 import * as models from '../../../__fixtures__/models';
-// import { createData, IModelTestData } from '../../../__fixtures__/modeldata';
+import { createData, IModelTestData } from '../../../__fixtures__/modeldata';
 import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount /*, ReactWrapper */ } from 'enzyme';
 import { ModelProvider } from '../../../provider/ModelProvider';
 import { DetailView, IDetailViewContext /*, IDetailViewProps */ } from '../../DetailView';
-// import { sleep } from '../../../__test_utils__/utils';
+import { sleep } from '../../../__test_utils__/utils';
 // import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 // import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
 
@@ -47,7 +47,7 @@ describe('DetailView with RelatedModel field data', () => {
     });
 
     let receivedDetailViewContext: IDetailViewContext;
-    // let renderCount: number;
+    let renderCount: number;
 
     class TestView extends React.Component {
         static contextTypes = {
@@ -59,14 +59,14 @@ describe('DetailView with RelatedModel field data', () => {
             receivedDetailViewContext = this.context.detailViewContext;
         }
         render() {
-            // renderCount++;
+            renderCount++;
             return <p>SpyComponent</p>;
         }
     }
 
     function resetTestView() {
         receivedDetailViewContext = null as any;
-        // renderCount = 0;
+        renderCount = 0;
     }
 
     describe('when primaryKeyValue is not specified and related fields are specified', () => {
@@ -94,16 +94,6 @@ describe('DetailView with RelatedModel field data', () => {
             expect(ctx.loadState).to.equal('NONE');
         });
 
-        it('a new model instance is created', () => {
-            expect(ctx.model).not.to.be.null;
-            expect(ctx.model).to.be.instanceof(models.Post);
-            expect(modelManager.isNew(ctx.model!)).to.be.true;
-        });
-
-        it('modelMeta is set', () => {
-            expect(ctx.modelMeta).to.deep.equal(modelManager.getModelMeta('Post'));
-        });
-
         it('a model instance is created for each "related" model field', () => {
             expect(ctx.model!.user).not.to.be.null;
             expect(ctx.model!.user).to.be.instanceof(models.User);
@@ -124,179 +114,53 @@ describe('DetailView with RelatedModel field data', () => {
 
     });
 
-    // describe('initial detailViewContext - when primaryKeyValue is specified', () => {
-    //     let modelManager: rev.ModelManager;
+    describe('detailViewContext after successful model load', () => {
+        let modelManager: rev.ModelManager;
+        let expectedData: IModelTestData;
 
-    //     before(() => {
-    //         resetTestView();
-    //         modelManager = models.getModelManager();
-    //         const backend = modelManager.getBackend('default') as rev.InMemoryBackend;
-    //         backend.OPERATION_DELAY = 10;
-    //         mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post" primaryKeyValue="1">
-    //                     <TestView />
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //     });
+        before(async () => {
+            resetTestView();
+            modelManager = models.getModelManager();
+            expectedData = await createData(modelManager);
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post" primaryKeyValue="1" related={['user']}>
+                        <TestView />
+                    </DetailView>
+                </ModelProvider>
+            );
+            await sleep(10);
+        });
 
-    //     it('passes detailViewContext to contained Views', () => {
-    //         expect(receivedDetailViewContext).not.to.be.null;
-    //     });
+        it('component has rendered twice', () => {
+            expect(renderCount).to.equal(2);
+        });
 
-    //     it('loadState is LOADING', () => {
-    //         expect(receivedDetailViewContext.loadState).to.equal('LOADING');
-    //     });
+        it('loadState is set back to NONE', () => {
+            expect(receivedDetailViewContext.loadState).to.equal('NONE');
+        });
 
-    //     it('contains the current ModelManager', () => {
-    //         expect(receivedDetailViewContext.manager).to.equal(modelManager);
-    //     });
+        it('related model data is the requested model instance', () => {
+            const ctx = receivedDetailViewContext;
+            expect(ctx.model!.user).to.be.instanceof(models.User);
+            expect(ctx.model!.user.id).to.equal(expectedData.posts[0].user.id);
+            expect(ctx.model!.user.name).to.equal(expectedData.posts[0].user.name);
+        });
 
-    //     it('model data is initially null', () => {
-    //         expect(receivedDetailViewContext.model).to.be.null;
-    //     });
+        it('relatedModelMeta is set', () => {
+            const ctx = receivedDetailViewContext;
+            expect(ctx.relatedModelMeta['user']).to.deep.equal(modelManager.getModelMeta('User'));
+        });
 
-    //     it('modelMeta is set', () => {
-    //         expect(receivedDetailViewContext.modelMeta).to.deep.equal(modelManager.getModelMeta('Post'));
-    //     });
+        it('validation information is null', () => {
+            expect(receivedDetailViewContext.validation).to.be.null;
+        });
 
-    //     it('validation information is null', () => {
-    //         expect(receivedDetailViewContext.validation).to.be.null;
-    //     });
+        it('dirty is false', () => {
+            expect(receivedDetailViewContext.dirty).to.be.false;
+        });
 
-    //     it('dirty is false', () => {
-    //         expect(receivedDetailViewContext.dirty).to.be.false;
-    //     });
-
-    // });
-
-    // describe('detailViewContext after successful model load', () => {
-    //     let modelManager: rev.ModelManager;
-    //     let expectedData: IModelTestData;
-
-    //     before(async () => {
-    //         resetTestView();
-    //         modelManager = models.getModelManager();
-    //         expectedData = await createData(modelManager);
-    //         mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post" primaryKeyValue="1">
-    //                     <TestView />
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //         await sleep(10);
-    //     });
-
-    //     it('component has rendered twice', () => {
-    //         expect(renderCount).to.equal(2);
-    //     });
-
-    //     it('loadState is set back to NONE', () => {
-    //         expect(receivedDetailViewContext.loadState).to.equal('NONE');
-    //     });
-
-    //     it('model data is the requested model instance', () => {
-    //         const ctx = receivedDetailViewContext;
-    //         expect(ctx.model).to.be.instanceof(models.Post);
-    //         expect(ctx.model!.id).to.equal(expectedData.posts[0].id);
-    //         expect(ctx.model!.title).to.equal(expectedData.posts[0].title);
-    //     });
-
-    //     it('modelMeta is set', () => {
-    //         expect(receivedDetailViewContext.modelMeta).to.deep.equal(modelManager.getModelMeta('Post'));
-    //     });
-
-    //     it('validation information is null', () => {
-    //         expect(receivedDetailViewContext.validation).to.be.null;
-    //     });
-
-    //     it('dirty is false', () => {
-    //         expect(receivedDetailViewContext.dirty).to.be.false;
-    //     });
-
-    // });
-
-    // describe('setLoadState()', () => {
-    //     let modelManager: rev.ModelManager;
-
-    //     before(() => {
-    //         resetTestView();
-    //         modelManager = models.getModelManager();
-    //         mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post">
-    //                     <TestView />
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //     });
-
-    //     it('setLoadState() is passed in detailViewContext', () => {
-    //         expect(receivedDetailViewContext.setLoadState).to.be.a('function');
-    //     });
-
-    //     it('detailViewContext.loadState is "NONE" by default', () => {
-    //         expect(receivedDetailViewContext.loadState).to.equal('NONE');
-    //     });
-
-    //     it('initial render has completed', () => {
-    //         expect(renderCount).to.equal(1);
-    //     });
-
-    //     it('setLoadState() changes the loadState and forces a re-render', () => {
-    //         receivedDetailViewContext.setLoadState('SAVING');
-    //         expect(receivedDetailViewContext.loadState).to.equal('SAVING');
-    //         expect(renderCount).to.equal(2);
-    //     });
-
-    //     it('setLoadState() does not force a re-render if loadState value has not changed', () => {
-    //         receivedDetailViewContext.setLoadState('SAVING');
-    //         expect(renderCount).to.equal(2);
-    //     });
-
-    // });
-
-    // describe('setDirty()', () => {
-    //     let modelManager: rev.ModelManager;
-
-    //     before(() => {
-    //         resetTestView();
-    //         modelManager = models.getModelManager();
-    //         mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post">
-    //                     <TestView />
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //     });
-
-    //     it('setDirty() is passed in detailViewContext', () => {
-    //         expect(receivedDetailViewContext.setDirty).to.be.a('function');
-    //     });
-
-    //     it('detailViewContext.dirty is false by default', () => {
-    //         expect(receivedDetailViewContext.dirty).to.be.false;
-    //     });
-
-    //     it('initial render has completed', () => {
-    //         expect(renderCount).to.equal(1);
-    //     });
-
-    //     it('setDirty() changes the value of dirty and forces a re-render', () => {
-    //         receivedDetailViewContext.setDirty(true);
-    //         expect(receivedDetailViewContext.dirty).to.equal(true);
-    //         expect(renderCount).to.equal(2);
-    //     });
-
-    //     it('setDirty() does not force a re-render if dirty value has not changed', () => {
-    //         receivedDetailViewContext.setDirty(true);
-    //         expect(renderCount).to.equal(2);
-    //     });
-
-    // });
+    });
 
     // describe('validate()', () => {
     //     let modelManager: rev.ModelManager;
