@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { fields } from 'rev-models';
 
-import { IModelProviderContext } from '../provider/ModelProvider';
 import { IDetailViewContextProp } from '../views/DetailView';
 import { IFieldError } from 'rev-models/lib/validation/validationresult';
 import { withDetailViewContext } from '../views/withDetailViewContext';
@@ -72,19 +71,39 @@ export interface IFieldComponentProps extends IStandardComponentProps  {
 
 class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFieldState> {
 
+    parentFieldName: string | null;
     modelField: fields.Field;
     fieldComponentName: string;
 
-    constructor(props: IFieldProps & IDetailViewContextProp, context: IModelProviderContext & IDetailViewContextProp) {
-        super(props, context);
+    constructor(props: IFieldProps & IDetailViewContextProp) {
+        super(props);
         if (!this.props.detailViewContext) {
             throw new Error('Field Error: must be nested inside a DetailView.');
         }
         const meta = this.props.detailViewContext.modelMeta;
-        if (!(props.name in meta.fieldsByName)) {
-            throw new Error(`Field Error: Model '${meta.name}' does not have a field called '${props.name}'.`);
+        const tokens = props.name.split('.');
+        if (tokens.length > 2) {
+            throw new Error(`Field Error: invalid field '${props.name}'. Currently only 2 levels of field hierarchy are supported.`);
         }
-        this.modelField = meta.fieldsByName[props.name];
+        else if (tokens.length == 2) {
+            const [parentField, subField] = tokens;
+            const relMeta = this.props.detailViewContext.relatedModelMeta;
+            if (!(parentField in relMeta)) {
+                throw new Error(`Field Error: invalid field '${props.name}'. Related field '${parentField}' is not selected in parent DetailView.`);
+            }
+            else if (!(subField in relMeta[parentField].fieldsByName)) {
+                throw new Error(`Field Error: invalid field '${props.name}'. Field '${subField}' does not exist on model '${relMeta[parentField].name}'.`);
+            }
+            this.parentFieldName = parentField;
+            this.modelField = relMeta[parentField].fieldsByName[subField];
+        }
+        else {
+            if (!(props.name in meta.fieldsByName)) {
+                throw new Error(`Field Error: Model '${meta.name}' does not have a field called '${props.name}'.`);
+            }
+            this.parentFieldName = null;
+            this.modelField = meta.fieldsByName[props.name];
+        }
         this.fieldComponentName = this.modelField.constructor.name;
         if (!this.props.component && !UI_COMPONENTS.fields[this.fieldComponentName]) {
             throw new Error(`Field Error: There is no UI_COMPONENT registered for field type '${this.fieldComponentName}'`);
