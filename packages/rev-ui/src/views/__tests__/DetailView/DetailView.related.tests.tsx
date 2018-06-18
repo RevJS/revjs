@@ -166,7 +166,7 @@ describe('DetailView with RelatedModel field data', () => {
 
     });
 
-    describe.only('validate()', () => {
+    describe('validate()', () => {
         let modelManager: rev.ModelManager;
 
         before(() => {

@@ -126,9 +126,20 @@ class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFiel
 
         const ctx = this.props.detailViewContext;
         let fieldErrors: IFieldError[] = [];
-        if (ctx.validation
-            && this.modelField.name in ctx.validation.fieldErrors) {
-            fieldErrors = ctx.validation.fieldErrors[this.modelField.name];
+        if (ctx.validation) {
+            if (this.parentFieldName) {
+                if (this.parentFieldName in ctx.validation.fieldErrors) {
+                    const subValidation = ctx.validation.fieldErrors[this.parentFieldName][0];
+                    if (subValidation && subValidation.validation.fieldErrors[this.modelField.name]) {
+                        fieldErrors = subValidation.validation.fieldErrors[this.modelField.name];
+                    }
+                }
+            }
+            else {
+                if (this.modelField.name in ctx.validation.fieldErrors) {
+                    fieldErrors = ctx.validation.fieldErrors[this.modelField.name];
+                }
+            }
         }
         const disabled = this.props.detailViewContext.loadState != 'NONE';
         let value: any;
