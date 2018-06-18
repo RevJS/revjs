@@ -227,7 +227,26 @@ export class DetailView extends React.Component<IDetailViewProps> {
 
     async validate() {
         const ctx = this.detailViewContext;
-        ctx.validation = await this.context.modelManager.validate(ctx.model!);
+        if (this.props.related) {
+            const fields = Object.keys(ctx.modelMeta.fieldsByName).filter((fieldName) => {
+                return this.props.related!.indexOf(fieldName) == -1;
+            });
+            ctx.validation = await this.context.modelManager.validate(ctx.model!, { fields });
+            for (const fieldName of this.props.related) {
+                const validation = await this.context.modelManager.validate(ctx.model![fieldName]);
+                if (!validation.valid) {
+                    (ctx.validation as ModelValidationResult).addFieldError(
+                        fieldName,
+                        RELATED_MODEL_VALIDATION_ERROR_MSG,
+                        RELATED_MODEL_VALIDATION_ERROR_CODE,
+                        { validation }
+                    );
+                }
+            }
+        }
+        else {
+            ctx.validation = await this.context.modelManager.validate(ctx.model!);
+        }
         this.forceUpdate();
         return ctx.validation;
     }

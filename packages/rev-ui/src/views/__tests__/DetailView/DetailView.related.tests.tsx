@@ -6,15 +6,15 @@ import * as models from '../../../__fixtures__/models';
 import { createData, IModelTestData } from '../../../__fixtures__/modeldata';
 import { expect } from 'chai';
 import * as rev from 'rev-models';
-import { mount /*, ReactWrapper */ } from 'enzyme';
+import { mount } from 'enzyme';
 import { ModelProvider } from '../../../provider/ModelProvider';
 import {
-    DetailView, IDetailViewContext, /*, IDetailViewProps */
+    DetailView, IDetailViewContext,
     RELATED_MODEL_VALIDATION_ERROR_MSG,
     RELATED_MODEL_VALIDATION_ERROR_CODE
 } from '../../DetailView';
 import { sleep } from '../../../__test_utils__/utils';
-// import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
+import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
 
 describe('DetailView with RelatedModel field data', () => {
@@ -166,41 +166,46 @@ describe('DetailView with RelatedModel field data', () => {
 
     });
 
-    // describe('validate()', () => {
-    //     let modelManager: rev.ModelManager;
+    describe.only('validate()', () => {
+        let modelManager: rev.ModelManager;
 
-    //     before(() => {
-    //         resetTestView();
-    //         modelManager = models.getModelManager();
-    //         mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post">
-    //                     <TestView />
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //     });
+        before(() => {
+            resetTestView();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post" related={['user']}>
+                        <TestView />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
 
-    //     it('validate() is passed in detailViewContext', () => {
-    //         expect(receivedDetailViewContext.validate).to.be.a('function');
-    //     });
+        it('detailViewContext.validation is null by default', () => {
+            expect(receivedDetailViewContext.validation).to.be.null;
+        });
 
-    //     it('detailViewContext.validation is null by default', () => {
-    //         expect(receivedDetailViewContext.validation).to.be.null;
-    //     });
+        it('initial render has completed', () => {
+            expect(renderCount).to.equal(1);
+        });
 
-    //     it('initial render has completed', () => {
-    //         expect(renderCount).to.equal(1);
-    //     });
+        it('validate() triggers validation of base model and related model, re-renders, and returns result', async () => {
+            receivedDetailViewContext.model = new models.Post({
+                user: new models.User()
+            });
+            let result = await receivedDetailViewContext.validate();
+            expect(result).to.be.instanceof(ModelValidationResult);
+            expect(result.valid).to.be.false;
+            expect(result.fieldErrors).to.have.keys('body', 'title', 'user');
+            expect(result.fieldErrors['user']).to.have.length(1);
+            const userError = result.fieldErrors['user'][0];
+            expect(userError.message).to.equal(RELATED_MODEL_VALIDATION_ERROR_MSG);
+            expect(userError.code).to.equal(RELATED_MODEL_VALIDATION_ERROR_CODE);
+            expect(receivedDetailViewContext.validation).to.equal(result);
+            expect(renderCount).to.equal(2);
+        });
 
-    //     it('validate() triggers validation of the model, re-renders, and returns result', async () => {
-    //         let result = await receivedDetailViewContext.validate();
-    //         expect(result).to.be.instanceof(ModelValidationResult);
-    //         expect(receivedDetailViewContext.validation).to.equal(result);
-    //         expect(renderCount).to.equal(2);
-    //     });
-
-    // });
+    });
 
     describe('save()', () => {
         let modelManager: rev.ModelManager;
@@ -313,176 +318,8 @@ describe('DetailView with RelatedModel field data', () => {
 
     });
 
-    // describe('remove()', () => {
-    //     let modelManager: rev.ModelManager;
-
-    //     beforeEach(() => {
-    //         resetTestView();
-    //         modelManager = models.getModelManager();
-    //         mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post">
-    //                     <TestView />
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //     });
-
-    //     it('remove() is passed in detailViewContext', () => {
-    //         expect(receivedDetailViewContext.save).to.be.a('function');
-    //     });
-
-    //     it('initial render has completed', () => {
-    //         expect(renderCount).to.equal(1);
-    //     });
-
-    //     describe('when model has no primary key', () => {
-
-    //         beforeEach(() => {
-    //             const meta = modelManager.getModelMeta(models.Post);
-    //             meta.primaryKey = undefined;
-    //         });
-
-    //         it('remove() throws an error and does not rerender', async () => {
-    //             try {
-    //                 await receivedDetailViewContext.remove();
-    //                 throw new Error('should have thrown');
-    //             }
-    //             catch (e) {
-    //                 expect(e).to.be.instanceof(Error);
-    //                 expect(e.message).to.equal(`DetailView Error: Cannot remove record for model 'Post' because it doesn't have a primaryKey field defined.`);
-    //             }
-
-    //             expect(renderCount).to.equal(1);
-    //         });
-
-    //     });
-
-    //     describe('when model is a new record', () => {
-
-    //         it('remove() throws an error', async () => {
-    //             receivedDetailViewContext.model = new models.Post({
-    //                 title: 'Valid New Post', body: 'Posty Posty...'
-    //             });
-    //             try {
-    //                 await receivedDetailViewContext.remove();
-    //                 throw new Error('should have thrown');
-    //             }
-    //             catch (e) {
-    //                 expect(e).to.be.instanceof(Error);
-    //                 expect(e.message).to.equal('Cannot call remove() on a new model record.');
-    //             }
-    //         });
-
-    //     });
-
-    //     describe('when model is an existing record', () => {
-
-    //         it('remove() triggers removal of the model, re-renders, and returns operation result', async () => {
-    //             receivedDetailViewContext.model = new models.Post({
-    //                 id: 100, title: 'Valid New Post', body: 'Posty Posty...'
-    //             });
-    //             const result = await receivedDetailViewContext.remove();
-
-    //             expect(result).to.be.instanceof(ModelOperationResult);
-    //             expect(result.operation.operationName).to.equal('remove');
-    //             expect(result.operation.where).to.deep.equal({ id: 100 });
-    //             expect(result.success).to.be.true;
-
-    //             expect(renderCount).to.equal(2);
-    //             expect(receivedDetailViewContext.model).to.deep.equal(new models.Post());
-    //             expect(receivedDetailViewContext.validation).to.equal(null);
-    //             expect(receivedDetailViewContext.dirty).to.equal(false);
-
-    //         });
-
-    //     });
-
-    // });
-
-    // describe('refresh()', () => {
-    //     let modelManager: rev.ModelManager;
-
-    //     before(() => {
-    //         resetTestView();
-    //         modelManager = models.getModelManager();
-    //         mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post">
-    //                     <TestView />
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //     });
-
-    //     it('refresh() is passed in detailViewContext', () => {
-    //         expect(receivedDetailViewContext.refresh).to.be.a('function');
-    //     });
-
-    //     it('initial render has completed', () => {
-    //         expect(renderCount).to.equal(1);
-    //     });
-
-    //     it('calling refresh() forces a re-render', () => {
-    //         receivedDetailViewContext.refresh();
-    //         expect(renderCount).to.equal(2);
-    //     });
-
-    // });
-
-    // describe('rendering', () => {
-    //     let modelManager: rev.ModelManager;
-    //     let wrapper: ReactWrapper;
-
-    //     before(() => {
-    //         modelManager = models.getModelManager();
-    //         wrapper = mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView model="Post">
-    //                     <span>content</span>
-    //                 </DetailView>
-    //             </ModelProvider>
-    //         );
-    //     });
-
-    //     it('renders children directly', () => {
-    //         expect(wrapper.at(0).text()).to.equal('content');
-    //     });
-
-    // });
-
-    // describe('Standard Component Properties', () => {
-    //     let modelManager: rev.ModelManager;
-    //     let receivedProps: IDetailViewProps;
-
-    //     const SpyComponent = (props: any) => {
-    //         receivedProps = props;
-    //         return <p>SpyComponent</p>;
-    //     };
-
-    //     before(() => {
-    //         receivedProps = null as any;
-    //         modelManager = models.getModelManager();
-    //         mount(
-    //             <ModelProvider modelManager={modelManager}>
-    //                 <DetailView
-    //                     model="Post"
-    //                     component={SpyComponent}
-    //                     style={{marginTop: 10}}
-    //                 />
-    //             </ModelProvider>
-    //         );
-    //     });
-
-    //     it('style prop is passed to rendered component', () => {
-    //         expect(receivedProps.style).to.deep.equal({marginTop: 10});
-    //     });
-
-    // });
-
     /**
      * TODO
-     *  - test when a slow load completes during a save
-     *     OR make sure you cant save during a load
+     *  - cascade remove()
      */
 });
