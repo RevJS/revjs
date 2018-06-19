@@ -1,7 +1,7 @@
 
 ## RevJS Module Releases
 
-### 0.20.0 - TBC
+### 0.20.0 - 19th June 2018
 
 **`rev-ui`**
 
