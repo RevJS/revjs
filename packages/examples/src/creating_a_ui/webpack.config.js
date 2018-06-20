@@ -13,6 +13,7 @@ module.exports = function() {
             related_data: './src/creating_a_ui/related_data/related_data.tsx',
             detailview: './src/creating_a_ui/detailview/detailview.tsx',
             detailview_allfields: './src/creating_a_ui/detailview_allfields/detailview_allfields.tsx',
+            searchview_allfields: './src/creating_a_ui/searchview_allfields/searchview_allfields.tsx',
         },
         output: {
             path: outputPath, 

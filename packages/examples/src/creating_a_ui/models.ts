@@ -115,11 +115,11 @@ export class ModelWithAllFields {
     @AutoNumberField({ primaryKey: true })
         autoNumberField: number;
     @BooleanField({ label: 'Boolean Field', required: false })
-        booleanField: string;
+        booleanField: boolean;
     @SelectField({ label: 'Select Field', selection: POST_STATUS, required: false })
         selectField: string;
     @MultiSelectField({ label: 'Multi Select Field', selection: POST_STATUS, required: false })
-        multiSelectField: string;
+        multiSelectField: string[];
     @DateField({ label: 'Date Field', required: false })
         dateField: string;
     @TimeField({ label: 'Time Field', required: false })

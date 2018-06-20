@@ -1,6 +1,6 @@
 
 import { ModelManager } from 'rev-models';
-import { User, Post, Comment } from './models';
+import { User, Post, Comment, ModelWithAllFields } from './models';
 
 export async function createData(manager: ModelManager) {
 
@@ -116,6 +116,46 @@ export async function createData(manager: ModelManager) {
         comment: 'no comment',
         post: post2,
         user: bill
+    }));
+
+    // Create sample data for ModelWithAllFields
+
+    await manager.create(new ModelWithAllFields({
+        textField: 'some text',
+        multilineTextField: 'some text\nover multiple lines',
+        emailField: 'bob@bob.com',
+        urlField: 'https://bob.com/',
+        passwordField: 'password1234',
+        numberField: 22.33,
+        integerField: 123,
+        // autoNumberField: 1,
+        booleanField: true,
+        selectField: 'draft',
+        multiSelectField: ['draft'],
+        dateField: '2018-05-01',
+        timeField: '10:00:00',
+        dateTimeField: '2018-05-02T10:11:12',
+        relatedModel: bill,
+        // relatedModelList: Comment[];
+    }));
+
+    await manager.create(new ModelWithAllFields({
+        textField: 'other text',
+        multilineTextField: 'other text\nover multiple lines',
+        emailField: 'john@bob.com',
+        urlField: 'https://bob.com/',
+        passwordField: '123456!',
+        numberField: 1.234,
+        integerField: -12,
+        // autoNumberField: 1,
+        booleanField: false,
+        selectField: 'published',
+        multiSelectField: ['draft', 'published'],
+        dateField: '2019-01-02',
+        timeField: '22:00:00',
+        dateTimeField: '2019-01-02T22:11:00',
+        relatedModel: joe,
+        // relatedModelList: Comment[];
     }));
 
 }
