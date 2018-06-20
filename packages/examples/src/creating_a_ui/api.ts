@@ -12,11 +12,13 @@ modelManager.registerBackend('default', backend);
 modelManager.register(models.User);
 modelManager.register(models.Post);
 modelManager.register(models.Comment);
+modelManager.register(models.ModelWithAllFields);
 
 export const api = new ModelApiManager(modelManager);
 api.register(models.User);
 api.register(models.Post);
 api.register(models.Comment);
+api.register(models.ModelWithAllFields);
 
 // Create Koa & Apollo GraphQL Server
 
