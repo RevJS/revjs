@@ -12,11 +12,11 @@ const testMethodMeta = { modelData: false };
 class TestModel {
 
     @rev.IntegerField()
-        id: number = 1;
+        id: number;
     @rev.TextField()
-        name: string = 'A Test Model';
+        name: string;
     @rev.DateField()
-        date: Date = new Date();
+        date: Date;
 
     @ApiMethod(testMethodMeta)
     testMethod() {
@@ -45,7 +45,7 @@ describe('ModelApiManager', () => {
 
         it('throws if not passed a ModelManager', () => {
             expect(() => {
-                testApi = new ModelApiManager(null);
+                testApi = new ModelApiManager(undefined as any);
             }).to.throw('Invalid ModelManager passed in constructor');
         });
 

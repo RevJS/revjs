@@ -6,7 +6,7 @@ import { mount, ReactWrapper } from 'enzyme';
 
 import { MUIActionButton } from '../MUIActionButton';
 import { IActionComponentProps } from 'rev-ui/lib/actions/types';
-import Button from 'material-ui/Button';
+import Button from '@material-ui/core/Button';
 
 describe('MUIActionButton', () => {
 
@@ -18,6 +18,7 @@ describe('MUIActionButton', () => {
         return {
             label: 'Button Label',
             doAction: sinon.stub(),
+            defaultAction: false,
             disabled: false,
             style: {marginTop: 10}
         };
@@ -66,6 +67,16 @@ describe('MUIActionButton', () => {
     it('calls doAction() when clicked', () => {
         button.simulate('click');
         expect((props.doAction as any).callCount).to.equal(1);
+    });
+
+    it('button type is "button" by default', () => {
+        expect(button.prop('type')).to.equal('button');
+    });
+
+    it('button type is "submit" when defaultAction is true', () => {
+        props.defaultAction = true;
+        render();
+        expect(button.prop('type')).to.equal('submit');
     });
 
 });

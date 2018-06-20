@@ -15,7 +15,7 @@ describe('ModelApiBackend - read() - graphql response tests', () => {
     let readOptions: IReadOptions;
     let readResult: ModelOperationResult<any, IReadMeta>;
 
-    async function setup(mockResponse?: AxiosResponse<any>) {
+    async function setup(mockResponse: AxiosResponse<any>) {
         manager = getModelManager();
         const mockHttpClient = getMockHttpClient(mockResponse);
         apiBackend = new ModelApiBackend('/api', mockHttpClient);

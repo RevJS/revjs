@@ -49,7 +49,7 @@ describe('GraphQL "mutation" type - Model_remove()', () => {
             `;
 
             const result = await graphql(schema, query);
-            signature = result.data.__schema.mutationType.fields[0];
+            signature = result.data!.__schema.mutationType.fields[0];
         });
 
         it('Mutation name is the model name plus _remove', () => {
@@ -111,7 +111,7 @@ describe('GraphQL "mutation" type - Model_remove()', () => {
             `;
             const result = await graphql(schema, query);
             expect(result.errors).to.have.length(1);
-            expect(result.errors[0].message).to.contain('argument "where" of type "JSON!" is required but not provided');
+            expect(result.errors![0].message).to.contain('argument "where" of type "JSON!" is required but not provided');
         });
 
         it('When the "were" clause is valid, the matching record is removed', async () => {
@@ -125,9 +125,9 @@ describe('GraphQL "mutation" type - Model_remove()', () => {
             const result = await graphql(schema, query);
             expect(result.errors).to.be.undefined;
             expect(result.data).to.be.an('object');
-            expect(result.data.Post_remove).to.be.an('object');
+            expect(result.data!.Post_remove).to.be.an('object');
 
-            const opResult: IModelOperationResult<any, IRemoveMeta> = result.data.Post_remove;
+            const opResult: IModelOperationResult<any, IRemoveMeta> = result.data!.Post_remove;
             expect(opResult.success).to.be.true;
             expect(opResult.result).to.be.undefined;
             expect(opResult.results).to.be.undefined;
@@ -147,9 +147,9 @@ describe('GraphQL "mutation" type - Model_remove()', () => {
             const result = await graphql(schema, query);
             expect(result.errors).to.be.undefined;
             expect(result.data).to.be.an('object');
-            expect(result.data.Post_remove).to.be.an('object');
+            expect(result.data!.Post_remove).to.be.an('object');
 
-            const opResult: IModelOperationResult<any, IRemoveMeta> = result.data.Post_remove;
+            const opResult: IModelOperationResult<any, IRemoveMeta> = result.data!.Post_remove;
             expect(opResult.success).to.be.true;
             expect(opResult.result).to.be.undefined;
             expect(opResult.results).to.be.undefined;
@@ -170,7 +170,7 @@ describe('GraphQL "mutation" type - Model_remove()', () => {
             `;
             const result = await graphql(schema, query);
             expect(result.errors).to.have.length(1);
-            expect(result.errors[0].message).to.equal(expectedError.message);
+            expect(result.errors![0].message).to.equal(expectedError.message);
         });
 
     });

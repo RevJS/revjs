@@ -8,7 +8,7 @@ import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
-import { DetailView, IDetailViewContextProp, IDetailViewContext } from '../../views/DetailView';
+import { DetailView, IDetailViewContextProp } from '../../views/DetailView';
 import { RemoveAction, IRemoveActionProps } from '../RemoveAction';
 import { withDetailViewContext } from '../../views/withDetailViewContext';
 import { IActionComponentProps } from '../types';
@@ -43,7 +43,7 @@ describe('RemoveAction', () => {
     });
 
     function resetSpyComponent() {
-        receivedProps = null;
+        receivedProps = null as any;
     }
 
     describe('rendering', () => {
@@ -122,8 +122,37 @@ describe('RemoveAction', () => {
             expect(receivedProps.disabled).to.be.true;
         });
 
+        it('defaultAction = false', () => {
+            expect(receivedProps.defaultAction).to.be.false;
+        });
+
         it('passes through doAction() function', () => {
             expect(receivedProps.doAction).to.be.a('function');
+        });
+
+    });
+
+    describe('IActionComponentProps - defaultAction', () => {
+        let modelManager: rev.ModelManager;
+
+        before(() => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post">
+                        <RemoveAction
+                            label="Remove"
+                            defaultAction={true}
+                            component={SpyComponent}
+                        />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
+
+        it('defaultAction = true', () => {
+            expect(receivedProps.defaultAction).to.be.true;
         });
 
     });
@@ -278,8 +307,8 @@ describe('RemoveAction', () => {
                         <RemoveAction
                             label="Remove"
 
-                            disabled={(ctx: IDetailViewContext<models.User>) => {
-                                return ctx.model.name == 'should be disabled';
+                            disabled={(ctx) => {
+                                return ctx.model!.name == 'should be disabled';
                             }}
 
                             component={SpyComponent}
@@ -295,7 +324,7 @@ describe('RemoveAction', () => {
         });
 
         it('control disabled when disabled function returns true', () => {
-            receivedProps.detailViewContext.model.name = 'should be disabled';
+            receivedProps.detailViewContext.model!.name = 'should be disabled';
             receivedProps.detailViewContext.refresh();
             expect(receivedProps.disabled).to.be.true;
         });

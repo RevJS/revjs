@@ -31,7 +31,7 @@ describe('withModelManager()', () => {
     const SpyComponent = withModelManager(SpyComponentC);
 
     before(() => {
-        receivedProps = null;
+        receivedProps = null as any;
         modelManager = models.getModelManager();
         mount(
             <ModelProvider modelManager={modelManager}>

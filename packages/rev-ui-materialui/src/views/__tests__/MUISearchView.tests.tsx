@@ -5,7 +5,7 @@ import { mount, ReactWrapper } from 'enzyme';
 
 import { MUISearchView } from '../MUISearchView';
 import { ISearchViewProps } from 'rev-ui/lib/views/SearchView';
-import Grid from 'material-ui/Grid';
+import Grid from '@material-ui/core/Grid';
 
 describe('MUISearchView', () => {
 

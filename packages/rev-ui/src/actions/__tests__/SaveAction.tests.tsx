@@ -6,10 +6,11 @@ import { expect } from 'chai';
 import * as rev from 'rev-models';
 import { mount, ReactWrapper } from 'enzyme';
 import { ModelProvider } from '../../provider/ModelProvider';
-import { DetailView, IDetailViewContextProp, IDetailViewContext } from '../../views/DetailView';
+import { DetailView, IDetailViewContextProp } from '../../views/DetailView';
 import { SaveAction, ISaveActionProps } from '../SaveAction';
 import { withDetailViewContext } from '../../views/withDetailViewContext';
 import { IActionComponentProps } from '../types';
+import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 
 describe('SaveAction', () => {
 
@@ -41,7 +42,7 @@ describe('SaveAction', () => {
     });
 
     function resetSpyComponent() {
-        receivedProps = null;
+        receivedProps = null as any;
     }
 
     describe('rendering', () => {
@@ -120,8 +121,37 @@ describe('SaveAction', () => {
             expect(receivedProps.disabled).to.be.false;
         });
 
+        it('defaultAction = false', () => {
+            expect(receivedProps.defaultAction).to.be.false;
+        });
+
         it('passes through doAction() function', () => {
             expect(receivedProps.doAction).to.be.a('function');
+        });
+
+    });
+
+    describe('IActionComponentProps - defaultAction', () => {
+        let modelManager: rev.ModelManager;
+
+        before(() => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <DetailView model="Post">
+                        <SaveAction
+                            label="Save"
+                            defaultAction={true}
+                            component={SpyComponent}
+                        />
+                    </DetailView>
+                </ModelProvider>
+            );
+        });
+
+        it('defaultAction = true', () => {
+            expect(receivedProps.defaultAction).to.be.true;
         });
 
     });
@@ -197,9 +227,27 @@ describe('SaveAction', () => {
             expect(receivedProps.detailViewContext.loadState).to.equal('SAVING');
         });
 
+        it('resets loadState and calls onError() with a validation error if validation fails', async () => {
+            expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
+
+            const validResult = new ModelValidationResult(false);
+            receivedProps.detailViewContext.validate = (): any => Promise.resolve(validResult);
+
+            await receivedProps.doAction();
+
+            expect(onErrorCallback.callCount).to.equal(1);
+            const err = onErrorCallback.getCall(0).args[0];
+            expect(err).to.be.instanceof(rev.ValidationError);
+            expect(err.validation).to.equal(validResult);
+
+            expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
+        });
+
         it('resets loadState and calls onError() if an error is returned from save()', async () => {
             expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
 
+            const validResult = new ModelValidationResult(true);
+            receivedProps.detailViewContext.validate = (): any => Promise.resolve(validResult);
             const expectedError = new Error('ack!!!');
             receivedProps.detailViewContext.save = () => Promise.reject(expectedError);
 
@@ -215,6 +263,8 @@ describe('SaveAction', () => {
         it('resets loadState and calls onSuccess() if the save() method is successful', async () => {
             expect(receivedProps.detailViewContext.loadState).to.equal('NONE');
 
+            const validResult = new ModelValidationResult(true);
+            receivedProps.detailViewContext.validate = (): any => Promise.resolve(validResult);
             const expectedResult = 'Yay!';
             receivedProps.detailViewContext.save = () => Promise.resolve(expectedResult) as any;
 
@@ -241,8 +291,8 @@ describe('SaveAction', () => {
                         <SaveAction
                             label="Save"
 
-                            disabled={(ctx: IDetailViewContext<models.User>) => {
-                                return ctx.model.name == 'should be disabled';
+                            disabled={(ctx) => {
+                                return ctx.model!.name == 'should be disabled';
                             }}
 
                             component={SpyComponent}
@@ -257,7 +307,7 @@ describe('SaveAction', () => {
         });
 
         it('control disabled when disabled function returns true', () => {
-            receivedProps.detailViewContext.model.name = 'should be disabled';
+            receivedProps.detailViewContext.model!.name = 'should be disabled';
             receivedProps.detailViewContext.refresh();
             expect(receivedProps.disabled).to.be.true;
         });

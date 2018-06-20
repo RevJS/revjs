@@ -18,13 +18,13 @@ export function getModelOperationMutations(api: IGraphQLApi, meta: IApiMeta): Gr
                 else {
                     const relatedModel = field.options.model;
                     const relatedMeta = modelManager.getModelMeta(relatedModel);
-                    const relatedPKField = relatedMeta.fieldsByName[relatedMeta.primaryKey].name;
+                    const relatedPKField = relatedMeta.fieldsByName[relatedMeta.primaryKey!].name;
                     const res = await modelManager.read(relatedMeta.ctor, {
                         where: { [relatedPKField]: data[field.name] },
                         limit: 1
                     });
                     if (res.meta.totalCount == 1) {
-                        model[field.name] = res.results[0];
+                        model[field.name] = res.results![0];
                     }
                 }
             }

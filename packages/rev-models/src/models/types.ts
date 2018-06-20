@@ -38,6 +38,20 @@ export interface IValidationContext {
 }
 
 /**
+ * The IDefaultsContext interface represents the object passed to the
+ * [[IModel.defaults]] method
+ *
+ * This interface will most likely be extended with additional contextual
+ * information in the future
+ */
+export interface IDefaultsContext {
+    /**
+     * The associated ModelManager
+     */
+    manager: IModelManager;
+}
+
+/**
  * The IModel interface defines the standard methods that RevJS models can
  * implement.
  *
@@ -51,17 +65,23 @@ export interface IValidationContext {
 export interface IModel {
     [fieldName: string]: any;
     /**
+     * You should use this method (and not the constructor) to set any default
+     * field values by assigning them to `this`. You can use the objects
+     * passed in the [[IDefaultsContext]] to help determine what defaults to set.
+     */
+    defaults?(ctx: IDefaultsContext): void;
+    /**
      * You can define any synchronous model validation logic in this method.
      * Use the `vc.result` ([[ModelValidationResult]]) object to record any
      * validation errors.
      */
-    validate?(vc: IValidationContext): void;
+    validate?(ctx: IValidationContext): void;
     /**
      * You can define any asynchronous model validation logic in this method.
      * This method must return a promise. Use the `vc.result`
      * ([[ModelValidationResult]]) object to record any validation errors.
      */
-    validateAsync?(vc: IValidationContext): Promise<void>;
+    validateAsync?(ctx: IValidationContext): Promise<void>;
 }
 
 /**
@@ -73,11 +93,11 @@ export interface IModelMeta<T> {
     /**
      * The model Class / constructor function
      */
-    ctor?: new(...args: any[]) => T;
+    ctor: new(...args: any[]) => T;
     /**
      * The model name
      */
-    name?: string;
+    name: string;
     /**
      * A user-friendly name for the model
      */
@@ -85,11 +105,11 @@ export interface IModelMeta<T> {
     /**
      * The array of [[Field]]s defined for the object
      */
-    fields?: Field[];
+    fields: Field[];
     /**
      * The model [[Field]]s, indexed by field name
      */
-    fieldsByName?: {
+    fieldsByName: {
         [fieldName: string]: Field
     };
     /**
@@ -99,11 +119,11 @@ export interface IModelMeta<T> {
     /**
      * The name of the backend used to store the model
      */
-    backend?: string;
+    backend: string;
     /**
      * A boolean indicating whether the model can be stored in the backend
      */
-    stored?: boolean;
+    stored: boolean;
 }
 
 /**
@@ -221,13 +241,14 @@ export interface IModelManager {
     getBackendNames: () => string[];
 
     isNew: <T extends IModel>(model: T) => boolean;
+    getNew: <T extends IModel>(model: new() => T) => T;
 
     create: <T extends IModel>(model: T, options?: ICreateOptions) => Promise<IModelOperationResult<T, ICreateMeta>>;
     update: <T extends IModel>(model: T, options?: IUpdateOptions) => Promise<IModelOperationResult<T, IUpdateMeta>>;
     remove: <T extends IModel>(model: T, options?: IRemoveOptions) => Promise<IModelOperationResult<T, IRemoveMeta>>;
     read: <T extends IModel>(model: new() => T, options?: IReadOptions) => Promise<IModelOperationResult<T, IReadMeta>>;
     validate: <T extends IModel>(model: T, options?: IValidationOptions) => Promise<IModelValidationResult>;
-    exec: <R>(model: IModel, options?: IExecOptions) => Promise<IModelOperationResult<R, any>>;
+    exec: <R>(model: IModel, options: IExecOptions) => Promise<IModelOperationResult<R, any>>;
 
     hydrate: <T extends IModel>(model: new() => T, data: any) => T;
 }

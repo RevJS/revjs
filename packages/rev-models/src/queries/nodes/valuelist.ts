@@ -13,7 +13,7 @@ export class ValueListOperator<T extends IModel> extends QueryNode<T> {
             model: new() => T,
             operator: string,
             public values: any[],
-            parent: IQueryNode<T>) {
+            parent?: IQueryNode<T>) {
 
         super(parser, model, operator, parent);
         if (!(this.operator in parser.FIELD_OPERATORS)) {

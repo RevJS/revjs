@@ -18,6 +18,9 @@ export interface IRemoveActionProps extends IStandardComponentProps {
     /** Action label (default = "Delete") */
     label?: string;
 
+    /** Set to true to make this the default action for the DetailView */
+    defaultAction?: boolean;
+
     /** This method is called when the operation is successful */
     onSuccess?: (result: IModelOperationResult<any, any>) => void;
 
@@ -36,7 +39,7 @@ export interface IRemoveActionProps extends IStandardComponentProps {
      * instead of the component configured in [[UI_COMPONENTS]]. It will
      * be passed [[IActionComponentProps]]
      */
-    component?: React.ComponentType;
+    component?: React.ComponentType<any>;
 }
 
 class RemoveActionC extends React.Component<IRemoveActionProps & IDetailViewContextProp> {
@@ -79,7 +82,7 @@ class RemoveActionC extends React.Component<IRemoveActionProps & IDetailViewCont
     render() {
         const ctx = this.props.detailViewContext;
         let disabled = ctx.loadState != 'NONE'
-            || ctx.manager.isNew(ctx.model);
+            || ctx.manager.isNew(ctx.model!);
 
         if (!disabled && this.props.disabled) {
             disabled = this.props.disabled(this.props.detailViewContext);
@@ -88,6 +91,7 @@ class RemoveActionC extends React.Component<IRemoveActionProps & IDetailViewCont
         const cProps: IActionComponentProps = {
             label: this.props.label || 'Delete',
             disabled,
+            defaultAction: this.props.defaultAction ? true : false,
             doAction: () => this.doAction(),
             children: this.props.children
         };

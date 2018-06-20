@@ -43,11 +43,11 @@ export function createWithRelatedModelTests(backendName: string, config: IBacken
             expect(res.results).to.be.undefined;
             expect(res.result).to.be.instanceof(Developer);
             expect(res.result).to.not.equal(model);
-            expect(res.result.name).to.equal(model.name);
-            expect(res.result.company).to.be.undefined;
+            expect(res.result!.name).to.equal(model.name);
+            expect(res.result!.company).to.be.undefined;
 
             const readRes = await manager.read(Developer, { where: { id: 1 }, related: ['company']});
-            expect(readRes.results[0].company).to.be.null;
+            expect(readRes.results![0].company).to.be.null;
         });
 
         it('stores null related model value and does not return it', async () => {
@@ -60,11 +60,11 @@ export function createWithRelatedModelTests(backendName: string, config: IBacken
             expect(res.results).to.be.undefined;
             expect(res.result).to.be.instanceof(Developer);
             expect(res.result).to.not.equal(model);
-            expect(res.result.name).to.equal(model.name);
-            expect(res.result.company).to.be.undefined;
+            expect(res.result!.name).to.equal(model.name);
+            expect(res.result!.company).to.be.undefined;
 
             const readRes = await manager.read(Developer, { where: { id: 1 }, related: ['company']});
-            expect(readRes.results[0].company).to.be.null;
+            expect(readRes.results![0].company).to.be.null;
         });
 
         it('stores related model field as its primary key value and does not return it', async () => {
@@ -84,12 +84,12 @@ export function createWithRelatedModelTests(backendName: string, config: IBacken
             expect(res.results).to.be.undefined;
             expect(res.result).to.be.instanceof(Developer);
             expect(res.result).to.not.equal(model);
-            expect(res.result.name).to.equal(model.name);
-            expect(res.result.company).to.be.undefined;
+            expect(res.result!.name).to.equal(model.name);
+            expect(res.result!.company).to.be.undefined;
 
             const readRes = await manager.read(Developer, { where: { id: 1 }, related: ['company']});
-            expect(readRes.results[0].company).to.be.instanceof(Company);
-            expect(readRes.results[0].company.id).to.equal(company.id);
+            expect(readRes.results![0].company).to.be.instanceof(Company);
+            expect(readRes.results![0].company!.id).to.equal(company.id);
         });
 
         if (!config.skipRelatedModelListStoreTest) {
@@ -112,11 +112,11 @@ export function createWithRelatedModelTests(backendName: string, config: IBacken
                 expect(res.results).to.be.undefined;
                 expect(res.result).to.be.instanceof(Company);
                 expect(res.result).to.not.equal(model);
-                expect(res.result.name).to.equal(model.name);
-                expect(res.result.developers).to.be.undefined;
+                expect(res.result!.name).to.equal(model.name);
+                expect(res.result!.developers).to.be.undefined;
 
                 const readResult = await manager.read(Company, { where: { id: 1 }, related: ['developers']});
-                expect(readResult.results[0].developers).to.deep.equal([]);
+                expect(readResult.results![0].developers).to.deep.equal([]);
             });
         }
 

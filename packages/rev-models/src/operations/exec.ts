@@ -3,6 +3,7 @@ import { IModel, IModelManager, IExecOptions, IExecMeta, IExecArgs } from '../mo
 import { ModelOperationResult } from './operationresult';
 import { IModelOperation } from './operation';
 import { isSet } from '../utils/index';
+import { IExecParams } from '../backends/backend';
 
 /**
  * The IMethodContext interface represents the object passed to model methods,
@@ -31,7 +32,7 @@ export interface IMethodContext<T> {
  * @private
  */
 export const DEFAULT_EXEC_OPTIONS: IExecOptions = {
-    method: null
+    method: ''
 };
 
 /**
@@ -48,13 +49,13 @@ export async function exec<R>(manager: IModelManager, model: IModel, options: IE
     }
 
     let meta = manager.getModelMeta(model);
-    let opts: IExecOptions = Object.assign({}, DEFAULT_EXEC_OPTIONS, options);
+    let opts: IExecParams = Object.assign({}, DEFAULT_EXEC_OPTIONS, options);
 
     let operation: IModelOperation = {
         operationName: options.method
     };
     let result = new ModelOperationResult<R, IExecMeta>(operation);
-    let ctx: IMethodContext<R> = { manager, args: options.args, result, options };
+    let ctx: IMethodContext<R> = { manager, args: options.args || {}, result, options };
 
     let callResult: any;
     if (model[options.method]) {

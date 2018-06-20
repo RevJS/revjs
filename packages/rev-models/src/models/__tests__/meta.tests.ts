@@ -7,9 +7,9 @@ import { ModelManager } from '../../models/manager';
 import { IModelMeta } from '../types';
 
 class TestModel {
-    id: number = 1;
-    name: string = 'A Test Model';
-    date: string = '2018-01-02';
+    id: number;
+    name: string;
+    date: string;
 }
 
 class TestModel2 {}
@@ -19,9 +19,9 @@ function getAnyObject() {
 }
 
 let testManager: ModelManager;
-let testModelMeta: IModelMeta<TestModel>;
+let testModelMeta: Partial<IModelMeta<TestModel>>;
 let testModelMetaRes: IModelMeta<TestModel>;
-let testModel2Meta: IModelMeta<TestModel2>;
+let testModel2Meta: Partial<IModelMeta<TestModel2>>;
 let testModel2MetaRes: IModelMeta<TestModel2>;
 
 describe('initialiseMeta()', () => {
@@ -43,7 +43,7 @@ describe('initialiseMeta()', () => {
 
     it('throws an error if fields metadata is missing', () => {
         expect(() => {
-            testModelMeta = null;
+            testModelMeta = null as any;
             initialiseMeta(testManager, TestModel, testModelMeta);
         }).to.throw('You must define the fields metadata for the model');
         expect(() => {
@@ -164,7 +164,7 @@ describe('initialiseMeta()', () => {
 
     it('creates the fieldsByName property as expected', () => {
         testModelMetaRes = initialiseMeta(testManager, TestModel, testModelMeta);
-        let fieldNames = testModelMeta.fields.map((f) => f.name);
+        let fieldNames = testModelMetaRes.fields.map((f) => f.name);
         expect(Object.keys(testModelMetaRes.fieldsByName)).to.deep.equal(fieldNames);
         expect(testModelMetaRes.fieldsByName[fieldNames[0]]).to.be.instanceOf(Field);
     });
@@ -403,7 +403,7 @@ describe('checkMetadataInitialised()', () => {
         expect(() => {
             testModelMeta = {
                 fields: [],
-                fieldsByName: null
+                fieldsByName: null as any
             };
             checkMetadataInitialised(TestModel);
         }).to.throw(notInitedMsg);

@@ -24,7 +24,7 @@ class TestModel {
 
 class TestRelatedModel {
     @d.IntegerField({ primaryKey: true})
-        id: number;
+        id: number | null;
     @d.TextField()
         name: string;
 }

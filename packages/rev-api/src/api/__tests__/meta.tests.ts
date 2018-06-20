@@ -13,7 +13,7 @@ const testDecoratedMethodMeta = { modelData: false };
 class TestDecoratedModel {
 
     @rev.TextField()
-        name: string = 'A Test Model';
+        name: string;
 
     @ApiMethod(testDecoratedMethodMeta)
     testMethod() {}
@@ -23,11 +23,11 @@ class TestDecoratedModel {
 class TestModel {
 
     @rev.IntegerField()
-        id: number = 1;
+        id: number;
     @rev.TextField()
-        name: string = 'A Test Model';
+        name: string;
     @rev.DateField()
-        date: Date = new Date();
+        date: Date;
 
     testMethod() {}
 }

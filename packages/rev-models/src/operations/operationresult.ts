@@ -53,7 +53,7 @@ export interface IModelOperationResult<T, M extends IOperationMeta> {
     /**
      * Additional metadata related to the operation, e.g. "totalCount" - the number of records affected
      */
-    meta?: M;
+    meta: M;
 }
 
 /**
@@ -68,11 +68,12 @@ export class ModelOperationResult<T, M extends IOperationMeta> implements IModel
     result?: T;
     results?: T[];
     errors?: IOperationError[];
-    meta?: M;
+    meta: M;
 
     constructor(operation: IModelOperation) {
         this.operation = operation;
         this.success = true;
+        this.meta = {} as any;
     }
 
     /**
@@ -111,9 +112,6 @@ export class ModelOperationResult<T, M extends IOperationMeta> implements IModel
     setMeta(meta: Partial<M>) {
         if (typeof meta != 'object') {
             throw new Error('metadata must be an object');
-        }
-        if (!this.meta) {
-            this.meta = {} as any;
         }
         Object.assign(this.meta, meta);
     }

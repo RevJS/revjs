@@ -15,7 +15,7 @@ export class FieldNode<T extends IModel> extends QueryNode<T> {
             model: new() => T,
             public fieldName: string,
             value: any,
-            parent: IQueryNode<T>) {
+            parent?: IQueryNode<T>) {
 
         super(parser, model, fieldName, parent);
 

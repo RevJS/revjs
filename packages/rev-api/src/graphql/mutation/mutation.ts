@@ -1,9 +1,8 @@
-import { GraphQLObjectTypeConfig } from 'graphql';
 import { getModelOperationMutations } from './operations';
 import { getModelMethodMutations } from './methods';
 import { IGraphQLApi } from '../types';
 
-export function getMutationConfig(api: IGraphQLApi): GraphQLObjectTypeConfig<any, any> {
+export function getMutationConfig(api: IGraphQLApi) {
 
     let mutations = {
         name: 'mutation',

@@ -25,7 +25,7 @@ export function ApiOperations(operations: string[]) {
 
 // ApiMethod method decorator
 
-function addApiMethod(target: any, methodName: string, meta: IApiMethodMeta) {
+function addApiMethod(target: any, methodName: string, meta?: IApiMethodMeta) {
 
     if (typeof target[methodName] != 'function') {
         throw new Error(`ApiMethod decorator error: '${methodName}' is not a function.`);

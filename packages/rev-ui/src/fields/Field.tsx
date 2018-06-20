@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { fields } from 'rev-models';
 
-import { IModelProviderContext } from '../provider/ModelProvider';
 import { IDetailViewContextProp } from '../views/DetailView';
 import { IFieldError } from 'rev-models/lib/validation/validationresult';
 import { withDetailViewContext } from '../views/withDetailViewContext';
@@ -72,19 +71,39 @@ export interface IFieldComponentProps extends IStandardComponentProps  {
 
 class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFieldState> {
 
+    parentFieldName: string | null;
     modelField: fields.Field;
     fieldComponentName: string;
 
-    constructor(props: IFieldProps & IDetailViewContextProp, context: IModelProviderContext & IDetailViewContextProp) {
-        super(props, context);
+    constructor(props: IFieldProps & IDetailViewContextProp) {
+        super(props);
         if (!this.props.detailViewContext) {
             throw new Error('Field Error: must be nested inside a DetailView.');
         }
         const meta = this.props.detailViewContext.modelMeta;
-        if (!(props.name in meta.fieldsByName)) {
-            throw new Error(`Field Error: Model '${meta.name}' does not have a field called '${props.name}'.`);
+        const tokens = props.name.split('.');
+        if (tokens.length > 2) {
+            throw new Error(`Field Error: invalid field '${props.name}'. Currently only 2 levels of field hierarchy are supported.`);
         }
-        this.modelField = meta.fieldsByName[props.name];
+        else if (tokens.length == 2) {
+            const [parentField, subField] = tokens;
+            const relMeta = this.props.detailViewContext.relatedModelMeta;
+            if (!(parentField in relMeta)) {
+                throw new Error(`Field Error: invalid field '${props.name}'. Related field '${parentField}' is not selected in parent DetailView.`);
+            }
+            else if (!(subField in relMeta[parentField].fieldsByName)) {
+                throw new Error(`Field Error: invalid field '${props.name}'. Field '${subField}' does not exist on model '${relMeta[parentField].name}'.`);
+            }
+            this.parentFieldName = parentField;
+            this.modelField = relMeta[parentField].fieldsByName[subField];
+        }
+        else {
+            if (!(props.name in meta.fieldsByName)) {
+                throw new Error(`Field Error: Model '${meta.name}' does not have a field called '${props.name}'.`);
+            }
+            this.parentFieldName = null;
+            this.modelField = meta.fieldsByName[props.name];
+        }
         this.fieldComponentName = this.modelField.constructor.name;
         if (!this.props.component && !UI_COMPONENTS.fields[this.fieldComponentName]) {
             throw new Error(`Field Error: There is no UI_COMPONENT registered for field type '${this.fieldComponentName}'`);
@@ -92,8 +111,14 @@ class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFiel
     }
 
     onChange(value: any) {
-        this.props.detailViewContext.model[this.modelField.name] = value;
-        this.props.detailViewContext.setDirty(true);
+        const ctx = this.props.detailViewContext;
+        if (this.parentFieldName === null) {
+            ctx.model![this.modelField.name] = value;
+        }
+        else {
+            ctx.model![this.parentFieldName][this.modelField.name] = value;
+        }
+        ctx.setDirty(true);
         this.setState({ value });
     }
 
@@ -101,11 +126,34 @@ class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFiel
 
         const ctx = this.props.detailViewContext;
         let fieldErrors: IFieldError[] = [];
-        if (ctx.validation
-            && this.modelField.name in ctx.validation.fieldErrors) {
-            fieldErrors = ctx.validation.fieldErrors[this.modelField.name];
+        if (ctx.validation) {
+            if (this.parentFieldName) {
+                if (this.parentFieldName in ctx.validation.fieldErrors) {
+                    const subValidation = ctx.validation.fieldErrors[this.parentFieldName][0];
+                    if (subValidation && subValidation.validation.fieldErrors[this.modelField.name]) {
+                        fieldErrors = subValidation.validation.fieldErrors[this.modelField.name];
+                    }
+                }
+            }
+            else {
+                if (this.modelField.name in ctx.validation.fieldErrors) {
+                    fieldErrors = ctx.validation.fieldErrors[this.modelField.name];
+                }
+            }
         }
         const disabled = this.props.detailViewContext.loadState != 'NONE';
+        let value: any;
+        if (ctx.model) {
+            if (this.parentFieldName === null) {
+                value = ctx.model[this.modelField.name];
+            }
+            else {
+                const relModel = ctx.model[this.parentFieldName];
+                if (relModel) {
+                    value = ctx.model[this.parentFieldName][this.modelField.name];
+                }
+            }
+        }
 
         let cProps: IFieldComponentProps = {
             field: this.modelField,
@@ -113,10 +161,10 @@ class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFiel
             colspanNarrow: this.props.colspanNarrow || 12,
             colspan: this.props.colspan || 6,
             colspanWide: this.props.colspanWide || this.props.colspan || 6,
-            value: ctx.model ? ctx.model[this.modelField.name] : undefined,
+            value,
             errors: fieldErrors,
             disabled,
-            onChange: (value) => this.onChange(value)
+            onChange: (newValue) => this.onChange(newValue)
         };
         const sProps = getStandardProps(this.props);
 

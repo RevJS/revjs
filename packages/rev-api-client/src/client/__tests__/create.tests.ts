@@ -15,7 +15,7 @@ describe('ModelApiBackend - create() - graphql response tests', () => {
     let createOptions: ICreateOptions;
     let createResult: ModelOperationResult<any, ICreateMeta>;
 
-    async function setup(mockResponse?: AxiosResponse<any>) {
+    async function setup(mockResponse: AxiosResponse<any>) {
         manager = getModelManager();
         const mockHttpClient = getMockHttpClient(mockResponse);
         apiBackend = new ModelApiBackend('/api', mockHttpClient);

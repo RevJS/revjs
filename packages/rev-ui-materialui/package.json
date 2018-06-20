@@ -1,10 +1,10 @@
 {
   "name": "rev-ui-materialui",
-  "version": "0.16.3",
+  "version": "0.20.0",
   "description": "React MaterialUI components for RevJS",
   "main": "lib/index.js",
   "scripts": {
-    "build": "run-bin tslint -p . && run-bin tsc",
+    "build": "run-bin tslint -p . && rm -rf lib/ && run-bin tsc",
     "build-docs": "echo DOCS_TODO",
     "build-watch": "run-bin tsc --watch",
     "test": "run-bin mocha -r ./testsetup -r ts-node/register --recursive \"./src/**/__tests__/*\"",
@@ -21,13 +21,13 @@
   },
   "typings": "lib/index.d.ts",
   "dependencies": {
-    "material-ui": "1.0.0-beta.41",
-    "@material-ui/icons": "1.0.0-beta.42",
+    "@material-ui/core": "^1.2.0",
+    "@material-ui/icons": "^1.1.0",
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "rev-models": "^0.16.2",
-    "rev-ui": "^0.16.2",
+    "rev-models": "^0.19.0",
+    "rev-ui": "^0.20.0",
     "tslib": "1.x"
   },
   "devDependencies": {

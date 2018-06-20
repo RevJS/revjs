@@ -7,20 +7,31 @@ import { IBackend } from '../../backends/backend';
 import { InMemoryBackend } from '../../backends/inmemory/backend';
 import { IModelMeta } from '../../models/types';
 
+const TestModel_defaults: Partial<TestModel> = {
+    name: 'default_name',
+    date: '2018-01-01'
+};
+
 class TestModel {
-    id: number;
+    id: number | null;
     name: string;
-    date: Date;
+    date: string;
+
+    defaults() {
+        Object.assign(this, TestModel_defaults);
+    }
 }
 
-class TestModel2 {}
+class TestModel2 {
+    rating: number;
+}
 
 class EmptyModel {}
 
 describe('ModelManager', () => {
     let testReg: manager.ModelManager;
-    let testMeta: IModelMeta<TestModel>;
-    let testMeta2: IModelMeta<TestModel>;
+    let testMeta: Partial<IModelMeta<TestModel>>;
+    let testMeta2: Partial<IModelMeta<TestModel2>>;
     let testBackend: IBackend;
 
     beforeEach(() => {
@@ -225,7 +236,7 @@ describe('ModelManager', () => {
 
         it('throws an error when backendName is not specified', () => {
             expect(() => {
-                testReg.registerBackend(undefined, undefined);
+                testReg.registerBackend(undefined as any, undefined as any);
             }).to.throw('you must specify a name');
         });
 
@@ -252,7 +263,7 @@ describe('ModelManager', () => {
 
         it('throws an error if backendName not specified', () => {
             expect(() => {
-                testReg.getBackend(undefined);
+                testReg.getBackend(undefined as any);
             }).to.throw('you must specify the name of the backend to get');
         });
 
@@ -270,6 +281,18 @@ describe('ModelManager', () => {
             testReg.registerBackend('default', testBackend);
             testReg.register(TestModel, testMeta);
             testReg.register(TestModel2, testMeta2);
+        });
+
+        it('throws if specified model is undefined', () => {
+            expect(() => {
+                testReg.isNew(undefined as any);
+            }).to.throw('Specified model is not a Model instance');
+        });
+
+        it('throws if specified model is null', () => {
+            expect(() => {
+                testReg.isNew(null as any);
+            }).to.throw('Specified model is not a Model instance');
         });
 
         it('throws if specified model does not have a primaryKey field', () => {
@@ -294,6 +317,34 @@ describe('ModelManager', () => {
             const model = new TestModel();
             model.id = 0;
             expect(testReg.isNew(model)).to.be.false;
+        });
+
+    });
+
+    describe('getNew()', () => {
+
+        beforeEach(() => {
+            testReg.registerBackend('default', testBackend);
+            testReg.register(TestModel, testMeta);
+            testReg.register(TestModel2, testMeta2);
+        });
+
+        it('throws if specified model is not registered', () => {
+            expect(() => {
+                testReg.getNew(EmptyModel);
+            }).to.throw(`ModelManagerError: Model 'EmptyModel' is not registered`);
+        });
+
+        it('model with defaults() function has default values applied', () => {
+            const model = testReg.getNew(TestModel);
+            expect(model.name).to.equal(TestModel_defaults.name);
+            expect(model.date).to.equal(TestModel_defaults.date);
+        });
+
+        it('model without defaults() function is still created successfully', () => {
+            const model = testReg.getNew(TestModel2);
+            expect(model).to.be.instanceof(TestModel2);
+            expect(model.rating).to.be.undefined;
         });
 
     });

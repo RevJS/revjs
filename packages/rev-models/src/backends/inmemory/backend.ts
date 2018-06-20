@@ -1,6 +1,5 @@
 
-import { IBackend } from '../';
-import { IModel, IModelMeta, IModelManager, ICreateMeta, ICreateOptions, IUpdateMeta, IUpdateOptions, IReadMeta, IReadOptions, IRemoveMeta, IRemoveOptions, IExecMeta, IExecOptions, IRawValues } from '../../models/types';
+import { IModel, IModelMeta, IModelManager, ICreateMeta, IUpdateMeta, IReadMeta, IRemoveMeta, IExecMeta, IRawValues } from '../../models/types';
 import { ModelOperationResult } from '../../operations/operationresult';
 import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
@@ -8,6 +7,7 @@ import { sortRecords } from './sort';
 import { AutoNumberField, RelatedModelField, RelatedModelListField } from '../../fields';
 import { sleep } from '../../__test_utils__';
 import { IForeignKeyValues, getOwnRelatedFieldNames, getRelatedModelInstances, getRelatedModelListInstances } from '../utils';
+import { IBackend, ICreateParams, IUpdateParams, IReadParams, IRemoveParams, IExecParams } from '../backend';
 
 /**
  * The InMemoryBackend stores your model data in JavaScript objects. This
@@ -71,7 +71,7 @@ export class InMemoryBackend implements IBackend {
     async create<T extends IModel>(
             manager: IModelManager,
             model: T,
-            options: ICreateOptions,
+            params: ICreateParams,
             result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
 
         if (this.OPERATION_DELAY) {
@@ -95,10 +95,10 @@ export class InMemoryBackend implements IBackend {
     async update<T extends IModel>(
             manager: IModelManager,
             model: T,
-            options: IUpdateOptions,
+            params: IUpdateParams,
             result: ModelOperationResult<T, IUpdateMeta>): Promise<ModelOperationResult<T, IUpdateMeta>> {
 
-        if (!options.where) {
+        if (!params.where) {
             throw new Error(`update() requires the 'where' option to be set.`);
         }
 
@@ -108,14 +108,14 @@ export class InMemoryBackend implements IBackend {
 
         let meta = manager.getModelMeta(model);
         let parser = new QueryParser(manager);
-        let queryNode = parser.getQueryNodeForQuery(meta.ctor, options.where);
+        let queryNode = parser.getQueryNodeForQuery(meta.ctor, params.where);
         let query = new InMemoryQuery(queryNode);
 
         let modelStorage = this._getModelStorage(meta);
         let updateCount = 0;
         for (let record of modelStorage) {
             if (query.testRecord(record)) {
-                this._writeFields(manager, 'update', model, meta, record, options.fields);
+                this._writeFields(manager, 'update', model, meta, record, params.fields);
                 updateCount++;
             }
         }
@@ -129,7 +129,7 @@ export class InMemoryBackend implements IBackend {
     async read<T extends IModel>(
             manager: IModelManager,
             model: new(...args: any[]) => T,
-            options: IReadOptions,
+            params: IReadParams,
             result: ModelOperationResult<T, IReadMeta>): Promise<ModelOperationResult<T, IReadMeta>> {
 
         if (this.OPERATION_DELAY) {
@@ -139,14 +139,14 @@ export class InMemoryBackend implements IBackend {
         let meta = manager.getModelMeta(model);
         let modelStorage = this._getModelStorage(meta);
         let parser = new QueryParser(manager);
-        let queryNode = parser.getQueryNodeForQuery(model, options.where);
+        let queryNode = parser.getQueryNodeForQuery(model, params.where || {});
         let query = new InMemoryQuery(queryNode);
 
         const primaryKeyValues: any[] = [];
         const foreignKeyValues: IForeignKeyValues = {};
         const rawValues: IRawValues = [];
 
-        const relatedFieldNames = getOwnRelatedFieldNames(options.related);
+        const relatedFieldNames = getOwnRelatedFieldNames(params.related);
 
         // Populate scalar values and cache related model information
         result.results = [];
@@ -181,9 +181,9 @@ export class InMemoryBackend implements IBackend {
                     }
                 }
 
-                if (options.rawValues) {
+                if (params.rawValues) {
                     let rawValueObj = {};
-                    for (let fieldName of options.rawValues) {
+                    for (let fieldName of params.rawValues) {
                         rawValueObj[fieldName] = record[fieldName];
                     }
                     rawValues.push(rawValueObj);
@@ -194,8 +194,8 @@ export class InMemoryBackend implements IBackend {
         if (relatedFieldNames) {
             // Get related record data
             const related = await Promise.all([
-                getRelatedModelInstances(manager, meta, foreignKeyValues, options),
-                getRelatedModelListInstances(manager, meta, primaryKeyValues, options)
+                getRelatedModelInstances(manager, meta, foreignKeyValues, params),
+                getRelatedModelListInstances(manager, meta, primaryKeyValues, params)
             ]);
             const [relatedModelInstances, relatedModelListInstances] = related;
 
@@ -214,8 +214,8 @@ export class InMemoryBackend implements IBackend {
                     }
                     else if (field instanceof RelatedModelListField) {
                         if (relatedModelListInstances[fieldName]
-                            && relatedModelListInstances[fieldName][instance[meta.primaryKey]]) {
-                                instance[fieldName] = relatedModelListInstances[fieldName][instance[meta.primaryKey]];
+                            && relatedModelListInstances[fieldName][instance[meta.primaryKey!]]) {
+                                instance[fieldName] = relatedModelListInstances[fieldName][instance[meta.primaryKey!]];
                         }
                         else {
                             instance[fieldName] = [];
@@ -225,16 +225,16 @@ export class InMemoryBackend implements IBackend {
             }
         }
 
-        if (options.rawValues) {
+        if (params.rawValues) {
             result.setMeta({ rawValues: rawValues });
         }
-        if (options.orderBy) {
-            result.results = sortRecords(result.results, options.orderBy) as T[];
-            result.setMeta({ orderBy: options.orderBy });
+        if (params.orderBy) {
+            result.results = sortRecords(result.results, params.orderBy) as T[];
+            result.setMeta({ orderBy: params.orderBy });
         }
         result.setMeta({
-            offset: options.offset,
-            limit: options.limit,
+            offset: params.offset,
+            limit: params.limit,
             totalCount: result.results.length
         });
         result.results = result.results.slice(
@@ -250,10 +250,10 @@ export class InMemoryBackend implements IBackend {
     async remove<T extends IModel>(
             manager: IModelManager,
             model: T,
-            options: IRemoveOptions,
+            params: IRemoveParams,
             result: ModelOperationResult<T, IRemoveMeta>): Promise<ModelOperationResult<T, IRemoveMeta>> {
 
-        if (!options.where) {
+        if (!params.where) {
             throw new Error('remove() requires the \'where\' option to be set');
         }
 
@@ -263,7 +263,7 @@ export class InMemoryBackend implements IBackend {
 
         let meta = manager.getModelMeta(model);
         let parser = new QueryParser(manager);
-        let queryNode = parser.getQueryNodeForQuery(meta.ctor, options.where);
+        let queryNode = parser.getQueryNodeForQuery(meta.ctor, params.where);
         let query = new InMemoryQuery(queryNode);
 
         let modelStorage = this._getModelStorage(meta);
@@ -285,7 +285,7 @@ export class InMemoryBackend implements IBackend {
     /**
      * @private
      */
-    async exec<R>(manager: IModelManager, model: IModel, options: IExecOptions, result: ModelOperationResult<R, IExecMeta>): Promise<ModelOperationResult<R, IExecMeta>> {
+    async exec<R>(manager: IModelManager, model: IModel, params: IExecParams, result: ModelOperationResult<R, IExecMeta>): Promise<ModelOperationResult<R, IExecMeta>> {
         return Promise.reject(new Error('InMemoryBackend.exec() not supported'));
     }
 

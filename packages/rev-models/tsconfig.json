@@ -3,10 +3,7 @@
     "compilerOptions": {
         "outDir": "./lib",
         "rootDir": "./src",
-        "baseUrl": "./",
-        "paths": {
-            "rev-models": ["src"]
-        }
+        "baseUrl": "./"
     },
     "include": [
         "./src/**/*"

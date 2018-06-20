@@ -2,6 +2,7 @@ import { IReadOptions, IModelManager, IModelMeta, IModel } from '../models/types
 import { IModelOperationResult } from '../operations/operationresult';
 import { RelatedModelField, RelatedModelListField } from '../fields';
 import { dedupeStringArray } from '../utils';
+import { DEFAULT_READ_OPTIONS } from '../operations/read';
 
 /**
  * @private
@@ -31,16 +32,21 @@ export interface IRelatedModelListInstances {
 /**
  * @private
  */
-export function getOwnRelatedFieldNames(related: string[]) {
-    return related && dedupeStringArray(related.map((fieldName) => {
-        return fieldName.split('.')[0];
-    }));
+export function getOwnRelatedFieldNames(related?: string[]) {
+    if (related) {
+        return dedupeStringArray(related.map((fieldName) => {
+            return fieldName.split('.')[0];
+        }));
+    }
+    else {
+        return [];
+    }
 }
 
 /**
  * @private
  */
-export function getChildRelatedFieldNames(related: string[], parent: string) {
+export function getChildRelatedFieldNames(parent: string, related?: string[]) {
     if (related) {
         let childRelatedFields: string[] = [];
         related.forEach((fieldName) => {
@@ -66,19 +72,20 @@ export async function getRelatedModelInstances(manager: IModelManager, meta: IMo
         if (foreignKeyValues[fieldName].length > 0) {
             let field = meta.fieldsByName[fieldName] as RelatedModelField;
             let relatedMeta = manager.getModelMeta(field.options.model);
-            let readOptions: IReadOptions = {
+            let readOptions = {
                 limit: foreignKeyValues[fieldName].length,
-                related: getChildRelatedFieldNames(options.related, fieldName)
+                offset: 0,
+                related: getChildRelatedFieldNames(fieldName, options.related)
             };
 
             foreignKeyFields.push(fieldName);
-            foreignKeyPKFields.push(relatedMeta.primaryKey);
+            foreignKeyPKFields.push(relatedMeta.primaryKey!);
             foreignKeyPromises.push(
                 manager.read(
                     relatedMeta.ctor,
                     {
                         where: {
-                            [relatedMeta.primaryKey]: { _in: foreignKeyValues[fieldName] }
+                            [relatedMeta.primaryKey!]: { _in: foreignKeyValues[fieldName] }
                         },
                         ...readOptions
                     }
@@ -91,7 +98,7 @@ export async function getRelatedModelInstances(manager: IModelManager, meta: IMo
     let results = await Promise.all(foreignKeyPromises);
     foreignKeyFields.forEach((fieldName, i) => {
         relatedModelInstances[fieldName] = {};
-        for (let instance of results[i].results) {
+        for (let instance of results[i].results!) {
             relatedModelInstances[fieldName][instance[foreignKeyPKFields[i]]] = instance;
         }
     });
@@ -113,10 +120,11 @@ export async function getRelatedModelListInstances(manager: IModelManager, meta:
         let field = meta.fieldsByName[fieldName];
         if (field instanceof RelatedModelListField) {
             let relatedMeta = manager.getModelMeta(field.options.model);
-            let readOptions: IReadOptions = {
-                // NOTE: Number of results limited to the default number of results
+            let readOptions = {
+                limit: DEFAULT_READ_OPTIONS.limit,
+                offset: 0,
                 rawValues: [field.options.field],
-                related: getChildRelatedFieldNames(options.related, fieldName)
+                related: getChildRelatedFieldNames(fieldName, options.related)
             };
             modelListFields.push(fieldName);
             modelListFieldFKs.push(field.options.field);
@@ -138,7 +146,7 @@ export async function getRelatedModelListInstances(manager: IModelManager, meta:
     let results = await Promise.all(modelListFieldPromises);
     modelListFields.forEach((fieldName, i) => {
         relatedModelListInstances[fieldName] = {};
-        results[i].results.forEach((instance, resultIdx) => {
+        results[i].results!.forEach((instance, resultIdx) => {
             let fkValue = results[i].meta.rawValues[resultIdx][modelListFieldFKs[i]];
             if (!relatedModelListInstances[fieldName][fkValue]) {
                 relatedModelListInstances[fieldName][fkValue] = [];

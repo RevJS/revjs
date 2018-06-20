@@ -41,7 +41,7 @@ describe('SearchAction', () => {
     });
 
     function resetSpyComponent() {
-        receivedProps = null;
+        receivedProps = null as any;
     }
 
     describe('rendering', () => {
@@ -120,8 +120,37 @@ describe('SearchAction', () => {
             expect(receivedProps.disabled).to.be.false;
         });
 
+        it('defaultAction = false', () => {
+            expect(receivedProps.defaultAction).to.be.false;
+        });
+
         it('passes through doAction() function', () => {
             expect(receivedProps.doAction).to.be.a('function');
+        });
+
+    });
+
+    describe('IActionComponentProps - defaultAction', () => {
+        let modelManager: rev.ModelManager;
+
+        before(() => {
+            resetSpyComponent();
+            modelManager = models.getModelManager();
+            mount(
+                <ModelProvider modelManager={modelManager}>
+                    <SearchView model="Post" onSearch={() => null}>
+                        <SearchAction
+                            label="Search Things"
+                            defaultAction={true}
+                            component={SpyComponent}
+                        />
+                    </SearchView>
+                </ModelProvider>
+            );
+        });
+
+        it('defaultAction = true', () => {
+            expect(receivedProps.defaultAction).to.be.true;
         });
 
     });

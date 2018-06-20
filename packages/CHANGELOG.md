@@ -1,7 +1,49 @@
 
 ## RevJS Module Releases
 
-### 0.17.0 - 
+### 0.20.0 - 19th June 2018
+
+**`rev-ui`**
+
+* `<DetailView />` has a new `related` prop for loading `RelatedModel` fields
+* `<Field />` component now supports sub-fields, e.g. `address.address1`
+* `<SaveAction />` now triggers validation before saving
+
+### 0.19.0 - 15th June 2018
+
+**`rev-models`**
+
+* `ModelManager.isNew()` throw better error when model is null or undefined
+* `ModelManager.register()` now does a test instantiation of the model, and throws an error if the constructor sets any default values
+* Added `IModel.defaults()` method, to be used for setting default field values
+* Added `ModelManager.getNew()` method, for returning models with default values applied
+
+**`rev-ui`**
+
+* Add a `defaultAction` prop for `<PostAction />`, `<SaveAction />`, etc. components
+* `<DetailView />` now applies default values set in `IModel.defaults()`
+
+**`rev-ui-materialui`**
+
+* MUISelectField - store `null` instead of empty string when empty option is selected
+
+### 0.18.0 - 6th June 2018
+
+* Build fix: clean lib/** before building
+
+**`rev-api`**
+
+* Export IModelApiManager interface from `rev-api` root
+
+**`rev-ui-materialui`**
+
+* Update to @material-ui/core and @material-ui/icons @ 1.x
+
+### 0.17.0 - 13th May 2018
+
+* Upgraded to latest devDependencies
+* Added support for TypeScript `strict` mode
+* Added seperate `Params` interfaces for `IBackend` methods
 
 **`rev-ui-materialui`**
 

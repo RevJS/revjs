@@ -52,7 +52,7 @@ describe('SearchField', () => {
     });
 
     function resetSpyComponent() {
-        receivedProps = null;
+        receivedProps = null as any;
     }
 
     describe('ISearchFieldComponentProps', () => {

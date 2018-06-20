@@ -7,7 +7,7 @@ export const DISALLOWED_FIELD_NAMES = [
     'validateAsync'
 ];
 
-function populateMetaFromClassFields<T extends IModel>(model: new(...args: any[]) => T, meta: IModelMeta<T>) {
+function populateMetaFromClassFields<T extends IModel>(model: new(...args: any[]) => T, meta: Partial<IModelMeta<T>>) {
     // Load fields from prototype __fields property if present (fields added via decorators)
     let proto = model.prototype;
     if (proto.__fields) {
@@ -29,7 +29,7 @@ function populateMetaFromClassFields<T extends IModel>(model: new(...args: any[]
 /**
  * @private
  */
-export function initialiseMeta<T extends IModel>(manager: IModelManager, model: new(...args: any[]) => T, meta?: IModelMeta<T>): IModelMeta<T> {
+export function initialiseMeta<T extends IModel>(manager: IModelManager, model: new(...args: any[]) => T, meta?: Partial<IModelMeta<T>>): IModelMeta<T> {
 
     if (!meta) {
         meta = {};
@@ -91,7 +91,7 @@ export function initialiseMeta<T extends IModel>(manager: IModelManager, model: 
         throw new Error(`MetadataError (${meta.name}): Primary key field "${meta.primaryKey}" is not defined.`);
     }
 
-    return meta;
+    return meta as IModelMeta<T>;
 }
 
 /**

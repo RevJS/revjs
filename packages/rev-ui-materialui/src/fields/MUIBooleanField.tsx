@@ -1,9 +1,11 @@
 
 import * as React from 'react';
 
-import Grid from 'material-ui/Grid';
-import { FormControl, FormControlLabel, FormHelperText } from 'material-ui/Form';
-import Checkbox from 'material-ui/Checkbox';
+import Grid from '@material-ui/core/Grid';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Checkbox from '@material-ui/core/Checkbox';
 
 import { IFieldComponentProps } from 'rev-ui/lib/fields/Field';
 import { getGridWidthProps } from './utils';

@@ -1,9 +1,11 @@
 
 import * as React from 'react';
 
-import Grid from 'material-ui/Grid';
-import { FormControl, FormHelperText } from 'material-ui/Form';
-import Input, { InputLabel } from 'material-ui/Input';
+import Grid from '@material-ui/core/Grid';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
 
 import { IFieldComponentProps } from 'rev-ui/lib/fields/Field';
 import { getGridWidthProps } from './utils';

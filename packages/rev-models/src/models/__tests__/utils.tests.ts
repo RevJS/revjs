@@ -1,34 +1,74 @@
 import { expect } from 'chai';
+import * as d from '../../decorators';
 
-import { checkIsModelConstructor, checkFieldsList } from '../utils';
+import { checkIsValidModelConstructor, checkFieldsList } from '../utils';
 
 describe('rev.model', () => {
 
-    describe('checkIsModelConstructor()', () => {
+    class TestModel {
+        @d.AutoNumberField()
+            id: number;
+        @d.TextField()
+            name: string;
+        testMethod() {
+            // should be sweet
+        }
+        @d.TextField()
+        get calculated() {
+            // should also get ignored
+            return 'test';
+        }
+    }
+
+    class TestModelWithConstructorError {
+        constructor() {
+            throw new Error('Boom!');
+        }
+    }
+
+    class TestModelWithConstructorValue {
+        @d.AutoNumberField()
+            id: number;
+        @d.TextField()
+            name: string = 'test';
+    }
+
+    describe('checkIsValidModelConstructor()', () => {
 
         let errorMessage = 'ModelError: Supplied model is not a model constructor.';
 
         it('should not throw if a constructor is passed', () => {
             expect(() => {
-                checkIsModelConstructor(class MyModel {});
+                checkIsValidModelConstructor(TestModel);
             }).to.not.throw();
         });
 
         it('should throw if a non-constructor is passed', () => {
-            expect(() => { checkIsModelConstructor(undefined);
+            expect(() => { checkIsValidModelConstructor(undefined);
                 }).to.throw(errorMessage);
-            expect(() => { checkIsModelConstructor(null);
+            expect(() => { checkIsValidModelConstructor(null);
                 }).to.throw(errorMessage);
-            expect(() => { checkIsModelConstructor(22 as any);
+            expect(() => { checkIsValidModelConstructor(22 as any);
                 }).to.throw(errorMessage);
-            expect(() => { checkIsModelConstructor('string' as any);
+            expect(() => { checkIsValidModelConstructor('string' as any);
                 }).to.throw(errorMessage);
-            expect(() => { checkIsModelConstructor(function() {} as any);
+            expect(() => { checkIsValidModelConstructor(function() {} as any);
                 }).to.throw(errorMessage);
-            expect(() => { checkIsModelConstructor({name: 'Fred'} as any);
+            expect(() => { checkIsValidModelConstructor({name: 'Fred'} as any);
                 }).to.throw(errorMessage);
         });
 
+        it('should throw if calling the constructor with no arguments fails', () => {
+            expect(() => {
+                checkIsValidModelConstructor(TestModelWithConstructorError);
+            }).to.throw('ModelError: constructor threw an error when called with no arguments: Boom!');
+        });
+
+        it('should throw if constructor sets initial field values', () => {
+            expect(() => {
+                checkIsValidModelConstructor(TestModelWithConstructorValue);
+            }).to.throw('ModelError: constructor must not set default field values');
+        });
     });
 
     describe('checkFieldsList()', () => {
@@ -39,7 +79,7 @@ describe('rev.model', () => {
 
         it('throws when fields arg is not set', () => {
             expect(() => {
-                checkFieldsList(meta, null);
+                checkFieldsList(meta, null as any);
             }).to.throw('"fields" must be an array of field names');
         });
 

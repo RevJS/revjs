@@ -13,7 +13,7 @@ export class ConjunctionNode<T extends IModel> extends QueryNode<T> {
             model: new() => T,
             operator: string,
             value: any,
-            parent: IQueryNode<T>) {
+            parent?: IQueryNode<T>) {
 
         super(parser, model, operator, parent);
 

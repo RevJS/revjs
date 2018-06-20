@@ -24,23 +24,23 @@ describe('class ConjunctionNode<T> - constructor', () => {
 
     it('throws if operator is not a conjunction operator', () => {
         expect(() => {
-            new ConjunctionNode(parser, TestModel, '_gt', [], null);
+            new ConjunctionNode(parser, TestModel, '_gt', [], undefined);
         }).to.throw('unrecognised conjunction operator');
     });
 
     it('throws if value is not an array', () => {
         expect(() => {
-            new ConjunctionNode(parser, TestModel, '_and', {}, null);
+            new ConjunctionNode(parser, TestModel, '_and', {}, undefined);
         }).to.throw('must be an array');
     });
 
     it('creates a conjunction node with the correct operator', () => {
-        let node = new ConjunctionNode(parser, TestModel, '_and', [], null);
+        let node = new ConjunctionNode(parser, TestModel, '_and', [], undefined);
         expect(node.operator).to.equal('and');
     });
 
     it('creates a conjunction node with no children if value array is empty', () => {
-        let node = new ConjunctionNode(parser, TestModel, '_and', [], null);
+        let node = new ConjunctionNode(parser, TestModel, '_and', [], undefined);
         expect(node.children).to.have.length(0);
     });
 
@@ -49,7 +49,7 @@ describe('class ConjunctionNode<T> - constructor', () => {
             { id: 1 },
             { name: 'bob' },
             { active: true, name: 'bob' }
-        ], null);
+        ], undefined);
         expect(node.children).to.have.length(3);
     });
 

@@ -26,7 +26,7 @@ describe('GraphQLApi class', () => {
 
         it('throws if not passed a ModelManager', () => {
             expect(() => {
-                api = new GraphQLApi(null);
+                api = new GraphQLApi(undefined as any);
             }).to.throw('Invalid ModelApiManager passed in constructor');
         });
 

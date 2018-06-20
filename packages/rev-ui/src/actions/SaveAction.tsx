@@ -5,12 +5,12 @@ import { IDetailViewContextProp, IDetailViewContext } from '../views/DetailView'
 import { withDetailViewContext } from '../views/withDetailViewContext';
 import { UI_COMPONENTS } from '../config';
 import { IActionComponentProps } from './types';
-import { IModelOperationResult } from 'rev-models';
+import { IModelOperationResult, ValidationError } from 'rev-models';
 import { IStandardComponentProps, getStandardProps } from '../utils/props';
 
 /**
  * A `<SaveAction />` component is designed to be included inside a
- * `<DetailView />`. By default it renders a button that, when clicked,
+ * `<DetailView />`. By default it renders a button that, when clicked, triggers validation, then
  * either creates or updates the current record, depending on whether it has
  * a primaryKey value or not.
  */
@@ -18,6 +18,9 @@ export interface ISaveActionProps extends IStandardComponentProps {
 
     /** Action label (default = "Submit") */
     label?: string;
+
+    /** Set to true to make this the default action for the DetailView */
+    defaultAction?: boolean;
 
     /** This method is called when the operation is successful */
     onSuccess?: (result: IModelOperationResult<any, any>) => void;
@@ -40,7 +43,7 @@ export interface ISaveActionProps extends IStandardComponentProps {
      * instead of the component configured in [[UI_COMPONENTS]]. It will
      * be passed [[IActionComponentProps]]
      */
-    component?: React.ComponentType;
+    component?: React.ComponentType<any>;
 }
 
 class SaveActionC extends React.Component<ISaveActionProps & IDetailViewContextProp> {
@@ -72,6 +75,10 @@ class SaveActionC extends React.Component<ISaveActionProps & IDetailViewContextP
         ctx.setLoadState('SAVING');
 
         try {
+            const valid = await ctx.validate();
+            if (!valid.valid) {
+                throw new ValidationError(valid);
+            }
             const result = await ctx.save();
             success(result);
         }
@@ -90,6 +97,7 @@ class SaveActionC extends React.Component<ISaveActionProps & IDetailViewContextP
         const cProps: IActionComponentProps = {
             label: this.props.label || 'Save',
             disabled,
+            defaultAction: this.props.defaultAction ? true : false,
             doAction: () => this.doAction(),
             children: this.props.children
         };

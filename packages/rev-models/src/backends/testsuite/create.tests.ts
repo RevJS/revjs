@@ -40,18 +40,18 @@ export function createTests(backendName: string, config: IBackendTestConfig) {
             expect(res.results).to.be.undefined;
             expect(res.result).to.be.instanceof(TestModel);
             expect(res.result).to.not.equal(model);
-            expect(res.result.name).to.equal(model.name);
-            expect(res.result.age).to.equal(model.age);
-            expect(res.result.gender).to.be.undefined;
+            expect(res.result!.name).to.equal(model.name);
+            expect(res.result!.age).to.equal(model.age);
+            expect(res.result!.gender).to.be.undefined;
 
             const readRes = await manager.read(TestModel, { where: { id: 1 }});
             expect(readRes.meta.totalCount).to.equal(1);
-            expect(readRes.results[0]).to.include({
+            expect(readRes.results![0]).to.include({
                 id: 1,
                 name: 'test model',
                 age: 20
             });
-            expect(readRes.results[0]).to.be.instanceof(TestModel);
+            expect(readRes.results![0]).to.be.instanceof(TestModel);
         });
 
         it('stores multiple records', async () => {
@@ -69,8 +69,8 @@ export function createTests(backendName: string, config: IBackendTestConfig) {
             expect(res[1].result).to.be.instanceof(TestModel);
             expect(res[0].result).to.not.equal(model1);
             expect(res[1].result).to.not.equal(model2);
-            expect(res[0].result.name).to.equal(model1.name);
-            expect(res[1].result.name).to.equal(model2.name);
+            expect(res[0].result!.name).to.equal(model1.name);
+            expect(res[1].result!.name).to.equal(model2.name);
 
             const readRes = await manager.read(TestModel);
             expect(readRes.meta.totalCount).to.equal(2);

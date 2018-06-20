@@ -1,7 +1,7 @@
 
 import { initialiseMeta } from '../models/meta';
 import { IModel, ModelCtor, IModelMeta } from '../models/types';
-import { checkIsModelConstructor } from '../models/utils';
+import { checkIsValidModelConstructor } from '../models/utils';
 import { IBackend } from '../backends/backend';
 import { IModelOperation } from '../operations/operation';
 import { create } from '../operations/create';
@@ -86,10 +86,10 @@ export class ModelManager implements IModelManager {
      * instance**
      * @param meta Optional additional metadata about the model being registered
      */
-    register<T extends IModel>(model: new(...args: any[]) => T, meta?: IModelMeta<T>) {
+    register<T extends IModel>(model: new(...args: any[]) => T, meta?: Partial<IModelMeta<T>>) {
 
         // Check model constructor
-        checkIsModelConstructor(model);
+        checkIsValidModelConstructor(model);
 
         // Initialise model metadata
         let modelMeta = initialiseMeta(this, model, meta);
@@ -207,11 +207,31 @@ export class ModelManager implements IModelManager {
      * @param model An instance of a registered model to check
      */
     isNew<T extends IModel>(model: T) {
+        if (model === null || typeof model != 'object') {
+            throw new Error('Specified model is not a Model instance');
+        }
         const meta = this.getModelMeta(model);
         if (!meta.primaryKey) {
             throw new Error('ModelManagerError: isNew() can only be used with models that have a primaryKey field');
         }
         return !isSet(model[meta.primaryKey]);
+    }
+
+    /**
+     * Returns a new instance of the passed model, including any default values
+     * defined in its `defaults()` function
+     *
+     * @param model The Class constructor if the model to instantiate
+     */
+    getNew<T extends IModel>(model: new() => T) {
+        this.assertModelClassIsRegistered(model);
+        const instance = new model();
+        if (typeof instance.defaults == 'function') {
+            instance.defaults({
+                manager: this
+            });
+        }
+        return instance;
     }
 
     /* Model CRUD Functions */

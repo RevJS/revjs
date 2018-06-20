@@ -1,14 +1,18 @@
 
 import * as React from 'react';
 
-import { withStyles, StyledComponentProps } from 'material-ui/styles';
-import IconButton from 'material-ui/IconButton';
+import { withStyles, StyledComponentProps } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import Table, { TableHead, TableBody, TableRow, TableCell } from 'material-ui/Table';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
-import { CircularProgress } from 'material-ui/Progress';
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import TableBody from '@material-ui/core/TableBody';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { IListViewComponentProps } from 'rev-ui/lib/views/ListView';
 
 const styles = withStyles({
@@ -85,7 +89,7 @@ export const MUIListView = styles<IMUIListViewProps>((props) => {
                         key={rowIdx} hover
                         onClick={() => props.onItemPress(model)}
                     >
-                        {props.fields.map((field, colIdx) => {
+                        {props.fields!.map((field, colIdx) => {
                             const data = model[field.name];
                             return (
                                 <TableCell key={colIdx} padding="dense">{data ? data.toString() : ''}</TableCell>

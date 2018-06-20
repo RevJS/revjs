@@ -9,3 +9,4 @@ package-lock.json
 docs/dist
 docs/mkdocs/dist
 test-results.xml
+.DS_Store

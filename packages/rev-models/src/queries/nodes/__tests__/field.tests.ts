@@ -25,12 +25,12 @@ describe('class FieldNode<T> - constructor', () => {
 
     it('throws if fieldName does not exist in meta', () => {
         expect(() => {
-            new FieldNode(parser, TestModel, 'non_field', null, null);
+            new FieldNode(parser, TestModel, 'non_field', null, undefined);
         }).to.throw('is not a recognised field');
     });
 
     it('contains a single ValueOperator(_eq) if value is a field value', () => {
-        let node = new FieldNode(parser, TestModel, 'name', 'bob', null);
+        let node = new FieldNode(parser, TestModel, 'name', 'bob', undefined);
         expect(node.children).to.have.length(1);
         expect(node.children[0]).to.be.instanceof(ValueOperator);
         expect(node.children[0].operator).to.equal('eq');
@@ -38,16 +38,16 @@ describe('class FieldNode<T> - constructor', () => {
 
     it('throws if value is not a field value or valid query object', () => {
         expect(() => {
-            new FieldNode(parser, TestModel, 'name', undefined, null);
+            new FieldNode(parser, TestModel, 'name', undefined, undefined);
         }).to.throw('invalid field query value for field');
         expect(() => {
-            new FieldNode(parser, TestModel, 'name', {}, null);
+            new FieldNode(parser, TestModel, 'name', {}, undefined);
         }).to.throw('invalid field query value for field');
     });
 
     it('throws if field operator is not in parser.FIELD_OPERATORS', () => {
         expect(() => {
-            new FieldNode(parser, TestModel, 'name', { _neq: 'test', _flibble: 2 }, null);
+            new FieldNode(parser, TestModel, 'name', { _neq: 'test', _flibble: 2 }, undefined);
         }).to.throw('unrecognised field operator');
     });
 
@@ -56,7 +56,7 @@ describe('class FieldNode<T> - constructor', () => {
             _gt: 'aaa',
             _lt: 'zzz',
             _ne: 'jimbob'
-        }, null);
+        }, undefined);
         expect(node.children).to.have.length(3);
     });
 

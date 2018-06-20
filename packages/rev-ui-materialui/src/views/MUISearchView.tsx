@@ -1,9 +1,9 @@
 
 import * as React from 'react';
 
-import { withStyles, StyledComponentProps } from 'material-ui/styles';
+import { withStyles, StyledComponentProps } from '@material-ui/core/styles';
 
-import Grid from 'material-ui/Grid';
+import Grid from '@material-ui/core/Grid';
 import { ISearchViewProps } from 'rev-ui/lib/views/SearchView';
 
 const styles = withStyles({

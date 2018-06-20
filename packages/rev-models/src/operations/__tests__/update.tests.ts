@@ -67,7 +67,7 @@ describe('rev.operations.update()', () => {
                 expect(updateCall.args[1]).to.equal(model);
                 expect(res.success).to.be.true;
                 expect(res.validation).to.be.instanceOf(ModelValidationResult);
-                expect(res.validation.valid).to.be.true;
+                expect(res.validation!.valid).to.be.true;
             })
             .catch((e) => {
                 console.log(e.result.validation);
@@ -101,7 +101,7 @@ describe('rev.operations.update()', () => {
         model.name = 'Bob';
         model.gender = 'male';
         model.age = 24;
-        model.email = undefined;
+        model.email = undefined as any;
         let expectedOpts = Object.assign({}, update.DEFAULT_UPDATE_OPTIONS, {
             fields: ['name', 'gender', 'age'],
             where: { name: 'Bob' }

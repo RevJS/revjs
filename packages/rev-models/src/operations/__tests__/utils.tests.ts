@@ -11,7 +11,7 @@ class TestModel {
 describe('getModelPrimaryKeyQuery()', () => {
 
     it('returns a query for a model with one primary key', () => {
-        let meta = { primaryKey: 'id' };
+        let meta: any = { primaryKey: 'id' };
         let model = new TestModel();
         Object.assign(model, { id: 12, name: 'fred' });
         expect(getModelPrimaryKeyQuery(model, meta))
@@ -19,7 +19,7 @@ describe('getModelPrimaryKeyQuery()', () => {
     });
 
     it('throws an error if meta.primaryKey is not defined', () => {
-        let meta = {};
+        let meta: any = {};
         let model = new TestModel();
         Object.assign(model, { id: 12, name: 'fred' });
         expect(() => {
@@ -28,7 +28,7 @@ describe('getModelPrimaryKeyQuery()', () => {
     });
 
     it('throws an error if meta.primaryKey is an empty string', () => {
-        let meta = { primaryKey: '' };
+        let meta: any = { primaryKey: '' };
         let model = new TestModel();
         Object.assign(model, { id: 12, name: 'fred' });
         expect(() => {
@@ -37,7 +37,7 @@ describe('getModelPrimaryKeyQuery()', () => {
     });
 
     it('throws an error if a primary key field does not have a value', () => {
-        let meta = { primaryKey: 'id2' };
+        let meta: any = { primaryKey: 'id2' };
         let model = new TestModel();
         Object.assign(model, { id: 12, name: 'fred' });
         expect(() => {

@@ -1,5 +1,6 @@
 import { IModelManager } from 'rev-models/lib/models/types';
 import { IModel, fields } from 'rev-models';
+import { GraphQLSchema } from 'graphql';
 
 export interface IApiMethodMeta {
     args?: fields.Field[];
@@ -7,9 +8,9 @@ export interface IApiMethodMeta {
 }
 
 export interface IApiMeta {
-    model?: string;
-    operations?: string[];
-    methods?: {
+    model: string;
+    operations: string[];
+    methods: {
         [methodName: string]: IApiMethodMeta;
     };
 }
@@ -22,6 +23,7 @@ export interface IModelApiManager {
 
     getModelNames(): string[];
     getModelNamesByOperation(operationName: string): string[];
+    getGraphQLSchema(): GraphQLSchema;
 
     getApiMeta(modelName: string): IApiMeta;
     clearManager(): void;

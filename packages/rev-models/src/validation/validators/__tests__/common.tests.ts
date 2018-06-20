@@ -394,14 +394,14 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.name = '';
             vld.minStringLengthValidator(manager, test, nameField, op, vResult, opts);
-            expectValidationFailure('min_string_length', nameField.name, msg.min_string_length(nameField.name, nameField.options.minLength), vResult);
+            expectValidationFailure('min_string_length', nameField.name, msg.min_string_length(nameField.name, nameField.options.minLength!), vResult);
         });
 
         it('returns valid = false for a short string with spaces', () => {
             let test = new TestModel();
             test.name = ' ab ';
             vld.minStringLengthValidator(manager, test, nameField, op, vResult, opts);
-            expectValidationFailure('min_string_length', nameField.name, msg.min_string_length(nameField.name, nameField.options.minLength), vResult);
+            expectValidationFailure('min_string_length', nameField.name, msg.min_string_length(nameField.name, nameField.options.minLength!), vResult);
         });
 
     });
@@ -455,14 +455,14 @@ describe('rev.fields.validators', () => {
             let test = new TestModel();
             test.name = 'dfs sfdsf erfwef dfsdf sdfsdf';
             vld.maxStringLengthValidator(manager, test, nameField, op, vResult, opts);
-            expectValidationFailure('max_string_length', nameField.name, msg.max_string_length(nameField.name, nameField.options.maxLength), vResult);
+            expectValidationFailure('max_string_length', nameField.name, msg.max_string_length(nameField.name, nameField.options.maxLength!), vResult);
         });
 
         it('returns valid = false for a long string with spaces', () => {
             let test = new TestModel();
             test.name = '     ab      ';
             vld.maxStringLengthValidator(manager, test, nameField, op, vResult, opts);
-            expectValidationFailure('max_string_length', nameField.name, msg.max_string_length(nameField.name, nameField.options.maxLength), vResult);
+            expectValidationFailure('max_string_length', nameField.name, msg.max_string_length(nameField.name, nameField.options.maxLength!), vResult);
         });
 
     });
