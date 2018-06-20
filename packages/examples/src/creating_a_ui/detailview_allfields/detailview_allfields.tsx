@@ -41,10 +41,21 @@ ReactDOM.render((
 
                 <DetailView model="ModelWithAllFields" primaryKeyValue={modelId}>
                     <Field name="textField" />
+                    <Field name="multilineTextField" />
                     <Field name="emailField" />
                     <Field name="urlField" />
                     <Field name="passwordField" />
-                    <Field name="multilineTextField" />
+                    <Field name="numberField" />
+                    <Field name="integerField" />
+                    <Field name="autoNumberField" />
+                    <Field name="booleanField" />
+                    <Field name="selectField" />
+                    <Field name="multiSelectField" />
+                    <Field name="dateField" />
+                    <Field name="timeField" />
+                    <Field name="dateTimeField" />
+                    <Field name="relatedModel" />
+                    <Field name="relatedModelList" />
 
                     <SaveAction
                         label="Save Record"
