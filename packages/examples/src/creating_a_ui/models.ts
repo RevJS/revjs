@@ -1,7 +1,9 @@
 
 import {
     AutoNumberField, TextField, RelatedModel, RelatedModelList,
-    SelectField, DateField, IntegerField, IValidationContext
+    SelectField, DateField, IntegerField, IValidationContext,
+    NumberField, TimeField, DateTimeField, EmailField, URLField,
+    PasswordField, BooleanField, MultiSelectField
 } from 'rev-models';
 import { ApiOperations } from 'rev-api/lib/decorators';
 
@@ -88,6 +90,48 @@ export class Comment {
         comment: string;
 
     constructor(data?: Partial<Comment>) {
+        Object.assign(this, data);
+    }
+}
+
+@ApiOperations(
+    ['create', 'read', 'update', 'remove']
+)
+export class ModelWithAllFields {
+    @TextField({ label: 'Text Field', required: false })
+        textField: string;
+    @TextField({ label: 'Multi-line Text Field', multiLine: true, required: false })
+        multilineTextField: string;
+    @EmailField({ label: 'Email Field', required: false })
+        emailField: string;
+    @URLField({ label: 'URL Field', required: false })
+        urlField: string;
+    @PasswordField({ label: 'Password Field', required: false })
+        passwordField: string;
+    @NumberField({ label: 'Number Field', required: false })
+        numberField: number;
+    @IntegerField({ label: 'Integer Field', required: false })
+        integerField: number;
+    @AutoNumberField({ primaryKey: true })
+        autoNumberField: number;
+    @BooleanField({ label: 'Boolean Field', required: false })
+        booleanField: string;
+    @SelectField({ label: 'Select Field', selection: POST_STATUS, required: false })
+        selectField: string;
+    @MultiSelectField({ label: 'Multi Select Field', selection: POST_STATUS, required: false })
+        multiSelectField: string;
+    @DateField({ label: 'Date Field', required: false })
+        dateField: string;
+    @TimeField({ label: 'Time Field', required: false })
+        timeField: string;
+    @DateTimeField({ label: 'Date & Time Field', required: false })
+        dateTimeField: string;
+    @RelatedModel({ model: 'User', label: 'Related Model', required: false })
+        relatedModel: User;
+    @RelatedModelList({ model: 'Comment', field: 'post', label: 'Related Model List' })
+        relatedModelList: Comment[];
+
+    constructor(data?: Partial<ModelWithAllFields>) {
         Object.assign(this, data);
     }
 }

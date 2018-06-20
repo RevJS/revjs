@@ -12,6 +12,7 @@ module.exports = function() {
             searchable_list: './src/creating_a_ui/searchable_list/searchable_list.tsx',
             related_data: './src/creating_a_ui/related_data/related_data.tsx',
             detailview: './src/creating_a_ui/detailview/detailview.tsx',
+            detailview_allfields: './src/creating_a_ui/detailview_allfields/detailview_allfields.tsx',
         },
         output: {
             path: outputPath, 
