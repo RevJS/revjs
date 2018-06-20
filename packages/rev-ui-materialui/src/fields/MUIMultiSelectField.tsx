@@ -1,13 +1,14 @@
 
 import * as React from 'react';
 
-import Grid from 'material-ui/Grid';
-import { FormControl, FormHelperText } from 'material-ui/Form';
-import { InputLabel } from 'material-ui/Input';
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
-import Checkbox from 'material-ui/Checkbox';
-import { ListItemText } from 'material-ui/List';
+import Grid from '@material-ui/core/Grid';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import Checkbox from '@material-ui/core/Checkbox';
+import ListItemText from '@material-ui/core/ListItemText';
 
 import { IFieldComponentProps } from 'rev-ui/lib/fields/Field';
 import { getGridWidthProps } from './utils';
@@ -47,7 +48,7 @@ export const MUIMultiSelectField: React.StatelessComponent<IFieldComponentProps>
                 <Select
                     multiple
                     value={props.value || []}
-                    renderValue={(selected: string[]) =>
+                    renderValue={(selected: any) =>
                         selected.map(getOptionDesc).join(', ')}
                     onChange={(event) => {
                         props.onChange(event.target.value);
