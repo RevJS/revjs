@@ -55,7 +55,7 @@ export function registerComponents() {
     UI_COMPONENTS.searchFields.AutoNumberField = MUITextSearchField;
     UI_COMPONENTS.searchFields.BooleanField = MUIBooleanSearchField;
     UI_COMPONENTS.searchFields.SelectField = MUISelectSearchField;
-    UI_COMPONENTS.searchFields.MultiSelectField = MUITextSearchField;
+    UI_COMPONENTS.searchFields.MultiSelectField = MUISelectSearchField;
     UI_COMPONENTS.searchFields.DateField = MUIDateSearchField;
     UI_COMPONENTS.searchFields.TimeField = MUITextSearchField;
     UI_COMPONENTS.searchFields.DateTimeField = MUITextSearchField;
