@@ -1,7 +1,7 @@
 
 ## RevJS Module Releases
 
-### 0.21.0 - TBC
+### 0.21.0 - 21st June 2018
 
 **`rev-models`**
 
@@ -9,7 +9,7 @@
 
 **`rev-ui-materialui`**
 
-* Added `<MUIMultiSelectField />` component
+* Added `<MUIMultiSelectField />` component and associated search field
 
 ### 0.20.0 - 19th June 2018
 
