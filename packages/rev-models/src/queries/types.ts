@@ -5,6 +5,8 @@ import { IModel, IModelManager } from '../models/types';
  * @private
  */
 export interface IQueryNode<T extends IModel> {
+    parser: IQueryParser;
+    model: new() => T;
     operator: string;
     parent?: IQueryNode<T>;
     children: Array<IQueryNode<T>>;

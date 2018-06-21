@@ -3,6 +3,10 @@
 
 ### 0.21.0 - TBC
 
+**`rev-models`**
+
+* `_eq` operator now searches MultiSelectField options for a match
+
 **`rev-ui-materialui`**
 
 * Added `<MUIMultiSelectField />` component

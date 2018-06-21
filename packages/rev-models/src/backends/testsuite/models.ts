@@ -7,6 +7,12 @@ let GENDERS = [
     ['female', 'Female']
 ];
 
+let HOBBIES = [
+    ['gardening', 'Gardening'],
+    ['music', 'Music'],
+    ['karate', 'Karate'],
+];
+
 export class TestModel {
     @d.AutoNumberField({ primaryKey: true })
         id: number;
@@ -16,6 +22,8 @@ export class TestModel {
         age: number;
     @d.SelectField({ required: false, selection: GENDERS })
         gender: string;
+    @d.MultiSelectField({ required: false, selection: HOBBIES })
+        hobbies: string[];
     @d.BooleanField({ required: false })
         newsletter: boolean;
     @d.DateField({ required: false })

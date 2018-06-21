@@ -1,15 +1,21 @@
 
 import { IQueryNode } from '../../queries/types';
-import { IModel } from '../../models/types';
+import { IModel, IModelManager, IModelMeta } from '../../models/types';
 import { ConjunctionNode, FieldNode, ValueOperator, ValueListOperator } from '../../queries/nodes';
 import { getLikeOperatorRegExp } from '../../queries/utils';
+import { MultiSelectField } from '../../fields';
 
 /**
  * @private
  */
 export class InMemoryQuery<T extends IModel> {
+    private manager: IModelManager;
+    private meta: IModelMeta<any>;
 
-    constructor(private query: IQueryNode<T>) {}
+    constructor(private query: IQueryNode<T>) {
+        this.manager = this.query.parser.manager;
+        this.meta = this.manager.getModelMeta(this.query.model);
+    }
 
     testRecord(record: object): boolean {
         return this.testRecordAgainstNode(record, this.query);
@@ -59,9 +65,18 @@ export class InMemoryQuery<T extends IModel> {
     }
 
     testRecordFieldValue(record: object, fieldName: string, valueNode: IQueryNode<T>): boolean {
+        const field = this.meta.fieldsByName[fieldName];
         if (valueNode instanceof ValueOperator) {
-            if (valueNode.operator == 'eq' && record[fieldName] == valueNode.value) {
-                return true;
+            if (valueNode.operator == 'eq') {
+                if (field instanceof MultiSelectField) {
+                    if (record[fieldName] instanceof Array) {
+                        return record[fieldName].indexOf(valueNode.value) > -1;
+                    }
+                    return false;
+                }
+                else if (record[fieldName] == valueNode.value) {
+                    return true;
+                }
             }
             if (valueNode.operator == 'ne' && record[fieldName] != valueNode.value) {
                 return true;

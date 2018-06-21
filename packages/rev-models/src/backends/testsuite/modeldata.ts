@@ -8,6 +8,7 @@ export const testData = [
         name: 'John Doe',
         age: 20,
         gender: 'male',
+        hobbies: ['music', 'karate'],
         newsletter: true,
         date_registered: '2016-05-26'
     }),
@@ -16,6 +17,7 @@ export const testData = [
         name: 'Jane Doe',
         age: 23,
         gender: 'female',
+        hobbies: ['music'],
         newsletter: true,
         date_registered: '2017-01-01'
     }),
@@ -24,6 +26,7 @@ export const testData = [
         name: 'Felix The Cat',
         age: 3,
         gender: 'male',
+        hobbies: ['gardening'],
         newsletter: false,
         date_registered: '2016-12-03'
     }),

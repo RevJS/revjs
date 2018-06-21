@@ -2,6 +2,7 @@ import { IBackend } from '../backend';
 import { createTests } from './create.tests';
 import { autoNumberTests } from './autonumber.tests';
 import { readTests } from './read.tests';
+import { queryTests } from './query.tests';
 import { updateTests } from './update.tests';
 import { removeTests } from './remove.tests';
 import { createWithRelatedModelTests } from './create.related.tests';
@@ -16,6 +17,7 @@ export interface IBackendTestConfig {
 
 export function standardBackendTests(backendName: string, config: IBackendTestConfig) {
     readTests(backendName, config);
+    queryTests(backendName, config);
     createTests(backendName, config);
     updateTests(backendName, config);
     removeTests(backendName, config);
