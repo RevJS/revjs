@@ -6,7 +6,6 @@
 * Update to TypeScript 3.0
 * Update devDependencies
 
-
 ### 0.21.0 - 21st June 2018
 
 **`rev-models`**

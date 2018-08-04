@@ -21,15 +21,14 @@
   },
   "typings": "lib/index.d.ts",
   "dependencies": {
-    "axios": "^0.17.1",
-    "graphql": "^0.10.1",
-    "json-to-graphql-query": "^1.1.2",
+    "axios": "0.x",
+    "graphql": "0.x",
+    "json-to-graphql-query": "1.x",
     "rev-models": "^0.21.0",
     "tslib": "1.x"
   },
   "devDependencies": {
-    "@types/graphql": "^0.9.1",
     "rev-api": "^0.21.0",
-    "run-bin": "^1.0.0"
+    "run-bin": "1.x"
   }
 }

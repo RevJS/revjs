@@ -23,17 +23,14 @@
   "dependencies": {
     "@material-ui/core": "^1.2.0",
     "@material-ui/icons": "^1.1.0",
-    "prop-types": "^15.6.0",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
+    "prop-types": "15.x",
+    "react": "16.x",
+    "react-dom": "16.x",
     "rev-models": "^0.21.0",
     "rev-ui": "^0.21.0",
     "tslib": "1.x"
   },
   "devDependencies": {
-    "@types/prop-types": "^15.5.2",
-    "@types/react": "^16.0.0",
-    "@types/react-dom": "^16.0.0",
-    "run-bin": "^1.0.0"
+    "run-bin": "1.x"
   }
 }

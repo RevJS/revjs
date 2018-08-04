@@ -21,13 +21,12 @@
   },
   "typings": "lib/index.d.ts",
   "dependencies": {
-    "graphql": "^0.10.1",
-    "graphql-type-json": "^0.1.4",
+    "graphql": "0.x",
+    "graphql-type-json": "0.x",
     "rev-models": "^0.21.0",
     "tslib": "1.x"
   },
   "devDependencies": {
-    "@types/graphql": "^0.9.1",
-    "run-bin": "^1.0.0"
+    "run-bin": "1.x"
   }
 }
