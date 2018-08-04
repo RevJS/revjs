@@ -8,10 +8,11 @@ import { getOwnRelatedFieldNames, IForeignKeyValues, getRelatedModelInstances, g
 import { ModelOperationResult } from 'rev-models/lib/operations/operationresult';
 import {
     ICreateMeta, IUpdateMeta, IRemoveMeta,
-    IReadMeta, IExecMeta, IModelMeta, IRawValues
+    IReadMeta, IExecMeta, IModelMeta, IRawValues, IRawValueRow
 } from 'rev-models/lib/models/types';
 import { convertQuery } from './query';
 import { ICreateParams, IUpdateParams, IRemoveParams, IReadParams, IExecParams } from '../../rev-models/lib/backends/backend';
+import { IKeyMap } from 'rev-models/lib/utils/types';
 
 /**
  * Configuration used to initialise the MongoDB connection for [[MongoDBBackend]]
@@ -74,7 +75,7 @@ export class MongoDBBackend implements IBackend {
     }
 
     private _convertOrderBy(orderBy: string[]) {
-        const sortDocument = {};
+        const sortDocument: IKeyMap<1 | -1> = {};
         if (orderBy instanceof Array) {
             orderBy.forEach((field) => {
                 const tokens = field.split(' ');
@@ -101,7 +102,7 @@ export class MongoDBBackend implements IBackend {
     async create<T extends IModel>(manager: ModelManager, model: T, params: ICreateParams, result: ModelOperationResult<T, ICreateMeta>): Promise<ModelOperationResult<T, ICreateMeta>> {
         const meta = manager.getModelMeta(model);
 
-        const document = {};
+        const document: IKeyMap<number> = {};
         let fieldList = Object.keys(meta.fieldsByName);
         for (let fieldName of fieldList) {
             let field = meta.fieldsByName[fieldName];
@@ -140,7 +141,7 @@ export class MongoDBBackend implements IBackend {
         let meta = manager.getModelMeta(model);
         const mongoQuery = convertQuery(manager, meta.ctor, params.where);
 
-        const fieldUpdates = {};
+        const fieldUpdates: IKeyMap<any> = {};
         params.fields!.forEach((fieldName) => {
             const field = meta.fieldsByName[fieldName];
             if (field.options.stored && typeof model[fieldName] != 'undefined') {
@@ -230,7 +231,7 @@ export class MongoDBBackend implements IBackend {
             }
 
             if (params.rawValues) {
-                let rawValueObj = {};
+                let rawValueObj: IRawValueRow = {};
                 for (let fieldName of params.rawValues) {
                     rawValueObj[fieldName] = record[fieldName];
                 }

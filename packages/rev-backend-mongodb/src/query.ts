@@ -3,8 +3,9 @@ import { ConjunctionNode, FieldNode, ValueOperator, ValueListOperator } from 're
 import { getLikeOperatorRegExp } from 'rev-models/lib/queries/utils';
 import { IQueryNode } from 'rev-models/lib/queries/types';
 import { QueryParser } from 'rev-models/lib/queries/queryparser';
+import { IObject } from 'rev-models/lib/utils/types';
 
-const FIELD_OPERATOR_MAPPING = {
+const FIELD_OPERATOR_MAPPING: any = {
     eq: '$eq',
     ne: '$ne',
     gt: '$gt',
@@ -16,7 +17,7 @@ const FIELD_OPERATOR_MAPPING = {
     nin: '$nin'
 };
 
-function _convertConjunctionNode(srcNode: ConjunctionNode<any>, destNode: object) {
+function _convertConjunctionNode(srcNode: ConjunctionNode<any>, destNode: IObject) {
     if (srcNode.children.length == 0) {
         return;
     }
@@ -31,7 +32,7 @@ function _convertConjunctionNode(srcNode: ConjunctionNode<any>, destNode: object
     });
 }
 
-function _convertFieldNode(srcNode: FieldNode<any>, destNode: object) {
+function _convertFieldNode(srcNode: FieldNode<any>, destNode: IObject) {
     destNode[srcNode.fieldName] = {};
     for (let valueNode of srcNode.children) {
         let mongoOperator = FIELD_OPERATOR_MAPPING[valueNode.operator];
