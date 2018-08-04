@@ -6,6 +6,7 @@ import { IModel, IModelMeta, IModelManager } from 'rev-models';
 import { UI_COMPONENTS } from '../config';
 import { IStandardComponentProps } from '../utils/props';
 import { deepCopy } from '../utils/deepCopy';
+import { IObject } from 'rev-models/lib/utils/types';
 
 /**
  * A `<SearchView />` serves as a wrapper for a set of `<SearchField />`s
@@ -50,7 +51,7 @@ export interface ISearchViewContext<T extends IModel = IModel> {
     manager: IModelManager;
 
     /** The current where clause being edited in this SearchView */
-    where: object;
+    where: IObject;
 
     /** The current model's metadata */
     modelMeta: IModelMeta<T>;

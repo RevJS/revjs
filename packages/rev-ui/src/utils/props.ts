@@ -12,7 +12,7 @@ export interface IStandardComponentProps {
  */
 export function getStandardProps(props: any) {
     const sProps: IStandardComponentProps = {};
-    function addProp(propName: string) {
+    function addProp(propName: keyof IStandardComponentProps) {
         if (typeof props[propName] != 'undefined') {
             sProps[propName] = props[propName];
         }

@@ -80,7 +80,8 @@ class SearchFieldC extends React.Component<ISearchFieldProps & ISearchViewContex
         }
         this.modelField = meta.fieldsByName[props.name];
         this.fieldComponentName = this.modelField.constructor.name;
-        if (!this.props.component && !UI_COMPONENTS.searchFields[this.fieldComponentName]) {
+        const components: any = UI_COMPONENTS.searchFields;
+        if (!this.props.component && !components[this.fieldComponentName]) {
             throw new Error(`SearchField Error: There is no UI_COMPONENT registered for field type '${this.fieldComponentName}'`);
         }
     }
@@ -110,7 +111,8 @@ class SearchFieldC extends React.Component<ISearchFieldProps & ISearchViewContex
         };
         const sProps = getStandardProps(this.props);
 
-        const Component = this.props.component || UI_COMPONENTS.searchFields[this.fieldComponentName];
+        const components: any = UI_COMPONENTS.searchFields;
+        const Component = this.props.component || components[this.fieldComponentName];
         return <Component {...cProps} {...sProps} />;
 
     }

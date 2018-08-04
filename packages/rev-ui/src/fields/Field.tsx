@@ -105,7 +105,8 @@ class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFiel
             this.modelField = meta.fieldsByName[props.name];
         }
         this.fieldComponentName = this.modelField.constructor.name;
-        if (!this.props.component && !UI_COMPONENTS.fields[this.fieldComponentName]) {
+        const components: any = UI_COMPONENTS.fields;
+        if (!this.props.component && !components[this.fieldComponentName]) {
             throw new Error(`Field Error: There is no UI_COMPONENT registered for field type '${this.fieldComponentName}'`);
         }
     }
@@ -168,7 +169,8 @@ class FieldC extends React.Component<IFieldProps & IDetailViewContextProp, IFiel
         };
         const sProps = getStandardProps(this.props);
 
-        const Component = this.props.component || UI_COMPONENTS.fields[this.fieldComponentName];
+        const components: any = UI_COMPONENTS.fields;
+        const Component = this.props.component || components[this.fieldComponentName];
         return <Component {...cProps} {...sProps} />;
 
     }

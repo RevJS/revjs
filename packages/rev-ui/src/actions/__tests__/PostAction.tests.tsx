@@ -229,7 +229,7 @@ describe('PostAction', () => {
             fetchStub = sinon.stub();
             onResponseCallback = sinon.spy();
             onErrorCallback = sinon.spy();
-            global.fetch = fetchStub;
+            (global as any).fetch = fetchStub;
 
             resetSpyComponent();
             modelManager = models.getModelManager();
@@ -244,7 +244,7 @@ describe('PostAction', () => {
         });
 
         afterEach(() => {
-            delete global.fetch;
+            delete (global as any).fetch;
         });
 
         function setupValidModel() {

@@ -5,7 +5,7 @@ import { mount } from 'enzyme';
 import { sleep } from '../../../__test_utils__/utils';
 import { ListView, lifecycleOptions, IListViewComponentProps } from '../../ListView';
 import * as models from '../../../__fixtures__/models';
-import { ModelManager, IModelMeta, fields } from 'rev-models';
+import { ModelManager, IModelMeta, fields, IModel } from 'rev-models';
 import { ModelProvider } from '../../../provider/ModelProvider';
 import { createData, IModelTestData } from '../../../__fixtures__/modeldata';
 
@@ -80,7 +80,7 @@ describe('ListView data & pagination', () => {
         });
 
         it('passes the correct record data', () => {
-            expectedData.forEach((record, recordIdx) => {
+            expectedData.forEach((record: IModel, recordIdx) => {
                 fieldList.forEach((fieldName) => {
                     expect(receivedProps.results[recordIdx][fieldName])
                         .to.equal(record[fieldName]);
@@ -133,7 +133,7 @@ describe('ListView data & pagination', () => {
         });
 
         it('passes the correct record data', () => {
-            expectedData.forEach((record, recordIdx) => {
+            expectedData.forEach((record: IModel, recordIdx) => {
                 fieldList.forEach((fieldName) => {
                     expect(receivedProps.results[recordIdx][fieldName])
                         .to.equal(record[fieldName]);
@@ -189,7 +189,7 @@ describe('ListView data & pagination', () => {
         });
 
         it('passes the correct record data', () => {
-            expectedData.forEach((record, recordIdx) => {
+            expectedData.forEach((record: IModel, recordIdx) => {
                 fieldList.forEach((fieldName) => {
                     expect(receivedProps.results[recordIdx][fieldName])
                         .to.equal(record[fieldName]);
@@ -245,7 +245,7 @@ describe('ListView data & pagination', () => {
         });
 
         it('passes the correct record data', () => {
-            expectedData.forEach((record, recordIdx) => {
+            expectedData.forEach((record: IModel, recordIdx) => {
                 fieldList.forEach((fieldName) => {
                     expect(receivedProps.results[recordIdx][fieldName])
                         .to.equal(record[fieldName]);
