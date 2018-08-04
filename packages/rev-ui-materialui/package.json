@@ -21,8 +21,8 @@
   },
   "typings": "lib/index.d.ts",
   "dependencies": {
-    "@material-ui/core": "^1.2.0",
-    "@material-ui/icons": "^1.1.0",
+    "@material-ui/core": "1.x",
+    "@material-ui/icons": "1.x",
     "prop-types": "15.x",
     "react": "16.x",
     "react-dom": "16.x",
