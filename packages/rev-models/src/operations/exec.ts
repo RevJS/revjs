@@ -49,7 +49,7 @@ export async function exec<R>(manager: IModelManager, model: IModel, options: IE
     }
 
     let meta = manager.getModelMeta(model);
-    let opts: IExecParams = Object.assign({}, DEFAULT_EXEC_OPTIONS, options);
+    let opts = Object.assign({}, DEFAULT_EXEC_OPTIONS, options);
 
     let operation: IModelOperation = {
         operationName: options.method
@@ -66,7 +66,7 @@ export async function exec<R>(manager: IModelManager, model: IModel, options: IE
     }
     else {
         let backend = manager.getBackend(meta.backend);
-        callResult = await backend.exec(manager, model, opts, result);
+        callResult = await backend.exec(manager, model, opts as IExecParams, result);
     }
 
     if (!isSet(callResult)) {

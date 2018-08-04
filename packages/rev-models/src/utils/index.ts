@@ -1,3 +1,4 @@
+import { IObject } from './types';
 
 /**
  * @private
@@ -41,7 +42,7 @@ export function withTimeout<T>(promise: Promise<T>, timeout: number, name: strin
  * @private
  */
 export function dedupeStringArray(array: string[]) {
-    const items = {};
+    const items: IObject = {};
     array.forEach((item) => {
         items[item] = true;
     });

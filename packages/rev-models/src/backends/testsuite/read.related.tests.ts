@@ -7,15 +7,16 @@ import { Company, Developer, City, Department } from './models';
 import { testCityData, removeRelatedTestData, createRelatedTestData } from './modeldata.related';
 import { DEFAULT_READ_OPTIONS } from '../../operations/read';
 import { IReadMeta } from '../../models/types';
-import { IBackend } from '../backend';
+import { IBackend, IReadParams } from '../backend';
 import { IBackendTestConfig } from '.';
+import { IObject } from '../../utils/types';
 
 export function readWithRelatedModelTests(backendName: string, config: IBackendTestConfig) {
 
     describe(`Standard backend.read() with related model data tests for ${backendName}`, () => {
 
-        function getReadOpts(options?: object) {
-            return Object.assign({}, DEFAULT_READ_OPTIONS, options);
+        function getReadOpts(options?: IObject) {
+            return Object.assign({}, DEFAULT_READ_OPTIONS, options) as IReadParams;
         }
 
         let backend: IBackend;

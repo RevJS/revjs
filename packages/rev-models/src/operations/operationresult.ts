@@ -1,5 +1,6 @@
 import { IModelOperation } from './operation';
 import { ModelValidationResult, IModelValidationResult } from '../validation/validationresult';
+import { IObject } from '../utils/types';
 
 /**
  * @private
@@ -82,7 +83,7 @@ export class ModelOperationResult<T, M extends IOperationMeta> implements IModel
      * @param code A code that calling methods can use to identify the type of error
      * @param data Any additional data to pass back to calling methods
      */
-    addError(message: string, code?: string, data?: object) {
+    addError(message: string, code?: string, data?: IObject) {
         if (!message) {
             throw new Error(`ModelOperationResult Error: A message must be specified for the operation error.`);
         }

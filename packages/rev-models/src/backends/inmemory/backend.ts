@@ -1,5 +1,5 @@
 
-import { IModel, IModelMeta, IModelManager, ICreateMeta, IUpdateMeta, IReadMeta, IRemoveMeta, IExecMeta, IRawValues } from '../../models/types';
+import { IModel, IModelMeta, IModelManager, ICreateMeta, IUpdateMeta, IReadMeta, IRemoveMeta, IExecMeta, IRawValues, IRawValueRow } from '../../models/types';
 import { ModelOperationResult } from '../../operations/operationresult';
 import { QueryParser } from '../../queries/queryparser';
 import { InMemoryQuery } from './query';
@@ -182,7 +182,7 @@ export class InMemoryBackend implements IBackend {
                 }
 
                 if (params.rawValues) {
-                    let rawValueObj = {};
+                    let rawValueObj: IRawValueRow = {};
                     for (let fieldName of params.rawValues) {
                         rawValueObj[fieldName] = record[fieldName];
                     }

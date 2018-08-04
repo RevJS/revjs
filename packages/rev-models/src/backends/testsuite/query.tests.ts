@@ -7,13 +7,14 @@ import { TestModel, TestModelNoPK } from './models';
 import { createTestData, removeTestData } from './modeldata';
 import { DEFAULT_READ_OPTIONS } from '../../operations/read';
 import { IReadMeta } from '../../models/types';
-import { IBackend } from '../backend';
+import { IBackend, IReadParams } from '../backend';
 import { IBackendTestConfig } from '.';
+import { IObject } from '../../utils/types';
 
 export function queryTests(backendName: string, config: IBackendTestConfig) {
 
-    function getReadOpts(options?: object) {
-        return Object.assign({}, DEFAULT_READ_OPTIONS, options);
+    function getReadOpts(options?: IObject) {
+        return Object.assign({}, DEFAULT_READ_OPTIONS, options) as IReadParams;
     }
 
     describe(`Standard RevJS Query tests for ${backendName}`, () => {

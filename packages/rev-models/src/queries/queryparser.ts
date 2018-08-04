@@ -4,6 +4,7 @@ import { ConjunctionNode, FieldNode, ValueOperator, ValueListOperator } from './
 import { IQueryParser, IQueryNode, IOperatorRegister } from './types';
 import { printObj } from '../utils/index';
 import { IModel, IModelManager } from '../models/types';
+import { IObject } from '../utils/types';
 
 /**
  * @private
@@ -63,7 +64,7 @@ export class QueryParser implements IQueryParser {
 
     getQueryNodeForQuery<T extends IModel>(
             model: new() => T,
-            value: object,
+            value: IObject,
             parent?: IQueryNode<T>): IQueryNode<T> {
 
         if (!value || typeof value != 'object') {

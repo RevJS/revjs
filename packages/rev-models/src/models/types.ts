@@ -4,6 +4,7 @@ import { IBackend } from '../backends';
 import { IModelOperationResult, IOperationMeta } from '../operations/operationresult';
 import { ModelValidationResult, IModelValidationResult } from '../validation/validationresult';
 import { IModelOperation } from '../operations/operation';
+import { IObject } from '../utils/types';
 
 /**
  * @private
@@ -149,7 +150,7 @@ export interface ICreateMeta extends IOperationMeta {
  * @private
  */
 export interface IUpdateOptions {
-    where?: object;
+    where?: IObject;
     fields?: string[];
     validation?: IValidationOptions;
 }
@@ -165,7 +166,7 @@ export interface IUpdateMeta extends IOperationMeta {
  * @private
  */
 export interface IRemoveOptions {
-    where?: object;
+    where?: IObject;
 }
 
 /**
@@ -179,7 +180,7 @@ export interface IRemoveMeta extends IOperationMeta {
  * @private
  */
 export interface IReadOptions {
-    where?: object;
+    where?: IObject;
     orderBy?: string[];
     limit?: number;
     offset?: number;
@@ -190,9 +191,14 @@ export interface IReadOptions {
 /**
  * @private
  */
-export type IRawValues = Array<{
+export interface IRawValueRow {
     [fieldName: string]: any;
-}>;
+}
+
+/**
+ * @private
+ */
+export type IRawValues = IRawValueRow[];
 
 /**
  * @private

@@ -8,6 +8,7 @@ import { expect } from 'chai';
 import { ModelManager } from '../../models/manager';
 import { InMemoryBackend } from '../../backends/inmemory/backend';
 import * as d from '../../decorators';
+import { IObject } from '../../utils/types';
 
 class TestModel {
     @d.RelatedModel({ model: 'TestRelatedModel' })
@@ -129,19 +130,19 @@ describe('rev.fields.relatedmodelfields', () => {
         const field = new RelatedModelField('value', {model: 'TestRelatedModel'});
 
         it('returns null if model field is not set', () => {
-            const record = new TestModel();
+            const record: IObject = new TestModel();
             expect(field.toBackendValue(manager, record[field.name])).to.be.null;
         });
 
         it('returns null if model primary key field is not set', () => {
-            const record = new TestModel();
+            const record: IObject = new TestModel();
             const linkedModel = new TestRelatedModel();
             record.value = linkedModel;
             expect(field.toBackendValue(manager, record[field.name])).to.be.null;
         });
 
         it('returns primary key value if model primary key field is set', () => {
-            const record = new TestModel();
+            const record: IObject = new TestModel();
             const linkedModel = new TestRelatedModel();
             linkedModel.name = 'key_value';
             record.value = linkedModel;

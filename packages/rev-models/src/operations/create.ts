@@ -33,7 +33,7 @@ export async function create<T extends IModel>(manager: IModelManager, model: T,
     let operationResult = new ModelOperationResult<T, ICreateMeta>(operation);
     let opts = Object.assign({}, DEFAULT_CREATE_OPTIONS, options);
 
-    let validationResult = await validate(manager, model, operation, opts.validation ? opts.validation : null);
+    let validationResult = await validate(manager, model, operation, opts.validation ? opts.validation : undefined);
 
     if (!validationResult.valid) {
         operationResult.addError('Model failed validation', 'validation_error');

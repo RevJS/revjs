@@ -1,8 +1,9 @@
+import { IObject } from '../../utils/types';
 
 /**
  * @private
  */
-export function sortRecords(records: object[], orderBy: string[]) {
+export function sortRecords(records: IObject[], orderBy: string[]) {
     return records.sort((r1, r2) => {
         for (let order_spec of orderBy) {
             let tokens = order_spec.split(' ');

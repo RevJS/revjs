@@ -8,9 +8,11 @@ import { TestModel, testData } from './testdata';
 import { DEFAULT_READ_OPTIONS } from '../../../operations/read';
 import { IReadMeta } from '../../../models/types';
 import { standardBackendTests } from '../../testsuite';
+import { IObject } from '../../../utils/types';
+import { IReadParams } from '../../backend';
 
-function getReadOpts(options?: object) {
-    return Object.assign({}, DEFAULT_READ_OPTIONS, options);
+function getReadOpts(options?: IObject) {
+    return Object.assign({}, DEFAULT_READ_OPTIONS, options) as IReadParams;
 }
 
 describe('rev.backends.inmemory', () => {

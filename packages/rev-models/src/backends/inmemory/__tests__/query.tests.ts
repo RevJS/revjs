@@ -5,6 +5,7 @@ import { QueryParser } from '../../../queries/queryparser';
 import { InMemoryQuery } from '../query';
 import { ModelManager } from '../../../models/manager';
 import { InMemoryBackend } from '../backend';
+import { IObject } from '../../../utils/types';
 
 class TestModel {
     @d.TextField() name: string;
@@ -33,7 +34,7 @@ let record2 = {
 let manager: ModelManager;
 let parser: QueryParser;
 
-function getQuery(query: object) {
+function getQuery(query: IObject) {
     return new InMemoryQuery(parser.getQueryNodeForQuery(TestModel, query));
 }
 
@@ -234,7 +235,7 @@ describe('InMemoryQuery', () => {
     });
 
     function expectResult(field: string, operator: string, queryValue: any, result: boolean) {
-        let queryObj: object = {};
+        let queryObj: any = {};
         queryObj[field] = {};
         queryObj[field][operator] = queryValue;
         let query = getQuery(queryObj);

@@ -4,6 +4,7 @@ import { IModel, IModelManager, IModelMeta } from '../../models/types';
 import { ConjunctionNode, FieldNode, ValueOperator, ValueListOperator } from '../../queries/nodes';
 import { getLikeOperatorRegExp } from '../../queries/utils';
 import { MultiSelectField } from '../../fields';
+import { IObject } from '../../utils/types';
 
 /**
  * @private
@@ -17,11 +18,11 @@ export class InMemoryQuery<T extends IModel> {
         this.meta = this.manager.getModelMeta(this.query.model);
     }
 
-    testRecord(record: object): boolean {
+    testRecord(record: IObject): boolean {
         return this.testRecordAgainstNode(record, this.query);
     }
 
-    testRecordAgainstNode(record: object, node: IQueryNode<T>): boolean {
+    testRecordAgainstNode(record: IObject, node: IQueryNode<T>): boolean {
         if (node instanceof ConjunctionNode) {
             return this.testRecordAgainstConjunction(record, node);
         }
@@ -33,7 +34,7 @@ export class InMemoryQuery<T extends IModel> {
         }
     }
 
-    testRecordAgainstConjunction(record: object, conjunction: ConjunctionNode<T>): boolean {
+    testRecordAgainstConjunction(record: IObject, conjunction: ConjunctionNode<T>): boolean {
         if (conjunction.operator == 'and') {
             for (let childNode of conjunction.children) {
                 if (!this.testRecordAgainstNode(record, childNode)) {
@@ -55,7 +56,7 @@ export class InMemoryQuery<T extends IModel> {
         }
     }
 
-    testRecordAgainstFieldNode(record: object, fieldNode: FieldNode<T>): boolean {
+    testRecordAgainstFieldNode(record: IObject, fieldNode: FieldNode<T>): boolean {
         for (let valueNode of fieldNode.children) {
             if (!this.testRecordFieldValue(record, fieldNode.fieldName, valueNode)) {
                 return false;
@@ -64,7 +65,7 @@ export class InMemoryQuery<T extends IModel> {
         return true;
     }
 
-    testRecordFieldValue(record: object, fieldName: string, valueNode: IQueryNode<T>): boolean {
+    testRecordFieldValue(record: IObject, fieldName: string, valueNode: IQueryNode<T>): boolean {
         const field = this.meta.fieldsByName[fieldName];
         if (valueNode instanceof ValueOperator) {
             if (valueNode.operator == 'eq') {

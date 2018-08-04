@@ -6,15 +6,14 @@
    * - a relative path to a JSON file
    */
   "extends": [
-    "tslint:latest",
-    "tslint-no-circular-imports"
+    "tslint:latest"
   ],
   "rules": {
     /*
      * Any rules specified here will override those from the base config we are extending
      */
      "max-line-length": [false],
-     "max-classes-per-file": [false],
+     "max-classes-per-file": false,
      "no-var-requires": false,
      "trailing-comma": [false],
      "object-literal-sort-keys": false,

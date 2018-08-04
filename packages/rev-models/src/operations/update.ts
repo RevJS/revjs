@@ -6,6 +6,7 @@ import { IModelOperation } from './operation';
 import { getModelPrimaryKeyQuery } from './utils';
 import { checkFieldsList } from '../models/utils';
 import { ValidationError } from '../validation/validationerror';
+import { IUpdateParams } from '../backends/backend';
 
 /**
  * @private
@@ -28,7 +29,7 @@ export async function update<T extends IModel>(manager: IModelManager, model: T,
     }
 
     let backend = manager.getBackend(meta.backend);
-    let opts = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
+    let opts: IUpdateOptions = Object.assign({}, DEFAULT_UPDATE_OPTIONS, options);
     let validationOpts = opts.validation || {};
 
     if (!opts.where || typeof opts.where != 'object') {
@@ -71,5 +72,5 @@ export async function update<T extends IModel>(manager: IModelManager, model: T,
         operationResult.validation = validationResult;
     }
 
-    return backend.update<typeof model>(manager, model, opts, operationResult);
+    return backend.update<typeof model>(manager, model, opts as IUpdateParams, operationResult);
 }

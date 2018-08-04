@@ -1,4 +1,5 @@
 import { IModel, IModelMeta } from '../models/types';
+import { IObject } from '../utils/types';
 
 /**
  * @private
@@ -8,7 +9,7 @@ export function getModelPrimaryKeyQuery<T extends IModel>(model: T, meta: IModel
         throw new Error('KeyError: no primaryKey defined');
     }
     else {
-        let pkQuery: object = {};
+        let pkQuery: IObject = {};
         if (typeof model[meta.primaryKey] == 'undefined') {
             throw new Error(`KeyError: primary key field '${meta.primaryKey}' is undefined`);
         }

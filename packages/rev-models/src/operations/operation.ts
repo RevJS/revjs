@@ -1,3 +1,4 @@
+import { IObject } from '../utils/types';
 
 export const STANDARD_OPERATIONS = ['create', 'read', 'update', 'remove'];
 
@@ -14,5 +15,5 @@ export interface IModelOperation {
     /**
      * The `where` clause associated with the current operation
      */
-    where?: object;
+    where?: IObject;
 }

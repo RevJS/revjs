@@ -1,6 +1,7 @@
 
 import { ModelOperationResult } from '../operations/operationresult';
 import { IModel, IModelManager, ICreateMeta, IUpdateMeta, IRemoveMeta, IReadMeta, IExecMeta, IExecArgs } from '../models/types';
+import { IObject } from '../utils/types';
 
 /**
  * Interface that all RevJS backends are required to implement
@@ -13,18 +14,18 @@ export interface ICreateParams {
 
 /** @private */
 export interface IUpdateParams {
-    where: object;
+    where: IObject;
     fields: string[];
 }
 
 /** @private */
 export interface IRemoveParams {
-    where: object;
+    where: IObject;
 }
 
 /** @private */
 export interface IReadParams {
-    where: object;
+    where: IObject;
     orderBy: string[];
     limit: number;
     offset: number;

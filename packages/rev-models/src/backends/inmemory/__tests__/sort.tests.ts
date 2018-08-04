@@ -1,6 +1,7 @@
 
 import { expect } from 'chai';
 import { sortRecords } from '../sort';
+import { IObject } from '../../../utils/types';
 
 let testRecords = [
     {
@@ -35,7 +36,7 @@ let testRecords = [
     },
 ];
 
-function expectOrder(result: object[], field: string, order: any[]) {
+function expectOrder(result: IObject[], field: string, order: any[]) {
     let vals: any[] = [];
     for (let i = 0; i < order.length; i++) {
         vals.push(result[i][field]);

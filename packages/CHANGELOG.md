@@ -1,6 +1,12 @@
 
 ## RevJS Module Releases
 
+### 0.22.0 - TBC
+
+* Update to TypeScript 3.0
+* Update devDependencies
+
+
 ### 0.21.0 - 21st June 2018
 
 **`rev-models`**
