@@ -16,6 +16,7 @@
     "clean-modules": "lerna clean"
   },
   "devDependencies": {
+    "@babel/runtime": "7.0.0-beta.55",
     "@types/chai": "4.1.4",
     "@types/enzyme": "3.1.12",
     "@types/graphql": "^0.13.4",
@@ -37,7 +38,6 @@
     "mocha-circleci-reporter": "0.0.3",
     "react": "16.x",
     "react-dom": "16.x",
-    "react-event-listener": "0.5.5",
     "rewire": "4.0.1",
     "sinon": "6.1.4",
     "ts-loader": "4.4.2",
