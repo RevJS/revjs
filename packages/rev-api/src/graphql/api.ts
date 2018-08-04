@@ -1,6 +1,3 @@
-// tslint:disable-next-line:no-reference
-/// <reference path="../types.d.ts" />
-
 import { fields, IModelManager } from 'rev-models';
 
 import { GraphQLSchema, GraphQLObjectType, GraphQLResolveInfo, GraphQLList, FieldNode, GraphQLType, GraphQLInputObjectType, GraphQLFieldConfigMap, GraphQLOutputType, GraphQLInputType, GraphQLInputFieldConfigMap } from 'graphql';

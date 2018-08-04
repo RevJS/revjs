@@ -1,4 +1,3 @@
-
 import { IModel, ModelManager, fields } from 'rev-models';
 import axios, { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
 
@@ -10,6 +9,7 @@ import {
     IRemoveOptions, IReadMeta, IReadOptions, IExecMeta, IExecOptions, IModelMeta
 } from 'rev-models/lib/models/types';
 import { jsonToGraphQLQuery } from 'json-to-graphql-query';
+import { IObject } from 'rev-models/lib/utils/types';
 
 /**
  * A RevJS Backend class that stores and retrieves data from a GraphQL API
@@ -250,7 +250,7 @@ export class ModelApiBackend implements IBackend {
     }
 
     private _buildGraphQLModelData(manager: ModelManager, meta: IModelMeta<any>, model: IModel, fieldNames?: string[]) {
-        const data = {};
+        const data: IObject = {};
         meta.fields.forEach((field) => {
             if (field.options.stored
                 && (!fieldNames || fieldNames.indexOf(field.name) > -1)

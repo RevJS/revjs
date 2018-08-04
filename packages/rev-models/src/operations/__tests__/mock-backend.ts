@@ -1,5 +1,3 @@
-// tslint:disable-next-line:no-reference
-/// <reference path="../../types.d.ts" />
 
 import * as sinon from 'sinon';
 import { IBackend } from '../../backends/backend';
