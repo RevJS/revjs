@@ -7,7 +7,7 @@ import { IModel, fields, ValidationError } from 'rev-models';
 export function getModelOperationMutations(api: IGraphQLApi, meta: IApiMeta): GraphQLFieldConfigMap<any, any> {
     const modelManager = api.getModelManager();
     const modelMeta = modelManager.getModelMeta(meta.model);
-    const mutations = {};
+    const mutations: GraphQLFieldConfigMap<any, any> = {};
 
     async function hydrateRelatedModelFields(model: IModel, data: any) {
         for (const field of modelMeta.fields) {

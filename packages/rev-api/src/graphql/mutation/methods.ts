@@ -5,7 +5,7 @@ import { getMethodResolver } from './resolve_method';
 import { IGraphQLApi } from '../types';
 
 export function getModelMethodMutations(api: IGraphQLApi, meta: IApiMeta): GraphQLFieldConfigMap<any, any> {
-    let fields = {};
+    let fields: GraphQLFieldConfigMap<any, any> = {};
 
     for (let methodName in meta.methods) {
         let mutationName = meta.model + '_' + methodName;

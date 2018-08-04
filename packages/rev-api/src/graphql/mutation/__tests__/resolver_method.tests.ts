@@ -27,8 +27,8 @@ export class User {
             id: this.id,
             name: this.name
         };
-        if (this['extra_prop']) {
-            smellyInstanceProps.extra_prop = this['extra_prop'];
+        if ((this as any).extra_prop) {
+            smellyInstanceProps.extra_prop = (this as any).extra_prop;
         }
         smellyArgs = arguments;
         // Do the thing

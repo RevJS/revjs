@@ -1,6 +1,9 @@
+// tslint:disable-next-line:no-reference
+/// <reference path="../types.d.ts" />
+
 import { fields, IModelManager } from 'rev-models';
 
-import { GraphQLSchema, GraphQLObjectType, GraphQLResolveInfo, GraphQLList, FieldNode, GraphQLType, GraphQLInputObjectType } from 'graphql';
+import { GraphQLSchema, GraphQLObjectType, GraphQLResolveInfo, GraphQLList, FieldNode, GraphQLType, GraphQLInputObjectType, GraphQLFieldConfigMap, GraphQLOutputType, GraphQLInputType, GraphQLInputFieldConfigMap } from 'graphql';
 import { GraphQLInt, GraphQLFloat, GraphQLString, GraphQLBoolean } from 'graphql/type/scalars';
 import * as GraphQLJSON from 'graphql-type-json';
 import { getMutationConfig } from './mutation/mutation';
@@ -82,11 +85,11 @@ export class GraphQLApi implements IGraphQLApi {
         return new GraphQLObjectType({
             name: modelName,
             fields: () => {
-                const fieldConfig = {};
+                const fieldConfig: GraphQLFieldConfigMap<any, any> = {};
                 meta.fields.forEach((field) => {
                     const fieldConverter = this.getGraphQLFieldConverter(field);
                     fieldConfig[field.name] = {
-                        type: fieldConverter.type,
+                        type: fieldConverter.type as GraphQLOutputType,
                         resolve: (rootValue: any, args: any, context: any, info: GraphQLResolveInfo) => {
                             return fieldConverter.converter(rootValue, field.name);
                         }
@@ -108,12 +111,12 @@ export class GraphQLApi implements IGraphQLApi {
         else {
             const manager = this.getModelManager();
             let meta = manager.getModelMeta(modelName);
-            const fieldConfig = {};
+            const fieldConfig: GraphQLInputFieldConfigMap = {};
             meta.fields.forEach((field) => {
                 if (!(field instanceof fields.RelatedModelFieldBase)) {
                     const mapping = this.getGraphQLFieldMapping(field);
                     fieldConfig[field.name] = {
-                        type: mapping.type
+                        type: mapping.type as GraphQLInputType
                     };
                 }
                 else {
@@ -123,7 +126,7 @@ export class GraphQLApi implements IGraphQLApi {
                         const relatedPKField = relatedMeta.fieldsByName[relatedMeta.primaryKey!];
                         const mapping = this.getGraphQLFieldMapping(relatedPKField);
                         fieldConfig[field.name] = {
-                            type: mapping.type
+                            type: mapping.type as GraphQLInputType
                         };
                     }
                 }
@@ -208,13 +211,10 @@ export class GraphQLApi implements IGraphQLApi {
         }
         else {
             const models = this.getModelManager();
-            const queryObjectConfig = {
-                name: 'query',
-                fields: {}
-            };
+            const modelFields: GraphQLFieldConfigMap<any, any> = {};
             for (let modelName of readableModels) {
                 let modelMeta = models.getModelMeta(modelName);
-                queryObjectConfig.fields[modelName] = {
+                modelFields[modelName] = {
                     type: this.getModelQueryResultsObject(modelName),
                     args: {
                         where: { type: GraphQLJSON },
@@ -250,7 +250,10 @@ export class GraphQLApi implements IGraphQLApi {
                     }
                 };
             }
-            return new GraphQLObjectType(queryObjectConfig);
+            return new GraphQLObjectType({
+                name: 'query',
+                fields: modelFields
+            });
         }
     }
 

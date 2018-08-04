@@ -3,6 +3,7 @@ import { IModelOperationResult, ModelOperationResult, IModelManager } from 'rev-
 import { ModelValidationResult } from 'rev-models/lib/validation/validationresult';
 import { IApiMethodMeta, IModelApiManager } from '../../api/types';
 import { IModelOperation } from 'rev-models/lib/operations/operation';
+import { IObject } from 'rev-models/lib/utils/types';
 
 export function getMethodResolver(manager: IModelApiManager, modelName: string, methodName: string) {
     let models = manager.getModelManager();
@@ -37,7 +38,7 @@ export function getMethodResolver(manager: IModelApiManager, modelName: string, 
 }
 
 function getMethodExecArgs(meta: IApiMethodMeta, args: any) {
-    let argsData = {};
+    let argsData: IObject = {};
     if (meta.args && args && typeof args == 'object') {
         for (let field of meta.args) {
             argsData[field.name] = args[field.name];
