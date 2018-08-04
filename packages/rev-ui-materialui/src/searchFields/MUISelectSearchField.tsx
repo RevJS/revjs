@@ -10,6 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { ISearchFieldComponentProps } from 'rev-ui/lib/fields/SearchField';
 import { getGridWidthProps } from '../fields/utils';
 import { ISelectFieldOptions } from 'rev-models/lib/fields';
+import { IObject } from 'rev-models/lib/utils/types';
 
 // TODO: Allow searching for multiple values
 export const MUISelectSearchField: React.StatelessComponent<ISearchFieldComponentProps> = (props) => {
@@ -20,8 +21,9 @@ export const MUISelectSearchField: React.StatelessComponent<ISearchFieldComponen
     const opts: ISelectFieldOptions = props.field.options;
 
     let value = '';
-    if (props.criteria && typeof props.criteria['_eq'] == 'string') {
-        value = props.criteria['_eq'];
+    const criteria: IObject = props.criteria;
+    if (criteria && typeof criteria['_eq'] == 'string') {
+        value = criteria['_eq'];
     }
 
     return (

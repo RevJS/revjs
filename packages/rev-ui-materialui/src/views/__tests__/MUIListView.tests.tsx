@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { mount, ReactWrapper } from 'enzyme';
 
-import { ModelManager, IModelMeta } from 'rev-models';
+import { ModelManager, IModelMeta, IModel } from 'rev-models';
 import * as models from '../../__fixtures__/models';
 import { getData, IModelTestData } from '../../__fixtures__/modeldata';
 
@@ -217,7 +217,7 @@ describe('MUIListView', () => {
 
             it('renders the correct data in each cell', () => {
                 for (let i = 0; i < props.results.length; i++) {
-                    const post = modelData.posts[i];
+                    const post: IModel = modelData.posts[i];
                     const row = wrapper.find('tbody')
                         .at(0).find('tr').at(i);
 

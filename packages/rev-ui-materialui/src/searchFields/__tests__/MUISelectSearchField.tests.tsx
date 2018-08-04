@@ -76,7 +76,7 @@ describe('MUISelectSearchField', () => {
             const select = wrapper.find(Select);
             expect(select).to.have.length(1);
             expect(select.prop('inputProps')).to.deep.equal({ id: props.field.name });
-            expect(select.prop('value')).to.equal(props.criteria['_eq']);
+            expect(select.prop('value')).to.equal((props.criteria as any)['_eq']);
         });
 
         it('Select component has correct options', () => {

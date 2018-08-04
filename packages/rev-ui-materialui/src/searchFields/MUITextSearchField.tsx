@@ -8,6 +8,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 
 import { ISearchFieldComponentProps } from 'rev-ui/lib/fields/SearchField';
 import { getGridWidthProps } from '../fields/utils';
+import { IObject } from 'rev-models/lib/utils/types';
 
 // Text Search Field - does a basic 'contains' search
 export const MUITextSearchField: React.StatelessComponent<ISearchFieldComponentProps> = (props) => {
@@ -18,9 +19,10 @@ export const MUITextSearchField: React.StatelessComponent<ISearchFieldComponentP
     let type = 'text';
 
     let value = '';
-    if (props.criteria && typeof props.criteria['_like'] == 'string') {
+    const criteria: IObject = props.criteria;
+    if (criteria && typeof criteria['_like'] == 'string') {
         // We assume the current criteria starts and ends with a '%'
-        value = props.criteria['_like'].substr(1, props.criteria['_like'].length - 2);
+        value = criteria['_like'].substr(1, criteria['_like'].length - 2);
     }
 
     return (

@@ -8,6 +8,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 
 import { ISearchFieldComponentProps } from 'rev-ui/lib/fields/SearchField';
 import { getGridWidthProps } from '../fields/utils';
+import { IObject } from 'rev-models/lib/utils/types';
 
 export const MUIDateSearchField: React.StatelessComponent<ISearchFieldComponentProps> = (props) => {
 
@@ -16,25 +17,26 @@ export const MUIDateSearchField: React.StatelessComponent<ISearchFieldComponentP
 
     let valueFrom = '';
     let valueTo = '';
-    if (props.criteria) {
-        if (typeof props.criteria['_gte'] == 'string') {
-            valueFrom = props.criteria['_gte'];
+    const criteria: IObject = props.criteria;
+    if (criteria) {
+        if (typeof criteria['_gte'] == 'string') {
+            valueFrom = criteria['_gte'];
         }
-        if (typeof props.criteria['_lte'] == 'string') {
-            valueTo = props.criteria['_lte'];
+        if (typeof criteria['_lte'] == 'string') {
+            valueTo = criteria['_lte'];
         }
     }
 
     function onChange(newValueFrom: string, newValueTo: string) {
         if (newValueFrom || newValueTo) {
-            const criteria = {};
+            const newCriteria: IObject = {};
             if (newValueFrom) {
-                criteria['_gte'] = newValueFrom;
+                newCriteria['_gte'] = newValueFrom;
             }
             if (newValueTo) {
-                criteria['_lte'] = newValueTo;
+                newCriteria['_lte'] = newValueTo;
             }
-            props.onCriteriaChange(criteria);
+            props.onCriteriaChange(newCriteria);
         }
         else {
             props.onCriteriaChange(null);

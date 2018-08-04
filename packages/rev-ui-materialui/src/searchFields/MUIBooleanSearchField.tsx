@@ -9,6 +9,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 import { ISearchFieldComponentProps } from 'rev-ui/lib/fields/SearchField';
 import { getGridWidthProps } from '../fields/utils';
+import { IObject } from 'rev-models/lib/utils/types';
 
 export const MUIBooleanSearchField: React.StatelessComponent<ISearchFieldComponentProps> = (props) => {
 
@@ -16,8 +17,9 @@ export const MUIBooleanSearchField: React.StatelessComponent<ISearchFieldCompone
     const fieldId = props.field.name;
 
     let value = '';
-    if (props.criteria && typeof props.criteria['_eq'] != 'undefined') {
-        value = props.criteria['_eq'] == true ? 'Y' : 'N';
+    const criteria: IObject = props.criteria;
+    if (criteria && typeof criteria['_eq'] != 'undefined') {
+        value = criteria['_eq'] == true ? 'Y' : 'N';
     }
 
     return (
