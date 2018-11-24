@@ -1,6 +1,6 @@
 {
   "name": "rev-api",
-  "version": "0.21.0",
+  "version": "0.21.1",
   "description": "RevJS Isomorphic Data Library - API Library",
   "main": "lib/index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   "dependencies": {
     "graphql": "0.x",
     "graphql-type-json": "0.x",
-    "rev-models": "^0.21.0",
+    "rev-models": "^0.21.1",
     "tslib": "1.x"
   },
   "devDependencies": {

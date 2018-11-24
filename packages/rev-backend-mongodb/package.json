@@ -1,6 +1,6 @@
 {
   "name": "rev-backend-mongodb",
-  "version": "0.21.0",
+  "version": "0.21.1",
   "description": "RevJS Isomorphic Data Library - Mongo DB Backend",
   "main": "lib/index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   "dependencies": {
     "@types/mongodb": "3.x",
     "mongodb": "3.x",
-    "rev-models": "^0.21.0"
+    "rev-models": "^0.21.1"
   },
   "devDependencies": {
     "run-bin": "1.x"
