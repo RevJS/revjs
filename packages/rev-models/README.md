@@ -1,10 +1,14 @@
+# DEPRECATION NOTICE
 
-[![CircleCI](https://img.shields.io/circleci/project/github/RevJS/revjs.svg)](https://circleci.com/gh/RevJS/revjs)
-[![npm version](https://badge.fury.io/js/rev-models.svg)](https://badge.fury.io/js/rev-models)
-[![Join the chat at https://gitter.im/RevJS/revjs](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/RevJS/revjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+I've made the decision to deprecate this project. Implementing and maintaining a custom
+ORM is a very complex job and there are far more mature solutions already available on
+other platforms.
 
-[![NPM](https://nodei.co/npm/rev-models.png)](https://www.npmjs.com/package/rev-models)
-[![NPM](https://nodei.co/npm/rev-ui.png)](https://www.npmjs.com/package/rev-ui)
+HOWEVER the concept of this project lives on. I am still passionate about building a
+platform that makes it super-easy to create business apps in record time, and I am now
+focussing my efforts on a Kotlin-based CRM platform using the Hibernate ORM, GraphQL
+and many of the UI elements developed for RevJS. Check it out!...
+[RevCRM.com](http://revcrm.com)
 
 # RevJS - Rev up your data-driven JS app development!
 
