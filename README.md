@@ -1,14 +1,12 @@
-# DEPRECATION NOTICE
+# Deprecation Notice
 
 I've made the decision to deprecate this project. Implementing and maintaining a custom
 ORM is a very complex job and there are far more mature solutions already available on
 other platforms.
 
-HOWEVER the concept of this project lives on. I am still passionate about building a
-platform that makes it super-easy to create business apps in record time, and I am now
-focussing my efforts on a Kotlin-based CRM platform using the Hibernate ORM, GraphQL
-and many of the UI elements developed for RevJS. Check it out!...
-[RevCRM.com](http://revcrm.com)
+HOWEVER I am still passionate about working on a platform that makes it super-easy to create
+business apps in record time. You can track this work over at
+[RevCRM.com](http://revcrm.com)!
 
 ## RevJS - Rev up your data-driven JS app development!
 
