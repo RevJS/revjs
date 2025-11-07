@@ -5,7 +5,7 @@ ORM is a very complex job and there are far more mature solutions already availa
 other platforms.
 
 It was a useful learning experience though, and as part of this project
-I developed the [json-to-graphqu-query](https://www.npmjs.com/package/json-to-graphql-query)
+I developed the [json-to-graphql-query](https://www.npmjs.com/package/json-to-graphql-query)
 library which has becoome pretty popular on NPM :)
 
 ## RevJS - Rev up your data-driven JS app development!
