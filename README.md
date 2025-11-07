@@ -2,11 +2,9 @@
 
 I've made the decision to deprecate this project. Implementing and maintaining a custom
 ORM is a very complex job and there are far more mature solutions already available on
-other platforms.
-
-HOWEVER I am still passionate about working on a platform that makes it super-easy to create
-business apps in record time. You can track this work over at
-[RevCRM.com](http://revcrm.com)!
+other platforms. It was a useful learning experience though, and as part of this project
+I developed the [json-to-graphqu-query](https://www.npmjs.com/package/json-to-graphql-query)
+library which has becoome pretty popular on NPM :)
 
 ## RevJS - Rev up your data-driven JS app development!
 
